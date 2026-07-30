@@ -58,7 +58,14 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
         int total = menu.totalProgress();
         if (total > 0) {
             int width = Mth.clamp(menu.progress() * 80 / total, 0, 80);
-            graphics.fill(leftPos + 48, topPos + 29, leftPos + 48 + width, topPos + 45, 0x806B5540);
+            graphics.blit(
+                    BACKGROUND,
+                    leftPos + 48,
+                    topPos + 29,
+                    176,
+                    0,
+                    width,
+                    16);
         }
     }
 

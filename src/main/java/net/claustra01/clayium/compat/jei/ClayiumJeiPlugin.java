@@ -51,9 +51,9 @@ public final class ClayiumJeiPlugin implements IModPlugin {
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(
                 ClayWorkTableScreen.class,
-                40,
-                52,
-                96,
+                48,
+                29,
+                80,
                 16,
                 ClayiumJeiRecipeTypes.CLAY_WORK_TABLE);
     }
