@@ -24,13 +24,19 @@ public final class ClayiumDataGenerators {
                     add(tier.translationKey(), tier.displayName());
                 }
                 add("block." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
+                add("item." + Clayium.MODID + ".clay_stick", "Clay Stick");
                 add("container." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
-                add("gui." + Clayium.MODID + ".clay_work_table.process", "Process");
                 add("jei." + Clayium.MODID + ".category.clay_work_table", "Clay Work Table");
                 add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
+                add("jei." + Clayium.MODID + ".required_actions", "Manual actions: %s");
+                add("jei." + Clayium.MODID + ".operation", "Operation: %s");
                 add("jei." + Clayium.MODID + ".clay_energy_per_tick", "CE/t: %s");
                 add("jei." + Clayium.MODID + ".total_clay_energy", "Total CE: %s");
                 add("jei." + Clayium.MODID + ".minimum_tier", "Tier: %s");
+                for (net.claustra01.clayium.recipe.ClayWorkTableOperation operation
+                        : net.claustra01.clayium.recipe.ClayWorkTableOperation.values()) {
+                    add(operation.translationKey(), operation.id());
+                }
                 add(Clayium.MODID + ".config.log_registry_summary", "Log registry summary");
                 add(Clayium.MODID + ".config.ce_sync_interval_ticks", "Clay Energy sync interval");
             }

@@ -8,6 +8,8 @@ package net.claustra01.clayium.registry;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.recipe.MachineRecipeSerializer;
+import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
+import net.claustra01.clayium.recipe.ClayWorkTableRecipeSerializer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -25,6 +27,11 @@ public final class ClayiumRecipes {
             TYPES.register("machine", () -> RecipeType.simple(Clayium.id("machine")));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<MachineRecipe>> MACHINE_RECIPE_SERIALIZER =
             SERIALIZERS.register("machine", () -> MachineRecipeSerializer.INSTANCE);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<ClayWorkTableRecipe>> CLAY_WORK_TABLE_RECIPE_TYPE =
+            TYPES.register("clay_work_table", () -> RecipeType.simple(Clayium.id("clay_work_table")));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ClayWorkTableRecipe>>
+            CLAY_WORK_TABLE_RECIPE_SERIALIZER =
+                    SERIALIZERS.register("clay_work_table", () -> ClayWorkTableRecipeSerializer.INSTANCE);
 
     private ClayiumRecipes() {
     }

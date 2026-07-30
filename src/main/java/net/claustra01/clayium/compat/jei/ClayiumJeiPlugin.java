@@ -11,12 +11,11 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayWorkTableScreen;
-import net.claustra01.clayium.machine.ClayiumMachineIds;
-import net.claustra01.clayium.recipe.MachineRecipe;
+import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.claustra01.clayium.registry.ClayiumRecipes;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
@@ -42,21 +41,6 @@ public final class ClayiumJeiPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerRecipes(IRecipeRegistration registration) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) {
-            return;
-        }
-        List<MachineRecipe> recipes = level.getRecipeManager()
-                .getAllRecipesFor(ClayiumRecipes.MACHINE_RECIPE_TYPE.get())
-                .stream()
-                .filter(holder -> holder.value().machine().equals(ClayiumMachineIds.CLAY_WORK_TABLE))
-                .map(holder -> holder.value())
-                .toList();
-        registration.addRecipes(ClayiumJeiRecipeTypes.CLAY_WORK_TABLE, recipes);
-    }
-
-    @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(
                 ClayiumRegistries.CLAY_WORK_TABLE_ITEM.get(),
@@ -67,10 +51,10 @@ public final class ClayiumJeiPlugin implements IModPlugin {
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(
                 ClayWorkTableScreen.class,
-                63,
-                50,
-                58,
-                20,
+                40,
+                52,
+                96,
+                16,
                 ClayiumJeiRecipeTypes.CLAY_WORK_TABLE);
     }
 
@@ -84,5 +68,19 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 1,
                 2,
                 36);
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) {
+            return;
+        }
+        List<ClayWorkTableRecipe> recipes = level.getRecipeManager()
+                .getAllRecipesFor(ClayiumRecipes.CLAY_WORK_TABLE_RECIPE_TYPE.get())
+                .stream()
+                .map(holder -> holder.value())
+                .toList();
+        jeiRuntime.getRecipeManager().addRecipes(ClayiumJeiRecipeTypes.CLAY_WORK_TABLE, recipes);
     }
 }

@@ -12,13 +12,13 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.claustra01.clayium.recipe.MachineRecipe;
+import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
-public final class ClayWorkTableRecipeCategory implements IRecipeCategory<MachineRecipe> {
+public final class ClayWorkTableRecipeCategory implements IRecipeCategory<ClayWorkTableRecipe> {
     private static final int WIDTH = 176;
     private static final int HEIGHT = 92;
     private static final int TEXT_COLOR = 0xFF555555;
@@ -32,7 +32,7 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<Machin
     }
 
     @Override
-    public mezz.jei.api.recipe.RecipeType<MachineRecipe> getRecipeType() {
+    public mezz.jei.api.recipe.RecipeType<ClayWorkTableRecipe> getRecipeType() {
         return ClayiumJeiRecipeTypes.CLAY_WORK_TABLE;
     }
 
@@ -59,7 +59,7 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<Machin
     @Override
     public void setRecipe(
             IRecipeLayoutBuilder builder,
-            MachineRecipe recipe,
+            ClayWorkTableRecipe recipe,
             IFocusGroup focuses) {
         builder.addInputSlot(34, 26)
                 .setStandardSlotBackground()
@@ -71,7 +71,7 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<Machin
 
     @Override
     public void draw(
-            MachineRecipe recipe,
+            ClayWorkTableRecipe recipe,
             IRecipeSlotsView recipeSlotsView,
             GuiGraphics graphics,
             double mouseX,
@@ -81,8 +81,8 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<Machin
         graphics.drawString(
                 font,
                 Component.translatable(
-                        "jei.clayium_neoforged.processing_time",
-                        recipe.processingTimeTicks()),
+                        "jei.clayium_neoforged.required_actions",
+                        recipe.requiredActions()),
                 8,
                 4,
                 TEXT_COLOR,
@@ -90,8 +90,8 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<Machin
         graphics.drawString(
                 font,
                 Component.translatable(
-                        "jei.clayium_neoforged.clay_energy_per_tick",
-                        recipe.clayEnergyPerTick()),
+                        "jei.clayium_neoforged.operation",
+                        Component.translatable(recipe.operation().translationKey())),
                 8,
                 57,
                 TEXT_COLOR,
@@ -99,10 +99,19 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<Machin
         graphics.drawString(
                 font,
                 Component.translatable(
-                        "jei.clayium_neoforged.total_clay_energy",
-                        Math.multiplyExact(recipe.processingTimeTicks(), recipe.clayEnergyPerTick())),
+                        "jei.clayium_neoforged.clay_energy_per_tick",
+                        0),
                 8,
                 69,
+                TEXT_COLOR,
+                false);
+        graphics.drawString(
+                font,
+                Component.translatable(
+                        "jei.clayium_neoforged.total_clay_energy",
+                        0),
+                8,
+                81,
                 TEXT_COLOR,
                 false);
         graphics.drawString(

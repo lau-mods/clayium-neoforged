@@ -14,7 +14,8 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -34,10 +35,16 @@ public final class ClayiumRegistries {
     public static final DeferredBlock<ClayWorkTableBlock> CLAY_WORK_TABLE = BLOCKS.registerBlock(
             "clay_work_table",
             ClayWorkTableBlock::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE));
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.CLAY)
+                    .strength(2.0F, 2.0F)
+                    .sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> CLAY_WORK_TABLE_ITEM = ITEMS.register(
             "clay_work_table",
             () -> new BlockItem(CLAY_WORK_TABLE.get(), new Item.Properties()));
+    public static final DeferredItem<Item> CLAY_STICK = ITEMS.register(
+            "clay_stick",
+            () -> new Item(new Item.Properties()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayWorkTableBlockEntity>>
             CLAY_WORK_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
                     "clay_work_table",

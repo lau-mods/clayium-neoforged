@@ -1,5 +1,11 @@
 {
   "block.clayium_neoforged.clay_work_table": "Clay Work Table",
+  "clayium_neoforged.clay_work_table.operation.cut": "cut",
+  "clayium_neoforged.clay_work_table.operation.divide": "divide",
+  "clayium_neoforged.clay_work_table.operation.form": "form",
+  "clayium_neoforged.clay_work_table.operation.punch": "punch",
+  "clayium_neoforged.clay_work_table.operation.roll": "roll",
+  "clayium_neoforged.clay_work_table.operation.slice": "slice",
   "clayium_neoforged.config.ce_sync_interval_ticks": "Clay Energy sync interval",
   "clayium_neoforged.config.log_registry_summary": "Log registry summary",
   "clayium_neoforged.tier.advanced": "Advanced",
@@ -17,10 +23,12 @@
   "clayium_neoforged.tier.simple": "Simple",
   "clayium_neoforged.tier.ultimate": "Ultimate",
   "container.clayium_neoforged.clay_work_table": "Clay Work Table",
-  "gui.clayium_neoforged.clay_work_table.process": "Process",
+  "item.clayium_neoforged.clay_stick": "Clay Stick",
   "jei.clayium_neoforged.category.clay_work_table": "Clay Work Table",
   "jei.clayium_neoforged.clay_energy_per_tick": "CE/t: %s",
   "jei.clayium_neoforged.minimum_tier": "Tier: %s",
+  "jei.clayium_neoforged.operation": "Operation: %s",
   "jei.clayium_neoforged.processing_time": "Time: %s ticks",
+  "jei.clayium_neoforged.required_actions": "Manual actions: %s",
   "jei.clayium_neoforged.total_clay_energy": "Total CE: %s"
 }

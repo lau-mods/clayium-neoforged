@@ -42,6 +42,8 @@ public final class Clayium {
     private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ClayiumRegistries.CLAY_WORK_TABLE_ITEM);
+        } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(ClayiumRegistries.CLAY_STICK);
         }
     }
 

@@ -6,6 +6,7 @@
 package net.claustra01.clayium.client.gui.screens.inventory;
 
 import net.claustra01.clayium.Clayium;
+import net.claustra01.clayium.recipe.ClayWorkTableOperation;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -31,15 +32,18 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
     protected void init() {
         super.init();
         titleLabelX = (imageWidth - font.width(title)) / 2;
-        addRenderableWidget(Button.builder(
-                        Component.translatable("gui.clayium_neoforged.clay_work_table.process"),
-                        button -> {
-                            if (minecraft != null && minecraft.gameMode != null) {
-                                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0);
-                            }
-                        })
-                .bounds(leftPos + 63, topPos + 50, 58, 20)
-                .build());
+        for (ClayWorkTableOperation operation : ClayWorkTableOperation.values()) {
+            int buttonId = operation.buttonId();
+            addRenderableWidget(Button.builder(
+                            Component.literal(Integer.toString(buttonId)),
+                            button -> {
+                                if (minecraft != null && minecraft.gameMode != null) {
+                                    minecraft.gameMode.handleInventoryButtonClick(menu.containerId, buttonId);
+                                }
+                            })
+                    .bounds(leftPos + 40 + (buttonId - 1) * 16, topPos + 52, 16, 16)
+                    .build());
+        }
     }
 
     @Override
@@ -53,8 +57,8 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
         graphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         int total = menu.totalProgress();
         if (total > 0) {
-            int width = Mth.clamp(menu.progress() * 42 / total, 0, 42);
-            graphics.fill(leftPos + 49, topPos + 32, leftPos + 49 + width, topPos + 36, 0xFF6B5540);
+            int width = Mth.clamp(menu.progress() * 80 / total, 0, 80);
+            graphics.fill(leftPos + 48, topPos + 29, leftPos + 48 + width, topPos + 45, 0x806B5540);
         }
     }
 }
