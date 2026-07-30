@@ -1,25 +1,34 @@
+# Clayium Neoforged
 
-Installation information
-=======
+Minecraft 1.21.1 / NeoForge向けに再設計するClayium移植プロジェクトです。
+本家Clayiumの粘土中心の進行、Clay Energy（CE）、機械加工、および後期コンテンツの役割を維持しつつ、現行APIに適合する構造へ移行します。
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+## 識別子
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+- Mod ID: `clayium_neoforged`
+- Java namespace: `net.claustra01.clayium`
+- Display name: `Clayium Neoforged`
+- Minecraft: `1.21.1`
+- Loader: `NeoForge`
+- License: `CC BY 4.0`
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+## 現在の実装状況
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+Phase 1（登録と共通データモデル）を実装中です。現在は、安定した登録基盤、名前付きTierと0〜13の進行比較値、CEストレージ、共通Machine RecipeのCodec / StreamCodec、Data Component、Datagenの基礎を含みます。
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+本家Jarの解析結果や一時的な移植用スクリプトなど、配布対象外の作業ファイルは `.tmp/` に置きます。このディレクトリはGit管理対象外です。
+
+## ビルド
+
+```text
+./gradlew build
+./gradlew runData
+```
+
+ゲーム内のクライアントおよびDedicated Server起動確認は、ビルド後に手動で実施します。
+
+## 帰属
+
+本プロジェクトは、本家Clayium（作者 deb_rk）のゲームデザインおよびアセットを基礎とする独立した移植・再実装です。詳細は [CREDITS.md](CREDITS.md)、[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)、[LICENSE](LICENSE) を参照してください。
+
+NeoForge MDKのマッピングおよび利用条件については、NeoForgedの公式ドキュメントを参照してください。
