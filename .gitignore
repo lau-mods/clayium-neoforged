@@ -36,5 +36,8 @@ bin/
 run/
 !**/src/**/run/
 **/src/generated/**/.cache/
+
+### Local migration workspace ###
+.tmp/
 repo/
 !**/src/**/repo/

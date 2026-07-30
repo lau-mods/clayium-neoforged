@@ -26,7 +26,7 @@
 
 * Minecraft: 1.21.1
 * Mod loader: NeoForge
-* Mod ID: `clayium`
+* Mod ID: `clayium_neoforged`
 * ライセンス: CC BY 4.0
 * テクスチャ: 本家Clayiumのテクスチャを使用
 * レシピ閲覧連携: JEIを初期実装対象とする
@@ -195,10 +195,10 @@ Block、Item、Block Entity、Menu、Recipe Typeなどは、意味のある安�
 例:
 
 ```text
-clayium:clay_bending_machine
-clayium:dense_clay_bending_machine
-clayium:precision_grinder
-clayium:clay_reactor
+clayium_neoforged:clay_bending_machine
+clayium_neoforged:dense_clay_bending_machine
+clayium_neoforged:precision_grinder
+clayium_neoforged:clay_reactor
 ```
 
 Tierや機械種別を数値メタデータだけで区別してはならない。
@@ -583,11 +583,11 @@ Clayium固有素材にはClayium名前空間のタグを定義する。
 例:
 
 ```text
-clayium:clays
-clayium:energetic_clays
-clayium:clay_ores
-clayium:machine_hulls
-clayium:laser_components
+clayium_neoforged:clays
+clayium_neoforged:energetic_clays
+clayium_neoforged:clay_ores
+clayium_neoforged:machine_hulls
+clayium_neoforged:laser_components
 ```
 
 レシピ入力では可能な範囲でタグを使用する。

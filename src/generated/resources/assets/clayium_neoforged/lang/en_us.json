@@ -1,0 +1,18 @@
+{
+  "clayium_neoforged.config.ce_sync_interval_ticks": "Clay Energy sync interval",
+  "clayium_neoforged.config.log_registry_summary": "Log registry summary",
+  "clayium_neoforged.tier.advanced": "Advanced",
+  "clayium_neoforged.tier.antimatter": "Antimatter",
+  "clayium_neoforged.tier.basic": "Basic",
+  "clayium_neoforged.tier.clay": "Clay",
+  "clayium_neoforged.tier.clay_steel": "Clay Steel",
+  "clayium_neoforged.tier.clayium": "Clayium",
+  "clayium_neoforged.tier.dense_clay": "Dense Clay",
+  "clayium_neoforged.tier.oec": "OEC",
+  "clayium_neoforged.tier.opa": "OPA",
+  "clayium_neoforged.tier.precision": "Precision",
+  "clayium_neoforged.tier.pure_antimatter": "Pure Antimatter",
+  "clayium_neoforged.tier.raw": "Raw",
+  "clayium_neoforged.tier.simple": "Simple",
+  "clayium_neoforged.tier.ultimate": "Ultimate"
+}
