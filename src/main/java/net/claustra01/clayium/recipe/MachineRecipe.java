@@ -36,7 +36,7 @@ public record MachineRecipe(
             value -> value);
     public static final com.mojang.serialization.MapCodec<MachineRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("machine").forGetter(MachineRecipe::machine),
-            Ingredient.MAP_CODEC_NONEMPTY.forGetter(MachineRecipe::ingredient),
+            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(MachineRecipe::ingredient),
             ItemStack.CODEC.fieldOf("result").forGetter(MachineRecipe::result),
             Codec.intRange(1, Integer.MAX_VALUE).fieldOf("processing_time_ticks").forGetter(MachineRecipe::processingTimeTicks),
             NON_NEGATIVE_LONG.fieldOf("clay_energy_per_tick").forGetter(MachineRecipe::clayEnergyPerTick),

@@ -11,8 +11,8 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
-import mezz.jei.api.runtime.IJeiRuntime;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayWorkTableScreen;
 import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
@@ -71,7 +71,7 @@ public final class ClayiumJeiPlugin implements IModPlugin {
     }
 
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+    public void registerRecipes(IRecipeRegistration registration) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
             return;
@@ -81,6 +81,6 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 .stream()
                 .map(holder -> holder.value())
                 .toList();
-        jeiRuntime.getRecipeManager().addRecipes(ClayiumJeiRecipeTypes.CLAY_WORK_TABLE, recipes);
+        registration.addRecipes(ClayiumJeiRecipeTypes.CLAY_WORK_TABLE, recipes);
     }
 }

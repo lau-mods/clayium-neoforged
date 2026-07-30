@@ -45,6 +45,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
     private static final String ACTIVE_OPERATION_KEY = "ActiveOperation";
     private static final String PROGRESS_KEY = "Progress";
     private static final String REQUIRED_ACTIONS_KEY = "RequiredActions";
+    private static final int OPERATION_COUNT = 6;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     @Nullable
@@ -61,6 +62,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
                 case 0 -> progress;
                 case 1 -> requiredActions;
                 case 2 -> activeOperation == null ? 0 : activeOperation.buttonId();
+                case 3 -> availableOperationsMask();
                 default -> 0;
             };
         }
@@ -78,7 +80,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
     };
 
@@ -199,6 +201,32 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         }
         setChanged();
         return true;
+    }
+
+    private int availableOperationsMask() {
+        if (level == null || getItem(INPUT_SLOT).isEmpty()) {
+            return 0;
+        }
+        int mask = 0;
+        for (int buttonId = 1; buttonId <= OPERATION_COUNT; buttonId++) {
+            Optional<ClayWorkTableOperation> operation = ClayWorkTableOperation.byButtonId(buttonId);
+            if (operation.isPresent() && canPushOperation(operation.get())) {
+                mask |= 1 << (buttonId - 1);
+            }
+        }
+        return mask;
+    }
+
+    private boolean canPushOperation(ClayWorkTableOperation operation) {
+        if (activeRecipeId == null) {
+            return findRecipe(operation)
+                    .map(holder -> canOutput(holder.value().result()))
+                    .orElse(false);
+        }
+        return activeOperation == operation
+                && resolveActiveRecipe()
+                        .map(holder -> canOutput(holder.value().result()))
+                        .orElse(false);
     }
 
     private Optional<RecipeHolder<ClayWorkTableRecipe>> findRecipe(ClayWorkTableOperation operation) {

@@ -6,8 +6,16 @@
 package net.claustra01.clayium.data;
 
 import net.claustra01.clayium.Clayium;
+import net.claustra01.clayium.recipe.ClayWorkTableOperation;
+import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
+import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -41,5 +49,21 @@ public final class ClayiumDataGenerators {
                 add(Clayium.MODID + ".config.ce_sync_interval_ticks", "Clay Energy sync interval");
             }
         });
+        event.getGenerator().addProvider(
+                event.includeServer(),
+                new RecipeProvider(packOutput, event.getLookupProvider()) {
+                    @Override
+                    protected void buildRecipes(RecipeOutput recipeOutput) {
+                        recipeOutput.accept(
+                                Clayium.id("clay_work_table/clay_ball_to_clay_stick"),
+                                new ClayWorkTableRecipe(
+                                        Ingredient.of(Items.CLAY_BALL),
+                                        new ItemStack(ClayiumRegistries.CLAY_STICK.get()),
+                                        ClayWorkTableOperation.FORM,
+                                        4,
+                                        ClayTier.RAW),
+                                null);
+                    }
+                });
     }
 }

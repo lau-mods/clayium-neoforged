@@ -34,15 +34,15 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
         titleLabelX = (imageWidth - font.width(title)) / 2;
         for (ClayWorkTableOperation operation : ClayWorkTableOperation.values()) {
             int buttonId = operation.buttonId();
-            addRenderableWidget(Button.builder(
-                            Component.literal(Integer.toString(buttonId)),
-                            button -> {
-                                if (minecraft != null && minecraft.gameMode != null) {
-                                    minecraft.gameMode.handleInventoryButtonClick(menu.containerId, buttonId);
-                                }
-                            })
-                    .bounds(leftPos + 40 + (buttonId - 1) * 16, topPos + 52, 16, 16)
-                    .build());
+            addRenderableWidget(new OperationButton(
+                    leftPos + 40 + (buttonId - 1) * 16,
+                    topPos + 52,
+                    operation,
+                    button -> {
+                        if (minecraft != null && minecraft.gameMode != null) {
+                            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, buttonId);
+                        }
+                    }));
         }
     }
 
@@ -59,6 +59,58 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
         if (total > 0) {
             int width = Mth.clamp(menu.progress() * 80 / total, 0, 80);
             graphics.fill(leftPos + 48, topPos + 29, leftPos + 48 + width, topPos + 45, 0x806B5540);
+        }
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        for (var child : children()) {
+            if (child instanceof OperationButton button) {
+                button.active = menu.canUseOperation(button.operation.buttonId());
+            }
+        }
+    }
+
+    private static final class OperationButton extends Button {
+        private final ClayWorkTableOperation operation;
+
+        private OperationButton(
+                int x,
+                int y,
+                ClayWorkTableOperation operation,
+                OnPress onPress) {
+            super(
+                    x,
+                    y,
+                    16,
+                    16,
+                    Component.translatable(operation.translationKey()),
+                    onPress,
+                    DEFAULT_NARRATION);
+            this.operation = operation;
+            this.active = false;
+        }
+
+        @Override
+        protected void renderWidget(
+                GuiGraphics graphics,
+                int mouseX,
+                int mouseY,
+                float partialTick) {
+            int textureX = operation == ClayWorkTableOperation.DIVIDE
+                    ? 176
+                    : 176 + (operation.buttonId() - 1) * 16;
+            int baseTextureY = operation == ClayWorkTableOperation.DIVIDE ? 80 : 32;
+            int stateOffset = active ? (isHoveredOrFocused() ? 32 : 16) : 0;
+            graphics.blit(
+                    BACKGROUND,
+                    getX(),
+                    getY(),
+                    textureX,
+                    baseTextureY + stateOffset,
+                    width,
+                    height);
         }
     }
 }

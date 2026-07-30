@@ -31,7 +31,7 @@ public record ClayWorkTableRecipe(
 ) implements Recipe<MachineRecipeInput> {
     public static final com.mojang.serialization.MapCodec<ClayWorkTableRecipe> CODEC =
             RecordCodecBuilder.mapCodec(instance -> instance.group(
-                    Ingredient.MAP_CODEC_NONEMPTY.forGetter(ClayWorkTableRecipe::ingredient),
+                    Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(ClayWorkTableRecipe::ingredient),
                     ItemStack.CODEC.fieldOf("result").forGetter(ClayWorkTableRecipe::result),
                     ClayWorkTableOperation.CODEC.fieldOf("operation").forGetter(ClayWorkTableRecipe::operation),
                     Codec.intRange(1, Integer.MAX_VALUE).fieldOf("required_actions").forGetter(ClayWorkTableRecipe::requiredActions),

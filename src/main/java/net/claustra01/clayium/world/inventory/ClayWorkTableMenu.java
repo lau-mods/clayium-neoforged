@@ -27,7 +27,7 @@ public final class ClayWorkTableMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public ClayWorkTableMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainer(DEVICE_SLOT_COUNT), new SimpleContainerData(3));
+        this(containerId, playerInventory, new SimpleContainer(DEVICE_SLOT_COUNT), new SimpleContainerData(4));
     }
 
     public ClayWorkTableMenu(
@@ -39,7 +39,7 @@ public final class ClayWorkTableMenu extends AbstractContainerMenu {
         this.container = container;
         this.data = data;
         checkContainerSize(container, DEVICE_SLOT_COUNT);
-        checkContainerDataCount(data, 3);
+        checkContainerDataCount(data, 4);
         container.startOpen(playerInventory.player);
 
         addSlot(new Slot(container, ClayWorkTableBlockEntity.INPUT_SLOT, 17, 30));
@@ -80,6 +80,12 @@ public final class ClayWorkTableMenu extends AbstractContainerMenu {
 
     public int activeOperation() {
         return data.get(2);
+    }
+
+    public boolean canUseOperation(int buttonId) {
+        return buttonId >= 1
+                && buttonId <= 6
+                && (data.get(3) & 1 << (buttonId - 1)) != 0;
     }
 
     @Override

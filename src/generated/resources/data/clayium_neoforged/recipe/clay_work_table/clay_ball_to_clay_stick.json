@@ -3,11 +3,11 @@
   "ingredient": {
     "item": "minecraft:clay_ball"
   },
-  "result": {
-    "id": "clayium_neoforged:clay_stick",
-    "count": 1
-  },
+  "minimum_tier": "raw",
   "operation": "form",
   "required_actions": 4,
-  "minimum_tier": "raw"
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_stick"
+  }
 }
