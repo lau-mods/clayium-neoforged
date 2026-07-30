@@ -14,26 +14,28 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 /** First data-driven recipe model used by the common machine processor. */
 public record MachineRecipe(
+        ResourceLocation machine,
         Ingredient ingredient,
         ItemStack result,
         int processingTimeTicks,
         long clayEnergyPerTick,
         ClayTier minimumTier
-) implements Recipe<RecipeInput> {
+) implements Recipe<MachineRecipeInput> {
     private static final Codec<Long> NON_NEGATIVE_LONG = Codec.LONG.comapFlatMap(
             value -> value < 0 ? com.mojang.serialization.DataResult.error(() -> "Value must not be negative") : com.mojang.serialization.DataResult.success(value),
             value -> value);
     public static final com.mojang.serialization.MapCodec<MachineRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            ResourceLocation.CODEC.fieldOf("machine").forGetter(MachineRecipe::machine),
             Ingredient.MAP_CODEC_NONEMPTY.forGetter(MachineRecipe::ingredient),
             ItemStack.CODEC.fieldOf("result").forGetter(MachineRecipe::result),
             Codec.intRange(1, Integer.MAX_VALUE).fieldOf("processing_time_ticks").forGetter(MachineRecipe::processingTimeTicks),
@@ -42,6 +44,7 @@ public record MachineRecipe(
     ).apply(instance, MachineRecipe::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, MachineRecipe> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, MachineRecipe::machine,
             Ingredient.CONTENTS_STREAM_CODEC, MachineRecipe::ingredient,
             ItemStack.STREAM_CODEC, MachineRecipe::result,
             ByteBufCodecs.VAR_INT, MachineRecipe::processingTimeTicks,
@@ -50,6 +53,9 @@ public record MachineRecipe(
             MachineRecipe::new);
 
     public MachineRecipe {
+        if (machine == null) {
+            throw new IllegalArgumentException("Machine recipe machine ID must not be null");
+        }
         if (ingredient == null || ingredient.isEmpty()) {
             throw new IllegalArgumentException("Machine recipe ingredient must not be empty");
         }
@@ -66,15 +72,25 @@ public record MachineRecipe(
         if (minimumTier == null) {
             throw new IllegalArgumentException("minimumTier must not be null");
         }
+        try {
+            Math.multiplyExact(processingTimeTicks, clayEnergyPerTick);
+        } catch (ArithmeticException exception) {
+            throw new IllegalArgumentException("Machine recipe total Clay Energy overflows a long", exception);
+        }
     }
 
     @Override
-    public boolean matches(RecipeInput input, Level level) {
-        return input.size() > 0 && ingredient.test(input.getItem(0));
+    public ItemStack result() {
+        return result.copy();
     }
 
     @Override
-    public ItemStack assemble(RecipeInput input, HolderLookup.Provider registries) {
+    public boolean matches(MachineRecipeInput input, Level level) {
+        return input != null && !input.isEmpty() && ingredient.test(input.getItem(0));
+    }
+
+    @Override
+    public ItemStack assemble(MachineRecipeInput input, HolderLookup.Provider registries) {
         return result.copy();
     }
 

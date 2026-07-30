@@ -23,6 +23,14 @@ public final class ClayiumDataGenerators {
                 for (ClayTier tier : ClayTier.values()) {
                     add(tier.translationKey(), tier.displayName());
                 }
+                add("block." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
+                add("container." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
+                add("gui." + Clayium.MODID + ".clay_work_table.process", "Process");
+                add("jei." + Clayium.MODID + ".category.clay_work_table", "Clay Work Table");
+                add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
+                add("jei." + Clayium.MODID + ".clay_energy_per_tick", "CE/t: %s");
+                add("jei." + Clayium.MODID + ".total_clay_energy", "Total CE: %s");
+                add("jei." + Clayium.MODID + ".minimum_tier", "Tier: %s");
                 add(Clayium.MODID + ".config.log_registry_summary", "Log registry summary");
                 add(Clayium.MODID + ".config.ce_sync_interval_ticks", "Clay Energy sync interval");
             }

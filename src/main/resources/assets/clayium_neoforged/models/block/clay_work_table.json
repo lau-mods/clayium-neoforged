@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "clayium_neoforged:block/clayworktable_side",
+    "up": "clayium_neoforged:block/clayworktable",
+    "north": "clayium_neoforged:block/clayworktable_side",
+    "south": "clayium_neoforged:block/clayworktable_side",
+    "west": "clayium_neoforged:block/clayworktable_side",
+    "east": "clayium_neoforged:block/clayworktable_side",
+    "particle": "clayium_neoforged:block/clayworktable_side"
+  }
+}

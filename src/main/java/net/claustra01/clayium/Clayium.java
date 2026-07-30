@@ -8,15 +8,18 @@ package net.claustra01.clayium;
 import net.claustra01.clayium.config.ClayiumConfig;
 import net.claustra01.clayium.data.ClayiumDataGenerators;
 import net.claustra01.clayium.registry.ClayiumDataComponents;
+import net.claustra01.clayium.registry.ClayiumCapabilities;
 import net.claustra01.clayium.registry.ClayiumRecipes;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
 @Mod(Clayium.MODID)
@@ -32,6 +35,14 @@ public final class Clayium {
         modEventBus.addListener(this::commonSetup);
         modContainer.registerConfig(ModConfig.Type.COMMON, ClayiumConfig.SPEC);
         modEventBus.addListener(ClayiumDataGenerators::gatherData);
+        modEventBus.addListener(this::addCreativeItems);
+        modEventBus.addListener(ClayiumCapabilities::register);
+    }
+
+    private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(ClayiumRegistries.CLAY_WORK_TABLE_ITEM);
+        }
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

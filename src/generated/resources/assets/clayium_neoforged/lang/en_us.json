@@ -1,4 +1,5 @@
 {
+  "block.clayium_neoforged.clay_work_table": "Clay Work Table",
   "clayium_neoforged.config.ce_sync_interval_ticks": "Clay Energy sync interval",
   "clayium_neoforged.config.log_registry_summary": "Log registry summary",
   "clayium_neoforged.tier.advanced": "Advanced",
@@ -14,5 +15,12 @@
   "clayium_neoforged.tier.pure_antimatter": "Pure Antimatter",
   "clayium_neoforged.tier.raw": "Raw",
   "clayium_neoforged.tier.simple": "Simple",
-  "clayium_neoforged.tier.ultimate": "Ultimate"
+  "clayium_neoforged.tier.ultimate": "Ultimate",
+  "container.clayium_neoforged.clay_work_table": "Clay Work Table",
+  "gui.clayium_neoforged.clay_work_table.process": "Process",
+  "jei.clayium_neoforged.category.clay_work_table": "Clay Work Table",
+  "jei.clayium_neoforged.clay_energy_per_tick": "CE/t: %s",
+  "jei.clayium_neoforged.minimum_tier": "Tier: %s",
+  "jei.clayium_neoforged.processing_time": "Time: %s ticks",
+  "jei.clayium_neoforged.total_clay_energy": "Total CE: %s"
 }

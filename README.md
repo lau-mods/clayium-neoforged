@@ -14,7 +14,11 @@ Minecraft 1.21.1 / NeoForge向けに再設計するClayium移植プロジェク�
 
 ## 現在の実装状況
 
-Phase 1（登録と共通データモデル）を実装中です。現在は、安定した登録基盤、名前付きTierと0〜13の進行比較値、CEストレージ、共通Machine RecipeのCodec / StreamCodec、Data Component、Datagenの基礎を含みます。
+Phase 2（共通Recipe基盤とJEI）を実装中です。共通Machine RecipeのCodec / StreamCodec、現在のRecipeManagerを参照する検索、完了時のトランザクション、および最初のJEIカテゴリを含みます。
+
+最初の縦スライスとしてClay Work Tableを独立したBlock Entity、Menu、Screen、永続インベントリを持つClayiumデバイスとして実装しています。vanilla作業台の継承やvanilla crafting recipe処理は使用しません。
+
+Machine Recipe JSONはMinecraft 1.21.1のdatapack構造に従い、`data/<namespace>/recipe/`へ配置します。JEIは接続中ワールドのRecipeManagerと同じレシピだけを表示し、リソースJSONを直接読むフォールバックは設けません。
 
 本家Jarの解析結果や一時的な移植用スクリプトなど、配布対象外の作業ファイルは `.tmp/` に置きます。このディレクトリはGit管理対象外です。
 
