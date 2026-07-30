@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 
 /** Dedicated menu for the Clay Work Table's persistent input and output slots. */
 public final class ClayWorkTableMenu extends AbstractContainerMenu {
-    private static final int DEVICE_SLOT_COUNT = 2;
+    private static final int DEVICE_SLOT_COUNT = 3;
     private static final int PLAYER_INVENTORY_START = DEVICE_SLOT_COUNT;
     private static final int PLAYER_INVENTORY_END = PLAYER_INVENTORY_START + 36;
 
@@ -43,6 +43,12 @@ public final class ClayWorkTableMenu extends AbstractContainerMenu {
         container.startOpen(playerInventory.player);
 
         addSlot(new Slot(container, ClayWorkTableBlockEntity.INPUT_SLOT, 17, 30));
+        addSlot(new Slot(container, ClayWorkTableBlockEntity.TOOL_SLOT, 80, 17) {
+            @Override
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
         addSlot(new Slot(container, ClayWorkTableBlockEntity.OUTPUT_SLOT, 143, 30) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -109,8 +115,14 @@ public final class ClayWorkTableMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(stack, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(stack, ClayWorkTableBlockEntity.INPUT_SLOT, ClayWorkTableBlockEntity.INPUT_SLOT + 1, false)) {
-            return ItemStack.EMPTY;
+        } else {
+            boolean isTool = stack.is(ClayiumRegistries.CLAY_ROLLING_PIN.get())
+                    || stack.is(ClayiumRegistries.CLAY_SLICER.get())
+                    || stack.is(ClayiumRegistries.CLAY_SPATULA.get());
+            int target = isTool ? ClayWorkTableBlockEntity.TOOL_SLOT : ClayWorkTableBlockEntity.INPUT_SLOT;
+            if (!moveItemStackTo(stack, target, target + 1, false)) {
+                return ItemStack.EMPTY;
+            }
         }
 
         if (stack.isEmpty()) {

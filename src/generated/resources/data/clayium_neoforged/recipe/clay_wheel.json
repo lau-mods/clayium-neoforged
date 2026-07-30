@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "clayium_neoforged:clay_plate"
+    },
+    "R": {
+      "item": "clayium_neoforged:clay_ring"
+    }
+  },
+  "pattern": [
+    " P ",
+    "PRP",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_wheel"
+  }
+}

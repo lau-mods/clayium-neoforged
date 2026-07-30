@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "G": {
+      "item": "clayium_neoforged:clay_gear"
+    },
+    "H": {
+      "item": "clayium_neoforged:clay_machine_hull"
+    },
+    "P": {
+      "item": "clayium_neoforged:clay_plate"
+    }
+  },
+  "pattern": [
+    " P ",
+    "GHG",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_bending_machine"
+  }
+}

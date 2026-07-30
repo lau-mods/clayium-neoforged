@@ -1,0 +1,14 @@
+{
+  "type": "clayium_neoforged:clay_work_table",
+  "ingredient": {
+    "item": "clayium_neoforged:clay_plate"
+  },
+  "input_count": 6,
+  "minimum_tier": "raw",
+  "operation": "roll",
+  "required_actions": 10,
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:large_clay_plate"
+  }
+}

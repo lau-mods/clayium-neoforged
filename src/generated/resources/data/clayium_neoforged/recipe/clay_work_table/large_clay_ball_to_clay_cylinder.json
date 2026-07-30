@@ -1,0 +1,13 @@
+{
+  "type": "clayium_neoforged:clay_work_table",
+  "ingredient": {
+    "item": "clayium_neoforged:large_clay_ball"
+  },
+  "minimum_tier": "raw",
+  "operation": "form",
+  "required_actions": 4,
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_cylinder"
+  }
+}

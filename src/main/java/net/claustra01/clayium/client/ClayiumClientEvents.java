@@ -7,6 +7,7 @@ package net.claustra01.clayium.client;
 
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayWorkTableScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.MachineScreen;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -21,5 +22,6 @@ public final class ClayiumClientEvents {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ClayiumRegistries.CLAY_WORK_TABLE_MENU.get(), ClayWorkTableScreen::new);
+        event.register(ClayiumRegistries.MACHINE_MENU.get(), MachineScreen::new);
     }
 }

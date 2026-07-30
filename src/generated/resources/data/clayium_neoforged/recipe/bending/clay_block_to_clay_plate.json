@@ -1,0 +1,14 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredient": {
+    "item": "minecraft:clay"
+  },
+  "machine": "clayium_neoforged:clay_bending_machine",
+  "minimum_tier": "clay",
+  "processing_time_ticks": 40,
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_plate"
+  }
+}

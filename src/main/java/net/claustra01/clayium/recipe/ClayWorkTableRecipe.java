@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level;
 /** Data-driven recipe for a repeated manual Clay Work Table operation. */
 public record ClayWorkTableRecipe(
         Ingredient ingredient,
+        int inputCount,
         ItemStack result,
         ClayWorkTableOperation operation,
         int requiredActions,
@@ -32,6 +33,7 @@ public record ClayWorkTableRecipe(
     public static final com.mojang.serialization.MapCodec<ClayWorkTableRecipe> CODEC =
             RecordCodecBuilder.mapCodec(instance -> instance.group(
                     Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(ClayWorkTableRecipe::ingredient),
+                    Codec.intRange(1, 64).optionalFieldOf("input_count", 1).forGetter(ClayWorkTableRecipe::inputCount),
                     ItemStack.CODEC.fieldOf("result").forGetter(ClayWorkTableRecipe::result),
                     ClayWorkTableOperation.CODEC.fieldOf("operation").forGetter(ClayWorkTableRecipe::operation),
                     Codec.intRange(1, Integer.MAX_VALUE).fieldOf("required_actions").forGetter(ClayWorkTableRecipe::requiredActions),
@@ -41,6 +43,7 @@ public record ClayWorkTableRecipe(
     public static final StreamCodec<RegistryFriendlyByteBuf, ClayWorkTableRecipe> STREAM_CODEC =
             StreamCodec.composite(
                     Ingredient.CONTENTS_STREAM_CODEC, ClayWorkTableRecipe::ingredient,
+                    ByteBufCodecs.VAR_INT, ClayWorkTableRecipe::inputCount,
                     ItemStack.STREAM_CODEC, ClayWorkTableRecipe::result,
                     ClayWorkTableOperation.STREAM_CODEC, ClayWorkTableRecipe::operation,
                     ByteBufCodecs.VAR_INT, ClayWorkTableRecipe::requiredActions,
@@ -54,7 +57,7 @@ public record ClayWorkTableRecipe(
         if (result == null || result.isEmpty() || result.getCount() > result.getMaxStackSize()) {
             throw new IllegalArgumentException("Clay Work Table result must be a valid stack");
         }
-        if (operation == null || minimumTier == null || requiredActions < 1) {
+        if (operation == null || minimumTier == null || inputCount < 1 || inputCount > 64 || requiredActions < 1) {
             throw new IllegalArgumentException("Clay Work Table recipe parameters are invalid");
         }
         result = result.copy();
@@ -67,7 +70,10 @@ public record ClayWorkTableRecipe(
 
     @Override
     public boolean matches(MachineRecipeInput input, Level level) {
-        return input != null && !input.isEmpty() && ingredient.test(input.getItem(0));
+        return input != null
+                && !input.isEmpty()
+                && input.getItem(0).getCount() >= inputCount
+                && ingredient.test(input.getItem(0));
     }
 
     @Override

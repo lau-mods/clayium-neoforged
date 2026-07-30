@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:clay_machine_hull"
+    },
+    {
+      "item": "clayium_neoforged:clay_wheel"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_water_wheel"
+  }
+}

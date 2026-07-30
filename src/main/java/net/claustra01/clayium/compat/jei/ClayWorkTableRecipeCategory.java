@@ -87,6 +87,29 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<ClayWo
                 4,
                 TEXT_COLOR,
                 false);
+        if (recipe.operation().buttonId() >= 3) {
+            graphics.drawString(
+                    font,
+                    Component.translatable(
+                            "jei.clayium_neoforged.required_tool",
+                            Component.translatable(
+                                    "jei.clayium_neoforged.tool." + recipe.operation().id())),
+                    8,
+                    45,
+                    TEXT_COLOR,
+                    false);
+        }
+        if (recipe.inputCount() > 1) {
+            graphics.drawString(
+                    font,
+                    Component.translatable(
+                            "jei.clayium_neoforged.input_count",
+                            recipe.inputCount()),
+                    8,
+                    16,
+                    TEXT_COLOR,
+                    false);
+        }
         graphics.drawString(
                 font,
                 Component.translatable(

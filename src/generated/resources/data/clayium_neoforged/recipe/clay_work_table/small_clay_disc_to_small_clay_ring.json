@@ -1,0 +1,13 @@
+{
+  "type": "clayium_neoforged:clay_work_table",
+  "ingredient": {
+    "item": "clayium_neoforged:small_clay_disc"
+  },
+  "minimum_tier": "raw",
+  "operation": "punch",
+  "required_actions": 1,
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:small_clay_ring"
+  }
+}

@@ -38,8 +38,9 @@ import net.neoforged.neoforge.items.IItemHandler;
  */
 public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
     public static final int INPUT_SLOT = 0;
-    public static final int OUTPUT_SLOT = 1;
-    public static final int SLOT_COUNT = 2;
+    public static final int TOOL_SLOT = 1;
+    public static final int OUTPUT_SLOT = 2;
+    public static final int SLOT_COUNT = 3;
 
     private static final String ACTIVE_RECIPE_KEY = "ActiveRecipe";
     private static final String ACTIVE_OPERATION_KEY = "ActiveOperation";
@@ -99,10 +100,12 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             validateSlot(slot);
-            if (slot != INPUT_SLOT || stack.isEmpty()) {
+            if (stack.isEmpty()
+                    || slot != INPUT_SLOT && slot != TOOL_SLOT
+                    || slot == TOOL_SLOT && !isCraftingTool(stack)) {
                 return stack;
             }
-            ItemStack existing = getItem(INPUT_SLOT);
+            ItemStack existing = getItem(slot);
             if (!existing.isEmpty() && !ItemStack.isSameItemSameComponents(existing, stack)) {
                 return stack;
             }
@@ -116,7 +119,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
                 if (!existing.isEmpty()) {
                     next.grow(accepted);
                 }
-                setItem(INPUT_SLOT, next);
+                setItem(slot, next);
             }
             return accepted == stack.getCount()
                     ? ItemStack.EMPTY
@@ -150,7 +153,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             validateSlot(slot);
-            return slot == INPUT_SLOT && canPlaceItem(slot, stack);
+            return canPlaceItem(slot, stack);
         }
 
         private void validateSlot(int slot) {
@@ -169,7 +172,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
             return false;
         }
         Optional<ClayWorkTableOperation> operation = ClayWorkTableOperation.byButtonId(buttonId);
-        if (operation.isEmpty()) {
+        if (operation.isEmpty() || !hasRequiredTool(operation.get())) {
             return false;
         }
 
@@ -196,6 +199,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         }
 
         progress++;
+        damageTool(operation.get());
         if (progress >= requiredActions) {
             complete(holder.value());
         }
@@ -218,6 +222,9 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
     }
 
     private boolean canPushOperation(ClayWorkTableOperation operation) {
+        if (!hasRequiredTool(operation)) {
+            return false;
+        }
         if (activeRecipeId == null) {
             return findRecipe(operation)
                     .map(holder -> canOutput(holder.value().result()))
@@ -253,7 +260,9 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
 
     private void complete(ClayWorkTableRecipe recipe) {
         ItemStack input = getItem(INPUT_SLOT);
-        if (input.isEmpty() || !recipe.ingredient().test(input) || !canOutput(recipe.result())) {
+        if (input.getCount() < recipe.inputCount()
+                || !recipe.ingredient().test(input)
+                || !canOutput(recipe.result())) {
             resetProgress();
             return;
         }
@@ -265,7 +274,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         } else {
             output.grow(result.getCount());
         }
-        input.shrink(1);
+        input.shrink(recipe.inputCount());
         resetProgress();
     }
 
@@ -285,6 +294,42 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
 
     public IItemHandler externalItemHandler() {
         return externalItemHandler;
+    }
+
+    private boolean hasRequiredTool(ClayWorkTableOperation operation) {
+        ItemStack tool = getItem(TOOL_SLOT);
+        return switch (operation) {
+            case FORM, CUT -> true;
+            case ROLL -> tool.is(ClayiumRegistries.CLAY_ROLLING_PIN.get());
+            case SLICE, DIVIDE -> tool.is(ClayiumRegistries.CLAY_SLICER.get())
+                    || tool.is(ClayiumRegistries.CLAY_SPATULA.get());
+            case PUNCH -> tool.is(ClayiumRegistries.CLAY_SPATULA.get());
+        };
+    }
+
+    private static boolean isCraftingTool(ItemStack stack) {
+        return stack.is(ClayiumRegistries.CLAY_ROLLING_PIN.get())
+                || stack.is(ClayiumRegistries.CLAY_SLICER.get())
+                || stack.is(ClayiumRegistries.CLAY_SPATULA.get());
+    }
+
+    private void damageTool(ClayWorkTableOperation operation) {
+        if (operation == ClayWorkTableOperation.FORM || operation == ClayWorkTableOperation.CUT) {
+            return;
+        }
+        ItemStack tool = getItem(TOOL_SLOT);
+        if (tool.isEmpty()) {
+            return;
+        }
+        int nextDamage = tool.getDamageValue() + 1;
+        if (nextDamage < tool.getMaxDamage()) {
+            tool.setDamageValue(nextDamage);
+            return;
+        }
+        int recoveredClay = tool.is(ClayiumRegistries.CLAY_ROLLING_PIN.get())
+                ? 4
+                : tool.is(ClayiumRegistries.CLAY_SLICER.get()) ? 3 : 2;
+        items.set(TOOL_SLOT, new ItemStack(net.minecraft.world.item.Items.CLAY_BALL, recoveredClay));
     }
 
     @Override
@@ -314,13 +359,13 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return slot == INPUT_SLOT;
+        return slot == INPUT_SLOT || slot == TOOL_SLOT && isCraftingTool(stack);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         super.setItem(slot, stack);
-        if (slot == INPUT_SLOT) {
+        if (slot == INPUT_SLOT || slot == TOOL_SLOT) {
             resetProgress();
         }
     }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "clayium_neoforged:clay_cylinder"
+    },
+    "S": {
+      "item": "clayium_neoforged:short_clay_stick"
+    }
+  },
+  "pattern": [
+    "SCS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:raw_clay_rolling_pin"
+  }
+}

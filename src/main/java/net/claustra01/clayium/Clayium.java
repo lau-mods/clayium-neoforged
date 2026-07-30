@@ -42,8 +42,44 @@ public final class Clayium {
     private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ClayiumRegistries.CLAY_WORK_TABLE_ITEM);
+            event.accept(ClayiumRegistries.CLAY_BENDING_MACHINE_ITEM);
+            event.accept(ClayiumRegistries.ELEMENTAL_MILLING_MACHINE_ITEM);
+            event.accept(ClayiumRegistries.CLAY_WATER_WHEEL_ITEM);
+            event.accept(ClayiumRegistries.CLAY_MACHINE_HULL_ITEM);
+            event.accept(ClayiumRegistries.RAW_CLAY_MACHINE_HULL_ITEM);
+        } else if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+            event.accept(ClayiumRegistries.CLAY_ORE_ITEM);
+            event.accept(ClayiumRegistries.DENSE_CLAY_ORE_ITEM);
+            event.accept(ClayiumRegistries.LARGE_DENSE_CLAY_ORE_ITEM);
+            event.accept(ClayiumRegistries.DENSE_CLAY_ITEM);
+            event.accept(ClayiumRegistries.COMPRESSED_CLAY_ITEM);
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ClayiumRegistries.CLAY_STICK);
+            event.accept(ClayiumRegistries.SHORT_CLAY_STICK);
+            event.accept(ClayiumRegistries.LARGE_CLAY_BALL);
+            event.accept(ClayiumRegistries.CLAY_DISC);
+            event.accept(ClayiumRegistries.SMALL_CLAY_DISC);
+            event.accept(ClayiumRegistries.CLAY_PLATE);
+            event.accept(ClayiumRegistries.LARGE_CLAY_PLATE);
+            event.accept(ClayiumRegistries.CLAY_BLADE);
+            event.accept(ClayiumRegistries.CLAY_CYLINDER);
+            event.accept(ClayiumRegistries.CLAY_RING);
+            event.accept(ClayiumRegistries.SMALL_CLAY_RING);
+            event.accept(ClayiumRegistries.CLAY_GEAR);
+            event.accept(ClayiumRegistries.CLAY_WHEEL);
+            event.accept(ClayiumRegistries.DENSE_CLAY_PLATE);
+            event.accept(ClayiumRegistries.DENSE_CLAY_STICK);
+            event.accept(ClayiumRegistries.DENSE_CLAY_GEAR);
+            event.accept(ClayiumRegistries.CLAY_CIRCUIT_BOARD);
+        } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(ClayiumRegistries.RAW_CLAY_ROLLING_PIN);
+            event.accept(ClayiumRegistries.RAW_CLAY_SLICER);
+            event.accept(ClayiumRegistries.RAW_CLAY_SPATULA);
+            event.accept(ClayiumRegistries.CLAY_ROLLING_PIN);
+            event.accept(ClayiumRegistries.CLAY_SLICER);
+            event.accept(ClayiumRegistries.CLAY_SPATULA);
+            event.accept(ClayiumRegistries.CLAY_SHOVEL);
+            event.accept(ClayiumRegistries.CLAY_PICKAXE);
         }
     }
 

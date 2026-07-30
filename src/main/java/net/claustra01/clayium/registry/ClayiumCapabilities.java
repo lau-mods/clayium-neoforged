@@ -18,5 +18,9 @@ public final class ClayiumCapabilities {
                 Capabilities.ItemHandler.BLOCK,
                 ClayiumRegistries.CLAY_WORK_TABLE_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> blockEntity.externalItemHandler());
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler());
     }
 }

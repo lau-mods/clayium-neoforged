@@ -1,0 +1,13 @@
+{
+  "type": "clayium_neoforged:clay_work_table",
+  "ingredient": {
+    "item": "clayium_neoforged:clay_cylinder"
+  },
+  "minimum_tier": "raw",
+  "operation": "divide",
+  "required_actions": 7,
+  "result": {
+    "count": 8,
+    "id": "clayium_neoforged:small_clay_disc"
+  }
+}

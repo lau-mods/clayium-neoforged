@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "item": "clayium_neoforged:small_clay_ring"
+    },
+    "S": {
+      "item": "clayium_neoforged:short_clay_stick"
+    }
+  },
+  "pattern": [
+    " S ",
+    "SRS",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_gear"
+  }
+}

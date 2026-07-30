@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": {
+      "item": "clayium_neoforged:clay_gear"
+    },
+    "P": {
+      "item": "clayium_neoforged:large_clay_plate"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "PGP",
+    "PPP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:raw_clay_machine_hull"
+  }
+}

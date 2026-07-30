@@ -14,11 +14,13 @@ Minecraft 1.21.1 / NeoForge向けに再設計するClayium移植プロジェク�
 
 ## 現在の実装状況
 
-Phase 2（共通Recipe基盤とJEI）を実装中です。共通Machine RecipeのCodec / StreamCodec、現在のRecipeManagerを参照する検索、完了時のトランザクション、および最初のJEIカテゴリを含みます。
+Phase 2（共通Recipe基盤とJEI）を完了し、Phase 3の最初の垂直進行を実装しました。Clay Ore系列とデータ駆動worldgen、圧縮粘土、初期工具・部品・筐体、Clay Bending Machine、Elemental Milling Machine、Clay Water WheelによるCE生成を含みます。
 
 最初の縦スライスとしてClay Work Tableを独立したBlock Entity、Menu、Screen、永続インベントリを持つClayiumデバイスとして実装しています。vanilla作業台の継承やvanilla crafting recipe処理は使用しません。本家の手加工と同様、加工Recipeはtick待機ではなく、対応する操作ボタンを必要回数押すことで進行します。
 
 Machine Recipe JSONはMinecraft 1.21.1のdatapack構造に従い、`data/<namespace>/recipe/`へ配置します。JEIは接続中ワールドのRecipeManagerと同じレシピだけを表示し、リソースJSONを直接読むフォールバックは設けません。
+
+最初の共通機械はサーバー側でレシピを解決・実行し、入力1枠、出力1枠、内部CE、進捗、停止理由を共通実装で管理します。水車は周囲3×3×3の流動水を1秒ごとに評価し、隣接するClayium機械へCEを供給します。
 
 本家Jarの解析結果や一時的な移植用スクリプトなど、配布対象外の作業ファイルは `.tmp/` に置きます。このディレクトリはGit管理対象外です。
 

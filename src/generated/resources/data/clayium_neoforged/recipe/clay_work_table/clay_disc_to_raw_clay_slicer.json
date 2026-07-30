@@ -1,0 +1,13 @@
+{
+  "type": "clayium_neoforged:clay_work_table",
+  "ingredient": {
+    "item": "clayium_neoforged:clay_disc"
+  },
+  "minimum_tier": "raw",
+  "operation": "cut",
+  "required_actions": 15,
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:raw_clay_slicer"
+  }
+}
