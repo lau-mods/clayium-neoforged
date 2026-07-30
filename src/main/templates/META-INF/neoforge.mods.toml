@@ -42,7 +42,7 @@ displayName="${mod_name}" #mandatory
 #credits="Original Clayium 1.7.10 by deb_rk; port and redesign for NeoForge 1.21.1" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="deb_rk, Clayium contributors"
+authors="deb_rk (original author), claustra01"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
