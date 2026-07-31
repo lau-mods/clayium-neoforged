@@ -34,8 +34,9 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
     private net.minecraft.core.NonNullList<ItemStack> items = net.minecraft.core.NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
     private final ClayEnergyStorage energy = new ClayEnergyStorage(1_000_000_000L, 1_000_000_000L, 1_000_000_000L);
     private final EnumMap<Direction,IItemHandler> handlers = new EnumMap<>(Direction.class);
-    private int[] insertionRoutes = {-1,-1,-1,0,-1,-1};
-    private int[] extractionRoutes = {-1,-1,0,-1,-1,-1};
+    private final int[] insertionRoutes = {-1,-1,-1,0,-1,-1};
+    private final int[] extractionRoutes = {-1,-1,0,-1,-1,-1};
+    private final net.claustra01.clayium.logistics.SideConfiguration sideConfiguration;
     private int progress;
     private int waterCount;
     private long activeEnergy;
@@ -53,8 +54,17 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
 
     public SaltExtractorBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.SALT_EXTRACTOR_BLOCK_ENTITY.get(),pos,state);
+        sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
+                insertionRoutes, extractionRoutes, null, () -> 1, () -> 1);
         for(Direction side:Direction.values()) handlers.put(side,new SidedHandler(side));
     }
+
+    @Override public net.claustra01.clayium.logistics.SideConfiguration sideConfiguration(){return sideConfiguration;}
+    @Override public net.minecraft.world.level.block.entity.BlockEntity ioOwner(){return this;}
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return SaltExtractorBlock.PIPE;}
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return SaltExtractorBlock.FACING;}
+    @Override public void ioConfigurationChanged(){changed();}
+    @Override public String insertionIcon(Direction side){return insertionRoute(side)>=0?"import_energy":"";}
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SaltExtractorBlockEntity be) { be.tickServer(); }
     private void tickServer() {
@@ -105,20 +115,8 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
     @Override public void clearContent(){items.clear();}
     @Override public boolean canPlaceItem(int slot,ItemStack stack){return slot==energySlot()&&EnergeticClayFuel.isFuel(stack);}
     @Override protected void saveAdditional(CompoundTag tag,HolderLookup.Provider p){super.saveAdditional(tag,p);net.minecraft.world.ContainerHelper.saveAllItems(tag,items,p);energy.save(tag);tag.putInt("Progress",progress);tag.putIntArray("InsertionRoutes",insertionRoutes);tag.putIntArray("ExtractionRoutes",extractionRoutes);}
-    @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider p){super.loadAdditional(tag,p);items.clear();net.minecraft.world.ContainerHelper.loadAllItems(tag,items,p);energy.load(tag);progress=Math.max(0,Math.min(PROGRESS_MAX-1,tag.getInt("Progress")));int[] in=tag.getIntArray("InsertionRoutes"),out=tag.getIntArray("ExtractionRoutes");if(in.length==6)insertionRoutes=in;if(out.length==6)extractionRoutes=out;}
+    @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider p){super.loadAdditional(tag,p);items.clear();net.minecraft.world.ContainerHelper.loadAllItems(tag,items,p);energy.load(tag);progress=Math.max(0,Math.min(PROGRESS_MAX-1,tag.getInt("Progress")));int[] in=tag.getIntArray("InsertionRoutes"),out=tag.getIntArray("ExtractionRoutes");sideConfiguration.replaceRoutes(in.length==6?in:insertionRoutes,out.length==6?out:extractionRoutes);}
 
-    @Override public int cycleInsertRoute(Direction d){int i=d.ordinal();insertionRoutes[i]=insertionRoutes[i]<0?0:-1;changed();return insertionRoutes[i];}
-    @Override public int cycleExtractRoute(Direction d){int i=d.ordinal();extractionRoutes[i]=extractionRoutes[i]<0?0:-1;changed();return extractionRoutes[i];}
-    @Override public int insertionRoute(Direction d){return insertionRoutes[d.ordinal()];}
-    @Override public int extractionRoute(Direction d){return extractionRoutes[d.ordinal()];}
-    @Override public boolean hasFilter(Direction d){return false;}
-    @Override public ItemStack filter(Direction d){return ItemStack.EMPTY;}
-    @Override public void setFilter(Direction d,ItemStack filter){}
-    @Override public boolean togglePipe(){if(level==null)return false;boolean next=!getBlockState().getValue(SaltExtractorBlock.PIPE);level.setBlock(worldPosition,getBlockState().setValue(SaltExtractorBlock.PIPE,next),3);changed();return next;}
-    @Override public boolean rotate(Direction d){if(level==null||!d.getAxis().isHorizontal())return false;level.setBlock(worldPosition,getBlockState().setValue(SaltExtractorBlock.FACING,d),3);changed();return true;}
-    @Override public IoMemory saveIoMemory(){return IoMemory.of(insertionRoutes,extractionRoutes,getBlockState().getValue(SaltExtractorBlock.PIPE),getBlockState().getValue(SaltExtractorBlock.FACING).getName());}
-    @Override public void loadIoMemory(IoMemory m){int[] in=m.insertionRoutesOrDefault(insertionRoutes),out=m.extractionRoutesOrDefault(extractionRoutes);if(in.length==6)insertionRoutes=in;if(out.length==6)extractionRoutes=out;changed();}
-    public boolean pipeConnects(Direction side){return level!=null&&(insertionRoute(side)>=0||extractionRoute(side)>=0)&&level.getBlockEntity(worldPosition.relative(side))!=null;}
     private void changed(){setChanged();if(level!=null){level.invalidateCapabilities(worldPosition);level.sendBlockUpdated(worldPosition,getBlockState(),getBlockState(),3);}}
 
     private final class SidedHandler implements IItemHandler {

@@ -42,21 +42,11 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
             MultiBufferSource buffers,
             int packedLight,
             int packedOverlay) {
-        boolean pipe = blockEntity.getBlockState().getBlock() instanceof MachineBlock
-                ? blockEntity.getBlockState().getValue(MachineBlock.PIPE)
-                : blockEntity.getBlockState().getBlock() instanceof LogisticsBlock
-                        ? blockEntity.getBlockState().getValue(LogisticsBlock.PIPE)
-                        : blockEntity.getBlockState().getBlock() instanceof FluidBufferBlock
-                                ? blockEntity.getBlockState().getValue(FluidBufferBlock.PIPE)
-                                : blockEntity.getBlockState().getBlock() instanceof SaltExtractorBlock
-                                        ? blockEntity.getBlockState().getValue(SaltExtractorBlock.PIPE)
-                                        : blockEntity.getBlockState().getBlock() instanceof SpecialMachineBlock
-                                                ? blockEntity.getBlockState().getValue(SpecialMachineBlock.PIPE)
-                                                : blockEntity.getBlockState().getValue(CobblestoneGeneratorBlock.PIPE);
+        boolean pipe = blockEntity.pipeEnabled();
         if (pipe) {
             ResourceLocation hull = hullTexture(blockEntity);
             for (Direction side : Direction.values()) {
-                if (pipeConnects(blockEntity, side)) {
+                if (blockEntity.pipeConnects(side)) {
                     drawArm(poseStack, buffers, packedLight, side, hull);
                 }
             }
@@ -77,20 +67,6 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
                 drawFace(poseStack, buffers, packedLight, side, "filter", false);
             }
         }
-    }
-
-    private static boolean pipeConnects(ConfigurableItemDevice device, Direction side) {
-        return device instanceof MachineBlockEntity machine
-                ? machine.pipeConnects(side)
-                : device instanceof LogisticsBlockEntity logistics
-                        ? logistics.pipeConnects(side)
-                        : device instanceof FluidBufferBlockEntity fluid
-                                ? fluid.pipeConnects(side)
-                        : device instanceof SaltExtractorBlockEntity salt
-                                ? salt.pipeConnects(side)
-                                : device instanceof SpecialMachineBlockEntity special
-                                        ? special.pipeConnects(side)
-                                        : device instanceof CobblestoneGeneratorBlockEntity generator && generator.pipeConnects(side);
     }
 
     private static ResourceLocation hullTexture(BlockEntity blockEntity) {
@@ -182,28 +158,11 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
     }
 
     private static String insertionIcon(ConfigurableItemDevice device, Direction side) {
-        if (device instanceof MachineBlockEntity machine) {
-            return machine.insertionIcon(side);
-        }
-        if (device instanceof LogisticsBlockEntity logistics) {
-            return logistics.insertionIcon(side);
-        }
-        if (device instanceof FluidBufferBlockEntity fluid) return fluid.insertionRoute(side) >= 0 ? "import" : "";
-        if (device instanceof SpecialMachineBlockEntity special) return special.insertionIcon(side);
-        return device instanceof SaltExtractorBlockEntity salt && salt.insertionRoute(side) >= 0 ? "import_energy" : "";
+        return device.insertionIcon(side);
     }
 
     private static String extractionIcon(ConfigurableItemDevice device, Direction side) {
-        if (device instanceof MachineBlockEntity machine) {
-            return machine.extractionIcon(side);
-        }
-        if (device instanceof LogisticsBlockEntity logistics) {
-            return logistics.extractionIcon(side);
-        }
-        if (device instanceof FluidBufferBlockEntity fluid) return fluid.extractionRoute(side) >= 0 ? "export" : "";
-        if (device instanceof SaltExtractorBlockEntity salt) return salt.extractionRoute(side) >= 0 ? "export" : "";
-        if (device instanceof SpecialMachineBlockEntity special) return special.extractionIcon(side);
-        return device instanceof CobblestoneGeneratorBlockEntity generator && generator.extractionRoute(side) >= 0 ? "export" : "";
+        return device.extractionIcon(side);
     }
 
     private static void drawFace(

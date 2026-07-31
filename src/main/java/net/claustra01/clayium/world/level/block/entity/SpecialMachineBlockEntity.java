@@ -59,9 +59,10 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity
     private NonNullList<ItemStack> items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
     private final ClayEnergyStorage energy = new ClayEnergyStorage(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE);
     private int progress;
-    private int[] insertionRoutes = new int[]{-1,0,-1,-1,-1,-1};
-    private int[] extractionRoutes = new int[]{0,-1,-1,-1,-1,-1};
+    private final int[] insertionRoutes = new int[]{-1,0,-1,-1,-1,-1};
+    private final int[] extractionRoutes = new int[]{0,-1,-1,-1,-1,-1};
     private final ItemStack[] filters = new ItemStack[6];
+    private final net.claustra01.clayium.logistics.SideConfiguration sideConfiguration;
     private final java.util.EnumMap<Direction,IItemHandler> sidedHandlers = new java.util.EnumMap<>(Direction.class);
     private final java.util.EnumMap<Direction,BlockCapabilityCache<IItemHandler,Direction>> neighborCaches = new java.util.EnumMap<>(Direction.class);
     private int automationCooldown;
@@ -120,8 +121,16 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity
         super(ClayiumRegistries.SPECIAL_MACHINE_BLOCK_ENTITY.get(), pos, state);
         java.util.Arrays.fill(filters,ItemStack.EMPTY);
         if (acceptsEnergy()) insertionRoutes[3]=1;
+        sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
+                insertionRoutes, extractionRoutes, filters, () -> acceptsEnergy() ? 2 : 1, () -> 1);
         for(Direction side:Direction.values())sidedHandlers.put(side,new SidedHandler(side));
     }
+
+    @Override public net.claustra01.clayium.logistics.SideConfiguration sideConfiguration(){return sideConfiguration;}
+    @Override public net.minecraft.world.level.block.entity.BlockEntity ioOwner(){return this;}
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return SpecialMachineBlock.PIPE;}
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return SpecialMachineBlock.FACING;}
+    @Override public void ioConfigurationChanged(){configurationChanged();}
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SpecialMachineBlockEntity machine) {
         machine.tickAutomation();
@@ -278,7 +287,7 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity
     @Override protected NonNullList<ItemStack> getItems(){return items;}
     @Override protected void setItems(NonNullList<ItemStack> values){items=values;}
     @Override public int getContainerSize(){return MAX_SLOTS;}
-    @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries){super.loadAdditional(tag,registries);items=NonNullList.withSize(MAX_SLOTS,ItemStack.EMPTY);ContainerHelper.loadAllItems(tag,items,registries);energy.load(tag);progress=Math.max(0,tag.getInt("Progress"));insertionRoutes=routes(tag,"InsertionRoutes",insertionRoutes,acceptsEnergy()?2:1);extractionRoutes=routes(tag,"ExtractionRoutes",extractionRoutes,1);ListTag list=tag.getList("Filters",Tag.TAG_COMPOUND);for(int i=0;i<Math.min(6,list.size());i++)filters[i]=ItemStack.parseOptional(registries,list.getCompound(i));}
+    @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries){super.loadAdditional(tag,registries);items=NonNullList.withSize(MAX_SLOTS,ItemStack.EMPTY);ContainerHelper.loadAllItems(tag,items,registries);energy.load(tag);progress=Math.max(0,tag.getInt("Progress"));sideConfiguration.replaceRoutes(routes(tag,"InsertionRoutes",insertionRoutes,acceptsEnergy()?2:1),routes(tag,"ExtractionRoutes",extractionRoutes,1));ListTag list=tag.getList("Filters",Tag.TAG_COMPOUND);for(int i=0;i<Math.min(6,list.size());i++)filters[i]=ItemStack.parseOptional(registries,list.getCompound(i));}
     @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries){super.saveAdditional(tag,registries);ContainerHelper.saveAllItems(tag,items,registries);energy.save(tag);tag.putInt("Progress",progress);tag.putIntArray("InsertionRoutes",insertionRoutes);tag.putIntArray("ExtractionRoutes",extractionRoutes);ListTag list=new ListTag();for(ItemStack filter:filters)list.add(filter.saveOptional(registries));tag.put("Filters",list);}
 
     private boolean acceptsEnergy(){return kind()==SpecialMachineKind.CHEMICAL_METAL_SEPARATOR||kind()==SpecialMachineKind.AUTO_CRAFTER&&tier()>=6;}
@@ -289,18 +298,6 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity
         long total=0;for(int clayLevel=0;clayLevel<=13;clayLevel++)total+=(long)Math.pow(10,clayLevel)*countClay(clayLevel);return total;
     }
     private int relative(Direction side){return RelativeFace.index(getBlockState().getValue(SpecialMachineBlock.FACING),side);}
-    @Override public int insertionRoute(Direction side){return insertionRoutes[relative(side)];}
-    @Override public int extractionRoute(Direction side){return extractionRoutes[relative(side)];}
-    @Override public boolean hasFilter(Direction side){return !filters[relative(side)].isEmpty();}
-    @Override public ItemStack filter(Direction side){return filters[relative(side)].copy();}
-    @Override public void setFilter(Direction side,ItemStack filter){filters[relative(side)]=filter.isEmpty()?ItemStack.EMPTY:filter.copyWithCount(1);configurationChanged();}
-    @Override public int cycleInsertRoute(Direction side){int i=relative(side);insertionRoutes[i]=next(insertionRoutes[i],acceptsEnergy()?2:1);configurationChanged();return insertionRoutes[i];}
-    @Override public int cycleExtractRoute(Direction side){int i=relative(side);extractionRoutes[i]=next(extractionRoutes[i],1);configurationChanged();return extractionRoutes[i];}
-    @Override public boolean togglePipe(){if(level==null)return false;boolean value=!getBlockState().getValue(SpecialMachineBlock.PIPE);level.setBlock(worldPosition,getBlockState().setValue(SpecialMachineBlock.PIPE,value),3);configurationChanged();return value;}
-    @Override public boolean rotate(Direction clicked){if(level==null||!clicked.getAxis().isHorizontal())return false;Direction current=getBlockState().getValue(SpecialMachineBlock.FACING);Direction next=clicked==current?clicked.getOpposite():clicked;level.setBlock(worldPosition,getBlockState().setValue(SpecialMachineBlock.FACING,next),3);configurationChanged();return true;}
-    @Override public IoMemory saveIoMemory(){return IoMemory.of(insertionRoutes,extractionRoutes,getBlockState().getValue(SpecialMachineBlock.PIPE),getBlockState().getValue(SpecialMachineBlock.FACING).getName());}
-    @Override public void loadIoMemory(IoMemory memory){insertionRoutes=sanitize(memory.insertionRoutesOrDefault(insertionRoutes),acceptsEnergy()?2:1);extractionRoutes=sanitize(memory.extractionRoutesOrDefault(extractionRoutes),1);if(level!=null){Direction facing=Direction.byName(memory.facing());BlockState state=getBlockState().setValue(SpecialMachineBlock.PIPE,memory.pipe());if(facing!=null&&facing.getAxis().isHorizontal())state=state.setValue(SpecialMachineBlock.FACING,facing);level.setBlock(worldPosition,state,3);}configurationChanged();}
-    public boolean pipeConnects(Direction side){if(level==null||insertionRoute(side)<0&&extractionRoute(side)<0)return false;var neighbor=level.getBlockEntity(worldPosition.relative(side));if(neighbor instanceof ConfigurableItemDevice device)return device.insertionRoute(side.getOpposite())>=0||device.extractionRoute(side.getOpposite())>=0;return neighbor!=null;}
     public String insertionIcon(Direction side){return insertionRoute(side)==0?"import":insertionRoute(side)==1?"import_energy":"";}
     public String extractionIcon(Direction side){return extractionRoute(side)==0?"export":"";}
     private void configurationChanged(){neighborCaches.clear();setChanged();if(level!=null){level.invalidateCapabilities(worldPosition);level.sendBlockUpdated(worldPosition,getBlockState(),getBlockState(),3);}}

@@ -33,8 +33,9 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public final class FluidBufferBlockEntity extends BlockEntity implements MenuProvider, ConfigurableItemDevice {
-    private int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
-    private int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
+    private final int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
+    private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
+    private final net.claustra01.clayium.logistics.SideConfiguration sideConfiguration;
     private final EnumMap<Direction, IFluidHandler> handlers = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, BlockCapabilityCache<IFluidHandler, Direction>> neighborCaches = new EnumMap<>(Direction.class);
     private int cooldown;
@@ -44,8 +45,17 @@ public final class FluidBufferBlockEntity extends BlockEntity implements MenuPro
 
     public FluidBufferBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.FLUID_BUFFER_BLOCK_ENTITY.get(), pos, state);
+        sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
+                insertionRoutes, extractionRoutes, null, () -> 1, () -> 1);
         for (Direction side : Direction.values()) handlers.put(side, new SidedFluidHandler(side));
     }
+
+    @Override public net.claustra01.clayium.logistics.SideConfiguration sideConfiguration(){return sideConfiguration;}
+    @Override public net.minecraft.world.level.block.entity.BlockEntity ioOwner(){return this;}
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return FluidBufferBlock.PIPE;}
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return FluidBufferBlock.FACING;}
+    @Override public net.claustra01.clayium.logistics.IoTransportKind ioTransportKind(){return net.claustra01.clayium.logistics.IoTransportKind.FLUID;}
+    @Override public void ioConfigurationChanged(){configurationChanged();}
 
     private int capacityForState() {
         int tier = getBlockState().getBlock() instanceof FluidBufferBlock block ? block.tier().progressionIndex() : 4;
@@ -82,51 +92,9 @@ public final class FluidBufferBlockEntity extends BlockEntity implements MenuPro
     public IFluidHandler unrestrictedFluidHandler() { return tank; }
     public FluidStack fluid() { return tank.getFluid().copy(); }
     public int capacity() { return tank.getCapacity(); }
-    public boolean pipeConnects(Direction side) {
-        if (level == null) return false;
-        boolean ownActive = insertionRoute(side) >= 0 || extractionRoute(side) >= 0;
-        var neighbor = level.getBlockEntity(worldPosition.relative(side));
-        if (neighbor instanceof ConfigurableItemDevice device) {
-            boolean neighborActive = device.insertionRoute(side.getOpposite()) >= 0
-                    || device.extractionRoute(side.getOpposite()) >= 0;
-            boolean neighborPassive = neighbor instanceof FluidBufferBlockEntity;
-            return ownActive && (neighborActive || neighborPassive) || neighborActive;
-        }
-        return ownActive && level.getCapability(
-                Capabilities.FluidHandler.BLOCK,
-                worldPosition.relative(side),
-                side.getOpposite()) != null;
-    }
-
-    @Override public int cycleInsertRoute(Direction d) { int i=relativeIndex(d); insertionRoutes[i]=insertionRoutes[i] < 0 ? 0 : -1; configurationChanged(); return insertionRoutes[i]; }
-    @Override public int cycleExtractRoute(Direction d) { int i=relativeIndex(d); extractionRoutes[i]=extractionRoutes[i] < 0 ? 0 : -1; configurationChanged(); return extractionRoutes[i]; }
-    @Override public int insertionRoute(Direction d) { return insertionRoutes[relativeIndex(d)]; }
-    @Override public int extractionRoute(Direction d) { return extractionRoutes[relativeIndex(d)]; }
-    @Override public boolean hasFilter(Direction d) { return false; }
-    @Override public ItemStack filter(Direction d) { return ItemStack.EMPTY; }
-    @Override public void setFilter(Direction d, ItemStack filter) {}
-    @Override public boolean togglePipe() { if (level == null) return false; boolean value=!getBlockState().getValue(FluidBufferBlock.PIPE); level.setBlock(worldPosition,getBlockState().setValue(FluidBufferBlock.PIPE,value),3); configurationChanged(); return value; }
-    @Override public boolean rotate(Direction clicked) { if(level==null || !clicked.getAxis().isHorizontal()) return false; level.setBlock(worldPosition,getBlockState().setValue(FluidBufferBlock.FACING,clicked),3); configurationChanged(); return true; }
-    @Override public IoMemory saveIoMemory() { return IoMemory.of(insertionRoutes,extractionRoutes,getBlockState().getValue(FluidBufferBlock.PIPE),getBlockState().getValue(FluidBufferBlock.FACING).getName()); }
-    @Override public void loadIoMemory(IoMemory m) {
-        insertionRoutes=m.insertionRoutesOrDefault(insertionRoutes);
-        extractionRoutes=m.extractionRoutesOrDefault(extractionRoutes);
-        if (level != null) {
-            Direction facing=Direction.byName(m.facing());
-            BlockState state=getBlockState().setValue(FluidBufferBlock.PIPE,m.pipe());
-            if (facing != null && facing.getAxis().isHorizontal()) state=state.setValue(FluidBufferBlock.FACING,facing);
-            level.setBlock(worldPosition,state,3);
-        }
-        configurationChanged();
-    }
-
-    private int relativeIndex(Direction side) {
-        return RelativeFace.index(getBlockState().getValue(FluidBufferBlock.FACING), side);
-    }
-
     private void configurationChanged() { setChanged(); if(level!=null){ level.invalidateCapabilities(worldPosition); level.sendBlockUpdated(worldPosition,getBlockState(),getBlockState(),3); } }
     @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider p) { super.saveAdditional(tag,p); tag.put("Tank",tank.writeToNBT(p,new CompoundTag())); tag.putIntArray("InsertionRoutes",insertionRoutes); tag.putIntArray("ExtractionRoutes",extractionRoutes); }
-    @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider p) { super.loadAdditional(tag,p); tank.readFromNBT(p,tag.getCompound("Tank")); int[] in=tag.getIntArray("InsertionRoutes"); int[] out=tag.getIntArray("ExtractionRoutes"); if(in.length==6) insertionRoutes=in; if(out.length==6) extractionRoutes=out; }
+    @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider p) { super.loadAdditional(tag,p); tank.readFromNBT(p,tag.getCompound("Tank")); int[] in=tag.getIntArray("InsertionRoutes"); int[] out=tag.getIntArray("ExtractionRoutes"); sideConfiguration.replaceRoutes(in.length==6?in:insertionRoutes,out.length==6?out:extractionRoutes); }
     @Override public CompoundTag getUpdateTag(HolderLookup.Provider p) { CompoundTag tag=super.getUpdateTag(p); saveAdditional(tag,p); return tag; }
     @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
     @Override public Component getDisplayName() { return Component.translatable(getBlockState().getBlock().getDescriptionId()); }

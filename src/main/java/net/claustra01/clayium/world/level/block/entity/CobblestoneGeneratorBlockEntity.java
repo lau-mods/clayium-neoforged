@@ -34,14 +34,23 @@ public final class CobblestoneGeneratorBlockEntity extends BaseContainerBlockEnt
     private static final int PROGRESS_MAX = 100;
     private NonNullList<ItemStack> items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
     private int progress;
-    private int[] insertionRoutes = {-1,-1,-1,-1,-1,-1};
-    private int[] extractionRoutes = {-1,-1,0,-1,-1,-1};
+    private final int[] insertionRoutes = {-1,-1,-1,-1,-1,-1};
+    private final int[] extractionRoutes = {-1,-1,0,-1,-1,-1};
+    private final net.claustra01.clayium.logistics.SideConfiguration sideConfiguration;
     private final EnumMap<Direction, IItemHandler> handlers = new EnumMap<>(Direction.class);
 
     public CobblestoneGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(), pos, state);
+        sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
+                insertionRoutes, extractionRoutes, null, () -> 0, () -> 1);
         for (Direction direction : Direction.values()) handlers.put(direction, new OutputHandler(direction));
     }
+
+    @Override public net.claustra01.clayium.logistics.SideConfiguration sideConfiguration(){return sideConfiguration;}
+    @Override public net.minecraft.world.level.block.entity.BlockEntity ioOwner(){return this;}
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return CobblestoneGeneratorBlock.PIPE;}
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return CobblestoneGeneratorBlock.FACING;}
+    @Override public void ioConfigurationChanged(){configurationChanged();}
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, CobblestoneGeneratorBlockEntity generator) {
         if (!generator.hasWaterAndLava() || !generator.canInsertCobblestone()) return;
@@ -90,31 +99,6 @@ public final class CobblestoneGeneratorBlockEntity extends BaseContainerBlockEnt
     }
 
     public IItemHandler itemHandler(Direction side) { return handlers.get(side); }
-    @Override public int cycleInsertRoute(Direction direction) { return -1; }
-    @Override public int cycleExtractRoute(Direction direction) { int i=relativeIndex(direction); extractionRoutes[i]=extractionRoutes[i]<0?0:-1; configurationChanged(); return extractionRoutes[i]; }
-    @Override public boolean togglePipe() { if(level==null)return false; boolean value=!getBlockState().getValue(CobblestoneGeneratorBlock.PIPE); level.setBlock(worldPosition,getBlockState().setValue(CobblestoneGeneratorBlock.PIPE,value),3);configurationChanged();return value; }
-    @Override public boolean rotate(Direction clickedFace) { if(level==null||!clickedFace.getAxis().isHorizontal())return false;level.setBlock(worldPosition,getBlockState().setValue(CobblestoneGeneratorBlock.FACING,clickedFace),3);configurationChanged();return true; }
-    @Override public int insertionRoute(Direction direction) { return -1; }
-    @Override public int extractionRoute(Direction direction) { return extractionRoutes[relativeIndex(direction)]; }
-    @Override public boolean hasFilter(Direction direction) { return false; }
-    @Override public ItemStack filter(Direction direction) { return ItemStack.EMPTY; }
-    @Override public void setFilter(Direction direction, ItemStack filter) { }
-    @Override public IoMemory saveIoMemory() { return IoMemory.of(insertionRoutes,extractionRoutes,getBlockState().getValue(CobblestoneGeneratorBlock.PIPE),getBlockState().getValue(CobblestoneGeneratorBlock.FACING).getName()); }
-    @Override public void loadIoMemory(IoMemory memory) {
-        insertionRoutes=memory.insertionRoutesOrDefault(insertionRoutes);
-        extractionRoutes=memory.extractionRoutesOrDefault(extractionRoutes);
-        if (level != null) {
-            Direction facing = Direction.byName(memory.facing());
-            BlockState state = getBlockState().setValue(CobblestoneGeneratorBlock.PIPE, memory.pipe());
-            if (facing != null && facing.getAxis().isHorizontal()) {
-                state = state.setValue(CobblestoneGeneratorBlock.FACING, facing);
-            }
-            level.setBlock(worldPosition, state, 3);
-        }
-        configurationChanged();
-    }
-    public boolean pipeConnects(Direction side) { return extractionRoute(side)>=0 && level!=null && level.getBlockEntity(worldPosition.relative(side))!=null; }
-    private int relativeIndex(Direction side) { return RelativeFace.index(getBlockState().getValue(CobblestoneGeneratorBlock.FACING),side); }
     private void configurationChanged(){setChanged();if(level!=null){level.invalidateCapabilities(worldPosition);level.sendBlockUpdated(worldPosition,getBlockState(),getBlockState(),3);}}
 
     @Override protected Component getDefaultName(){return Component.translatable(getBlockState().getBlock().getDescriptionId());}
@@ -123,7 +107,7 @@ public final class CobblestoneGeneratorBlockEntity extends BaseContainerBlockEnt
     @Override protected void setItems(NonNullList<ItemStack> stacks){items=stacks;}
     @Override public int getContainerSize(){return MAX_SLOTS;}
     @Override public boolean canPlaceItem(int slot,ItemStack stack){return false;}
-    @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider registries){super.loadAdditional(tag,registries);items=NonNullList.withSize(MAX_SLOTS,ItemStack.EMPTY);ContainerHelper.loadAllItems(tag,items,registries);progress=Math.max(0,Math.min(PROGRESS_MAX-1,tag.getInt("Progress")));extractionRoutes=tag.contains("ExtractionRoutes")?tag.getIntArray("ExtractionRoutes"):extractionRoutes;if(extractionRoutes.length!=6)extractionRoutes=new int[]{-1,-1,0,-1,-1,-1};}
+    @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider registries){super.loadAdditional(tag,registries);items=NonNullList.withSize(MAX_SLOTS,ItemStack.EMPTY);ContainerHelper.loadAllItems(tag,items,registries);progress=Math.max(0,Math.min(PROGRESS_MAX-1,tag.getInt("Progress")));int[] saved=tag.getIntArray("ExtractionRoutes");sideConfiguration.replaceRoutes(insertionRoutes,saved.length==6?saved:extractionRoutes);}
     @Override protected void saveAdditional(CompoundTag tag,HolderLookup.Provider registries){super.saveAdditional(tag,registries);ContainerHelper.saveAllItems(tag,items,registries);tag.putInt("Progress",progress);tag.putIntArray("ExtractionRoutes",extractionRoutes);}
     @Override public Packet<ClientGamePacketListener> getUpdatePacket(){return ClientboundBlockEntityDataPacket.create(this);}
     @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries){return saveCustomOnly(registries);}

@@ -44,9 +44,10 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public static final int CONTAINER_FILTER_SLOT = INVENTORY_SLOTS;
     public static final long STORAGE_CAPACITY = 65_536L;
     private NonNullList<ItemStack> items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
-    private int[] insertionRoutes = new int[]{-1, -1, -1, 0, -1, -1};
-    private int[] extractionRoutes = new int[]{-1, -1, -1, -1, -1, -1};
+    private final int[] insertionRoutes = new int[]{-1, -1, -1, 0, -1, -1};
+    private final int[] extractionRoutes = new int[]{-1, -1, -1, -1, -1, -1};
     private final ItemStack[] filters = new ItemStack[6];
+    private final net.claustra01.clayium.logistics.SideConfiguration sideConfiguration;
     private final EnumMap<Direction, IItemHandler> handlers = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
             new EnumMap<>(Direction.class);
@@ -61,16 +62,24 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 ? block.kind()
                 : LogisticsKind.BUFFER;
         if (initialKind == LogisticsKind.DISTRIBUTOR) {
-            extractionRoutes = new int[]{0, 0, 0, -1, 0, 0};
+            System.arraycopy(new int[]{0, 0, 0, -1, 0, 0}, 0, extractionRoutes, 0, 6);
         } else if (initialKind == LogisticsKind.STORAGE_CONTAINER) {
-            insertionRoutes = new int[]{-1, 0, -1, -1, -1, -1};
+            System.arraycopy(new int[]{-1, 0, -1, -1, -1, -1}, 0, insertionRoutes, 0, 6);
         } else if (initialKind == LogisticsKind.VOID_CONTAINER) {
-            insertionRoutes = new int[]{-1, 0, -1, -1, -1, -1};
+            System.arraycopy(new int[]{-1, 0, -1, -1, -1, -1}, 0, insertionRoutes, 0, 6);
         }
+        sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
+                insertionRoutes, extractionRoutes, filters, this::routeCount, this::routeCount);
         for (Direction direction : Direction.values()) {
             handlers.put(direction, new SidedHandler(direction));
         }
     }
+
+    @Override public net.claustra01.clayium.logistics.SideConfiguration sideConfiguration(){return sideConfiguration;}
+    @Override public net.minecraft.world.level.block.entity.BlockEntity ioOwner(){return this;}
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return LogisticsBlock.PIPE;}
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return LogisticsBlock.FACING;}
+    @Override public void ioConfigurationChanged(){configurationChanged();}
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, LogisticsBlockEntity blockEntity) {
         if (++blockEntity.transferCooldown >= blockEntity.transferInterval()) {
@@ -187,76 +196,6 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     public IItemHandler itemHandler(Direction direction) {
         return handlers.get(direction);
-    }
-
-    public int cycleInsertRoute(Direction direction) {
-        int index = relativeIndex(direction);
-        insertionRoutes[index] = nextRoute(insertionRoutes[index]);
-        configurationChanged();
-        return insertionRoutes[index];
-    }
-
-    @Override
-    public int cycleExtractRoute(Direction direction) {
-        int index = relativeIndex(direction);
-        extractionRoutes[index] = nextRoute(extractionRoutes[index]);
-        configurationChanged();
-        return extractionRoutes[index];
-    }
-
-    @Override
-    public boolean togglePipe() {
-        if (level == null) {
-            return false;
-        }
-        boolean pipe = !getBlockState().getValue(LogisticsBlock.PIPE);
-        level.setBlock(worldPosition, getBlockState().setValue(LogisticsBlock.PIPE, pipe), 3);
-        configurationChanged();
-        return pipe;
-    }
-
-    @Override
-    public boolean rotate(Direction clickedFace) {
-        if (level == null || !clickedFace.getAxis().isHorizontal()) {
-            return false;
-        }
-        Direction current = getBlockState().getValue(LogisticsBlock.FACING);
-        Direction next = clickedFace == current ? clickedFace.getOpposite() : clickedFace;
-        level.setBlock(worldPosition, getBlockState().setValue(LogisticsBlock.FACING, next), 3);
-        configurationChanged();
-        return true;
-    }
-
-    public ItemStack filter(Direction direction) {
-        return filters[relativeIndex(direction)].copy();
-    }
-
-    @Override
-    public void setFilter(Direction direction, ItemStack filter) {
-        filters[relativeIndex(direction)] = filter.isEmpty() ? ItemStack.EMPTY : filter.copyWithCount(1);
-        configurationChanged();
-    }
-
-    public IoMemory saveIoMemory() {
-        return IoMemory.of(
-                insertionRoutes,
-                extractionRoutes,
-                getBlockState().getValue(LogisticsBlock.PIPE),
-                getBlockState().getValue(LogisticsBlock.FACING).getName());
-    }
-
-    public void loadIoMemory(IoMemory memory) {
-        insertionRoutes = sanitizeRoutes(memory.insertionRoutesOrDefault(insertionRoutes), routeCount());
-        extractionRoutes = sanitizeRoutes(memory.extractionRoutesOrDefault(extractionRoutes), routeCount());
-        if (level != null) {
-            Direction facing = Direction.byName(memory.facing());
-            BlockState state = getBlockState().setValue(LogisticsBlock.PIPE, memory.pipe());
-            if (facing != null && facing.getAxis().isHorizontal()) {
-                state = state.setValue(LogisticsBlock.FACING, facing);
-            }
-            level.setBlock(worldPosition, state, 3);
-        }
-        configurationChanged();
     }
 
     public int activeSlots() {
@@ -518,8 +457,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         } else {
             storedCount = 0;
         }
-        insertionRoutes = loadRoutes(tag, "InsertionRoutes", insertionRoutes, routeCount());
-        extractionRoutes = loadRoutes(tag, "ExtractionRoutes", extractionRoutes, routeCount());
+        sideConfiguration.replaceRoutes(
+                loadRoutes(tag, "InsertionRoutes", insertionRoutes, routeCount()),
+                loadRoutes(tag, "ExtractionRoutes", extractionRoutes, routeCount()));
         distributorSide = Math.floorMod(tag.getInt("DistributorSide"), 6);
         ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
         for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
@@ -544,18 +484,6 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         tag.put("Filters", savedFilters);
     }
 
-    public int insertionRoute(Direction side) {
-        return insertionRoutes[relativeIndex(side)];
-    }
-
-    public int extractionRoute(Direction side) {
-        return extractionRoutes[relativeIndex(side)];
-    }
-
-    public boolean hasFilter(Direction side) {
-        return !filters[relativeIndex(side)].isEmpty();
-    }
-
     private static boolean matchesFilter(ItemStack filter, ItemStack stack) {
         return filter.isEmpty() || ClayFilterItem.matches(filter, stack);
     }
@@ -565,24 +493,6 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 || kind() == LogisticsKind.MULTITRACK_BUFFER
                 || kind() == LogisticsKind.STORAGE_CONTAINER
                 || kind() == LogisticsKind.VOID_CONTAINER;
-    }
-
-    public boolean pipeConnects(Direction side) {
-        if (level == null) {
-            return false;
-        }
-        boolean ownActive = insertionRoute(side) >= 0 || extractionRoute(side) >= 0;
-        var neighbor = level.getBlockEntity(worldPosition.relative(side));
-        if (neighbor instanceof ConfigurableItemDevice device) {
-            boolean neighborActive =
-                    device.insertionRoute(side.getOpposite()) >= 0
-                            || device.extractionRoute(side.getOpposite()) >= 0;
-            boolean neighborPassive =
-                    neighbor instanceof LogisticsBlockEntity logistics && logistics.isPassivePipeEndpoint();
-            return ownActive && (neighborActive || neighborPassive)
-                    || isPassivePipeEndpoint() && neighborActive;
-        }
-        return ownActive && neighbor != null;
     }
 
     public String insertionIcon(Direction side) {

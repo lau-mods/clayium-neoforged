@@ -75,9 +75,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     private int recipeRecheckDelay;
     private long activeEnergyPerTick;
     private StopReason stopReason = StopReason.NO_RECIPE;
-    private int[] insertionRoutes = new int[]{-1, 0, -1, 1, -1, -1};
-    private int[] extractionRoutes = new int[]{0, -1, -1, -1, -1, -1};
+    private final int[] insertionRoutes = new int[]{-1, 0, -1, 1, -1, -1};
+    private final int[] extractionRoutes = new int[]{0, -1, -1, -1, -1, -1};
     private final ItemStack[] filters = new ItemStack[6];
+    private final net.claustra01.clayium.logistics.SideConfiguration sideConfiguration;
     private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
             new EnumMap<>(Direction.class);
@@ -213,12 +214,20 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         super(ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(), pos, state);
         java.util.Arrays.fill(filters, ItemStack.EMPTY);
         if (machineLayout() == MachineLayout.ASSEMBLER) {
-            insertionRoutes = new int[]{-1, 2, -1, 3, -1, -1};
+            System.arraycopy(new int[]{-1, 2, -1, 3, -1, -1}, 0, insertionRoutes, 0, 6);
         }
+        sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
+                insertionRoutes, extractionRoutes, filters, this::insertionRouteCount, () -> 1);
         for (Direction direction : Direction.values()) {
             sidedHandlers.put(direction, new SidedMachineHandler(direction));
         }
     }
+
+    @Override public net.claustra01.clayium.logistics.SideConfiguration sideConfiguration(){return sideConfiguration;}
+    @Override public net.minecraft.world.level.block.entity.BlockEntity ioOwner(){return this;}
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return MachineBlock.PIPE;}
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return MachineBlock.FACING;}
+    @Override public void ioConfigurationChanged(){configurationChanged();}
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, MachineBlockEntity machine) {
         machine.tickAutomation();
@@ -513,80 +522,6 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     @Override
-    public int cycleInsertRoute(Direction direction) {
-        int index = relativeIndex(direction);
-        insertionRoutes[index] = nextRoute(insertionRoutes[index], insertionRouteCount());
-        configurationChanged();
-        return insertionRoutes[index];
-    }
-
-    @Override
-    public int cycleExtractRoute(Direction direction) {
-        int index = relativeIndex(direction);
-        extractionRoutes[index] = nextRoute(extractionRoutes[index], 1);
-        configurationChanged();
-        return extractionRoutes[index];
-    }
-
-    @Override
-    public boolean togglePipe() {
-        if (level == null) {
-            return false;
-        }
-        boolean pipe = !getBlockState().getValue(MachineBlock.PIPE);
-        level.setBlock(worldPosition, getBlockState().setValue(MachineBlock.PIPE, pipe), 3);
-        configurationChanged();
-        return pipe;
-    }
-
-    @Override
-    public boolean rotate(Direction clickedFace) {
-        if (level == null || !clickedFace.getAxis().isHorizontal()) {
-            return false;
-        }
-        Direction current = getBlockState().getValue(MachineBlock.FACING);
-        Direction next = clickedFace == current ? clickedFace.getOpposite() : clickedFace;
-        level.setBlock(worldPosition, getBlockState().setValue(MachineBlock.FACING, next), 3);
-        configurationChanged();
-        return true;
-    }
-
-    @Override
-    public ItemStack filter(Direction direction) {
-        return filters[relativeIndex(direction)].copy();
-    }
-
-    @Override
-    public void setFilter(Direction direction, ItemStack filter) {
-        filters[relativeIndex(direction)] = filter.isEmpty() ? ItemStack.EMPTY : filter.copyWithCount(1);
-        configurationChanged();
-    }
-
-    @Override
-    public IoMemory saveIoMemory() {
-        return IoMemory.of(
-                insertionRoutes,
-                extractionRoutes,
-                getBlockState().getValue(MachineBlock.PIPE),
-                getBlockState().getValue(MachineBlock.FACING).getName());
-    }
-
-    @Override
-    public void loadIoMemory(IoMemory memory) {
-        insertionRoutes = sanitizeRoutes(memory.insertionRoutesOrDefault(insertionRoutes), insertionRouteCount());
-        extractionRoutes = sanitizeRoutes(memory.extractionRoutesOrDefault(extractionRoutes), 1);
-        if (level != null) {
-            Direction facing = Direction.byName(memory.facing());
-            BlockState state = getBlockState().setValue(MachineBlock.PIPE, memory.pipe());
-            if (facing != null && facing.getAxis().isHorizontal()) {
-                state = state.setValue(MachineBlock.FACING, facing);
-            }
-            level.setBlock(worldPosition, state, 3);
-        }
-        configurationChanged();
-    }
-
-    @Override
     public long receiveClayEnergy(long amount, boolean simulate) {
         return energy.receive(amount, simulate);
     }
@@ -674,8 +609,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
                 : null;
         progress = Math.max(0, tag.getInt("Progress"));
         totalProgress = Math.max(0, tag.getInt("TotalProgress"));
-        insertionRoutes = loadRoutes(tag, "InsertionRoutes", insertionRoutes, insertionRouteCount());
-        extractionRoutes = loadRoutes(tag, "ExtractionRoutes", extractionRoutes, 1);
+        sideConfiguration.replaceRoutes(
+                loadRoutes(tag, "InsertionRoutes", insertionRoutes, insertionRouteCount()),
+                loadRoutes(tag, "ExtractionRoutes", extractionRoutes, 1));
         ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
         for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
             filters[index] = ItemStack.parseOptional(registries, savedFilters.getCompound(index));
@@ -701,35 +637,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         tag.put("Filters", savedFilters);
     }
 
-    public int insertionRoute(Direction side) {
-        return insertionRoutes[relativeIndex(side)];
-    }
-
-    public int extractionRoute(Direction side) {
-        return extractionRoutes[relativeIndex(side)];
-    }
-
-    public boolean hasFilter(Direction side) {
-        return !filters[relativeIndex(side)].isEmpty();
-    }
-
     private static boolean matchesFilter(ItemStack filter, ItemStack stack) {
         return filter.isEmpty() || ClayFilterItem.matches(filter, stack);
-    }
-
-    public boolean pipeConnects(Direction side) {
-        if (level == null || insertionRoute(side) < 0 && extractionRoute(side) < 0) {
-            return false;
-        }
-        var neighbor = level.getBlockEntity(worldPosition.relative(side));
-        if (neighbor instanceof ConfigurableItemDevice device) {
-            boolean neighborActive =
-                    device.insertionRoute(side.getOpposite()) >= 0
-                            || device.extractionRoute(side.getOpposite()) >= 0;
-            return neighborActive
-                    || neighbor instanceof LogisticsBlockEntity logistics && logistics.isPassivePipeEndpoint();
-        }
-        return neighbor != null;
     }
 
     public String insertionIcon(Direction side) {
