@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:basic_machine_hull"
+    },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "-": {
+      "item": "clayium_neoforged:dense_clay_stick"
+    },
+    "P": {
+      "item": "clayium_neoforged:dense_clay_plate"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_spindle"
+    }
+  },
+  "pattern": [
+    "P*P",
+    "-#o",
+    "P*P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:basic_lathe"
+  }
+}

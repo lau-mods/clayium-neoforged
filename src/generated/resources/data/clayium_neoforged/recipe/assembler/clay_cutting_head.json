@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:large_clay_plate"
+      }
+    },
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "simple",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_cutting_head"
+    }
+  ]
+}

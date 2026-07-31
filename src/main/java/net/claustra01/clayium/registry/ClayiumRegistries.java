@@ -7,6 +7,10 @@ package net.claustra01.clayium.registry;
 
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
+import net.claustra01.clayium.machine.Phase4MachineCatalog;
+import net.claustra01.clayium.machine.Phase4ItemCatalog;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
 import net.claustra01.clayium.world.inventory.MachineMenu;
 import net.claustra01.clayium.world.level.block.ClayWorkTableBlock;
@@ -81,6 +85,10 @@ public final class ClayiumRegistries {
     public static final DeferredBlock<Block> CLAY_MACHINE_HULL = registerBlock(
             "clay_machine_hull", BlockBehaviour.Properties.of()
                     .mapColor(MapColor.CLAY).strength(3.0F, 5.0F).sound(SoundType.STONE));
+    public static final Map<String, DeferredBlock<Block>> COMPRESSED_CLAY_BLOCKS =
+            registerCompressedClayBlocks();
+    public static final Map<String, DeferredBlock<Block>> MACHINE_HULL_BLOCKS =
+            registerMachineHullBlocks();
 
     public static final DeferredBlock<MachineBlock> CLAY_BENDING_MACHINE = BLOCKS.register(
             "clay_bending_machine",
@@ -91,6 +99,11 @@ public final class ClayiumRegistries {
     public static final DeferredBlock<WaterWheelBlock> CLAY_WATER_WHEEL = BLOCKS.register(
             "clay_water_wheel",
             () -> new WaterWheelBlock(machineProperties()));
+    public static final DeferredBlock<WaterWheelBlock> DENSE_CLAY_WATER_WHEEL = BLOCKS.register(
+            "dense_clay_water_wheel",
+            () -> new WaterWheelBlock(machineProperties(), ClayTier.DENSE_CLAY));
+    public static final Map<String, DeferredBlock<MachineBlock>> PHASE4_MACHINE_BLOCKS =
+            registerPhase4MachineBlocks();
 
     public static final DeferredItem<BlockItem> CLAY_WORK_TABLE_ITEM = ITEMS.register(
             "clay_work_table",
@@ -106,12 +119,20 @@ public final class ClayiumRegistries {
             registerBlockItem("raw_clay_machine_hull", RAW_CLAY_MACHINE_HULL);
     public static final DeferredItem<BlockItem> CLAY_MACHINE_HULL_ITEM =
             registerBlockItem("clay_machine_hull", CLAY_MACHINE_HULL);
+    public static final Map<String, DeferredItem<BlockItem>> COMPRESSED_CLAY_BLOCK_ITEMS =
+            registerBlockItems(COMPRESSED_CLAY_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> MACHINE_HULL_BLOCK_ITEMS =
+            registerBlockItems(MACHINE_HULL_BLOCKS);
     public static final DeferredItem<BlockItem> CLAY_BENDING_MACHINE_ITEM =
             registerBlockItem("clay_bending_machine", CLAY_BENDING_MACHINE);
     public static final DeferredItem<BlockItem> ELEMENTAL_MILLING_MACHINE_ITEM =
             registerBlockItem("elemental_milling_machine", ELEMENTAL_MILLING_MACHINE);
     public static final DeferredItem<BlockItem> CLAY_WATER_WHEEL_ITEM =
             registerBlockItem("clay_water_wheel", CLAY_WATER_WHEEL);
+    public static final DeferredItem<BlockItem> DENSE_CLAY_WATER_WHEEL_ITEM =
+            registerBlockItem("dense_clay_water_wheel", DENSE_CLAY_WATER_WHEEL);
+    public static final Map<String, DeferredItem<BlockItem>> PHASE4_MACHINE_ITEMS =
+            registerPhase4MachineItems();
 
     public static final DeferredItem<Item> CLAY_STICK = ITEMS.register(
             "clay_stick",
@@ -127,7 +148,6 @@ public final class ClayiumRegistries {
     public static final DeferredItem<Item> CLAY_RING = item("clay_ring");
     public static final DeferredItem<Item> SMALL_CLAY_RING = item("small_clay_ring");
     public static final DeferredItem<Item> CLAY_GEAR = item("clay_gear");
-    public static final DeferredItem<Item> CLAY_WHEEL = item("clay_wheel");
     public static final DeferredItem<Item> DENSE_CLAY_PLATE = item("dense_clay_plate");
     public static final DeferredItem<Item> DENSE_CLAY_STICK = item("dense_clay_stick");
     public static final DeferredItem<Item> DENSE_CLAY_GEAR = item("dense_clay_gear");
@@ -148,6 +168,7 @@ public final class ClayiumRegistries {
             () -> new PickaxeItem(
                     Tiers.STONE,
                     new Item.Properties().attributes(PickaxeItem.createAttributes(Tiers.STONE, 1.0F, -2.8F))));
+    public static final Map<String, DeferredItem<Item>> PHASE4_ITEMS = registerPhase4Items();
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayWorkTableBlockEntity>>
             CLAY_WORK_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
                     "clay_work_table",
@@ -159,14 +180,14 @@ public final class ClayiumRegistries {
                     "machine",
                     () -> BlockEntityType.Builder.of(
                             MachineBlockEntity::new,
-                            CLAY_BENDING_MACHINE.get(),
-                            ELEMENTAL_MILLING_MACHINE.get()).build(null));
+                            allMachineBlocks()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WaterWheelBlockEntity>>
             WATER_WHEEL_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
                     "clay_water_wheel",
                     () -> BlockEntityType.Builder.of(
                             WaterWheelBlockEntity::new,
-                            CLAY_WATER_WHEEL.get()).build(null));
+                            CLAY_WATER_WHEEL.get(),
+                            DENSE_CLAY_WATER_WHEEL.get()).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<ClayWorkTableMenu>> CLAY_WORK_TABLE_MENU =
             MENU_TYPES.register(
                     "clay_work_table",
@@ -175,12 +196,117 @@ public final class ClayiumRegistries {
             MENU_TYPES.register(
                     "machine",
                     () -> new MenuType<>(MachineMenu::new, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> ASSEMBLER_MACHINE_MENU =
+            MENU_TYPES.register(
+                    "assembler_machine",
+                    () -> new MenuType<>(MachineMenu::assembler, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> CENTRIFUGE_MACHINE_MENU_1 =
+            MENU_TYPES.register(
+                    "centrifuge_machine_1",
+                    () -> new MenuType<>(MachineMenu::centrifugeTier3, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> CENTRIFUGE_MACHINE_MENU_2 =
+            MENU_TYPES.register(
+                    "centrifuge_machine_2",
+                    () -> new MenuType<>(MachineMenu::centrifugeTier4, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> CENTRIFUGE_MACHINE_MENU_3 =
+            MENU_TYPES.register(
+                    "centrifuge_machine_3",
+                    () -> new MenuType<>(MachineMenu::centrifugeTier5, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> CENTRIFUGE_MACHINE_MENU_4 =
+            MENU_TYPES.register(
+                    "centrifuge_machine_4",
+                    () -> new MenuType<>(MachineMenu::centrifugeTier6, FeatureFlags.DEFAULT_FLAGS));
 
     private ClayiumRegistries() {
     }
 
     private static DeferredBlock<Block> registerBlock(String name, BlockBehaviour.Properties properties) {
         return BLOCKS.register(name, () -> new Block(properties));
+    }
+
+    private static Map<String, DeferredBlock<MachineBlock>> registerPhase4MachineBlocks() {
+        Map<String, DeferredBlock<MachineBlock>> blocks = new LinkedHashMap<>();
+        for (Phase4MachineCatalog.Entry entry : Phase4MachineCatalog.ENTRIES) {
+            blocks.put(
+                    entry.blockId(),
+                    BLOCKS.register(
+                            entry.blockId(),
+                            () -> new MachineBlock(machineProperties(), entry.machineId(), entry.tier())));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredItem<BlockItem>> registerPhase4MachineItems() {
+        Map<String, DeferredItem<BlockItem>> items = new LinkedHashMap<>();
+        PHASE4_MACHINE_BLOCKS.forEach((id, block) -> items.put(id, registerBlockItem(id, block)));
+        return Map.copyOf(items);
+    }
+
+    private static Map<String, DeferredBlock<Block>> registerCompressedClayBlocks() {
+        String[] ids = {
+            "industrial_clay",
+            "advanced_industrial_clay",
+            "energetic_clay",
+            "compressed_energetic_clay",
+            "double_compressed_energetic_clay",
+            "triple_compressed_energetic_clay",
+            "quadruple_compressed_energetic_clay",
+            "quintuple_compressed_energetic_clay",
+            "sextuple_compressed_energetic_clay",
+            "septuple_compressed_energetic_clay",
+            "octuple_compressed_energetic_clay"
+        };
+        Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
+        for (String id : ids) {
+            blocks.put(id, registerBlock(
+                    id,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.CLAY)
+                            .strength(3.5F, 5.0F)
+                            .sound(SoundType.STONE)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<Block>> registerMachineHullBlocks() {
+        String[] ids = {
+            "dense_clay_machine_hull",
+            "simple_machine_hull",
+            "basic_machine_hull",
+            "advanced_machine_hull",
+            "precision_machine_hull"
+        };
+        Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
+        for (String id : ids) {
+            blocks.put(id, registerBlock(id, machineProperties()));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static <T extends Block> Map<String, DeferredItem<BlockItem>> registerBlockItems(
+            Map<String, DeferredBlock<T>> blocks) {
+        Map<String, DeferredItem<BlockItem>> items = new LinkedHashMap<>();
+        blocks.forEach((id, block) -> items.put(id, registerBlockItem(id, block)));
+        return Map.copyOf(items);
+    }
+
+    private static Map<String, DeferredItem<Item>> registerPhase4Items() {
+        Map<String, DeferredItem<Item>> items = new LinkedHashMap<>();
+        for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
+            items.put(entry.id(), item(entry.id()));
+        }
+        return Map.copyOf(items);
+    }
+
+    private static Block[] allMachineBlocks() {
+        Block[] blocks = new Block[PHASE4_MACHINE_BLOCKS.size() + 2];
+        blocks[0] = CLAY_BENDING_MACHINE.get();
+        blocks[1] = ELEMENTAL_MILLING_MACHINE.get();
+        int index = 2;
+        for (DeferredBlock<MachineBlock> block : PHASE4_MACHINE_BLOCKS.values()) {
+            blocks[index++] = block.get();
+        }
+        return blocks;
     }
 
     private static <T extends Block> DeferredItem<BlockItem> registerBlockItem(

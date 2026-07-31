@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:industrial_clay_large_plate"
+    },
+    "C": {
+      "item": "clayium_neoforged:simple_circuit"
+    }
+  },
+  "pattern": [
+    "###",
+    "#C#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:simple_machine_hull"
+  }
+}

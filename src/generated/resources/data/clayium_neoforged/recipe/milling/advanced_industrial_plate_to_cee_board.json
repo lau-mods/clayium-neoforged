@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 2,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:elemental_milling_machine",
+  "minimum_tier": "simple",
+  "processing_time_ticks": 32,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:cee_board"
+    }
+  ]
+}

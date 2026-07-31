@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:clay_circuit_board"
+    },
+    "-": {
+      "item": "clayium_neoforged:energetic_clay_dust"
+    }
+  },
+  "pattern": [
+    "---",
+    "-#-",
+    "---"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:simple_circuit"
+  }
+}

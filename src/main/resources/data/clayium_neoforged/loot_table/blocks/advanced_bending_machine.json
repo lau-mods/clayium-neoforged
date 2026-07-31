@@ -1,0 +1,1 @@
+{"type":"minecraft:block","pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"clayium_neoforged:advanced_bending_machine"}],"conditions":[{"condition":"minecraft:survives_explosion"}]}],"random_sequence":"clayium_neoforged:blocks/advanced_bending_machine"}

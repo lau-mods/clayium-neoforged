@@ -2,14 +2,17 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "P": {
-      "item": "clayium_neoforged:dense_clay_plate"
+    "i": {
+      "item": "clayium_neoforged:dense_clay_short_stick"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_small_ring"
     }
   },
   "pattern": [
-    " P ",
-    "P P",
-    " P "
+    "iii",
+    "ioi",
+    "iii"
   ],
   "result": {
     "count": 1,

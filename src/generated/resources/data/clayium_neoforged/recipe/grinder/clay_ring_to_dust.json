@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_ring"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:grinder",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 15,
+  "results": [
+    {
+      "count": 5,
+      "id": "clayium_neoforged:clay_dust"
+    }
+  ]
+}

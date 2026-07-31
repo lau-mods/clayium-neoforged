@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:clay_machine_hull"
+    },
+    "*": {
+      "item": "clayium_neoforged:clay_gear"
+    },
+    "=": {
+      "item": "clayium_neoforged:clay_pipe"
+    },
+    "o": {
+      "item": "clayium_neoforged:clay_spindle"
+    }
+  },
+  "pattern": [
+    "*o*",
+    "=#=",
+    "*o*"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_wire_drawing_machine"
+  }
+}

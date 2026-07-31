@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:large_clay_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:cutting_machine",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 3,
+  "results": [
+    {
+      "count": 2,
+      "id": "clayium_neoforged:clay_disc"
+    }
+  ]
+}

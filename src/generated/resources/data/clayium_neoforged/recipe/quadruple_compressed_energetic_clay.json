@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "clayium_neoforged:triple_compressed_energetic_clay"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "CCC",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:quadruple_compressed_energetic_clay"
+  }
+}

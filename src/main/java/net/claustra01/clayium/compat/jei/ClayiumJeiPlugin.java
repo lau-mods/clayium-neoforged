@@ -8,24 +8,32 @@ package net.claustra01.clayium.compat.jei;
 import java.util.List;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayWorkTableScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.MachineScreen;
+import net.claustra01.clayium.machine.ClayiumMachineIds;
+import net.claustra01.clayium.machine.MachineLayout;
+import net.claustra01.clayium.machine.Phase4MachineCatalog;
 import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.claustra01.clayium.recipe.MachineRecipe;
-import net.claustra01.clayium.machine.ClayiumMachineIds;
+import net.claustra01.clayium.recipe.SmelterRecipeAdapter;
 import net.claustra01.clayium.registry.ClayiumRecipes;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
 import net.claustra01.clayium.world.inventory.MachineMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.MenuType;
 
 @JeiPlugin
 public final class ClayiumJeiPlugin implements IModPlugin {
@@ -41,22 +49,16 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         var guiHelper = registration.getJeiHelpers().getGuiHelper();
         registration.addRecipeCategories(new ClayWorkTableRecipeCategory(
                 guiHelper,
-                guiHelper.createDrawableItemStack(ClayiumRegistries.CLAY_WORK_TABLE_ITEM.get().getDefaultInstance())));
-        registration.addRecipeCategories(
-                new MachineRecipeCategory(
+                guiHelper.createDrawableItemStack(
+                        ClayiumRegistries.CLAY_WORK_TABLE_ITEM.get().getDefaultInstance())));
+        ClayiumJeiRecipeTypes.MACHINES.forEach((machineId, recipeType) ->
+                registration.addRecipeCategories(new MachineRecipeCategory(
                         guiHelper,
-                        ClayiumJeiRecipeTypes.CLAY_BENDING_MACHINE,
-                        net.minecraft.network.chat.Component.translatable(
-                                "jei.clayium_neoforged.category.clay_bending_machine"),
-                        guiHelper.createDrawableItemStack(
-                                ClayiumRegistries.CLAY_BENDING_MACHINE_ITEM.get().getDefaultInstance())),
-                new MachineRecipeCategory(
-                        guiHelper,
-                        ClayiumJeiRecipeTypes.ELEMENTAL_MILLING_MACHINE,
-                        net.minecraft.network.chat.Component.translatable(
-                                "jei.clayium_neoforged.category.elemental_milling_machine"),
-                        guiHelper.createDrawableItemStack(
-                                ClayiumRegistries.ELEMENTAL_MILLING_MACHINE_ITEM.get().getDefaultInstance())));
+                        recipeType,
+                        Component.translatable(
+                                "jei." + Clayium.MODID + ".category." + machineId.getPath()),
+                        guiHelper.createDrawableItemStack(iconFor(machineId)),
+                        MachineLayout.forMachine(machineId))));
     }
 
     @Override
@@ -70,9 +72,15 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(
                 ClayiumRegistries.ELEMENTAL_MILLING_MACHINE_ITEM.get(),
                 ClayiumJeiRecipeTypes.ELEMENTAL_MILLING_MACHINE);
+        for (Phase4MachineCatalog.Entry entry : Phase4MachineCatalog.ENTRIES) {
+            registration.addRecipeCatalyst(
+                    ClayiumRegistries.PHASE4_MACHINE_ITEMS.get(entry.blockId()).get(),
+                    ClayiumJeiRecipeTypes.MACHINES.get(entry.machineId()));
+        }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(
                 ClayWorkTableScreen.class,
@@ -81,14 +89,19 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 80,
                 16,
                 ClayiumJeiRecipeTypes.CLAY_WORK_TABLE);
-        registration.addRecipeClickArea(
-                MachineScreen.class,
-                76,
-                35,
-                24,
-                17,
-                ClayiumJeiRecipeTypes.CLAY_BENDING_MACHINE,
-                ClayiumJeiRecipeTypes.ELEMENTAL_MILLING_MACHINE);
+        registration.addGuiContainerHandler(MachineScreen.class, new mezz.jei.api.gui.handlers.IGuiContainerHandler<>() {
+            @Override
+            public java.util.Collection<IGuiClickableArea> getGuiClickableAreas(
+                    MachineScreen screen,
+                    double guiMouseX,
+                    double guiMouseY) {
+                RecipeType<MachineRecipe> recipeType =
+                        ClayiumJeiRecipeTypes.MACHINES.get(screen.machineId());
+                return recipeType == null
+                        ? java.util.List.of()
+                        : java.util.List.of(IGuiClickableArea.createBasic(76, 35, 24, 17, recipeType));
+            }
+        });
     }
 
     @Override
@@ -101,21 +114,39 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 1,
                 3,
                 36);
+        ClayiumJeiRecipeTypes.MACHINES.forEach((machineId, recipeType) -> {
+            MachineLayout layout = MachineLayout.forMachine(machineId);
+            if (layout == MachineLayout.ASSEMBLER) {
+                registerTransfer(
+                        registration,
+                        ClayiumRegistries.ASSEMBLER_MACHINE_MENU.get(),
+                        recipeType,
+                        2,
+                        3);
+            } else if (layout == MachineLayout.CENTRIFUGE) {
+                registerTransfer(registration, ClayiumRegistries.CENTRIFUGE_MACHINE_MENU_1.get(), recipeType, 1, 2);
+                registerTransfer(registration, ClayiumRegistries.CENTRIFUGE_MACHINE_MENU_2.get(), recipeType, 1, 3);
+                registerTransfer(registration, ClayiumRegistries.CENTRIFUGE_MACHINE_MENU_3.get(), recipeType, 1, 4);
+                registerTransfer(registration, ClayiumRegistries.CENTRIFUGE_MACHINE_MENU_4.get(), recipeType, 1, 5);
+            } else {
+                registerTransfer(registration, ClayiumRegistries.MACHINE_MENU.get(), recipeType, 1, 2);
+            }
+        });
+    }
+
+    private static void registerTransfer(
+            IRecipeTransferRegistration registration,
+            MenuType<MachineMenu> menuType,
+            RecipeType<MachineRecipe> recipeType,
+            int inputCount,
+            int playerInventoryStart) {
         registration.addRecipeTransferHandler(
                 MachineMenu.class,
-                ClayiumRegistries.MACHINE_MENU.get(),
-                ClayiumJeiRecipeTypes.CLAY_BENDING_MACHINE,
+                menuType,
+                recipeType,
                 0,
-                1,
-                2,
-                36);
-        registration.addRecipeTransferHandler(
-                MachineMenu.class,
-                ClayiumRegistries.MACHINE_MENU.get(),
-                ClayiumJeiRecipeTypes.ELEMENTAL_MILLING_MACHINE,
-                0,
-                1,
-                2,
+                inputCount,
+                playerInventoryStart,
                 36);
     }
 
@@ -125,26 +156,41 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         if (level == null) {
             return;
         }
-        List<ClayWorkTableRecipe> recipes = level.getRecipeManager()
+        List<ClayWorkTableRecipe> workTableRecipes = level.getRecipeManager()
                 .getAllRecipesFor(ClayiumRecipes.CLAY_WORK_TABLE_RECIPE_TYPE.get())
                 .stream()
                 .map(holder -> holder.value())
                 .toList();
-        registration.addRecipes(ClayiumJeiRecipeTypes.CLAY_WORK_TABLE, recipes);
+        registration.addRecipes(ClayiumJeiRecipeTypes.CLAY_WORK_TABLE, workTableRecipes);
         List<MachineRecipe> machineRecipes = level.getRecipeManager()
                 .getAllRecipesFor(ClayiumRecipes.MACHINE_RECIPE_TYPE.get())
                 .stream()
                 .map(holder -> holder.value())
                 .toList();
-        registration.addRecipes(
-                ClayiumJeiRecipeTypes.CLAY_BENDING_MACHINE,
-                machineRecipes.stream()
-                        .filter(recipe -> recipe.machine().equals(ClayiumMachineIds.CLAY_BENDING_MACHINE))
-                        .toList());
-        registration.addRecipes(
-                ClayiumJeiRecipeTypes.ELEMENTAL_MILLING_MACHINE,
-                machineRecipes.stream()
-                        .filter(recipe -> recipe.machine().equals(ClayiumMachineIds.ELEMENTAL_MILLING_MACHINE))
-                        .toList());
+        ClayiumJeiRecipeTypes.MACHINES.forEach((machineId, recipeType) -> {
+            List<MachineRecipe> recipes = machineId.equals(ClayiumMachineIds.SMELTER)
+                    ? SmelterRecipeAdapter.all(level)
+                    : machineRecipes.stream()
+                            .filter(recipe -> recipe.machine().equals(machineId))
+                            .toList();
+            registration.addRecipes(recipeType, recipes);
+        });
+    }
+
+    private static ItemStack iconFor(ResourceLocation machineId) {
+        if (ClayiumMachineIds.CLAY_BENDING_MACHINE.equals(machineId)) {
+            return ClayiumRegistries.CLAY_BENDING_MACHINE_ITEM.get().getDefaultInstance();
+        }
+        if (ClayiumMachineIds.ELEMENTAL_MILLING_MACHINE.equals(machineId)) {
+            return ClayiumRegistries.ELEMENTAL_MILLING_MACHINE_ITEM.get().getDefaultInstance();
+        }
+        return Phase4MachineCatalog.ENTRIES.stream()
+                .filter(entry -> entry.machineId().equals(machineId))
+                .findFirst()
+                .map(entry -> ClayiumRegistries.PHASE4_MACHINE_ITEMS
+                        .get(entry.blockId())
+                        .get()
+                        .getDefaultInstance())
+                .orElse(ItemStack.EMPTY);
     }
 }

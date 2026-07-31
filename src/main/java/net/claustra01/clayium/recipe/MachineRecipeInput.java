@@ -5,33 +5,42 @@
  */
 package net.claustra01.clayium.recipe;
 
+import java.util.List;
 import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 
-/** Immutable one-item input used by the first common machine recipe model. */
+/** Immutable item inputs used by the common machine recipe model. */
 public final class MachineRecipeInput implements RecipeInput {
-    private final ItemStack input;
+    private final List<ItemStack> inputs;
 
     public MachineRecipeInput(ItemStack input) {
-        this.input = Objects.requireNonNull(input, "input").copy();
+        this(List.of(input));
+    }
+
+    public MachineRecipeInput(List<ItemStack> inputs) {
+        Objects.requireNonNull(inputs, "inputs");
+        if (inputs.isEmpty() || inputs.size() > MachineRecipe.MAX_INPUTS) {
+            throw new IllegalArgumentException("Machine recipe input must have 1 to "
+                    + MachineRecipe.MAX_INPUTS + " slots");
+        }
+        this.inputs = inputs.stream()
+                .map(stack -> Objects.requireNonNull(stack, "input stack").copy())
+                .toList();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        if (slot != 0) {
-            throw new IndexOutOfBoundsException("Machine recipe input only has slot 0");
-        }
-        return input;
+        return inputs.get(slot);
     }
 
     @Override
     public int size() {
-        return 1;
+        return inputs.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return input.isEmpty();
+        return inputs.stream().allMatch(ItemStack::isEmpty);
     }
 }

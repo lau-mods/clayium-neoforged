@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "clayium_neoforged:advanced_industrial_clay"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "CCC",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:energetic_clay"
+  }
+}

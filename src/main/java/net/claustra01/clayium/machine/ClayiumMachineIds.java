@@ -13,6 +13,17 @@ public final class ClayiumMachineIds {
     public static final ResourceLocation CLAY_WORK_TABLE = Clayium.id("clay_work_table");
     public static final ResourceLocation CLAY_BENDING_MACHINE = Clayium.id("clay_bending_machine");
     public static final ResourceLocation ELEMENTAL_MILLING_MACHINE = Clayium.id("elemental_milling_machine");
+    public static final ResourceLocation GRINDER = Clayium.id("grinder");
+    public static final ResourceLocation CONDENSER = Clayium.id("condenser");
+    public static final ResourceLocation DECOMPOSER = Clayium.id("decomposer");
+    public static final ResourceLocation SMELTER = Clayium.id("smelter");
+    public static final ResourceLocation LATHE = Clayium.id("lathe");
+    public static final ResourceLocation CUTTING_MACHINE = Clayium.id("cutting_machine");
+    public static final ResourceLocation WIRE_DRAWING_MACHINE = Clayium.id("wire_drawing_machine");
+    public static final ResourceLocation PIPE_DRAWING_MACHINE = Clayium.id("pipe_drawing_machine");
+    public static final ResourceLocation ASSEMBLER = Clayium.id("assembler");
+    public static final ResourceLocation INSCRIBER = Clayium.id("inscriber");
+    public static final ResourceLocation CENTRIFUGE = Clayium.id("centrifuge");
 
     private ClayiumMachineIds() {
     }

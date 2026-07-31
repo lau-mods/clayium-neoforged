@@ -1,21 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "redstone",
+  "category": "misc",
   "key": {
-    "G": {
-      "item": "clayium_neoforged:dense_clay_gear"
-    },
-    "H": {
+    "#": {
       "item": "clayium_neoforged:clay_machine_hull"
     },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "0": {
+      "item": "clayium_neoforged:dense_clay_cutting_head"
+    },
     "P": {
-      "item": "clayium_neoforged:clay_plate"
+      "item": "clayium_neoforged:dense_clay_plate"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_spindle"
     }
   },
   "pattern": [
-    " P ",
-    "GHG",
-    " P "
+    "P0P",
+    "o#o",
+    "P*P"
   ],
   "result": {
     "count": 1,

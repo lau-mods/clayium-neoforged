@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"clayium_neoforged:block/precision_assembler"},"facing=east":{"model":"clayium_neoforged:block/precision_assembler","y":90},"facing=south":{"model":"clayium_neoforged:block/precision_assembler","y":180},"facing=west":{"model":"clayium_neoforged:block/precision_assembler","y":270}}}

@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_dense_clay_plate": {
+    "has_component": {
       "conditions": {
         "items": [
           {
-            "items": "clayium_neoforged:dense_clay_plate"
+            "items": "clayium_neoforged:dense_clay_short_stick"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_dense_clay_plate"
+      "has_component"
     ]
   ],
   "rewards": {

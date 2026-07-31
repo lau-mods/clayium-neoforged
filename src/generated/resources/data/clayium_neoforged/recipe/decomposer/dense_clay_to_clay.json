@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:decomposer",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 3,
+  "results": [
+    {
+      "count": 9,
+      "id": "minecraft:clay"
+    }
+  ]
+}

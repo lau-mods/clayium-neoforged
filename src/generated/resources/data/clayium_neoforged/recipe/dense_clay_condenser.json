@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:dense_clay_machine_hull"
+    },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "P": {
+      "item": "clayium_neoforged:dense_clay_plate"
+    }
+  },
+  "pattern": [
+    "*P*",
+    "P#P",
+    "*P*"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:dense_clay_condenser"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:large_clay_ball"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_bending_machine",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 2,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_disc"
+    }
+  ]
+}

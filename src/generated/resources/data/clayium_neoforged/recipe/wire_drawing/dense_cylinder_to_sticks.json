@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_cylinder"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:wire_drawing_machine",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 6,
+  "results": [
+    {
+      "count": 8,
+      "id": "clayium_neoforged:dense_clay_stick"
+    }
+  ]
+}

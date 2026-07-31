@@ -10,6 +10,8 @@ import net.claustra01.clayium.recipe.ClayWorkTableOperation;
 import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
+import net.claustra01.clayium.machine.Phase4MachineCatalog;
+import net.claustra01.clayium.machine.Phase4ItemCatalog;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.data.PackOutput;
@@ -53,6 +55,12 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.clay_work_table", "Clay Work Table");
                 add("jei." + Clayium.MODID + ".category.clay_bending_machine", "Clay Bending Machine");
                 add("jei." + Clayium.MODID + ".category.elemental_milling_machine", "Elemental Milling Machine");
+                for (String path : java.util.List.of(
+                        "wire_drawing_machine", "pipe_drawing_machine", "cutting_machine", "lathe",
+                        "condenser", "grinder", "decomposer", "assembler", "inscriber",
+                        "centrifuge", "smelter")) {
+                    add("jei." + Clayium.MODID + ".category." + path, titleCase(path));
+                }
                 add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
                 add("jei." + Clayium.MODID + ".required_actions", "Manual actions: %s");
                 add("jei." + Clayium.MODID + ".input_count", "Input: %s");
@@ -100,6 +108,28 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".clay_bending_machine", "Clay Bending Machine");
         language.add("block." + Clayium.MODID + ".elemental_milling_machine", "Elemental Milling Machine");
         language.add("block." + Clayium.MODID + ".clay_water_wheel", "Clay Water Wheel");
+        language.add("block." + Clayium.MODID + ".dense_clay_water_wheel", "Dense Clay Water Wheel");
+        for (Phase4MachineCatalog.Entry entry : Phase4MachineCatalog.ENTRIES) {
+            language.add(
+                    "block." + Clayium.MODID + "." + entry.blockId(),
+                    entry.tier().displayName() + " " + entry.displayTypeName());
+        }
+        addBlockName(language, "industrial_clay", "Industrial Clay");
+        addBlockName(language, "advanced_industrial_clay", "Advanced Industrial Clay");
+        addBlockName(language, "energetic_clay", "Energetic Clay");
+        addBlockName(language, "compressed_energetic_clay", "Compressed Energetic Clay");
+        addBlockName(language, "double_compressed_energetic_clay", "Double Compressed Energetic Clay");
+        addBlockName(language, "triple_compressed_energetic_clay", "Triple Compressed Energetic Clay");
+        addBlockName(language, "quadruple_compressed_energetic_clay", "Quadruple Compressed Energetic Clay");
+        addBlockName(language, "quintuple_compressed_energetic_clay", "Quintuple Compressed Energetic Clay");
+        addBlockName(language, "sextuple_compressed_energetic_clay", "Sextuple Compressed Energetic Clay");
+        addBlockName(language, "septuple_compressed_energetic_clay", "Septuple Compressed Energetic Clay");
+        addBlockName(language, "octuple_compressed_energetic_clay", "Octuple Compressed Energetic Clay");
+        for (String id : ClayiumRegistries.MACHINE_HULL_BLOCKS.keySet()) {
+            language.add(
+                    "block." + Clayium.MODID + "." + id,
+                    titleCase(id.replace("_machine_hull", "")) + " Machine Hull");
+        }
     }
 
     private static void addItemNames(LanguageProvider language) {
@@ -115,7 +145,6 @@ public final class ClayiumDataGenerators {
         language.add("item." + Clayium.MODID + ".clay_ring", "Clay Ring");
         language.add("item." + Clayium.MODID + ".small_clay_ring", "Small Clay Ring");
         language.add("item." + Clayium.MODID + ".clay_gear", "Clay Gear");
-        language.add("item." + Clayium.MODID + ".clay_wheel", "Clay Wheel");
         language.add("item." + Clayium.MODID + ".dense_clay_plate", "Dense Clay Plate");
         language.add("item." + Clayium.MODID + ".dense_clay_stick", "Dense Clay Stick");
         language.add("item." + Clayium.MODID + ".dense_clay_gear", "Dense Clay Gear");
@@ -128,6 +157,19 @@ public final class ClayiumDataGenerators {
         language.add("item." + Clayium.MODID + ".clay_spatula", "Clay Spatula");
         language.add("item." + Clayium.MODID + ".clay_shovel", "Clay Shovel");
         language.add("item." + Clayium.MODID + ".clay_pickaxe", "Clay Pickaxe");
+        for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
+            language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
+        }
+    }
+
+    private static String titleCase(String id) {
+        return java.util.Arrays.stream(id.split("_"))
+                .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
+                .collect(java.util.stream.Collectors.joining(" "));
+    }
+
+    private static void addBlockName(LanguageProvider language, String id, String name) {
+        language.add("block." + Clayium.MODID + "." + id, name);
     }
 
     private static void buildWorkTableRecipes(RecipeOutput output) {
@@ -194,28 +236,28 @@ public final class ClayiumDataGenerators {
                 .save(output);
         compression(output, "dense_clay", Items.CLAY, ClayiumRegistries.DENSE_CLAY.get());
         compression(output, "compressed_clay", ClayiumRegistries.DENSE_CLAY.get(), ClayiumRegistries.COMPRESSED_CLAY.get());
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ClayiumRegistries.CLAY_GEAR.get())
-                .define('S', ClayiumRegistries.SHORT_CLAY_STICK.get())
-                .define('R', ClayiumRegistries.SMALL_CLAY_RING.get())
-                .pattern(" S ").pattern("SRS").pattern(" S ")
-                .unlockedBy("has_small_clay_ring", has(ClayiumRegistries.SMALL_CLAY_RING.get()))
-                .save(output);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ClayiumRegistries.CLAY_WHEEL.get())
-                .define('P', ClayiumRegistries.CLAY_PLATE.get())
-                .define('R', ClayiumRegistries.CLAY_RING.get())
-                .pattern(" P ").pattern("PRP").pattern(" P ")
-                .unlockedBy("has_clay_ring", has(ClayiumRegistries.CLAY_RING.get()))
-                .save(output);
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ClayiumRegistries.DENSE_CLAY_STICK.get(), 2)
-                .requires(ClayiumRegistries.DENSE_CLAY_PLATE.get())
-                .unlockedBy("has_dense_clay_plate", has(ClayiumRegistries.DENSE_CLAY_PLATE.get()))
-                .save(output);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ClayiumRegistries.DENSE_CLAY_GEAR.get())
-                .define('P', ClayiumRegistries.DENSE_CLAY_PLATE.get())
-                .pattern(" P ").pattern("P P").pattern(" P ")
-                .unlockedBy("has_dense_clay_plate", has(ClayiumRegistries.DENSE_CLAY_PLATE.get()))
-                .save(output);
+        compression(output, "industrial_clay", ClayiumRegistries.COMPRESSED_CLAY.get(),
+                ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("industrial_clay").get());
+        compression(output, "advanced_industrial_clay",
+                ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("industrial_clay").get(),
+                ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("advanced_industrial_clay").get());
+        String[] energeticLevels = {
+            "energetic_clay",
+            "compressed_energetic_clay",
+            "double_compressed_energetic_clay",
+            "triple_compressed_energetic_clay",
+            "quadruple_compressed_energetic_clay",
+            "quintuple_compressed_energetic_clay",
+            "sextuple_compressed_energetic_clay",
+            "septuple_compressed_energetic_clay",
+            "octuple_compressed_energetic_clay"
+        };
+        ItemLike previous = ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("advanced_industrial_clay").get();
+        for (String level : energeticLevels) {
+            ItemLike next = ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get(level).get();
+            compression(output, level, previous, next);
+            previous = next;
+        }
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ClayiumRegistries.RAW_CLAY_ROLLING_PIN.get())
                 .define('S', ClayiumRegistries.SHORT_CLAY_STICK.get())
                 .define('C', ClayiumRegistries.CLAY_CYLINDER.get())
@@ -251,13 +293,7 @@ public final class ClayiumDataGenerators {
                 .unlockedBy("has_dense_clay_plate", has(ClayiumRegistries.DENSE_CLAY_PLATE.get()))
                 .save(output);
 
-        machineBlockRecipe(output, ClayiumRegistries.CLAY_BENDING_MACHINE.get(), ClayiumRegistries.CLAY_GEAR.get());
-        machineBlockRecipe(output, ClayiumRegistries.ELEMENTAL_MILLING_MACHINE.get(), ClayiumRegistries.DENSE_CLAY_GEAR.get());
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.REDSTONE, ClayiumRegistries.CLAY_WATER_WHEEL.get())
-                .requires(ClayiumRegistries.CLAY_MACHINE_HULL.get())
-                .requires(ClayiumRegistries.CLAY_WHEEL.get())
-                .unlockedBy("has_clay_machine_hull", has(ClayiumRegistries.CLAY_MACHINE_HULL.get()))
-                .save(output);
+        Phase4CraftingRecipes.build(output);
     }
 
     private static void compression(RecipeOutput output, String id, ItemLike input, ItemLike outputBlock) {
@@ -269,16 +305,6 @@ public final class ClayiumDataGenerators {
                 .requires(outputBlock)
                 .unlockedBy("has_" + id, has(outputBlock))
                 .save(output, Clayium.id(id + "_unpack"));
-    }
-
-    private static void machineBlockRecipe(RecipeOutput output, ItemLike result, ItemLike gear) {
-        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, result)
-                .define('H', ClayiumRegistries.CLAY_MACHINE_HULL.get())
-                .define('G', gear)
-                .define('P', ClayiumRegistries.CLAY_PLATE.get())
-                .pattern(" P ").pattern("GHG").pattern(" P ")
-                .unlockedBy("has_clay_machine_hull", has(ClayiumRegistries.CLAY_MACHINE_HULL.get()))
-                .save(output);
     }
 
     private static void smelt(RecipeOutput output, ItemLike input, ItemLike result, int time) {
@@ -299,31 +325,6 @@ public final class ClayiumDataGenerators {
     }
 
     private static void buildMachineRecipes(RecipeOutput output) {
-        machine(output, "bending/clay_block_to_clay_plate", ClayiumMachineIds.CLAY_BENDING_MACHINE,
-                Items.CLAY, ClayiumRegistries.CLAY_PLATE.get(), 40, 1);
-        machine(output, "bending/dense_clay_to_dense_clay_plate", ClayiumMachineIds.CLAY_BENDING_MACHINE,
-                ClayiumRegistries.DENSE_CLAY.get(), ClayiumRegistries.DENSE_CLAY_PLATE.get(), 80, 1);
-        machine(output, "milling/dense_clay_plate_to_circuit_board", ClayiumMachineIds.ELEMENTAL_MILLING_MACHINE,
-                ClayiumRegistries.DENSE_CLAY_PLATE.get(), ClayiumRegistries.CLAY_CIRCUIT_BOARD.get(), 32, 1);
-    }
-
-    private static void machine(
-            RecipeOutput output,
-            String id,
-            net.minecraft.resources.ResourceLocation machine,
-            ItemLike input,
-            ItemLike result,
-            int time,
-            long energyPerTick) {
-        output.accept(
-                Clayium.id(id),
-                new MachineRecipe(
-                        machine,
-                        Ingredient.of(input),
-                        new ItemStack(result),
-                        time,
-                        energyPerTick,
-                        ClayTier.CLAY),
-                null);
+        Phase4MachineRecipes.build(output);
     }
 }

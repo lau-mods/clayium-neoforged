@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:triple_compressed_energetic_clay_unpack"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_triple_compressed_energetic_clay": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:triple_compressed_energetic_clay"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_triple_compressed_energetic_clay"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:triple_compressed_energetic_clay_unpack"
+    ]
+  }
+}

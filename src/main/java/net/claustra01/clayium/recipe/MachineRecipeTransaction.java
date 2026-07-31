@@ -5,12 +5,14 @@
  */
 package net.claustra01.clayium.recipe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.world.item.ItemStack;
 
-/** Performs all validation before returning the item and CE state of a completion. */
+/** Validates every input, output, tier, and CE condition before committing. */
 public final class MachineRecipeTransaction {
     private MachineRecipeTransaction() {
     }
@@ -26,13 +28,13 @@ public final class MachineRecipeTransaction {
 
     public record Result(
             FailureReason failureReason,
-            ItemStack remainingInput,
-            ItemStack resultingOutput,
+            List<ItemStack> remainingInputs,
+            List<ItemStack> resultingOutputs,
             long clayEnergyConsumed) {
         public Result {
             Objects.requireNonNull(failureReason, "failureReason");
-            remainingInput = Objects.requireNonNull(remainingInput, "remainingInput").copy();
-            resultingOutput = Objects.requireNonNull(resultingOutput, "resultingOutput").copy();
+            remainingInputs = copyStacks(remainingInputs);
+            resultingOutputs = copyStacks(resultingOutputs);
             if (clayEnergyConsumed < 0) {
                 throw new IllegalArgumentException("Consumed Clay Energy must not be negative");
             }
@@ -43,64 +45,90 @@ public final class MachineRecipeTransaction {
         }
 
         @Override
-        public ItemStack remainingInput() {
-            return remainingInput.copy();
+        public List<ItemStack> remainingInputs() {
+            return copyStacks(remainingInputs);
         }
 
         @Override
-        public ItemStack resultingOutput() {
-            return resultingOutput.copy();
+        public List<ItemStack> resultingOutputs() {
+            return copyStacks(resultingOutputs);
         }
     }
 
     public static Result execute(
             MachineRecipe recipe,
-            ItemStack input,
-            ItemStack output,
+            List<ItemStack> inputs,
+            List<ItemStack> outputs,
             ClayTier availableTier,
             ClayEnergyStorage clayEnergy,
             boolean simulate) {
         Objects.requireNonNull(recipe, "recipe");
-        Objects.requireNonNull(input, "input");
-        Objects.requireNonNull(output, "output");
+        Objects.requireNonNull(inputs, "inputs");
+        Objects.requireNonNull(outputs, "outputs");
         Objects.requireNonNull(availableTier, "availableTier");
         Objects.requireNonNull(clayEnergy, "clayEnergy");
 
-        if (input.isEmpty()) {
-            return failure(FailureReason.EMPTY_INPUT, input, output);
+        if (inputs.isEmpty() || inputs.stream().allMatch(ItemStack::isEmpty)) {
+            return failure(FailureReason.EMPTY_INPUT, inputs, outputs);
         }
-        if (!recipe.ingredient().test(input)) {
-            return failure(FailureReason.INPUT_MISMATCH, input, output);
+        MachineRecipeInput recipeInput = new MachineRecipeInput(inputs);
+        var match = recipe.matchInputSlots(recipeInput);
+        if (match.isEmpty()) {
+            return failure(FailureReason.INPUT_MISMATCH, inputs, outputs);
         }
         if (!availableTier.isAtLeast(recipe.minimumTier())) {
-            return failure(FailureReason.TIER_TOO_LOW, input, output);
+            return failure(FailureReason.TIER_TOO_LOW, inputs, outputs);
+        }
+        if (outputs.size() < recipe.results().size()) {
+            return failure(FailureReason.OUTPUT_BLOCKED, inputs, outputs);
         }
 
         long totalEnergy = Math.multiplyExact(recipe.processingTimeTicks(), recipe.clayEnergyPerTick());
         if (clayEnergy.extract(totalEnergy, true) != totalEnergy) {
-            return failure(FailureReason.INSUFFICIENT_CLAY_ENERGY, input, output);
+            return failure(FailureReason.INSUFFICIENT_CLAY_ENERGY, inputs, outputs);
         }
 
-        ItemStack recipeResult = recipe.result();
-        ItemStack nextOutput = output.copy();
-        if (nextOutput.isEmpty()) {
-            nextOutput = recipeResult;
-        } else if (!ItemStack.isSameItemSameComponents(nextOutput, recipeResult)
-                || recipeResult.getCount() > nextOutput.getMaxStackSize() - nextOutput.getCount()) {
-            return failure(FailureReason.OUTPUT_BLOCKED, input, output);
-        } else {
-            nextOutput.grow(recipeResult.getCount());
+        List<ItemStack> nextOutputs = copyStacks(outputs);
+        List<ItemStack> recipeResults = recipe.results();
+        for (int index = 0; index < recipeResults.size(); index++) {
+            ItemStack result = recipeResults.get(index);
+            ItemStack current = nextOutputs.get(index);
+            if (current.isEmpty()) {
+                nextOutputs.set(index, result.copy());
+            } else if (!ItemStack.isSameItemSameComponents(current, result)
+                    || result.getCount() > current.getMaxStackSize() - current.getCount()) {
+                return failure(FailureReason.OUTPUT_BLOCKED, inputs, outputs);
+            } else {
+                current.grow(result.getCount());
+            }
         }
 
-        ItemStack nextInput = input.copy();
-        nextInput.shrink(1);
+        List<ItemStack> nextInputs = copyStacks(inputs);
+        int[] matchedSlots = match.get();
+        for (int ingredientIndex = 0; ingredientIndex < recipe.ingredients().size(); ingredientIndex++) {
+            nextInputs.get(matchedSlots[ingredientIndex])
+                    .shrink(recipe.ingredients().get(ingredientIndex).count());
+        }
+
         if (!simulate && clayEnergy.extract(totalEnergy, false) != totalEnergy) {
             throw new IllegalStateException("Clay Energy changed between transaction validation and commit");
         }
-        return new Result(FailureReason.NONE, nextInput, nextOutput, totalEnergy);
+        return new Result(FailureReason.NONE, nextInputs, nextOutputs, totalEnergy);
     }
 
-    private static Result failure(FailureReason reason, ItemStack input, ItemStack output) {
-        return new Result(reason, input, output, 0);
+    private static Result failure(
+            FailureReason reason,
+            List<ItemStack> inputs,
+            List<ItemStack> outputs) {
+        return new Result(reason, inputs, outputs, 0);
+    }
+
+    private static List<ItemStack> copyStacks(List<ItemStack> stacks) {
+        Objects.requireNonNull(stacks, "stacks");
+        List<ItemStack> copies = new ArrayList<>(stacks.size());
+        for (ItemStack stack : stacks) {
+            copies.add(Objects.requireNonNull(stack, "stack").copy());
+        }
+        return copies;
     }
 }

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:basic_machine_hull"
+    },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_spindle"
+    }
+  },
+  "pattern": [
+    "*o*",
+    "o#o",
+    "*o*"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:basic_centrifuge"
+  }
+}

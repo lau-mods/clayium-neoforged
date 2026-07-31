@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_machine_hull"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 120,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_bending_machine"
+    }
+  ]
+}

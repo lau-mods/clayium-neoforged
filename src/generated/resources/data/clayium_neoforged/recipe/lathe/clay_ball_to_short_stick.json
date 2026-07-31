@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:clay_ball"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:lathe",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 1,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:short_clay_stick"
+    }
+  ]
+}

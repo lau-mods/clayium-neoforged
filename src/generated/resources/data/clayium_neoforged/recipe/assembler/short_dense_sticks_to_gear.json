@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10,
+  "ingredients": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_short_stick"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "simple",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_gear"
+    }
+  ]
+}

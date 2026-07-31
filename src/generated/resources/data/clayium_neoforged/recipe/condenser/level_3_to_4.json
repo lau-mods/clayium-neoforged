@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100,
+  "ingredients": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:condenser",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 4,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_industrial_clay"
+    }
+  ]
+}

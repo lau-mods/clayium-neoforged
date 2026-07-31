@@ -21,10 +21,9 @@ public final class WaterWheelBlockEntity extends BlockEntity {
     public static final int GENERATION_RATE_DENOMINATOR = 40;
     private static final int WATER_SCAN_INTERVAL = 20;
     private static final int GENERATION_PROGRESS_REQUIRED = 20_000;
-    private static final int PROGRESS_PER_FLOWING_WATER_PER_TICK = 25;
-    private static final long ENERGY_PER_GENERATION = 1;
-    private static final long SUPPLY_STOP_THRESHOLD = 5;
+    private static final int GENERATION_CHANCE_DENOMINATOR = 40;
     private int tickCounter;
+    private int generationChanceProgress;
     private int generationProgress;
     private int surroundingFlowingWater;
 
@@ -47,20 +46,29 @@ public final class WaterWheelBlockEntity extends BlockEntity {
         if (wheel.surroundingFlowingWater <= 0) {
             return;
         }
-        // The original rolls waterCount chances out of 40 each tick and adds
-        // 1000/20000 progress on success. This accumulator preserves the same
-        // average rate without random server-side timing.
-        wheel.generationProgress +=
-                wheel.surroundingFlowingWater * PROGRESS_PER_FLOWING_WATER_PER_TICK;
-        if (wheel.generationProgress < GENERATION_PROGRESS_REQUIRED) {
+        wheel.generationChanceProgress += wheel.surroundingFlowingWater;
+        if (wheel.generationChanceProgress < GENERATION_CHANCE_DENOMINATOR) {
             return;
         }
-        wheel.generationProgress -= GENERATION_PROGRESS_REQUIRED;
+        wheel.generationChanceProgress -= GENERATION_CHANCE_DENOMINATOR;
+        int tier = wheel.waterWheelTier();
+        int progressPerEvent = 1_000 * (int) Math.pow(tier, 6);
+        wheel.generationProgress += progressPerEvent;
+        if (wheel.generationProgress < GENERATION_PROGRESS_REQUIRED) {
+            wheel.setChanged();
+            return;
+        }
+        wheel.generationProgress = Math.min(
+                GENERATION_PROGRESS_REQUIRED - 1,
+                wheel.generationProgress - GENERATION_PROGRESS_REQUIRED);
+        long energyPerGeneration = (long) Math.pow(tier, 8);
+        long supplyStopThreshold = 5 * energyPerGeneration;
         for (Direction direction : Direction.values()) {
             BlockEntity adjacent = level.getBlockEntity(pos.relative(direction));
             if (adjacent instanceof MachineBlockEntity machine
-                    && machine.clayEnergyStored() < SUPPLY_STOP_THRESHOLD) {
-                machine.receiveClayEnergy(ENERGY_PER_GENERATION, false);
+                    && (machine.machineTierIndex() == 2 || machine.machineTierIndex() == 3)
+                    && machine.clayEnergyStored() < supplyStopThreshold) {
+                machine.receiveClayEnergy(energyPerGeneration, false);
             }
         }
         wheel.setChanged();
@@ -88,10 +96,25 @@ public final class WaterWheelBlockEntity extends BlockEntity {
         return surroundingFlowingWater;
     }
 
+    public long generationNumeratorPerSecond() {
+        int tier = waterWheelTier();
+        long energyPerGeneration = (long) Math.pow(tier, 8);
+        int eventsRequired = tier == 1 ? 20 : 1;
+        return (long) surroundingFlowingWater * 20 * energyPerGeneration / eventsRequired;
+    }
+
+    private int waterWheelTier() {
+        return getBlockState().getBlock() instanceof WaterWheelBlock wheel
+                ? wheel.tier().progressionIndex()
+                : 1;
+    }
+
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         tickCounter = Math.max(0, Math.min(WATER_SCAN_INTERVAL - 1, tag.getInt("TickCounter")));
+        generationChanceProgress = Math.max(
+                0, Math.min(GENERATION_CHANCE_DENOMINATOR - 1, tag.getInt("GenerationChanceProgress")));
         generationProgress =
                 Math.max(0, Math.min(GENERATION_PROGRESS_REQUIRED - 1, tag.getInt("GenerationProgress")));
         surroundingFlowingWater = Math.max(0, Math.min(27, tag.getInt("SurroundingWater")));
@@ -101,6 +124,7 @@ public final class WaterWheelBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt("TickCounter", tickCounter);
+        tag.putInt("GenerationChanceProgress", generationChanceProgress);
         tag.putInt("GenerationProgress", generationProgress);
         tag.putInt("SurroundingWater", surroundingFlowingWater);
     }

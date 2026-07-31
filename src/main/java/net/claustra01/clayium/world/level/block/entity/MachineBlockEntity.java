@@ -6,9 +6,13 @@
 package net.claustra01.clayium.world.level.block.entity;
 
 import java.util.Optional;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergyReceiver;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
+import net.claustra01.clayium.machine.MachineLayout;
+import net.claustra01.clayium.machine.MachinePerformance;
+import net.claustra01.clayium.recipe.MachineIngredient;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.recipe.MachineRecipeInput;
 import net.claustra01.clayium.recipe.MachineRecipeLookup;
@@ -33,11 +37,11 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 
-/** Server-owned runtime for the common one-input/one-output machine slice. */
+/** Server-owned runtime for the common Clayium machine recipe layouts. */
 public final class MachineBlockEntity extends BaseContainerBlockEntity implements ClayEnergyReceiver {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
-    public static final int SLOT_COUNT = 2;
+    public static final int SLOT_COUNT = MachineLayout.STORAGE_SLOT_COUNT;
     private static final int IDLE_RECIPE_RECHECK_TICKS = 20;
     // The original machines did not have a shared finite internal CE capacity.
     // Long.MAX_VALUE is an overflow guard, not a gameplay storage limit.
@@ -52,6 +56,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
     private int progress;
     private int totalProgress;
     private int recipeRecheckDelay;
+    private long activeEnergyPerTick;
     private StopReason stopReason = StopReason.NO_RECIPE;
 
     private final ContainerData menuData = new ContainerData() {
@@ -61,12 +66,14 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
                 case 0 -> progress;
                 case 1 -> totalProgress;
                 case 2 -> (int) energy.energyStored();
-                case 3 -> 0; // No finite capacity in the original machine model.
+                case 3 -> (int) (energy.energyStored() >>> 32);
                 case 4 -> stopReason.ordinal();
                 case 5 -> {
                     MachineBlock block = machineBlock();
                     yield block == null ? 0 : block.tier().progressionIndex();
                 }
+                case 6 -> (int) activeEnergyPerTick;
+                case 7 -> (int) (activeEnergyPerTick >>> 32);
                 default -> 0;
             };
         }
@@ -76,8 +83,15 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
             switch (index) {
                 case 0 -> progress = Math.max(0, value);
                 case 1 -> totalProgress = Math.max(0, value);
-                case 2 -> energy.setEnergy(value);
+                case 2 -> energy.setEnergy((energy.energyStored() & 0xFFFFFFFF00000000L)
+                        | Integer.toUnsignedLong(value));
+                case 3 -> energy.setEnergy((Integer.toUnsignedLong(value) << 32)
+                        | (energy.energyStored() & 0xFFFFFFFFL));
                 case 4 -> stopReason = StopReason.byOrdinal(value);
+                case 6 -> activeEnergyPerTick = (activeEnergyPerTick & 0xFFFFFFFF00000000L)
+                        | Integer.toUnsignedLong(value);
+                case 7 -> activeEnergyPerTick = (Integer.toUnsignedLong(value) << 32)
+                        | (activeEnergyPerTick & 0xFFFFFFFFL);
                 default -> {
                 }
             }
@@ -85,7 +99,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
         @Override
         public int getCount() {
-            return 6;
+            return 8;
         }
     };
 
@@ -104,10 +118,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             validateSlot(slot);
-            if (slot != INPUT_SLOT || stack.isEmpty()) {
+            if (!machineLayout().isInputSlot(slot) || stack.isEmpty()) {
                 return stack;
             }
-            ItemStack current = getItem(INPUT_SLOT);
+            ItemStack current = getItem(slot);
             if (!current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)) {
                 return stack;
             }
@@ -120,7 +134,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
                 if (!current.isEmpty()) {
                     next.grow(accepted);
                 }
-                setItem(INPUT_SLOT, next);
+                setItem(slot, next);
             }
             return accepted == stack.getCount()
                     ? ItemStack.EMPTY
@@ -130,17 +144,17 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             validateSlot(slot);
-            if (slot != OUTPUT_SLOT || amount <= 0) {
+            if (!machineLayout().isOutputSlot(slot, machineTier()) || amount <= 0) {
                 return ItemStack.EMPTY;
             }
-            ItemStack current = getItem(OUTPUT_SLOT);
+            ItemStack current = getItem(slot);
             int extracted = Math.min(amount, current.getCount());
             if (extracted <= 0) {
                 return ItemStack.EMPTY;
             }
             ItemStack result = current.copyWithCount(extracted);
             if (!simulate) {
-                removeItem(OUTPUT_SLOT, extracted);
+                removeItem(slot, extracted);
             }
             return result;
         }
@@ -154,7 +168,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             validateSlot(slot);
-            return slot == INPUT_SLOT;
+            return machineLayout().isInputSlot(slot);
         }
 
         private void validateSlot(int slot) {
@@ -181,23 +195,26 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
         Optional<RecipeHolder<MachineRecipe>> recipe = resolveRecipe(machineBlock);
         if (recipe.isEmpty()) {
-            stopReason = getItem(INPUT_SLOT).isEmpty() ? StopReason.NO_INPUT : StopReason.NO_RECIPE;
+            stopReason = recipeInput().isEmpty() ? StopReason.NO_INPUT : StopReason.NO_RECIPE;
             resetProcessing();
             return;
         }
 
         MachineRecipe value = recipe.get().value();
-        totalProgress = value.processingTimeTicks();
-        if (!canOutput(value.result())) {
+        totalProgress = MachinePerformance.processingTime(value, machineBlock.machineId(), machineBlock.tier());
+        long energyPerTick =
+                MachinePerformance.clayEnergyPerTick(value, machineBlock.machineId(), machineBlock.tier());
+        activeEnergyPerTick = energyPerTick;
+        if (!canOutput(value)) {
             stopReason = StopReason.OUTPUT_BLOCKED;
             return;
         }
-        if (energy.extract(value.clayEnergyPerTick(), true) != value.clayEnergyPerTick()) {
+        if (energy.extract(energyPerTick, true) != energyPerTick) {
             stopReason = StopReason.INSUFFICIENT_ENERGY;
             return;
         }
 
-        energy.extract(value.clayEnergyPerTick(), false);
+        energy.extract(energyPerTick, false);
         progress++;
         stopReason = StopReason.RUNNING;
         if (progress >= totalProgress) {
@@ -207,19 +224,25 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
     }
 
     private Optional<RecipeHolder<MachineRecipe>> resolveRecipe(MachineBlock block) {
-        if (level == null || getItem(INPUT_SLOT).isEmpty()) {
+        MachineRecipeInput input = recipeInput();
+        if (level == null || input.isEmpty()) {
             return Optional.empty();
         }
         if (activeRecipeId != null) {
             Optional<RecipeHolder<MachineRecipe>> resolved = level.getRecipeManager().getRecipeFor(
                     ClayiumRecipes.MACHINE_RECIPE_TYPE.get(),
-                    new MachineRecipeInput(getItem(INPUT_SLOT)),
+                    input,
                     level,
                     activeRecipeId);
             if (resolved.isPresent()
                     && resolved.get().value().machine().equals(block.machineId())
                     && block.tier().isAtLeast(resolved.get().value().minimumTier())) {
                 return resolved;
+            }
+            Optional<RecipeHolder<MachineRecipe>> adapted =
+                    MachineRecipeLookup.find(level, block.machineId(), block.tier(), inputStacks());
+            if (adapted.isPresent() && adapted.get().id().equals(activeRecipeId)) {
+                return adapted;
             }
             resetProcessing();
         }
@@ -229,48 +252,89 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         }
         recipeRecheckDelay = IDLE_RECIPE_RECHECK_TICKS;
         Optional<RecipeHolder<MachineRecipe>> found =
-                MachineRecipeLookup.find(level, block.machineId(), block.tier(), getItem(INPUT_SLOT));
+                MachineRecipeLookup.find(level, block.machineId(), block.tier(), inputStacks());
         found.ifPresent(holder -> {
             activeRecipeId = holder.id();
-            totalProgress = holder.value().processingTimeTicks();
+            totalProgress = MachinePerformance.processingTime(
+                    holder.value(), block.machineId(), block.tier());
         });
         return found;
     }
 
     private void complete(MachineRecipe recipe) {
-        ItemStack input = getItem(INPUT_SLOT);
-        if (input.isEmpty() || !recipe.ingredient().test(input) || !canOutput(recipe.result())) {
+        MachineRecipeInput input = recipeInput();
+        Optional<int[]> matchedSlots = recipe.matchInputSlots(input);
+        if (matchedSlots.isEmpty() || !canOutput(recipe)) {
             stopReason = StopReason.OUTPUT_BLOCKED;
             return;
         }
-        ItemStack result = recipe.result();
-        ItemStack output = getItem(OUTPUT_SLOT);
-        if (output.isEmpty()) {
-            items.set(OUTPUT_SLOT, result);
-        } else {
-            output.grow(result.getCount());
+        int[] outputSlots = machineLayout().outputSlots(machineTier());
+        List<ItemStack> results = recipe.results();
+        for (int index = 0; index < Math.min(outputSlots.length, results.size()); index++) {
+            int outputSlot = outputSlots[index];
+            ItemStack result = results.get(index);
+            ItemStack output = getItem(outputSlot);
+            if (output.isEmpty()) {
+                items.set(outputSlot, result.copy());
+            } else {
+                output.grow(result.getCount());
+            }
         }
-        input.shrink(1);
+        int[] inputSlots = machineLayout().inputSlots();
+        for (int ingredientIndex = 0; ingredientIndex < recipe.ingredients().size(); ingredientIndex++) {
+            int inventorySlot = inputSlots[matchedSlots.get()[ingredientIndex]];
+            MachineIngredient ingredient = recipe.ingredients().get(ingredientIndex);
+            getItem(inventorySlot).shrink(ingredient.count());
+        }
         resetProcessing();
         recipeRecheckDelay = 0;
     }
 
-    private boolean canOutput(ItemStack result) {
-        ItemStack output = getItem(OUTPUT_SLOT);
-        return output.isEmpty()
-                || ItemStack.isSameItemSameComponents(output, result)
-                && result.getCount() <= output.getMaxStackSize() - output.getCount();
+    private boolean canOutput(MachineRecipe recipe) {
+        int[] outputSlots = machineLayout().outputSlots(machineTier());
+        List<ItemStack> results = recipe.results();
+        for (int index = 0; index < Math.min(outputSlots.length, results.size()); index++) {
+            ItemStack result = results.get(index);
+            ItemStack output = getItem(outputSlots[index]);
+            if (!output.isEmpty()
+                    && (!ItemStack.isSameItemSameComponents(output, result)
+                            || result.getCount() > output.getMaxStackSize() - output.getCount())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void resetProcessing() {
         activeRecipeId = null;
         progress = 0;
         totalProgress = 0;
+        activeEnergyPerTick = 0;
     }
 
     @Nullable
     private MachineBlock machineBlock() {
         return getBlockState().getBlock() instanceof MachineBlock block ? block : null;
+    }
+
+    private MachineLayout machineLayout() {
+        MachineBlock block = machineBlock();
+        return block == null ? MachineLayout.SIMPLE : MachineLayout.forMachine(block.machineId());
+    }
+
+    private net.claustra01.clayium.tier.ClayTier machineTier() {
+        MachineBlock block = machineBlock();
+        return block == null ? net.claustra01.clayium.tier.ClayTier.RAW : block.tier();
+    }
+
+    private List<ItemStack> inputStacks() {
+        return java.util.Arrays.stream(machineLayout().inputSlots())
+                .mapToObj(this::getItem)
+                .toList();
+    }
+
+    private MachineRecipeInput recipeInput() {
+        return new MachineRecipeInput(inputStacks());
     }
 
     public IItemHandler itemHandler() {
@@ -286,6 +350,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         return energy.energyStored();
     }
 
+    public int machineTierIndex() {
+        return machineTier().progressionIndex();
+    }
+
     public boolean addManualEnergy() {
         if (level == null || level.isClientSide) {
             return false;
@@ -294,7 +362,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         Optional<RecipeHolder<MachineRecipe>> recipe = block == null
                 ? Optional.empty()
                 : resolveRecipe(block);
-        if (recipe.isEmpty() || !canOutput(recipe.get().value().result())) {
+        if (recipe.isEmpty() || !canOutput(recipe.get().value())) {
             return false;
         }
         long accepted = energy.receive(5, false);
@@ -315,7 +383,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return new MachineMenu(containerId, inventory, this, menuData);
+        return new MachineMenu(containerId, inventory, this, menuData, machineLayout(), machineTier());
     }
 
     @Override
@@ -335,13 +403,13 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return slot == INPUT_SLOT;
+        return machineLayout().isInputSlot(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         super.setItem(slot, stack);
-        if (slot == INPUT_SLOT) {
+        if (machineLayout().isInputSlot(slot)) {
             resetProcessing();
             recipeRecheckDelay = 0;
         }

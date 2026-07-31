@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:impure_silicon_plate"
+      }
+    },
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "clayium_neoforged:energetic_clay_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:inscriber",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 120,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_circuit"
+    }
+  ]
+}

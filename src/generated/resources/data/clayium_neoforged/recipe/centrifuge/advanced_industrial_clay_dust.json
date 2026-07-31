@@ -1,0 +1,33 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10000,
+  "ingredients": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:centrifuge",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 12,
+  "results": [
+    {
+      "count": 64,
+      "id": "clayium_neoforged:energetic_clay_dust"
+    },
+    {
+      "count": 64,
+      "id": "clayium_neoforged:clay_dust"
+    },
+    {
+      "count": 64,
+      "id": "clayium_neoforged:dense_clay_dust"
+    },
+    {
+      "count": 12,
+      "id": "clayium_neoforged:industrial_clay_dust"
+    }
+  ]
+}

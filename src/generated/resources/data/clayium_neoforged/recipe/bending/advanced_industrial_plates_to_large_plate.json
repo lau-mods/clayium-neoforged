@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 4,
+  "ingredients": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_bending_machine",
+  "minimum_tier": "dense_clay",
+  "processing_time_ticks": 8,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_industrial_clay_large_plate"
+    }
+  ]
+}

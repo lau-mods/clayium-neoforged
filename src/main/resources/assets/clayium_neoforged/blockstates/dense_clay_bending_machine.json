@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"clayium_neoforged:block/dense_clay_bending_machine"},"facing=east":{"model":"clayium_neoforged:block/dense_clay_bending_machine","y":90},"facing=south":{"model":"clayium_neoforged:block/dense_clay_bending_machine","y":180},"facing=west":{"model":"clayium_neoforged:block/dense_clay_bending_machine","y":270}}}

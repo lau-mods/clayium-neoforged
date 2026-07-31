@@ -7,11 +7,15 @@ package net.claustra01.clayium.client.gui.screens.inventory;
 
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.energy.ClayEnergyFormatter;
+import net.claustra01.clayium.machine.MachineLayout;
+import net.claustra01.clayium.machine.ClayiumMachineIds;
+import net.claustra01.clayium.machine.Phase4MachineCatalog;
 import net.claustra01.clayium.world.inventory.MachineMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -45,6 +49,29 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         inventoryLabelY = 72;
     }
 
+    public ResourceLocation machineId() {
+        if (!(title.getContents() instanceof TranslatableContents translatable)) {
+            return ClayiumMachineIds.CLAY_BENDING_MACHINE;
+        }
+        String prefix = "block." + Clayium.MODID + ".";
+        String key = translatable.getKey();
+        if (!key.startsWith(prefix)) {
+            return ClayiumMachineIds.CLAY_BENDING_MACHINE;
+        }
+        String blockId = key.substring(prefix.length());
+        if (blockId.equals("clay_bending_machine")) {
+            return ClayiumMachineIds.CLAY_BENDING_MACHINE;
+        }
+        if (blockId.equals("elemental_milling_machine")) {
+            return ClayiumMachineIds.ELEMENTAL_MILLING_MACHINE;
+        }
+        return Phase4MachineCatalog.ENTRIES.stream()
+                .filter(entry -> entry.blockId().equals(blockId))
+                .map(Phase4MachineCatalog.Entry::machineId)
+                .findFirst()
+                .orElse(ClayiumMachineIds.CLAY_BENDING_MACHINE);
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -56,12 +83,14 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
                         minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0);
                     }
                 }));
+        manualCraftButton.visible = menu.tier() <= 2;
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
         if (manualCraftButton != null) {
+            manualCraftButton.visible = menu.tier() <= 2;
             manualCraftButton.active =
                     menu.stopReason() == net.claustra01.clayium.world.level.block.entity.MachineBlockEntity.StopReason.RUNNING
                             || menu.stopReason()
@@ -99,8 +128,7 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         blitWhole(graphics, BOTTOM_LEFT, leftPos, topPos + 162, 4, 4);
         blitWhole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + 162, 4, 4);
         graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 94);
-        graphics.blit(SLOT, leftPos + 39, topPos + 30, 0, 32, 26, 26);
-        graphics.blit(SLOT, leftPos + 111, topPos + 30, 0, 32, 26, 26);
+        drawMachineSlots(graphics);
         graphics.blit(PROGRESS, leftPos + 76, topPos + 35, 0, 0, 24, 17);
         int width = menu.totalProgress() <= 0
                 ? 0
@@ -108,9 +136,41 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         graphics.blit(PROGRESS, leftPos + 76, topPos + 35, 0, 17, width, 17);
     }
 
+    private void drawMachineSlots(GuiGraphics graphics) {
+        if (menu.layout() == MachineLayout.ASSEMBLER) {
+            graphics.blit(SLOT, leftPos + 32, topPos + 35, 32, 0, 18, 18);
+            graphics.blit(SLOT, leftPos + 50, topPos + 35, 32, 32, 18, 18);
+            graphics.blit(SLOT, leftPos + 111, topPos + 30, 0, 32, 26, 26);
+            return;
+        }
+        graphics.blit(SLOT, leftPos + 39, topPos + 30, 0, 32, 26, 26);
+        if (menu.layout() == MachineLayout.CENTRIFUGE) {
+            int[] outputs = menu.layout().outputSlots(menu.machineTier());
+            for (int index = 0; index < outputs.length; index++) {
+                graphics.blit(
+                        SLOT,
+                        leftPos + 116,
+                        topPos + 35 + 18 * index - 9 * (outputs.length - 1),
+                        0,
+                        0,
+                        18,
+                        18);
+            }
+            return;
+        }
+        graphics.blit(SLOT, leftPos + 111, topPos + 30, 0, 32, 26, 26);
+    }
+
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
+        graphics.drawString(
+                font,
+                ClayEnergyFormatter.formatPerTick(menu.energyPerTick()),
+                4,
+                48,
+                0x404040,
+                false);
         graphics.drawString(
                 font,
                 Component.translatable(

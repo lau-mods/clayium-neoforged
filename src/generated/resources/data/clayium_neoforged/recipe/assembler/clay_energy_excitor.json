@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 8,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:cee_circuit"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_energy_excitor"
+    }
+  ]
+}

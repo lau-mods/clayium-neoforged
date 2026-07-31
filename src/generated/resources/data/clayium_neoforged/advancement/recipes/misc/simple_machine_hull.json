@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_component": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:industrial_clay_large_plate"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:simple_machine_hull"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_component"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:simple_machine_hull"
+    ]
+  }
+}

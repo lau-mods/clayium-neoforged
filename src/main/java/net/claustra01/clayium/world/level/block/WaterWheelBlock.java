@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergyFormatter;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
+import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -35,9 +36,15 @@ public final class WaterWheelBlock extends BaseEntityBlock {
     public static final MapCodec<WaterWheelBlock> CODEC = simpleCodec(WaterWheelBlock::new);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ACTIVE = BlockStateProperties.LIT;
+    private final ClayTier tier;
 
     public WaterWheelBlock(BlockBehaviour.Properties properties) {
+        this(properties, ClayTier.CLAY);
+    }
+
+    public WaterWheelBlock(BlockBehaviour.Properties properties, ClayTier tier) {
         super(properties);
+        this.tier = tier;
         registerDefaultState(stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ACTIVE, false));
@@ -79,11 +86,15 @@ public final class WaterWheelBlock extends BaseEntityBlock {
                             "message.clayium_neoforged.water_wheel_status",
                             wheel.surroundingFlowingWater(),
                             ClayEnergyFormatter.formatRatio(
-                                    wheel.surroundingFlowingWater(),
+                                    wheel.generationNumeratorPerSecond(),
                                     WaterWheelBlockEntity.GENERATION_RATE_DENOMINATOR)),
                     true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    public ClayTier tier() {
+        return tier;
     }
 
     @Nullable

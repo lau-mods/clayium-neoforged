@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:dense_clay_plate"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_ring"
+    }
+  },
+  "pattern": [
+    "###",
+    "#o#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:dense_clay_water_wheel_component"
+  }
+}

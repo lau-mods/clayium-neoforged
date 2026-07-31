@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_cylinder"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_bending_machine",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 4,
+  "results": [
+    {
+      "count": 2,
+      "id": "clayium_neoforged:clay_blade"
+    }
+  ]
+}

@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.energy.ClayEnergyFormatter;
+import net.claustra01.clayium.machine.MachineLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,15 +31,18 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
     private final Component title;
     private final IDrawable icon;
     private final IDrawableStatic arrow;
+    private final MachineLayout layout;
 
     public MachineRecipeCategory(
             IGuiHelper guiHelper,
             RecipeType<MachineRecipe> recipeType,
             Component title,
-            IDrawable icon) {
+            IDrawable icon,
+            MachineLayout layout) {
         this.recipeType = recipeType;
         this.title = title;
         this.icon = icon;
+        this.layout = layout;
         this.arrow = guiHelper.getRecipeArrow();
     }
 
@@ -69,12 +73,21 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
-        builder.addInputSlot(34, 24)
-                .setStandardSlotBackground()
-                .addIngredients(recipe.ingredient());
-        builder.addOutputSlot(124, 24)
-                .setOutputSlotBackground()
-                .addItemStack(recipe.result());
+        for (int index = 0; index < recipe.ingredients().size(); index++) {
+            var ingredient = recipe.ingredients().get(index);
+            int x = recipe.ingredients().size() == 1 ? 34 : 24 + index * 20;
+            builder.addInputSlot(x, 24)
+                    .setStandardSlotBackground()
+                    .addItemStacks(java.util.Arrays.stream(ingredient.ingredient().getItems())
+                            .map(stack -> stack.copyWithCount(ingredient.count()))
+                            .toList());
+        }
+        for (int index = 0; index < recipe.results().size(); index++) {
+            int y = 24 + 18 * index - 9 * (recipe.results().size() - 1);
+            builder.addOutputSlot(124, y)
+                    .setOutputSlotBackground()
+                    .addItemStack(recipe.results().get(index));
+        }
     }
 
     @Override

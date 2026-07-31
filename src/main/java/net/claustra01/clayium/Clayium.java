@@ -45,14 +45,18 @@ public final class Clayium {
             event.accept(ClayiumRegistries.CLAY_BENDING_MACHINE_ITEM);
             event.accept(ClayiumRegistries.ELEMENTAL_MILLING_MACHINE_ITEM);
             event.accept(ClayiumRegistries.CLAY_WATER_WHEEL_ITEM);
+            event.accept(ClayiumRegistries.DENSE_CLAY_WATER_WHEEL_ITEM);
             event.accept(ClayiumRegistries.CLAY_MACHINE_HULL_ITEM);
             event.accept(ClayiumRegistries.RAW_CLAY_MACHINE_HULL_ITEM);
+            ClayiumRegistries.MACHINE_HULL_BLOCK_ITEMS.values().forEach(event::accept);
+            ClayiumRegistries.PHASE4_MACHINE_ITEMS.values().forEach(event::accept);
         } else if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.accept(ClayiumRegistries.CLAY_ORE_ITEM);
             event.accept(ClayiumRegistries.DENSE_CLAY_ORE_ITEM);
             event.accept(ClayiumRegistries.LARGE_DENSE_CLAY_ORE_ITEM);
             event.accept(ClayiumRegistries.DENSE_CLAY_ITEM);
             event.accept(ClayiumRegistries.COMPRESSED_CLAY_ITEM);
+            ClayiumRegistries.COMPRESSED_CLAY_BLOCK_ITEMS.values().forEach(event::accept);
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ClayiumRegistries.CLAY_STICK);
             event.accept(ClayiumRegistries.SHORT_CLAY_STICK);
@@ -66,11 +70,11 @@ public final class Clayium {
             event.accept(ClayiumRegistries.CLAY_RING);
             event.accept(ClayiumRegistries.SMALL_CLAY_RING);
             event.accept(ClayiumRegistries.CLAY_GEAR);
-            event.accept(ClayiumRegistries.CLAY_WHEEL);
             event.accept(ClayiumRegistries.DENSE_CLAY_PLATE);
             event.accept(ClayiumRegistries.DENSE_CLAY_STICK);
             event.accept(ClayiumRegistries.DENSE_CLAY_GEAR);
             event.accept(ClayiumRegistries.CLAY_CIRCUIT_BOARD);
+            ClayiumRegistries.PHASE4_ITEMS.values().forEach(event::accept);
         } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ClayiumRegistries.RAW_CLAY_ROLLING_PIN);
             event.accept(ClayiumRegistries.RAW_CLAY_SLICER);

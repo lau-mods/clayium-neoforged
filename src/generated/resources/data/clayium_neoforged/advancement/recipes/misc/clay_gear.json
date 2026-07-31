@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_small_clay_ring": {
+    "has_component": {
       "conditions": {
         "items": [
           {
-            "items": "clayium_neoforged:small_clay_ring"
+            "items": "clayium_neoforged:short_clay_stick"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_small_clay_ring"
+      "has_component"
     ]
   ],
   "rewards": {
