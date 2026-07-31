@@ -74,7 +74,9 @@ public final class ClayFilterItem extends Item {
     @Override
     public Component getName(ItemStack stack) {
         Component name = super.getName(stack);
-        return isCopy(stack)
+        FilterSettings settings =
+                stack.getOrDefault(ClayiumDataComponents.FILTER_SETTINGS.get(), FilterSettings.DEFAULT);
+        return settings.copy()
                 ? Component.translatable("item.clayium_neoforged.filter_copy_name", name)
                 : name;
     }
