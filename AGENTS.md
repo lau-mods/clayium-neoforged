@@ -598,48 +598,9 @@ clayium_neoforged:laser_components
 
 ## 17. フィルターと設定工具
 
-旧来の細分化されたフィルターItemや設定工具は、現代的な操作体系へ統合する。
+旧来の細分化されたフィルターItemや設定工具は、本家に則してできるだけ忠実に実装する。
 
-### 17.1 Smart Filter
-
-単一のSmart Filterまたは少数のフィルター系Itemへ統合する。
-
-対応候補:
-
-* Item ID一致
-* 完全なItemStack一致
-* Data Componentを無視した一致
-* 特定Data Component一致
-* アイテムタグ
-* Mod namespace
-* 表示名
-* 耐久値範囲
-* BlockState条件
-* AND
-* OR
-* NOT
-* White list
-* Black list
-
-鉱石辞書フィルターはItem Tag Filterへ置き換える。
-
-メタデータフィルターはBlockState PropertyまたはData Component条件へ置き換える。
-
-### 17.2 Clay Configurator
-
-搬入設定、搬出設定、回転、外観変更などは、可能な限り共通設定工具へ統合する。
-
-操作は一貫させる。
-
-例:
-
-```text
-右クリック: 現在のモードを実行
-Shift + 右クリック: モード切替
-GUI操作: 詳細設定
-```
-
-操作方法はTooltipだけに依存せず、ゲーム内ガイドまたはJEI説明へ記載する。
+ただし、鉱石辞書やItem IDなど、Minecraft本体のバージョンの差異があるものは、現行バージョンの仕様に上手く適合させる。
 
 ---
 
@@ -741,7 +702,7 @@ GUI操作: 詳細設定
 * Distributor
 * Storage Container
 * Void Container
-* Smart Filter
+* Item Filter
 * Clay Configurator
 * Memory機能
 
@@ -769,6 +730,7 @@ GUI操作: 詳細設定
 * 他Modの一般的なFluid Containerと相互運用する
 * 専用カプセルなしで機械へ液体を搬入できる
 * JEIで液体量と入出力方向が確認できる
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 6までの全てのコンテンツが正常に移植されている
 
 ### Phase 7: Clay Steelと初期多ブロック
 
@@ -786,6 +748,7 @@ GUI操作: 詳細設定
 * 多ブロックがチャンク再ロード後に再構築される
 * 構成Tierが処理条件へ反映される
 * 不完全構造で処理を開始しない
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 7までの全てのコンテンツが正常に移植されている
 
 ### Phase 8: ClayiumおよびUltimate
 
@@ -806,6 +769,7 @@ GUI操作: 詳細設定
 * レーザー条件がJEIで確認できる
 * CE-FE変換で増殖ループが発生しない
 * ClayiumおよびUltimate Tierへ到達できる
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 9までの全てのコンテンツが正常に移植されている
 
 ### Phase 9: Antimatter、OEC、OPA、PAN
 
@@ -829,6 +793,7 @@ GUI操作: 詳細設定
 * CA Reactorの構造検証が決定論的である
 * 大規模構造探索がサーバー負荷上の上限を持つ
 * 全特殊RecipeがJEIで説明される
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 13までの全てのコンテンツが正常に移植されている
 
 ### Phase 10: 周辺機能
 
