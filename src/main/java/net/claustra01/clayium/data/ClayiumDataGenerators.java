@@ -61,9 +61,12 @@ public final class ClayiumDataGenerators {
                 add("message." + Clayium.MODID + ".pipe_mode", "Pipe shape: %s");
                 add("message." + Clayium.MODID + ".io_saved", "I/O configuration saved");
                 add("message." + Clayium.MODID + ".io_loaded", "I/O configuration loaded");
-                add("message." + Clayium.MODID + ".filter_applied", "Smart Filter applied");
-                add("message." + Clayium.MODID + ".filter_added", "Added %s to Smart Filter");
-                add("message." + Clayium.MODID + ".filter_mode", "Smart Filter mode: %s");
+                add("message." + Clayium.MODID + ".filter_applied", "Applied %s");
+                add("message." + Clayium.MODID + ".filter_copied", "Copied %s");
+                add("message." + Clayium.MODID + ".filter_removed", "Removed %s");
+                add("message." + Clayium.MODID + ".filter_copy_cleared", "Cleared the copy flag");
+                add("message." + Clayium.MODID + ".filter_broken", "The filter has broken! The filter size is too large!");
+                add("tooltip." + Clayium.MODID + ".filter_copy", "Copy");
                 add("jei." + Clayium.MODID + ".category.clay_work_table", "Clay Work Table");
                 add("jei." + Clayium.MODID + ".category.clay_bending_machine", "Clay Bending Machine");
                 add("jei." + Clayium.MODID + ".category.elemental_milling_machine", "Elemental Milling Machine");
@@ -180,10 +183,22 @@ public final class ClayiumDataGenerators {
         for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }
-        language.add("item." + Clayium.MODID + ".clay_configurator", "Clay IO Configurator");
-        language.add("item." + Clayium.MODID + ".piping_configurator", "Clay Piping Configurator");
+        language.add("item." + Clayium.MODID + ".clay_io_tool", "Clay IO Configurator");
+        language.add("item." + Clayium.MODID + ".clay_piping_tool", "Clay Piping Configurator");
         language.add("item." + Clayium.MODID + ".io_memory_card", "Memory Card");
-        language.add("item." + Clayium.MODID + ".smart_filter", "Smart Filter");
+        language.add("item." + Clayium.MODID + ".filter_duplicator", "Item Filter Duplicator");
+        language.add("item." + Clayium.MODID + ".filter_whitelist", "White List Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_blacklist", "Black List Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_fuzzy", "Fuzzy Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_item_tag", "Item Tag Filter");
+        language.add("item." + Clayium.MODID + ".filter_item_name", "Display Name Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_translation_key", "Translation Key Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_unique_id", "Unique ID Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_mod_id", "MOD ID Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_item_damage", "Damage Value Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_block_state", "Block State Item Filter");
+        language.add("item." + Clayium.MODID + ".filter_block_harvestable", "Harvestable Crop Filter");
+        language.add("item." + Clayium.MODID + ".filter_copy_name", "%s (Copy)");
     }
 
     private static String titleCase(String id) {
@@ -306,6 +321,31 @@ public final class ClayiumDataGenerators {
                 .save(output);
         smelt(output, ClayiumRegistries.RAW_CLAY_MACHINE_HULL.get(), ClayiumRegistries.CLAY_MACHINE_HULL.get(), 400);
 
+        filterConversion(output, ClayiumRegistries.FILTER_BLACKLIST.get(), ClayiumRegistries.FILTER_WHITELIST.get());
+        filterConversion(output, ClayiumRegistries.FILTER_WHITELIST.get(), ClayiumRegistries.FILTER_BLACKLIST.get());
+        filterConversion(output, ClayiumRegistries.FILTER_ITEM_NAME.get(), ClayiumRegistries.FILTER_TRANSLATION_KEY.get());
+        filterConversion(output, ClayiumRegistries.FILTER_TRANSLATION_KEY.get(), ClayiumRegistries.FILTER_ITEM_TAG.get());
+        filterConversion(output, ClayiumRegistries.FILTER_ITEM_TAG.get(), ClayiumRegistries.FILTER_UNIQUE_ID.get());
+        filterConversion(output, ClayiumRegistries.FILTER_UNIQUE_ID.get(), ClayiumRegistries.FILTER_MOD_ID.get());
+        filterConversion(output, ClayiumRegistries.FILTER_MOD_ID.get(), ClayiumRegistries.FILTER_ITEM_DAMAGE.get());
+        filterConversion(output, ClayiumRegistries.FILTER_ITEM_DAMAGE.get(), ClayiumRegistries.FILTER_ITEM_NAME.get());
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ClayiumRegistries.FILTER_DUPLICATOR.get())
+                .requires(ClayiumRegistries.FILTER_WHITELIST.get())
+                .requires(ClayiumRegistries.FILTER_ITEM_NAME.get())
+                .requires(ClayiumRegistries.FILTER_FUZZY.get())
+                .unlockedBy("has_filter_whitelist", has(ClayiumRegistries.FILTER_WHITELIST.get()))
+                .save(output, Clayium.id("filters/filter_duplicator"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ClayiumRegistries.FILTER_BLOCK_STATE.get())
+                .requires(ClayiumRegistries.FILTER_ITEM_DAMAGE.get())
+                .requires(Items.COMPARATOR)
+                .unlockedBy("has_filter_item_damage", has(ClayiumRegistries.FILTER_ITEM_DAMAGE.get()))
+                .save(output, Clayium.id("filters/item_damage_to_block_state"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ClayiumRegistries.FILTER_ITEM_DAMAGE.get())
+                .requires(ClayiumRegistries.FILTER_BLOCK_STATE.get())
+                .requires(Items.COMPARATOR)
+                .unlockedBy("has_filter_block_state", has(ClayiumRegistries.FILTER_BLOCK_STATE.get()))
+                .save(output, Clayium.id("filters/block_state_to_item_damage"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ClayiumRegistries.CLAY_SHOVEL.get())
                 .define('P', ClayiumRegistries.CLAY_PLATE.get()).define('S', ClayiumRegistries.CLAY_STICK.get())
                 .pattern("P").pattern("S").pattern("S")
@@ -329,6 +369,15 @@ public final class ClayiumDataGenerators {
                 .requires(outputBlock)
                 .unlockedBy("has_" + id, has(outputBlock))
                 .save(output, Clayium.id(id + "_unpack"));
+    }
+
+    private static void filterConversion(RecipeOutput output, ItemLike input, ItemLike result) {
+        String inputId = BuiltInRegistries.ITEM.getKey(input.asItem()).getPath();
+        String resultId = BuiltInRegistries.ITEM.getKey(result.asItem()).getPath();
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result)
+                .requires(input)
+                .unlockedBy("has_" + inputId, has(input))
+                .save(output, Clayium.id("filters/" + inputId + "_to_" + resultId));
     }
 
     private static void smelt(RecipeOutput output, ItemLike input, ItemLike result, int time) {

@@ -1,0 +1,1 @@
+{"parent":"minecraft:item/generated","textures":{"layer0":"clayium_neoforged:item/filter_block_harvestable"},"overrides":[{"predicate":{"minecraft:custom_model_data":1},"model":"clayium_neoforged:item/filter_block_harvestable_copy"}]}

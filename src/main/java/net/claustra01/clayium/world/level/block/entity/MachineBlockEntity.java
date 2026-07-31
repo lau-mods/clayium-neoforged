@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergyReceiver;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.energy.EnergeticClayFuel;
-import net.claustra01.clayium.data.FilterSettings;
 import net.claustra01.clayium.data.IoMemory;
 import net.claustra01.clayium.logistics.ConfigurableItemDevice;
 import net.claustra01.clayium.logistics.RelativeFace;
@@ -26,13 +25,13 @@ import net.claustra01.clayium.registry.ClayiumRecipes;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.inventory.MachineMenu;
 import net.claustra01.clayium.world.level.block.MachineBlock;
+import net.claustra01.clayium.world.item.ClayFilterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -77,7 +76,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     private StopReason stopReason = StopReason.NO_RECIPE;
     private int[] insertionRoutes = new int[]{-1, 0, -1, 1, -1, -1};
     private int[] extractionRoutes = new int[]{0, -1, -1, -1, -1, -1};
-    private final FilterSettings[] filters = new FilterSettings[6];
+    private final ItemStack[] filters = new ItemStack[6];
     private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
             new EnumMap<>(Direction.class);
@@ -211,7 +210,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     public MachineBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(), pos, state);
-        java.util.Arrays.fill(filters, FilterSettings.DEFAULT);
+        java.util.Arrays.fill(filters, ItemStack.EMPTY);
         if (machineLayout() == MachineLayout.ASSEMBLER) {
             insertionRoutes = new int[]{-1, 2, -1, 3, -1, -1};
         }
@@ -544,8 +543,13 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     @Override
-    public void setFilter(Direction direction, FilterSettings filter) {
-        filters[relativeIndex(direction)] = filter;
+    public ItemStack filter(Direction direction) {
+        return filters[relativeIndex(direction)].copy();
+    }
+
+    @Override
+    public void setFilter(Direction direction, ItemStack filter) {
+        filters[relativeIndex(direction)] = filter.isEmpty() ? ItemStack.EMPTY : filter.copyWithCount(1);
         configurationChanged();
     }
 
@@ -665,16 +669,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         extractionRoutes = loadRoutes(tag, "ExtractionRoutes", extractionRoutes, 1);
         ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
         for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
-            CompoundTag saved = savedFilters.getCompound(index);
-            ListTag ids = saved.getList("Items", Tag.TAG_STRING);
-            java.util.ArrayList<ResourceLocation> itemIds = new java.util.ArrayList<>();
-            for (int itemIndex = 0; itemIndex < ids.size(); itemIndex++) {
-                ResourceLocation id = ResourceLocation.tryParse(ids.getString(itemIndex));
-                if (id != null) {
-                    itemIds.add(id);
-                }
-            }
-            filters[index] = new FilterSettings(saved.getBoolean("Blacklist"), itemIds);
+            filters[index] = ItemStack.parseOptional(registries, savedFilters.getCompound(index));
         }
     }
 
@@ -691,13 +686,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         tag.putIntArray("InsertionRoutes", insertionRoutes);
         tag.putIntArray("ExtractionRoutes", extractionRoutes);
         ListTag savedFilters = new ListTag();
-        for (FilterSettings filter : filters) {
-            CompoundTag saved = new CompoundTag();
-            saved.putBoolean("Blacklist", filter.blacklist());
-            ListTag ids = new ListTag();
-            filter.itemIds().forEach(id -> ids.add(StringTag.valueOf(id.toString())));
-            saved.put("Items", ids);
-            savedFilters.add(saved);
+        for (ItemStack filter : filters) {
+            savedFilters.add(filter.saveOptional(registries));
         }
         tag.put("Filters", savedFilters);
     }
@@ -711,7 +701,11 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     public boolean hasFilter(Direction side) {
-        return !filters[relativeIndex(side)].equals(FilterSettings.DEFAULT);
+        return !filters[relativeIndex(side)].isEmpty();
+    }
+
+    private static boolean matchesFilter(ItemStack filter, ItemStack stack) {
+        return filter.isEmpty() || ClayFilterItem.matches(filter, stack);
     }
 
     public boolean pipeConnects(Direction side) {
@@ -849,7 +843,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             int relative = relativeIndex(side);
             int route = insertionRoutes[relative];
-            return contains(insertionSlots(route), slot) && filters[relative].matches(stack)
+            return contains(insertionSlots(route), slot) && matchesFilter(filters[relative], stack)
                     ? itemHandler.insertItem(slot, stack, simulate) : stack;
         }
 
@@ -869,7 +863,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         public boolean isItemValid(int slot, ItemStack stack) {
             int relative = relativeIndex(side);
             return contains(insertionSlots(insertionRoutes[relative]), slot)
-                    && filters[relative].matches(stack)
+                    && matchesFilter(filters[relative], stack)
                     && itemHandler.isItemValid(slot, stack);
         }
     }

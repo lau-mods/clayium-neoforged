@@ -25,18 +25,30 @@ public final class Phase5MachineRecipes {
         logisticsTier(output, "basic", "industrial_clay_plate", "industrial_clay_large_plate", "basic_circuit", 4, 100);
         logisticsTier(output, "advanced", "advanced_industrial_clay_plate", "advanced_industrial_clay_large_plate",
                 "advanced_circuit", 5, 1_000);
-        recipe(output, "phase5/tools/clay_configurator",
+        recipe(output, "phase5/tools/clay_io_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_ROLLING_PIN.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_SLICER.get(), 1)),
-                ClayiumRegistries.CLAY_CONFIGURATOR.get(), 1, 10_000, 20, 6);
+                ClayiumRegistries.CLAY_IO_TOOL.get(), 1, 10_000, 20, 6);
+        recipe(output, "phase5/tools/clay_piping_tool",
+                List.of(ingredient(ClayiumRegistries.CLAY_SPATULA.get(), 1),
+                        ingredient(ClayiumRegistries.CLAY_WRENCH.get(), 1)),
+                ClayiumRegistries.CLAY_PIPING_TOOL.get(), 1, 10_000, 20, 6);
         recipe(output, "phase5/tools/io_memory_card",
-                List.of(ingredient(ClayiumRegistries.CLAY_CONFIGURATOR.get(), 1),
+                List.of(ingredient(ClayiumRegistries.CLAY_IO_TOOL.get(), 1),
                         ingredient(item("precision_circuit"), 2)),
                 ClayiumRegistries.IO_MEMORY_CARD.get(), 1, 10_000, 20, 6);
-        recipe(output, "phase5/tools/smart_filter",
-                List.of(ingredient(item("industrial_clay_plate"), 1),
+        recipe(output, "phase5/tools/filter_whitelist",
+                List.of(ingredient(item("industrial_clay_plate"), 3),
                         ingredient(item("basic_circuit"), 1)),
-                ClayiumRegistries.SMART_FILTER.get(), 1, 8, 20, 4);
+                ClayiumRegistries.FILTER_WHITELIST.get(), 1, 8, 20, 4);
+        recipe(output, "phase5/tools/filter_item_name",
+                List.of(ingredient(item("industrial_clay_plate"), 3),
+                        ingredient(item("advanced_circuit"), 1)),
+                ClayiumRegistries.FILTER_ITEM_NAME.get(), 1, 8, 20, 4);
+        recipe(output, "phase5/tools/filter_fuzzy",
+                List.of(ingredient(item("industrial_clay_plate"), 3),
+                        ingredient(item("precision_circuit"), 1)),
+                ClayiumRegistries.FILTER_FUZZY.get(), 1, 8, 20, 4);
     }
 
     private static void logisticsTier(

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_filter_whitelist": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:filter_whitelist"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:filters/filter_whitelist_to_filter_blacklist"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_filter_whitelist"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:filters/filter_whitelist_to_filter_blacklist"
+    ]
+  }
+}

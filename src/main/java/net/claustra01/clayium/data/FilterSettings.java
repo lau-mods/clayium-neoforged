@@ -5,49 +5,70 @@ package net.claustra01.clayium.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-/** Immutable Smart Filter state. Empty entries deliberately match every item. */
-public record FilterSettings(boolean blacklist, List<ResourceLocation> itemIds) {
-    public static final FilterSettings DEFAULT = new FilterSettings(false, List.of());
+/**
+ * Persistent contents of a legacy Clayium filter.
+ *
+ * <p>The filter kind belongs to the Item ID, just as it did in 1.7.10. This
+ * component only replaces the old per-stack NBT payload.</p>
+ */
+public record FilterSettings(String pattern, List<ItemStack> entries, boolean copy) {
+    public static final int ENTRY_SLOTS = 10;
+    public static final int MAX_NESTED_FILTER_SIZE = 100;
+    public static final FilterSettings DEFAULT = new FilterSettings("", List.of(), false);
     public static final Codec<FilterSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.BOOL.optionalFieldOf("blacklist", false).forGetter(FilterSettings::blacklist),
-                    ResourceLocation.CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(FilterSettings::itemIds))
+                    Codec.STRING.optionalFieldOf("pattern", "").forGetter(FilterSettings::pattern),
+                    ItemStack.OPTIONAL_CODEC.listOf().optionalFieldOf("entries", List.of())
+                            .forGetter(FilterSettings::entries),
+                    Codec.BOOL.optionalFieldOf("copy", false).forGetter(FilterSettings::copy))
             .apply(instance, FilterSettings::new));
-    public static final StreamCodec<io.netty.buffer.ByteBuf, FilterSettings> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.BOOL,
-            FilterSettings::blacklist,
-            ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()),
-            FilterSettings::itemIds,
-            FilterSettings::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, FilterSettings> STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.STRING_UTF8,
+                    FilterSettings::pattern,
+                    ItemStack.OPTIONAL_LIST_STREAM_CODEC,
+                    FilterSettings::entries,
+                    ByteBufCodecs.BOOL,
+                    FilterSettings::copy,
+                    FilterSettings::new);
 
     public FilterSettings {
-        itemIds = List.copyOf(itemIds);
-    }
-
-    public boolean matches(ItemStack stack) {
-        if (itemIds.isEmpty()) {
-            return true;
+        pattern = pattern == null ? "" : pattern.substring(0, Math.min(pattern.length(), 128));
+        ArrayList<ItemStack> normalized = new ArrayList<>(ENTRY_SLOTS);
+        for (int index = 0; index < Math.min(entries.size(), ENTRY_SLOTS); index++) {
+            ItemStack entry = entries.get(index);
+            normalized.add(entry.isEmpty() ? ItemStack.EMPTY : entry.copyWithCount(1));
         }
-        boolean listed = itemIds.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()));
-        return blacklist != listed;
+        entries = List.copyOf(normalized);
     }
 
-    public FilterSettings add(ResourceLocation itemId) {
-        if (itemIds.contains(itemId)) {
+    public ItemStack entry(int slot) {
+        return slot >= 0 && slot < entries.size() ? entries.get(slot).copy() : ItemStack.EMPTY;
+    }
+
+    public FilterSettings withEntry(int slot, ItemStack stack) {
+        if (slot < 0 || slot >= ENTRY_SLOTS) {
             return this;
         }
-        var copy = new java.util.ArrayList<>(itemIds);
-        copy.add(itemId);
-        return new FilterSettings(blacklist, copy);
+        ArrayList<ItemStack> changed = new ArrayList<>(entries);
+        while (changed.size() <= slot) {
+            changed.add(ItemStack.EMPTY);
+        }
+        changed.set(slot, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1));
+        return new FilterSettings(pattern, changed, copy);
     }
 
-    public FilterSettings toggleListType() {
-        return new FilterSettings(!blacklist, itemIds);
+    public FilterSettings withPattern(String value) {
+        return new FilterSettings(value, entries, copy);
+    }
+
+    public FilterSettings withCopy(boolean value) {
+        return new FilterSettings(pattern, entries, value);
     }
 }

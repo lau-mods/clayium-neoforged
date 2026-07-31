@@ -23,7 +23,10 @@ import net.claustra01.clayium.world.level.block.entity.ClayWorkTableBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
-import net.claustra01.clayium.world.item.SmartFilterItem;
+import net.claustra01.clayium.world.item.ClayCraftingToolItem;
+import net.claustra01.clayium.world.item.ClayFilterItem;
+import net.claustra01.clayium.world.item.RawClayCraftingToolItem;
+import net.claustra01.clayium.world.inventory.ItemFilterMenu;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -169,21 +172,21 @@ public final class ClayiumRegistries {
     public static final DeferredItem<Item> DENSE_CLAY_STICK = item("dense_clay_stick");
     public static final DeferredItem<Item> DENSE_CLAY_GEAR = item("dense_clay_gear");
     public static final DeferredItem<Item> CLAY_CIRCUIT_BOARD = item("clay_circuit_board");
-    public static final DeferredItem<Item> RAW_CLAY_ROLLING_PIN = item("raw_clay_rolling_pin");
-    public static final DeferredItem<Item> RAW_CLAY_SLICER = item("raw_clay_slicer");
-    public static final DeferredItem<Item> RAW_CLAY_SPATULA = item("raw_clay_spatula");
+    public static final DeferredItem<Item> RAW_CLAY_ROLLING_PIN = rawTool("raw_clay_rolling_pin");
+    public static final DeferredItem<Item> RAW_CLAY_SLICER = rawTool("raw_clay_slicer");
+    public static final DeferredItem<Item> RAW_CLAY_SPATULA = rawTool("raw_clay_spatula");
     public static final DeferredItem<Item> CLAY_ROLLING_PIN = ITEMS.register(
-            "clay_rolling_pin", () -> new ClayConfiguratorItem(
-                    new Item.Properties().durability(60), ClayConfiguratorItem.Mode.INSERT));
+            "clay_rolling_pin", () -> new ClayCraftingToolItem(
+                    new Item.Properties().durability(60), ClayConfiguratorItem.Mode.INSERT, 4));
     public static final DeferredItem<Item> CLAY_SLICER = ITEMS.register(
-            "clay_slicer", () -> new ClayConfiguratorItem(
-                    new Item.Properties().durability(60), ClayConfiguratorItem.Mode.EXTRACT));
+            "clay_slicer", () -> new ClayCraftingToolItem(
+                    new Item.Properties().durability(60), ClayConfiguratorItem.Mode.EXTRACT, 3));
     public static final DeferredItem<Item> CLAY_SPATULA = ITEMS.register(
-            "clay_spatula", () -> new ClayConfiguratorItem(
-                    new Item.Properties().durability(36), ClayConfiguratorItem.Mode.PIPE));
+            "clay_spatula", () -> new ClayCraftingToolItem(
+                    new Item.Properties().durability(36), ClayConfiguratorItem.Mode.PIPE, 2));
     public static final DeferredItem<Item> CLAY_WRENCH = ITEMS.register(
             "clay_wrench", () -> new ClayConfiguratorItem(
-                    new Item.Properties().durability(128), ClayConfiguratorItem.Mode.ROTATE));
+                    new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.ROTATE));
     public static final DeferredItem<ShovelItem> CLAY_SHOVEL = ITEMS.register(
             "clay_shovel",
             () -> new ShovelItem(
@@ -195,23 +198,41 @@ public final class ClayiumRegistries {
                     Tiers.STONE,
                     new Item.Properties().attributes(PickaxeItem.createAttributes(Tiers.STONE, 1.0F, -2.8F))));
     public static final Map<String, DeferredItem<Item>> PHASE4_ITEMS = registerPhase4Items();
-    public static final DeferredItem<ClayConfiguratorItem> CLAY_CONFIGURATOR = ITEMS.register(
-            "clay_configurator", () -> new ClayConfiguratorItem(
+    public static final DeferredItem<ClayConfiguratorItem> CLAY_IO_TOOL = ITEMS.register(
+            "clay_io_tool", () -> new ClayConfiguratorItem(
                     new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.IO_COMBINED));
-    public static final DeferredItem<ClayConfiguratorItem> PIPING_CONFIGURATOR = ITEMS.register(
-            "piping_configurator", () -> new ClayConfiguratorItem(
+    public static final DeferredItem<ClayConfiguratorItem> CLAY_PIPING_TOOL = ITEMS.register(
+            "clay_piping_tool", () -> new ClayConfiguratorItem(
                     new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.PIPE_COMBINED));
     public static final DeferredItem<ClayConfiguratorItem> IO_MEMORY_CARD = ITEMS.register(
             "io_memory_card", () -> new ClayConfiguratorItem(new Item.Properties()
                     .stacksTo(1)
                     .component(ClayiumDataComponents.IO_MEMORY.get(), net.claustra01.clayium.data.IoMemory.DEFAULT),
                     ClayConfiguratorItem.Mode.MEMORY));
-    public static final DeferredItem<SmartFilterItem> SMART_FILTER = ITEMS.register(
-            "smart_filter", () -> new SmartFilterItem(new Item.Properties()
-                    .stacksTo(1)
-                    .component(
-                            ClayiumDataComponents.FILTER_SETTINGS.get(),
-                            net.claustra01.clayium.data.FilterSettings.DEFAULT)));
+    public static final DeferredItem<ClayFilterItem> FILTER_DUPLICATOR =
+            filter("filter_duplicator", ClayFilterItem.Kind.DUPLICATOR);
+    public static final DeferredItem<ClayFilterItem> FILTER_WHITELIST =
+            filter("filter_whitelist", ClayFilterItem.Kind.WHITELIST);
+    public static final DeferredItem<ClayFilterItem> FILTER_BLACKLIST =
+            filter("filter_blacklist", ClayFilterItem.Kind.BLACKLIST);
+    public static final DeferredItem<ClayFilterItem> FILTER_FUZZY =
+            filter("filter_fuzzy", ClayFilterItem.Kind.FUZZY);
+    public static final DeferredItem<ClayFilterItem> FILTER_ITEM_TAG =
+            filter("filter_item_tag", ClayFilterItem.Kind.ITEM_TAG);
+    public static final DeferredItem<ClayFilterItem> FILTER_ITEM_NAME =
+            filter("filter_item_name", ClayFilterItem.Kind.ITEM_NAME);
+    public static final DeferredItem<ClayFilterItem> FILTER_TRANSLATION_KEY =
+            filter("filter_translation_key", ClayFilterItem.Kind.TRANSLATION_KEY);
+    public static final DeferredItem<ClayFilterItem> FILTER_UNIQUE_ID =
+            filter("filter_unique_id", ClayFilterItem.Kind.UNIQUE_ID);
+    public static final DeferredItem<ClayFilterItem> FILTER_MOD_ID =
+            filter("filter_mod_id", ClayFilterItem.Kind.MOD_ID);
+    public static final DeferredItem<ClayFilterItem> FILTER_ITEM_DAMAGE =
+            filter("filter_item_damage", ClayFilterItem.Kind.ITEM_DAMAGE);
+    public static final DeferredItem<ClayFilterItem> FILTER_BLOCK_STATE =
+            filter("filter_block_state", ClayFilterItem.Kind.BLOCK_STATE);
+    public static final DeferredItem<ClayFilterItem> FILTER_BLOCK_HARVESTABLE =
+            filter("filter_block_harvestable", ClayFilterItem.Kind.BLOCK_HARVESTABLE);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayWorkTableBlockEntity>>
             CLAY_WORK_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
                     "clay_work_table",
@@ -271,6 +292,10 @@ public final class ClayiumRegistries {
             MENU_TYPES.register(
                     "logistics",
                     () -> IMenuTypeExtension.create(LogisticsMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<ItemFilterMenu>> ITEM_FILTER_MENU =
+            MENU_TYPES.register(
+                    "item_filter",
+                    () -> new MenuType<>(ItemFilterMenu::new, FeatureFlags.DEFAULT_FLAGS));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLAYIUM_CREATIVE_TAB =
             CREATIVE_MODE_TABS.register(
                     "clayium",
@@ -392,6 +417,20 @@ public final class ClayiumRegistries {
 
     private static DeferredItem<Item> item(String name) {
         return ITEMS.register(name, () -> new Item(new Item.Properties()));
+    }
+
+    private static DeferredItem<Item> rawTool(String name) {
+        return ITEMS.register(name, () -> new RawClayCraftingToolItem(new Item.Properties()));
+    }
+
+    private static DeferredItem<ClayFilterItem> filter(String name, ClayFilterItem.Kind kind) {
+        return ITEMS.register(
+                name,
+                () -> new ClayFilterItem(new Item.Properties()
+                        .stacksTo(1)
+                        .component(
+                                ClayiumDataComponents.FILTER_SETTINGS.get(),
+                                net.claustra01.clayium.data.FilterSettings.DEFAULT), kind));
     }
 
     private static DeferredItem<Item> durableItem(String name, int durability) {

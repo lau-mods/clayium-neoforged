@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_spatula"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_wrench"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "precision",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_piping_tool"
+    }
+  ]
+}

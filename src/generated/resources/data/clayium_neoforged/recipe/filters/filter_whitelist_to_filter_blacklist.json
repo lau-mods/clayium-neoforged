@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:filter_whitelist"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:filter_blacklist"
+  }
+}

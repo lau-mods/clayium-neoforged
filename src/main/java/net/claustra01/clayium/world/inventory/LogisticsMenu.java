@@ -229,7 +229,7 @@ public final class LogisticsMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(stack, machineMenuSlots, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (stack.is(ClayiumRegistries.SMART_FILTER.get()) && filterMenuSlots > 0) {
+        } else if (filterMenuSlots > 0) {
             if (!moveItemStackTo(stack, filterMenuStart, filterMenuStart + filterMenuSlots, false)) {
                 return ItemStack.EMPTY;
             }

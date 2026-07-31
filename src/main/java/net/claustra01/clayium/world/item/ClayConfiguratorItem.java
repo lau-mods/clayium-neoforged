@@ -13,7 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 
 /** Original Clayium I/O tools and their combined variants. */
-public final class ClayConfiguratorItem extends Item {
+public class ClayConfiguratorItem extends Item {
     public enum Mode {
         INSERT,
         EXTRACT,

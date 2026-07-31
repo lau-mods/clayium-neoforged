@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_filter_mod_id": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:filter_mod_id"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:filters/filter_mod_id_to_filter_item_damage"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_filter_mod_id"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:filters/filter_mod_id_to_filter_item_damage"
+    ]
+  }
+}

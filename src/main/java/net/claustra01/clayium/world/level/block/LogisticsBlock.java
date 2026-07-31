@@ -18,7 +18,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
-import net.claustra01.clayium.world.item.SmartFilterItem;
+import net.claustra01.clayium.world.item.ClayFilterItem;
+import net.claustra01.clayium.world.item.RawClayCraftingToolItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.BlockGetter;
@@ -121,7 +122,9 @@ public final class LogisticsBlock extends BaseEntityBlock {
             Player player,
             InteractionHand hand,
             BlockHitResult hit) {
-        if (stack.getItem() instanceof ClayConfiguratorItem || stack.getItem() instanceof SmartFilterItem) {
+        if (stack.getItem() instanceof ClayConfiguratorItem
+                || stack.getItem() instanceof ClayFilterItem
+                || stack.getItem() instanceof RawClayCraftingToolItem) {
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

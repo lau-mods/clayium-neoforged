@@ -1,1 +1,0 @@
-{"type":"clayium_neoforged:machine","clay_energy_per_tick":10000,"ingredients":[{"count":1,"ingredient":{"item":"clayium_neoforged:clay_rolling_pin"}},{"count":1,"ingredient":{"item":"clayium_neoforged:clay_slicer"}}],"machine":"clayium_neoforged:assembler","minimum_tier":"precision","processing_time_ticks":20,"results":[{"count":1,"id":"clayium_neoforged:clay_configurator"}]}

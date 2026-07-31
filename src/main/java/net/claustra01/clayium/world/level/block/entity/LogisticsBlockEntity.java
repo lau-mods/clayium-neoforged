@@ -4,13 +4,12 @@
 package net.claustra01.clayium.world.level.block.entity;
 
 import java.util.EnumMap;
-import net.claustra01.clayium.data.FilterSettings;
 import net.claustra01.clayium.data.IoMemory;
 import net.claustra01.clayium.logistics.LogisticsKind;
 import net.claustra01.clayium.logistics.ConfigurableItemDevice;
 import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.registry.ClayiumRegistries;
-import net.claustra01.clayium.registry.ClayiumDataComponents;
+import net.claustra01.clayium.world.item.ClayFilterItem;
 import net.claustra01.clayium.world.inventory.LogisticsMenu;
 import net.claustra01.clayium.world.level.block.LogisticsBlock;
 import net.minecraft.core.BlockPos;
@@ -19,9 +18,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -49,7 +46,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     private NonNullList<ItemStack> items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
     private int[] insertionRoutes = new int[]{-1, -1, -1, 0, -1, -1};
     private int[] extractionRoutes = new int[]{-1, -1, -1, -1, -1, -1};
-    private final FilterSettings[] filters = new FilterSettings[6];
+    private final ItemStack[] filters = new ItemStack[6];
     private final EnumMap<Direction, IItemHandler> handlers = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
             new EnumMap<>(Direction.class);
@@ -59,7 +56,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     public LogisticsBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(), pos, state);
-        java.util.Arrays.fill(filters, FilterSettings.DEFAULT);
+        java.util.Arrays.fill(filters, ItemStack.EMPTY);
         LogisticsKind initialKind = state.getBlock() instanceof LogisticsBlock block
                 ? block.kind()
                 : LogisticsKind.BUFFER;
@@ -230,8 +227,13 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         return true;
     }
 
-    public void setFilter(Direction direction, FilterSettings filter) {
-        filters[relativeIndex(direction)] = filter;
+    public ItemStack filter(Direction direction) {
+        return filters[relativeIndex(direction)].copy();
+    }
+
+    @Override
+    public void setFilter(Direction direction, ItemStack filter) {
+        filters[relativeIndex(direction)] = filter.isEmpty() ? ItemStack.EMPTY : filter.copyWithCount(1);
         configurationChanged();
     }
 
@@ -323,9 +325,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (filterStack.isEmpty()) {
             return true;
         }
-        FilterSettings settings = filterStack.getOrDefault(
-                ClayiumDataComponents.FILTER_SETTINGS.get(), FilterSettings.DEFAULT);
-        return settings.matches(stack);
+        return ClayFilterItem.isFilter(filterStack)
+                ? ClayFilterItem.matches(filterStack, stack)
+                : ItemStack.isSameItemSameComponents(filterStack, stack);
     }
 
     private boolean matchesContainerFilter(ItemStack stack) {
@@ -336,9 +338,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (filterStack.isEmpty()) {
             return true;
         }
-        return filterStack
-                .getOrDefault(ClayiumDataComponents.FILTER_SETTINGS.get(), FilterSettings.DEFAULT)
-                .matches(stack);
+        return ClayFilterItem.isFilter(filterStack)
+                ? ClayFilterItem.matches(filterStack, stack)
+                : ItemStack.isSameItemSameComponents(filterStack, stack);
     }
 
     private int transferLimit() {
@@ -392,7 +394,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
         if (isFilterSlot(slot)) {
-            return stack.is(ClayiumRegistries.SMART_FILTER.get());
+            return true;
         }
         if (kind() == LogisticsKind.STORAGE_CONTAINER) {
             ItemStack current = items.get(STORAGE_CONTENT_SLOT);
@@ -521,16 +523,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         distributorSide = Math.floorMod(tag.getInt("DistributorSide"), 6);
         ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
         for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
-            CompoundTag saved = savedFilters.getCompound(index);
-            ListTag ids = saved.getList("Items", Tag.TAG_STRING);
-            java.util.ArrayList<ResourceLocation> itemIds = new java.util.ArrayList<>();
-            for (int itemIndex = 0; itemIndex < ids.size(); itemIndex++) {
-                ResourceLocation id = ResourceLocation.tryParse(ids.getString(itemIndex));
-                if (id != null) {
-                    itemIds.add(id);
-                }
-            }
-            filters[index] = new FilterSettings(saved.getBoolean("Blacklist"), itemIds);
+            filters[index] = ItemStack.parseOptional(registries, savedFilters.getCompound(index));
         }
     }
 
@@ -545,13 +538,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         tag.putIntArray("ExtractionRoutes", extractionRoutes);
         tag.putInt("DistributorSide", distributorSide);
         ListTag savedFilters = new ListTag();
-        for (FilterSettings filter : filters) {
-            CompoundTag saved = new CompoundTag();
-            saved.putBoolean("Blacklist", filter.blacklist());
-            ListTag ids = new ListTag();
-            filter.itemIds().forEach(id -> ids.add(StringTag.valueOf(id.toString())));
-            saved.put("Items", ids);
-            savedFilters.add(saved);
+        for (ItemStack filter : filters) {
+            savedFilters.add(filter.saveOptional(registries));
         }
         tag.put("Filters", savedFilters);
     }
@@ -565,7 +553,11 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     }
 
     public boolean hasFilter(Direction side) {
-        return !filters[relativeIndex(side)].equals(FilterSettings.DEFAULT);
+        return !filters[relativeIndex(side)].isEmpty();
+    }
+
+    private static boolean matchesFilter(ItemStack filter, ItemStack stack) {
+        return filter.isEmpty() || ClayFilterItem.matches(filter, stack);
     }
 
     public boolean isPassivePipeEndpoint() {
@@ -705,7 +697,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             boolean passive = isPassivePipeEndpoint();
             if (stack.isEmpty()
                     || !passive && !routeContains(insertionRoutes[relativeIndex(side)], slot)
-                    || !filters[relativeIndex(side)].matches(stack)
+                    || !matchesFilter(filters[relativeIndex(side)], stack)
                     || !matchesContainerFilter(stack)
                     || !matchesTrackFilter(slot, stack)) {
                 return stack;
@@ -758,7 +750,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             validate(slot);
             boolean passive = isPassivePipeEndpoint();
             if ((!passive && !routeContains(extractionRoutes[relativeIndex(side)], slot))
-                    || !filters[relativeIndex(side)].matches(getItem(slot))
+                    || !matchesFilter(filters[relativeIndex(side)], getItem(slot))
                     || amount <= 0) {
                 return ItemStack.EMPTY;
             }
@@ -787,7 +779,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             validate(slot);
             return (isPassivePipeEndpoint()
                             || routeContains(insertionRoutes[relativeIndex(side)], slot))
-                    && filters[relativeIndex(side)].matches(stack)
+                    && matchesFilter(filters[relativeIndex(side)], stack)
                     && matchesContainerFilter(stack)
                     && matchesTrackFilter(slot, stack);
         }

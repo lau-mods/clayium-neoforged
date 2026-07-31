@@ -3,9 +3,9 @@
  */
 package net.claustra01.clayium.logistics;
 
-import net.claustra01.clayium.data.FilterSettings;
 import net.claustra01.clayium.data.IoMemory;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 
 public interface ConfigurableItemDevice {
     int cycleInsertRoute(Direction direction);
@@ -22,7 +22,9 @@ public interface ConfigurableItemDevice {
 
     boolean hasFilter(Direction direction);
 
-    void setFilter(Direction direction, FilterSettings filter);
+    ItemStack filter(Direction direction);
+
+    void setFilter(Direction direction, ItemStack filter);
 
     IoMemory saveIoMemory();
 
