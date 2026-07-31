@@ -15,6 +15,7 @@ import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -166,7 +167,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         ResourceLocation texture = Clayium.id("block/" + textureName);
         var sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(texture);
         VertexConsumer consumer = sprite.wrap(
-                buffers.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS)));
+                buffers.getBuffer(Sheets.cutoutBlockSheet()));
         float min = pipe ? 5.0F / 16.0F : 0.001F;
         float max = pipe ? 11.0F / 16.0F : 0.999F;
         float low = -0.02F;

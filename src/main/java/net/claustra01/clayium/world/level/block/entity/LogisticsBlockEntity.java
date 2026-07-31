@@ -571,7 +571,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public boolean isPassivePipeEndpoint() {
         return kind() == LogisticsKind.BUFFER
                 || kind() == LogisticsKind.MULTITRACK_BUFFER
-                || kind() == LogisticsKind.STORAGE_CONTAINER;
+                || kind() == LogisticsKind.STORAGE_CONTAINER
+                || kind() == LogisticsKind.VOID_CONTAINER;
     }
 
     public boolean pipeConnects(Direction side) {
@@ -701,8 +702,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             validate(slot);
+            boolean passive = isPassivePipeEndpoint();
             if (stack.isEmpty()
-                    || !routeContains(insertionRoutes[relativeIndex(side)], slot)
+                    || !passive && !routeContains(insertionRoutes[relativeIndex(side)], slot)
                     || !filters[relativeIndex(side)].matches(stack)
                     || !matchesContainerFilter(stack)
                     || !matchesTrackFilter(slot, stack)) {
@@ -754,7 +756,10 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             validate(slot);
-            if (!routeContains(extractionRoutes[relativeIndex(side)], slot) || amount <= 0) {
+            boolean passive = isPassivePipeEndpoint();
+            if ((!passive && !routeContains(extractionRoutes[relativeIndex(side)], slot))
+                    || !filters[relativeIndex(side)].matches(getItem(slot))
+                    || amount <= 0) {
                 return ItemStack.EMPTY;
             }
             ItemStack current = getItem(slot);
@@ -780,8 +785,10 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             validate(slot);
-            return routeContains(insertionRoutes[relativeIndex(side)], slot)
+            return (isPassivePipeEndpoint()
+                            || routeContains(insertionRoutes[relativeIndex(side)], slot))
                     && filters[relativeIndex(side)].matches(stack)
+                    && matchesContainerFilter(stack)
                     && matchesTrackFilter(slot, stack);
         }
 
