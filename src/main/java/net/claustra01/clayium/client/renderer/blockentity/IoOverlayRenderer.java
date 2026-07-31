@@ -114,17 +114,23 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         VertexConsumer consumer = sprite.wrap(
                 buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS)));
         quad(poses, consumer, light, Direction.NORTH,
-                minX, minY, minZ, maxX, minY, minZ, maxX, maxY, minZ, minX, maxY, minZ);
+                minX, minY, minZ, maxX, minY, minZ, maxX, maxY, minZ, minX, maxY, minZ,
+                minX, maxX, 1 - minY, 1 - maxY);
         quad(poses, consumer, light, Direction.SOUTH,
-                maxX, minY, maxZ, minX, minY, maxZ, minX, maxY, maxZ, maxX, maxY, maxZ);
+                maxX, minY, maxZ, minX, minY, maxZ, minX, maxY, maxZ, maxX, maxY, maxZ,
+                1 - maxX, 1 - minX, 1 - minY, 1 - maxY);
         quad(poses, consumer, light, Direction.WEST,
-                minX, minY, maxZ, minX, minY, minZ, minX, maxY, minZ, minX, maxY, maxZ);
+                minX, minY, maxZ, minX, minY, minZ, minX, maxY, minZ, minX, maxY, maxZ,
+                1 - maxZ, 1 - minZ, 1 - minY, 1 - maxY);
         quad(poses, consumer, light, Direction.EAST,
-                maxX, minY, minZ, maxX, minY, maxZ, maxX, maxY, maxZ, maxX, maxY, minZ);
+                maxX, minY, minZ, maxX, minY, maxZ, maxX, maxY, maxZ, maxX, maxY, minZ,
+                minZ, maxZ, 1 - minY, 1 - maxY);
         quad(poses, consumer, light, Direction.DOWN,
-                minX, minY, minZ, maxX, minY, minZ, maxX, minY, maxZ, minX, minY, maxZ);
+                minX, minY, minZ, maxX, minY, minZ, maxX, minY, maxZ, minX, minY, maxZ,
+                minX, maxX, minZ, maxZ);
         quad(poses, consumer, light, Direction.UP,
-                minX, maxY, maxZ, maxX, maxY, maxZ, maxX, maxY, minZ, minX, maxY, minZ);
+                minX, maxY, maxZ, maxX, maxY, maxZ, maxX, maxY, minZ, minX, maxY, minZ,
+                minX, maxX, 1 - maxZ, 1 - minZ);
     }
 
     private static boolean showsPipeOverlay() {
@@ -160,7 +166,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         ResourceLocation texture = Clayium.id("block/" + textureName);
         var sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(texture);
         VertexConsumer consumer = sprite.wrap(
-                buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS)));
+                buffers.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS)));
         float min = pipe ? 5.0F / 16.0F : 0.001F;
         float max = pipe ? 11.0F / 16.0F : 0.999F;
         float low = -0.02F;
@@ -194,6 +200,22 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         vertex(poses, consumer, light, normal, x1, y1, z1, 1, 1);
         vertex(poses, consumer, light, normal, x2, y2, z2, 1, 0);
         vertex(poses, consumer, light, normal, x3, y3, z3, 0, 0);
+    }
+
+    private static void quad(
+            PoseStack poses,
+            VertexConsumer consumer,
+            int light,
+            Direction normal,
+            float x0, float y0, float z0,
+            float x1, float y1, float z1,
+            float x2, float y2, float z2,
+            float x3, float y3, float z3,
+            float u0, float u1, float v0, float v1) {
+        vertex(poses, consumer, light, normal, x0, y0, z0, u0, v0);
+        vertex(poses, consumer, light, normal, x1, y1, z1, u1, v0);
+        vertex(poses, consumer, light, normal, x2, y2, z2, u1, v1);
+        vertex(poses, consumer, light, normal, x3, y3, z3, u0, v1);
     }
 
     private static void vertex(

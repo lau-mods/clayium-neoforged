@@ -42,11 +42,11 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     public MachineScreen(MachineMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 166;
+        imageHeight = menu.machineHeight() + 94;
         titleLabelX = 6;
         titleLabelY = 6;
         inventoryLabelX = 8;
-        inventoryLabelY = 72;
+        inventoryLabelY = menu.machineHeight();
     }
 
     public ResourceLocation machineId() {
@@ -118,16 +118,17 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        tile(graphics, BACK, leftPos + 4, topPos + 4, 168, 158, 8, 8);
+        int machineHeight = menu.machineHeight();
+        tile(graphics, BACK, leftPos + 4, topPos + 4, 168, imageHeight - 8, 8, 8);
         tile(graphics, TOP, leftPos + 4, topPos, 168, 4, 1, 4);
-        tile(graphics, BOTTOM, leftPos + 4, topPos + 162, 168, 4, 1, 4);
-        tile(graphics, LEFT, leftPos, topPos + 4, 4, 158, 4, 1);
-        tile(graphics, RIGHT, leftPos + 172, topPos + 4, 4, 158, 4, 1);
+        tile(graphics, BOTTOM, leftPos + 4, topPos + imageHeight - 4, 168, 4, 1, 4);
+        tile(graphics, LEFT, leftPos, topPos + 4, 4, imageHeight - 8, 4, 1);
+        tile(graphics, RIGHT, leftPos + 172, topPos + 4, 4, imageHeight - 8, 4, 1);
         blitWhole(graphics, TOP_LEFT, leftPos, topPos, 4, 4);
         blitWhole(graphics, TOP_RIGHT, leftPos + 172, topPos, 4, 4);
-        blitWhole(graphics, BOTTOM_LEFT, leftPos, topPos + 162, 4, 4);
-        blitWhole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + 162, 4, 4);
-        graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 94);
+        blitWhole(graphics, BOTTOM_LEFT, leftPos, topPos + imageHeight - 4, 4, 4);
+        blitWhole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + imageHeight - 4, 4, 4);
+        graphics.blit(PLAYER_INVENTORY, leftPos, topPos + machineHeight, 0, 0, 176, 94);
         drawMachineSlots(graphics);
         graphics.blit(PROGRESS, leftPos + 76, topPos + 35, 0, 0, 24, 17);
         int width = menu.totalProgress() <= 0
@@ -137,13 +138,9 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     }
 
     private void drawMachineSlots(GuiGraphics graphics) {
-        if (menu.tier() >= 4) {
-            // Container slots point at the item origin; the original 18px frame surrounds it.
-            graphics.blit(SLOT, leftPos + 145, topPos + 52, 0, 0, 18, 18);
-        }
         if (menu.layout() == MachineLayout.ASSEMBLER) {
-            graphics.blit(SLOT, leftPos + 32, topPos + 35, 32, 0, 18, 18);
-            graphics.blit(SLOT, leftPos + 50, topPos + 35, 32, 32, 18, 18);
+            graphics.blit(SLOT, leftPos + 31, topPos + 34, 32, 0, 18, 18);
+            graphics.blit(SLOT, leftPos + 49, topPos + 34, 32, 32, 18, 18);
             graphics.blit(SLOT, leftPos + 111, topPos + 30, 0, 32, 26, 26);
             return;
         }
@@ -153,8 +150,8 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
             for (int index = 0; index < outputs.length; index++) {
                 graphics.blit(
                         SLOT,
-                        leftPos + 116,
-                        topPos + 35 + 18 * index - 9 * (outputs.length - 1),
+                        leftPos + 115,
+                        topPos + 34 + 18 * index - 9 * (outputs.length - 1),
                         0,
                         0,
                         18,
@@ -172,7 +169,7 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
                 font,
                 ClayEnergyFormatter.formatPerTick(menu.energyPerTick()),
                 4,
-                48,
+                menu.machineHeight() - 24,
                 0x404040,
                 false);
         graphics.drawString(
@@ -181,11 +178,12 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
                         "gui.clayium_neoforged.energy",
                         ClayEnergyFormatter.format(menu.energy())),
                 4,
-                60,
+                menu.machineHeight() - 12,
                 0x404040,
                 false);
         Component tier = Component.translatable("gui.clayium_neoforged.tier", menu.tier());
-        graphics.drawString(font, tier, imageWidth - 6 - font.width(tier), 60, 0x404040, false);
+        graphics.drawString(
+                font, tier, imageWidth - 6 - font.width(tier), menu.machineHeight() - 12, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 

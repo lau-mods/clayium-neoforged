@@ -42,6 +42,10 @@ import net.minecraft.server.level.ServerLevel;
 public final class LogisticsBlockEntity extends BaseContainerBlockEntity implements ConfigurableItemDevice {
     public static final int INVENTORY_SLOTS = 54;
     public static final int MAX_SLOTS = 60;
+    public static final int STORAGE_CONTENT_SLOT = 0;
+    public static final int STORAGE_INPUT_SLOT = 1;
+    public static final int CONTAINER_FILTER_SLOT = INVENTORY_SLOTS;
+    public static final long STORAGE_CAPACITY = 65_536L;
     private NonNullList<ItemStack> items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
     private int[] insertionRoutes = new int[]{-1, -1, -1, 0, -1, -1};
     private int[] extractionRoutes = new int[]{-1, -1, -1, -1, -1, -1};
@@ -52,7 +56,6 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     private int transferCooldown;
     private int distributorSide;
     private long storedCount;
-    private static final long STORAGE_CAPACITY = 65_536L;
 
     public LogisticsBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(), pos, state);
@@ -261,7 +264,13 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     public int filterSlots() {
         LogisticsBlock block = logisticsBlock();
-        return block == null ? 0 : block.kind().tracks(block.tier());
+        if (block == null) {
+            return 0;
+        }
+        return block.kind() == LogisticsKind.STORAGE_CONTAINER
+                        || block.kind() == LogisticsKind.VOID_CONTAINER
+                ? 1
+                : block.kind().tracks(block.tier());
     }
 
     public int inventoryColumns() {
@@ -276,6 +285,19 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     public boolean isMultitrack() {
         return kind() == LogisticsKind.MULTITRACK_BUFFER;
+    }
+
+    public LogisticsKind kindValue() {
+        return kind();
+    }
+
+    public int tierValue() {
+        LogisticsBlock block = logisticsBlock();
+        return block == null ? 4 : block.tier();
+    }
+
+    public long storedCount() {
+        return storedCount;
     }
 
     public int filterSlotIndex(int filter) {
@@ -304,6 +326,19 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         FilterSettings settings = filterStack.getOrDefault(
                 ClayiumDataComponents.FILTER_SETTINGS.get(), FilterSettings.DEFAULT);
         return settings.matches(stack);
+    }
+
+    private boolean matchesContainerFilter(ItemStack stack) {
+        if (kind() != LogisticsKind.STORAGE_CONTAINER && kind() != LogisticsKind.VOID_CONTAINER) {
+            return true;
+        }
+        ItemStack filterStack = items.get(CONTAINER_FILTER_SLOT);
+        if (filterStack.isEmpty()) {
+            return true;
+        }
+        return filterStack
+                .getOrDefault(ClayiumDataComponents.FILTER_SETTINGS.get(), FilterSettings.DEFAULT)
+                .matches(stack);
     }
 
     private int transferLimit() {
@@ -359,23 +394,50 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (isFilterSlot(slot)) {
             return stack.is(ClayiumRegistries.SMART_FILTER.get());
         }
+        if (kind() == LogisticsKind.STORAGE_CONTAINER) {
+            ItemStack current = items.get(STORAGE_CONTENT_SLOT);
+            return slot == STORAGE_INPUT_SLOT
+                    && matchesContainerFilter(stack)
+                    && (current.isEmpty() || ItemStack.isSameItemSameComponents(current, stack))
+                    && storedCount < STORAGE_CAPACITY;
+        }
+        if (kind() == LogisticsKind.VOID_CONTAINER) {
+            return slot == STORAGE_CONTENT_SLOT && matchesContainerFilter(stack);
+        }
         return slot >= 0
                 && slot < activeSlots()
-                && kind() != LogisticsKind.VOID_CONTAINER
                 && matchesTrackFilter(slot, stack);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
+        if (kind() == LogisticsKind.VOID_CONTAINER && slot == STORAGE_CONTENT_SLOT) {
+            items.set(slot, matchesContainerFilter(stack) ? ItemStack.EMPTY : stack);
+            setChanged();
+            return;
+        }
         if (kind() != LogisticsKind.STORAGE_CONTAINER) {
             super.setItem(slot, stack);
             return;
         }
-        if (slot != 0) {
+        if (slot == CONTAINER_FILTER_SLOT) {
+            super.setItem(slot, stack);
             return;
         }
-        items.set(0, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(Math.min(stack.getCount(), stack.getMaxStackSize())));
-        storedCount = stack.isEmpty() ? 0 : stack.getCount();
+        if (slot != STORAGE_INPUT_SLOT || stack.isEmpty() || !canPlaceItem(slot, stack)) {
+            return;
+        }
+        int accepted = (int) Math.min(stack.getCount(), STORAGE_CAPACITY - storedCount);
+        if (items.get(STORAGE_CONTENT_SLOT).isEmpty()) {
+            items.set(STORAGE_CONTENT_SLOT, stack.copyWithCount(1));
+        }
+        storedCount += accepted;
+        items.set(
+                STORAGE_INPUT_SLOT,
+                accepted == stack.getCount()
+                        ? ItemStack.EMPTY
+                        : stack.copyWithCount(stack.getCount() - accepted));
+        syncStorageDisplay();
         setChanged();
     }
 
@@ -384,11 +446,18 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (kind() != LogisticsKind.STORAGE_CONTAINER) {
             return super.removeItem(slot, amount);
         }
-        if (slot != 0 || amount <= 0 || storedCount <= 0 || items.get(0).isEmpty()) {
+        if (slot == CONTAINER_FILTER_SLOT || slot == STORAGE_INPUT_SLOT) {
+            return super.removeItem(slot, amount);
+        }
+        if (slot != STORAGE_CONTENT_SLOT
+                || amount <= 0
+                || storedCount <= 0
+                || items.get(STORAGE_CONTENT_SLOT).isEmpty()) {
             return ItemStack.EMPTY;
         }
-        int removed = (int) Math.min(Math.min(amount, items.get(0).getMaxStackSize()), storedCount);
-        ItemStack result = items.get(0).copyWithCount(removed);
+        int removed = (int) Math.min(
+                Math.min(amount, items.get(STORAGE_CONTENT_SLOT).getMaxStackSize()), storedCount);
+        ItemStack result = items.get(STORAGE_CONTENT_SLOT).copyWithCount(removed);
         storedCount -= removed;
         syncStorageDisplay();
         setChanged();
@@ -400,15 +469,19 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (kind() != LogisticsKind.STORAGE_CONTAINER) {
             return super.removeItemNoUpdate(slot);
         }
+        if (slot == CONTAINER_FILTER_SLOT || slot == STORAGE_INPUT_SLOT) {
+            return super.removeItemNoUpdate(slot);
+        }
         return removeItem(slot, Integer.MAX_VALUE);
     }
 
     private void syncStorageDisplay() {
         if (storedCount <= 0) {
             storedCount = 0;
-            items.set(0, ItemStack.EMPTY);
-        } else if (!items.get(0).isEmpty()) {
-            items.get(0).setCount((int) Math.min(storedCount, items.get(0).getMaxStackSize()));
+            items.set(STORAGE_CONTENT_SLOT, ItemStack.EMPTY);
+        } else if (!items.get(STORAGE_CONTENT_SLOT).isEmpty()) {
+            items.get(STORAGE_CONTENT_SLOT).setCount(
+                    (int) Math.min(storedCount, items.get(STORAGE_CONTENT_SLOT).getMaxStackSize()));
         }
     }
 
@@ -416,8 +489,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (level == null || kind() != LogisticsKind.STORAGE_CONTAINER) {
             return;
         }
-        while (storedCount > 0 && !items.get(0).isEmpty()) {
-            ItemStack dropped = removeItem(0, items.get(0).getMaxStackSize());
+        while (storedCount > 0 && !items.get(STORAGE_CONTENT_SLOT).isEmpty()) {
+            ItemStack dropped = removeItem(
+                    STORAGE_CONTENT_SLOT, items.get(STORAGE_CONTENT_SLOT).getMaxStackSize());
             if (dropped.isEmpty()) {
                 break;
             }
@@ -435,8 +509,13 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         super.loadAdditional(tag, registries);
         items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(tag, items, registries);
-        storedCount = Math.max(items.get(0).getCount(), tag.getLong("StoredCount"));
-        syncStorageDisplay();
+        if (kind() == LogisticsKind.STORAGE_CONTAINER) {
+            storedCount = Math.max(
+                    items.get(STORAGE_CONTENT_SLOT).getCount(), tag.getLong("StoredCount"));
+            syncStorageDisplay();
+        } else {
+            storedCount = 0;
+        }
         insertionRoutes = loadRoutes(tag, "InsertionRoutes", insertionRoutes, routeCount());
         extractionRoutes = loadRoutes(tag, "ExtractionRoutes", extractionRoutes, routeCount());
         distributorSide = Math.floorMod(tag.getInt("DistributorSide"), 6);
@@ -625,6 +704,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             if (stack.isEmpty()
                     || !routeContains(insertionRoutes[relativeIndex(side)], slot)
                     || !filters[relativeIndex(side)].matches(stack)
+                    || !matchesContainerFilter(stack)
                     || !matchesTrackFilter(slot, stack)) {
                 return stack;
             }
@@ -632,8 +712,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 return ItemStack.EMPTY;
             }
             if (kind() == LogisticsKind.STORAGE_CONTAINER) {
-                ItemStack current = items.get(0);
-                if (!current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)) {
+                ItemStack current = items.get(STORAGE_CONTENT_SLOT);
+                if (!matchesContainerFilter(stack)
+                        || !current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)) {
                     return stack;
                 }
                 int accepted = (int) Math.min(stack.getCount(), STORAGE_CAPACITY - storedCount);
@@ -642,7 +723,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 }
                 if (!simulate) {
                     if (current.isEmpty()) {
-                        items.set(0, stack.copyWithCount(1));
+                        items.set(STORAGE_CONTENT_SLOT, stack.copyWithCount(1));
                     }
                     storedCount += accepted;
                     syncStorageDisplay();

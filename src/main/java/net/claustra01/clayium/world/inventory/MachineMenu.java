@@ -6,7 +6,6 @@
 package net.claustra01.clayium.world.inventory;
 
 import net.claustra01.clayium.machine.MachineLayout;
-import net.claustra01.clayium.energy.EnergeticClayFuel;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
@@ -83,19 +82,20 @@ public final class MachineMenu extends AbstractContainerMenu {
         checkContainerDataCount(data, 8);
         container.startOpen(inventory.player);
         this.deviceSlotCount = addMachineSlots();
+        int playerY = machineHeight();
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 84 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, playerY + 12 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 142));
+            addSlot(new Slot(inventory, column, 8 + column * 18, playerY + 70));
         }
         addDataSlots(data);
     }
 
     private int addMachineSlots() {
-        int processingSlots = switch (layout) {
+        return switch (layout) {
             case SIMPLE -> {
                 addSlot(new Slot(container, 0, 44, 35));
                 addOutputSlot(1, 116, 35);
@@ -116,16 +116,6 @@ public final class MachineMenu extends AbstractContainerMenu {
                 yield outputs.length + 1;
             }
         };
-        if (tier.progressionIndex() >= 4) {
-            addSlot(new Slot(container, MachineLayout.ENERGY_SLOT, 146, 53) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return EnergeticClayFuel.isFuel(stack);
-                }
-            });
-            return processingSlots + 1;
-        }
-        return processingSlots;
     }
 
     private void addOutputSlot(int inventorySlot, int x, int y) {
@@ -196,6 +186,13 @@ public final class MachineMenu extends AbstractContainerMenu {
         return layout.inputSlots().length;
     }
 
+    /** Original container height; centrifuges grow with their output count. */
+    public int machineHeight() {
+        return layout == MachineLayout.CENTRIFUGE
+                ? (layout.outputSlots(tier).length + 1) * 9 + 46
+                : 72;
+    }
+
     @Override
     public boolean stillValid(Player player) {
         return container.stillValid(player);
@@ -217,12 +214,7 @@ public final class MachineMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else {
-            int energyMenuSlot = deviceSlotCount - 1;
-            if (tier.progressionIndex() >= 4 && EnergeticClayFuel.isFuel(stack)) {
-                if (!moveItemStackTo(stack, energyMenuSlot, energyMenuSlot + 1, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!moveItemStackTo(stack, 0, inputSlotCount(), false)) {
+            if (!moveItemStackTo(stack, 0, inputSlotCount(), false)) {
                 return ItemStack.EMPTY;
             }
         }
