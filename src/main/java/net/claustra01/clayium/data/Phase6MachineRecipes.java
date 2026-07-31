@@ -24,6 +24,7 @@ public final class Phase6MachineRecipes {
         chemicalReactor(output);
         electrolysis(output);
         alloySmelter(output);
+        solarFabricator(output);
         materialProcessing(output);
         machineConstruction(output);
     }
@@ -73,6 +74,43 @@ public final class Phase6MachineRecipes {
         machine(output, "alloy_smelter/az91d", ClayiumMachineIds.ALLOY_SMELTER,
                 List.of(ingredient(item("magnesium_ingot"), 9), ingredient(item("zincalminium_ingot"), 1)),
                 List.of(stack(item("az91d_ingot"), 10)), 500, energy(7), ClayTier.PRECISION);
+    }
+
+    private static void solarFabricator(RecipeOutput output) {
+        for (int level = 0; level <= 6; level++) {
+            ClayTier minimumTier = level <= 4 ? ClayTier.ADVANCED : ClayTier.PRECISION;
+            int time = solarTime(level, level <= 4 ? 4.0D : 3.0D, level <= 4 ? 4 : 6,
+                    level <= 4 ? 5_000.0D : 50_000.0D);
+            machine(output, "solar_fabricator/level_" + level + "_to_" + (level + 1),
+                    ClayiumMachineIds.SOLAR_CLAY_FABRICATOR,
+                    List.of(ingredient(compressedClay(level), 1)),
+                    List.of(stack(compressedClay(level + 1), 1)), time, 0, minimumTier);
+            if (level == 2) {
+                machine(output, "solar_fabricator/sand_to_3", ClayiumMachineIds.SOLAR_CLAY_FABRICATOR,
+                        List.of(ingredient(Items.SAND, 1)), List.of(stack(compressedClay(3), 1)),
+                        time, 0, minimumTier);
+            }
+        }
+    }
+
+    private static int solarTime(int inputLevel, double base, int acceptableTier, double efficiency) {
+        double multiplier = Math.pow(10.0D, acceptableTier + 1) * (base - 1.0D)
+                / (base * (Math.pow(base, acceptableTier) - 1.0D)) / (efficiency / 20.0D);
+        return Math.max(1, (int) (Math.pow(base, inputLevel) * multiplier));
+    }
+
+    private static ItemLike compressedClay(int level) {
+        return switch (level) {
+            case 0 -> Items.CLAY;
+            case 1 -> ClayiumRegistries.DENSE_CLAY.get();
+            case 2 -> ClayiumRegistries.COMPRESSED_CLAY.get();
+            case 3 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("industrial_clay").get();
+            case 4 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("advanced_industrial_clay").get();
+            case 5 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("energetic_clay").get();
+            case 6 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("compressed_energetic_clay").get();
+            case 7 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("double_compressed_energetic_clay").get();
+            default -> throw new IllegalArgumentException("Unsupported compressed clay level: " + level);
+        };
     }
 
     private static void materialProcessing(RecipeOutput output) {
@@ -145,6 +183,10 @@ public final class Phase6MachineRecipes {
     }
 
     private static void machineConstruction(RecipeOutput output) {
+        machine(output, "machine/quartz_crucible", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(item("quartz_dust"), 16)),
+                List.of(stack(ClayiumRegistries.QUARTZ_CRUCIBLE.get(), 1)),
+                20, 1_000, ClayTier.RAW);
         for (int tier = 4; tier <= 6; tier++) {
             ClayTier clayTier = ClayTier.byLegacyIndex(tier);
             machine(output, "salt_extractor/" + clayTier.id(), ClayiumMachineIds.ASSEMBLER,
@@ -169,6 +211,36 @@ public final class Phase6MachineRecipes {
                 List.of(ingredient(ClayiumRegistries.PHASE4_MACHINE_BLOCKS.get("precision_smelter").get(), 1),
                         ingredient(phase4("precision_circuit"), 1)),
                 List.of(stack(ClayiumRegistries.PHASE6_MACHINE_BLOCKS.get("precision_alloy_smelter").get(), 1)),
+                40, energy(6), ClayTier.BASIC);
+        machine(output, "machine/advanced_solar_clay_fabricator_mk1", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("advanced_machine_hull").get(), 1),
+                        ingredient(phase4("silicon_plate"), 8)),
+                List.of(stack(ClayiumRegistries.PHASE6_MACHINE_BLOCKS.get("advanced_solar_clay_fabricator_mk1").get(), 1)),
+                120, energy(5), ClayTier.BASIC);
+        machine(output, "machine/precision_solar_clay_fabricator_mk2", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("precision_machine_hull").get(), 1),
+                        ingredient(phase4("silicon_plate"), 16)),
+                List.of(stack(ClayiumRegistries.PHASE6_MACHINE_BLOCKS.get("precision_solar_clay_fabricator_mk2").get(), 1)),
+                120, energy(6), ClayTier.BASIC);
+        machine(output, "machine/advanced_auto_clay_condenser", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get("advanced_buffer").get(), 1),
+                        ingredient(phase4("advanced_circuit"), 1)),
+                List.of(stack(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("advanced_auto_clay_condenser").get(), 1)),
+                40, energy(5), ClayTier.BASIC);
+        machine(output, "machine/advanced_auto_crafter", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.PHASE4_MACHINE_BLOCKS.get("basic_assembler").get(), 1),
+                        ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("advanced_machine_hull").get(), 1)),
+                List.of(stack(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("advanced_auto_crafter").get(), 1)),
+                40, energy(5), ClayTier.BASIC);
+        machine(output, "machine/precision_auto_crafter", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("advanced_auto_crafter").get(), 1),
+                        ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("precision_machine_hull").get(), 1)),
+                List.of(stack(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("precision_auto_crafter").get(), 1)),
+                40, energy(6), ClayTier.BASIC);
+        machine(output, "machine/precision_chemical_metal_separator", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.PHASE6_MACHINE_BLOCKS.get("advanced_chemical_reactor").get(), 1),
+                        ingredient(ClayiumRegistries.PHASE4_MACHINE_BLOCKS.get("precision_smelter").get(), 1)),
+                List.of(stack(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("precision_chemical_metal_separator").get(), 1)),
                 40, energy(6), ClayTier.BASIC);
     }
 

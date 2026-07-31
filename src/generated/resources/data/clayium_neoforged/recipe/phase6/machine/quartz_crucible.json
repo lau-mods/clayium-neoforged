@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000,
+  "ingredients": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:quartz_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:quartz_crucible"
+    }
+  ]
+}

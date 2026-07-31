@@ -15,6 +15,10 @@ import net.claustra01.clayium.recipe.MachineRecipe;
 import net.minecraft.resources.ResourceLocation;
 
 public final class ClayiumJeiRecipeTypes {
+    public static final RecipeType<SpecialProcessRecipe> QUARTZ_CRUCIBLE = RecipeType.create(
+            Clayium.MODID, "quartz_crucible", SpecialProcessRecipe.class);
+    public static final RecipeType<SpecialProcessRecipe> CHEMICAL_METAL_SEPARATOR = RecipeType.create(
+            Clayium.MODID, "chemical_metal_separator", SpecialProcessRecipe.class);
     public static final RecipeType<ClayWorkTableRecipe> CLAY_WORK_TABLE =
             RecipeType.create(Clayium.MODID, "clay_work_table", ClayWorkTableRecipe.class);
     public static final RecipeType<MachineRecipe> CLAY_BENDING_MACHINE = machine("clay_bending_machine");
@@ -33,6 +37,7 @@ public final class ClayiumJeiRecipeTypes {
     public static final RecipeType<MachineRecipe> CHEMICAL_REACTOR = machine("chemical_reactor");
     public static final RecipeType<MachineRecipe> ELECTROLYSIS_REACTOR = machine("electrolysis_reactor");
     public static final RecipeType<MachineRecipe> ALLOY_SMELTER = machine("alloy_smelter");
+    public static final RecipeType<MachineRecipe> SOLAR_CLAY_FABRICATOR = machine("solar_clay_fabricator");
     public static final RecipeType<MachineRecipe> ENERGETIC_CLAY_CONDENSER = machine("energetic_clay_condenser");
 
     public static final Map<ResourceLocation, RecipeType<MachineRecipe>> MACHINES = createMachineTypes();
@@ -62,6 +67,7 @@ public final class ClayiumJeiRecipeTypes {
         result.put(ClayiumMachineIds.CHEMICAL_REACTOR, CHEMICAL_REACTOR);
         result.put(ClayiumMachineIds.ELECTROLYSIS_REACTOR, ELECTROLYSIS_REACTOR);
         result.put(ClayiumMachineIds.ALLOY_SMELTER, ALLOY_SMELTER);
+        result.put(ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, SOLAR_CLAY_FABRICATOR);
         result.put(ClayiumMachineIds.ENERGETIC_CLAY_CONDENSER, ENERGETIC_CLAY_CONDENSER);
         return Map.copyOf(result);
     }

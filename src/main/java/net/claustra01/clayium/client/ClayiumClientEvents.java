@@ -14,7 +14,9 @@ import net.claustra01.clayium.client.gui.screens.inventory.LogisticsScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ItemFilterScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.FluidBufferScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.SaltExtractorScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.SpecialMachineScreen;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
+import net.claustra01.clayium.client.renderer.blockentity.QuartzCrucibleRenderer;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -44,6 +46,7 @@ public final class ClayiumClientEvents {
         event.register(ClayiumRegistries.ITEM_FILTER_MENU.get(), ItemFilterScreen::new);
         event.register(ClayiumRegistries.FLUID_BUFFER_MENU.get(), FluidBufferScreen::new);
         event.register(ClayiumRegistries.SALT_EXTRACTOR_MENU.get(), SaltExtractorScreen::new);
+        event.register(ClayiumRegistries.SPECIAL_MACHINE_MENU.get(), SpecialMachineScreen::new);
     }
 
     @SubscribeEvent
@@ -58,6 +61,10 @@ public final class ClayiumClientEvents {
                 ClayiumRegistries.SALT_EXTRACTOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.SPECIAL_MACHINE_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.QUARTZ_CRUCIBLE_BLOCK_ENTITY.get(), context -> new QuartzCrucibleRenderer());
     }
 
     @SubscribeEvent
@@ -82,6 +89,19 @@ public final class ClayiumClientEvents {
         impureDust(event, "impure_zirconium_dust", 190,170,122);
         pureDust(event, "zirconium_dust", 190,170,122, 120,120,120);
         impureDust(event, "impure_zinc_dust", 230,170,170);
+        impureDust(event, "impure_manganese_dust", 190,240,240);
+        impureDust(event, "impure_calcium_dust", 240,240,240);
+        impureDust(event, "impure_potassium_dust", 240,240,190);
+        impureDust(event, "impure_nickel_dust", 210,210,240);
+        impureDust(event, "impure_iron_dust", 216,216,216);
+        impureDust(event, "impure_beryllium_dust", 210,240,210);
+        impureDust(event, "impure_lead_dust", 190,240,210);
+        impureDust(event, "impure_hafnium_dust", 240,210,170);
+        impureDust(event, "impure_chrome_dust", 240,210,210);
+        impureDust(event, "impure_titanium_dust", 210,240,240);
+        impureDust(event, "impure_strontium_dust", 210,170,242);
+        impureDust(event, "impure_barium_dust", 150,80,120);
+        impureDust(event, "impure_copper_dust", 160,90,10);
         pureDust(event, "zinc_dust", 230,170,170, 120,120,120);
         material(event, colors(230,170,170, 120,120,120, 255,255,255), "zinc_ingot");
         material(event, colors(240,190,220, 160,0,0, 255,255,255),

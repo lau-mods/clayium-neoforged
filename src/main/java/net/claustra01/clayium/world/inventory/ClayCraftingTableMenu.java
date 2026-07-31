@@ -15,6 +15,7 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.TransientCraftingContainer;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -26,25 +27,32 @@ public final class ClayCraftingTableMenu extends AbstractContainerMenu {
     private static final int RESULT_SLOT = 0;
     private static final int GRID_START = 1;
     private static final int GRID_END = 10;
-    private static final int PLAYER_START = 10;
-    private static final int PLAYER_END = 46;
-
     private final CraftingContainer craftSlots;
     private final ResultContainer resultSlots = new ResultContainer();
     private final Player player;
+    @Nullable private final Container adjacentChest;
+    private final int playerStart;
+    private final int playerEnd;
 
-    public ClayCraftingTableMenu(int containerId, Inventory inventory) {
+    public ClayCraftingTableMenu(int containerId, Inventory inventory, boolean hasAdjacentChest) {
         super(ClayiumRegistries.CLAY_CRAFTING_TABLE_MENU.get(), containerId);
         this.player = inventory.player;
         this.craftSlots = new TransientCraftingContainer(this, 3, 3);
+        this.adjacentChest = hasAdjacentChest ? new SimpleContainer(27) : null;
         addSlots(inventory);
+        this.playerStart = hasAdjacentChest ? 37 : 10;
+        this.playerEnd = playerStart + 36;
     }
 
-    public ClayCraftingTableMenu(int containerId, Inventory inventory, CraftingContainer craftSlots) {
+    public ClayCraftingTableMenu(int containerId, Inventory inventory, CraftingContainer craftSlots,
+                                 @Nullable Container adjacentChest) {
         super(ClayiumRegistries.CLAY_CRAFTING_TABLE_MENU.get(), containerId);
         this.player = inventory.player;
         this.craftSlots = craftSlots;
+        this.adjacentChest = adjacentChest;
         addSlots(inventory);
+        this.playerStart = adjacentChest == null ? 10 : 37;
+        this.playerEnd = playerStart + 36;
         slotsChanged(craftSlots);
     }
 
@@ -55,13 +63,22 @@ public final class ClayCraftingTableMenu extends AbstractContainerMenu {
                 addSlot(new Slot(craftSlots, column + row * 3, 30 + column * 18, 17 + row * 18));
             }
         }
+        if (adjacentChest != null) {
+            adjacentChest.startOpen(player);
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 9; column++) {
+                    addSlot(new Slot(adjacentChest, column + row * 9, 8 + column * 18, 73 + row * 18));
+                }
+            }
+        }
+        int playerY = machineHeight();
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 84 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, playerY + 12 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 142));
+            addSlot(new Slot(inventory, column, 8 + column * 18, playerY + 70));
         }
     }
 
@@ -109,18 +126,22 @@ public final class ClayCraftingTableMenu extends AbstractContainerMenu {
         ItemStack copy = stack.copy();
         if (index == RESULT_SLOT) {
             stack.getItem().onCraftedBy(stack, player.level(), player);
-            if (!moveItemStackTo(stack, PLAYER_START, PLAYER_END, true)) {
+            if (!moveItemStackTo(stack, playerStart, playerEnd, true)) {
                 return ItemStack.EMPTY;
             }
             slot.onQuickCraft(stack, copy);
-        } else if (index >= PLAYER_START) {
-            if (!moveItemStackTo(stack, GRID_START, GRID_END, false)) {
-                int inventoryEnd = PLAYER_START + 27;
+        } else if (index >= playerStart) {
+            boolean moved = adjacentChest != null && moveItemStackTo(stack, GRID_END, playerStart, false);
+            if (!moved && !moveItemStackTo(stack, GRID_START, GRID_END, false)) {
+                int inventoryEnd = playerStart + 27;
                 if (index < inventoryEnd) {
-                    if (!moveItemStackTo(stack, inventoryEnd, PLAYER_END, false)) return ItemStack.EMPTY;
-                } else if (!moveItemStackTo(stack, PLAYER_START, inventoryEnd, false)) return ItemStack.EMPTY;
+                    if (!moveItemStackTo(stack, inventoryEnd, playerEnd, false)) return ItemStack.EMPTY;
+                } else if (!moveItemStackTo(stack, playerStart, inventoryEnd, false)) return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(stack, PLAYER_START, PLAYER_END, false)) {
+        } else if (index >= GRID_END && index < playerStart) {
+            if (!moveItemStackTo(stack, GRID_START, GRID_END, false)
+                    && !moveItemStackTo(stack, playerStart, playerEnd, false)) return ItemStack.EMPTY;
+        } else if (!moveItemStackTo(stack, playerStart, playerEnd, false)) {
             return ItemStack.EMPTY;
         }
         if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY); else slot.setChanged();
@@ -133,5 +154,15 @@ public final class ClayCraftingTableMenu extends AbstractContainerMenu {
     @Override
     public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
         return slot.container != resultSlots && super.canTakeItemForPickAll(stack, slot);
+    }
+
+    public boolean hasAdjacentChest() { return adjacentChest != null; }
+
+    public int machineHeight() { return hasAdjacentChest() ? 128 : 72; }
+
+    @Override
+    public void removed(Player player) {
+        super.removed(player);
+        if (adjacentChest != null) adjacentChest.stopOpen(player);
     }
 }

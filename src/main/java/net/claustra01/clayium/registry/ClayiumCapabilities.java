@@ -45,5 +45,10 @@ public final class ClayiumCapabilities {
                 ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> blockEntity.itemHandler(
                         direction == null ? net.minecraft.core.Direction.NORTH : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.SPECIAL_MACHINE_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
     }
 }

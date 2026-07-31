@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 0,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:sand"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:solar_clay_fabricator",
+  "minimum_tier": "advanced",
+  "processing_time_ticks": 18,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:industrial_clay"
+    }
+  ]
+}

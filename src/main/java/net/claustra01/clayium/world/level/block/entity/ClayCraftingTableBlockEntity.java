@@ -17,6 +17,9 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.Container;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.core.Direction;
 
 /** Persistent 3x3 crafting grid used by the original Clay Crafting Table. */
 public final class ClayCraftingTableBlockEntity extends BaseContainerBlockEntity implements CraftingContainer {
@@ -34,8 +37,23 @@ public final class ClayCraftingTableBlockEntity extends BaseContainerBlockEntity
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return new ClayCraftingTableMenu(containerId, inventory, this);
+        return new ClayCraftingTableMenu(containerId, inventory, this, adjacentChest());
     }
+
+    public Container adjacentChest() {
+        if (level == null) return null;
+        for (Direction direction : Direction.values()) {
+            var pos = worldPosition.relative(direction);
+            BlockState state = level.getBlockState(pos);
+            if (state.getBlock() instanceof ChestBlock chest) {
+                Container container = ChestBlock.getContainer(chest, state, level, pos, true);
+                if (container != null && container.getContainerSize() >= 27) return container;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasAdjacentChest() { return adjacentChest() != null; }
 
     @Override
     public NonNullList<ItemStack> getItems() {

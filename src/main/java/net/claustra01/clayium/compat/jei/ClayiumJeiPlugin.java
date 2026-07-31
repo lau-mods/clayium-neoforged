@@ -18,6 +18,8 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayWorkTableScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.MachineScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.SpecialMachineScreen;
+import net.claustra01.clayium.machine.SpecialMachineKind;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.Phase4MachineCatalog;
@@ -60,6 +62,12 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                                 "jei." + Clayium.MODID + ".category." + machineId.getPath()),
                         guiHelper.createDrawableItemStack(iconFor(machineId)),
                         MachineLayout.forMachine(machineId))));
+        registration.addRecipeCategories(new SpecialProcessRecipeCategory(guiHelper,
+                ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE, SpecialProcessRecipe.Kind.QUARTZ_CRUCIBLE,
+                ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get().getDefaultInstance()));
+        registration.addRecipeCategories(new SpecialProcessRecipeCategory(guiHelper,
+                ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR, SpecialProcessRecipe.Kind.CHEMICAL_METAL_SEPARATOR,
+                ClayiumRegistries.SPECIAL_MACHINE_ITEMS.get("precision_chemical_metal_separator").get().getDefaultInstance()));
     }
 
     @Override
@@ -83,6 +91,9 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                     ClayiumRegistries.PHASE6_MACHINE_ITEMS.get(entry.blockId()).get(),
                     ClayiumJeiRecipeTypes.MACHINES.get(entry.machineId()));
         }
+        registration.addRecipeCatalyst(ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get(), ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE);
+        registration.addRecipeCatalyst(ClayiumRegistries.SPECIAL_MACHINE_ITEMS.get("precision_chemical_metal_separator").get(),
+                ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR);
     }
 
     @Override
@@ -106,6 +117,14 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 return recipeType == null
                         ? java.util.List.of()
                         : java.util.List.of(IGuiClickableArea.createBasic(76, 35, 24, 17, recipeType));
+            }
+        });
+        registration.addGuiContainerHandler(SpecialMachineScreen.class, new mezz.jei.api.gui.handlers.IGuiContainerHandler<>() {
+            @Override public java.util.Collection<IGuiClickableArea> getGuiClickableAreas(
+                    SpecialMachineScreen screen,double x,double y) {
+                return screen.getMenu().kind()==SpecialMachineKind.CHEMICAL_METAL_SEPARATOR
+                        ? java.util.List.of(IGuiClickableArea.createBasic(77,65,22,7,ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR))
+                        : java.util.List.of();
             }
         });
     }
@@ -183,6 +202,11 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                             .toList();
             registration.addRecipes(recipeType, recipes);
         });
+        registration.addRecipes(ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE,
+                java.util.stream.IntStream.rangeClosed(1,9)
+                        .mapToObj(amount->new SpecialProcessRecipe(SpecialProcessRecipe.Kind.QUARTZ_CRUCIBLE,amount)).toList());
+        registration.addRecipes(ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR,
+                java.util.List.of(new SpecialProcessRecipe(SpecialProcessRecipe.Kind.CHEMICAL_METAL_SEPARATOR,1)));
     }
 
     private static ItemStack iconFor(ResourceLocation machineId) {

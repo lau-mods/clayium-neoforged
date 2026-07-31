@@ -17,6 +17,8 @@ import net.claustra01.clayium.world.level.block.SaltExtractorBlock;
 import net.claustra01.clayium.world.level.block.entity.SaltExtractorBlockEntity;
 import net.claustra01.clayium.world.level.block.CobblestoneGeneratorBlock;
 import net.claustra01.clayium.world.level.block.entity.CobblestoneGeneratorBlockEntity;
+import net.claustra01.clayium.world.level.block.SpecialMachineBlock;
+import net.claustra01.clayium.world.level.block.entity.SpecialMachineBlockEntity;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -48,7 +50,9 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
                                 ? blockEntity.getBlockState().getValue(FluidBufferBlock.PIPE)
                                 : blockEntity.getBlockState().getBlock() instanceof SaltExtractorBlock
                                         ? blockEntity.getBlockState().getValue(SaltExtractorBlock.PIPE)
-                                        : blockEntity.getBlockState().getValue(CobblestoneGeneratorBlock.PIPE);
+                                        : blockEntity.getBlockState().getBlock() instanceof SpecialMachineBlock
+                                                ? blockEntity.getBlockState().getValue(SpecialMachineBlock.PIPE)
+                                                : blockEntity.getBlockState().getValue(CobblestoneGeneratorBlock.PIPE);
         if (pipe) {
             ResourceLocation hull = hullTexture(blockEntity);
             for (Direction side : Direction.values()) {
@@ -82,8 +86,10 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
                         ? logistics.pipeConnects(side)
                         : device instanceof FluidBufferBlockEntity fluid
                                 ? fluid.pipeConnects(side)
-                                : device instanceof SaltExtractorBlockEntity salt
-                                        ? salt.pipeConnects(side)
+                        : device instanceof SaltExtractorBlockEntity salt
+                                ? salt.pipeConnects(side)
+                                : device instanceof SpecialMachineBlockEntity special
+                                        ? special.pipeConnects(side)
                                         : device instanceof CobblestoneGeneratorBlockEntity generator && generator.pipeConnects(side);
     }
 
@@ -111,6 +117,9 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
             return generator.tier().progressionIndex() == 1
                     ? Clayium.id("block/clay_machine_hull")
                     : Clayium.id("block/machine_hull_" + generator.tier().id());
+        }
+        if (blockEntity.getBlockState().getBlock() instanceof SpecialMachineBlock special) {
+            return Clayium.id("block/machine_hull_" + special.tier().id());
         }
         return Clayium.id("block/clay_machine_hull");
     }
@@ -180,6 +189,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
             return logistics.insertionIcon(side);
         }
         if (device instanceof FluidBufferBlockEntity fluid) return fluid.insertionRoute(side) >= 0 ? "import" : "";
+        if (device instanceof SpecialMachineBlockEntity special) return special.insertionIcon(side);
         return device instanceof SaltExtractorBlockEntity salt && salt.insertionRoute(side) >= 0 ? "import_energy" : "";
     }
 
@@ -192,6 +202,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         }
         if (device instanceof FluidBufferBlockEntity fluid) return fluid.extractionRoute(side) >= 0 ? "export" : "";
         if (device instanceof SaltExtractorBlockEntity salt) return salt.extractionRoute(side) >= 0 ? "export" : "";
+        if (device instanceof SpecialMachineBlockEntity special) return special.extractionIcon(side);
         return device instanceof CobblestoneGeneratorBlockEntity generator && generator.extractionRoute(side) >= 0 ? "export" : "";
     }
 

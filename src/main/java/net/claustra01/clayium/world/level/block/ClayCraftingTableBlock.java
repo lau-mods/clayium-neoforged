@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -47,8 +48,9 @@ public final class ClayCraftingTableBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(
             BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof ClayCraftingTableBlockEntity table) {
-            player.openMenu(table);
+        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer
+                && level.getBlockEntity(pos) instanceof ClayCraftingTableBlockEntity table) {
+            serverPlayer.openMenu(table, data -> data.writeBoolean(table.hasAdjacentChest()));
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

@@ -1,0 +1,11 @@
+{
+  "parent":"minecraft:block/thin_block",
+  "textures":{"particle":"minecraft:block/quartz_block_side","quartz":"minecraft:block/quartz_block_side"},
+  "elements":[
+    {"from":[0,0,0],"to":[16,1,16],"faces":{"down":{"texture":"#quartz"},"up":{"texture":"#quartz"},"north":{"texture":"#quartz"},"south":{"texture":"#quartz"},"west":{"texture":"#quartz"},"east":{"texture":"#quartz"}}},
+    {"from":[0,1,0],"to":[1,12,16],"faces":{"down":{"texture":"#quartz"},"up":{"texture":"#quartz"},"north":{"texture":"#quartz"},"south":{"texture":"#quartz"},"west":{"texture":"#quartz"},"east":{"texture":"#quartz"}}},
+    {"from":[15,1,0],"to":[16,12,16],"faces":{"down":{"texture":"#quartz"},"up":{"texture":"#quartz"},"north":{"texture":"#quartz"},"south":{"texture":"#quartz"},"west":{"texture":"#quartz"},"east":{"texture":"#quartz"}}},
+    {"from":[1,1,0],"to":[15,12,1],"faces":{"down":{"texture":"#quartz"},"up":{"texture":"#quartz"},"north":{"texture":"#quartz"},"south":{"texture":"#quartz"},"west":{"texture":"#quartz"},"east":{"texture":"#quartz"}}},
+    {"from":[1,1,15],"to":[15,12,16],"faces":{"down":{"texture":"#quartz"},"up":{"texture":"#quartz"},"north":{"texture":"#quartz"},"south":{"texture":"#quartz"},"west":{"texture":"#quartz"},"east":{"texture":"#quartz"}}}
+  ]
+}

@@ -26,8 +26,8 @@ public final class ClayCraftingTableScreen extends AbstractContainerScreen<ClayC
 
     public ClayCraftingTableScreen(ClayCraftingTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageHeight = 166;
-        inventoryLabelY = 72;
+        imageHeight = menu.machineHeight() + 94;
+        inventoryLabelY = menu.machineHeight();
     }
 
     @Override
@@ -41,11 +41,16 @@ public final class ClayCraftingTableScreen extends AbstractContainerScreen<ClayC
         whole(graphics, TOP_RIGHT, leftPos + 172, topPos);
         whole(graphics, BOTTOM_LEFT, leftPos, topPos + imageHeight - 4);
         whole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + imageHeight - 4);
-        graphics.blit(PLAYER, leftPos, topPos + 72, 0, 0, 176, 94);
+        graphics.blit(PLAYER, leftPos, topPos + menu.machineHeight(), 0, 0, 176, 94);
         for (int row = 0; row < 3; row++) for (int column = 0; column < 3; column++) {
             graphics.blit(SLOT, leftPos + 29 + column * 18, topPos + 16 + row * 18, 0, 0, 18, 18);
         }
         graphics.blit(SLOT, leftPos + 123, topPos + 34, 0, 0, 18, 18);
+        if (menu.hasAdjacentChest()) {
+            for (int row = 0; row < 3; row++) for (int column = 0; column < 9; column++) {
+                graphics.blit(SLOT, leftPos + 7 + column * 18, topPos + 72 + row * 18, 0, 0, 18, 18);
+            }
+        }
         graphics.blit(OVERLAY, leftPos, topPos, 0, 0, 176, 72, 256, 256);
     }
 

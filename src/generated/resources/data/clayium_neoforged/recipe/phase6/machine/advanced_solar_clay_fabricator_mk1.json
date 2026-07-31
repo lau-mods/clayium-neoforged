@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_machine_hull"
+      }
+    },
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium_neoforged:silicon_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 120,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_solar_clay_fabricator_mk1"
+    }
+  ]
+}

@@ -84,6 +84,10 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.chemical_reactor", "Chemical Reactor");
                 add("jei." + Clayium.MODID + ".category.electrolysis_reactor", "Electrolysis Reactor");
                 add("jei." + Clayium.MODID + ".category.alloy_smelter", "Alloy Smelter");
+                add("jei." + Clayium.MODID + ".category.solar_clay_fabricator", "Solar Clay Fabricator");
+                add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
+                add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");
+                add("jei." + Clayium.MODID + ".chance", "Chance: %.2f%%");
                 add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
                 add("jei." + Clayium.MODID + ".required_actions", "Manual actions: %s");
                 add("jei." + Clayium.MODID + ".input_count", "Input: %s");
@@ -132,6 +136,7 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".elemental_milling_machine", "Elemental Milling Machine");
         language.add("block." + Clayium.MODID + ".clay_water_wheel", "Clay Water Wheel");
         language.add("block." + Clayium.MODID + ".dense_clay_water_wheel", "Dense Clay Water Wheel");
+        language.add("block." + Clayium.MODID + ".quartz_crucible", "Quartz Crucible");
         for (ClayTier tier : new ClayTier[]{ClayTier.CLAY, ClayTier.DENSE_CLAY, ClayTier.SIMPLE,
                 ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION}) {
             language.add("block." + Clayium.MODID + "." + tier.id() + "_cobblestone_generator",
@@ -152,6 +157,10 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".basic_salt_extractor", "Basic Salt Extractor");
         language.add("block." + Clayium.MODID + ".advanced_salt_extractor", "Advanced Salt Extractor");
         language.add("block." + Clayium.MODID + ".precision_salt_extractor", "Precision Salt Extractor");
+        language.add("block." + Clayium.MODID + ".advanced_auto_clay_condenser", "Advanced Auto Clay Condenser");
+        language.add("block." + Clayium.MODID + ".advanced_auto_crafter", "Advanced Auto Crafter");
+        language.add("block." + Clayium.MODID + ".precision_auto_crafter", "Precision Auto Crafter");
+        language.add("block." + Clayium.MODID + ".precision_chemical_metal_separator", "Precision Chemical Metal Separator");
         for (Phase5LogisticsCatalog.Entry entry : Phase5LogisticsCatalog.ENTRIES) {
             language.add(
                     "block." + Clayium.MODID + "." + entry.blockId(),

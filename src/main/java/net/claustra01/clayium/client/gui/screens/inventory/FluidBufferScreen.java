@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 
 public final class FluidBufferScreen extends AbstractContainerScreen<FluidBufferMenu> {
     private static final ResourceLocation PLAYER=Clayium.id("textures/gui/gui_playerinventory.png");
@@ -21,10 +22,24 @@ public final class FluidBufferScreen extends AbstractContainerScreen<FluidBuffer
         g.blit(PLAYER,leftPos,topPos+72,0,0,176,94);
         g.fill(leftPos+79,topPos+17,leftPos+97,topPos+65,0xff202020);
         int h=menu.capacity()<=0?0:(int)(46L*menu.amount()/menu.capacity());
-        g.fill(leftPos+81,topPos+63-h,leftPos+95,topPos+63,0xff3f76e4);
+        drawFluid(g,h);
     }
     @Override protected void renderLabels(GuiGraphics g,int mx,int my){super.renderLabels(g,mx,my); Component amount=Component.literal(menu.amount()+" / "+menu.capacity()+" mB");g.drawString(font,amount,(imageWidth-font.width(amount))/2,66,0x404040,false);}
     @Override public void render(GuiGraphics g,int mx,int my,float partial){super.render(g,mx,my,partial);renderTooltip(g,mx,my);}
+    private void drawFluid(GuiGraphics g,int height){
+        var fluid=menu.fluid();
+        if(height<=0||fluid.isEmpty())return;
+        var extensions=IClientFluidTypeExtensions.of(fluid.getFluidType());
+        int tint=extensions.getTintColor(fluid);
+        float alpha=((tint>>>24)&255)/255.0F;
+        g.setColor(((tint>>>16)&255)/255.0F,((tint>>>8)&255)/255.0F,(tint&255)/255.0F,alpha==0?1.0F:alpha);
+        int x=leftPos+81,bottom=topPos+63,top=bottom-height;
+        g.enableScissor(x,top,x+14,bottom);
+        for(int y=bottom-16;y<bottom;y+=16)g.blitSprite(extensions.getStillTexture(fluid),x,y,14,16);
+        for(int y=bottom-32;y>=top-16;y-=16)g.blitSprite(extensions.getStillTexture(fluid),x,y,14,16);
+        g.disableScissor();
+        g.setColor(1,1,1,1);
+    }
     private static void tile(GuiGraphics g,ResourceLocation texture,int x,int y,int width,int height,int tw,int th){for(int dy=0;dy<height;dy+=th)for(int dx=0;dx<width;dx+=tw)g.blit(texture,x+dx,y+dy,0,0,Math.min(tw,width-dx),Math.min(th,height-dy),tw,th);}
     private static void whole(GuiGraphics g,ResourceLocation texture,int x,int y){g.blit(texture,x,y,0,0,4,4,4,4);}
 }

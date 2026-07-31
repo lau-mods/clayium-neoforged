@@ -326,6 +326,11 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             stopReason = StopReason.INVALID_BLOCK;
             return;
         }
+        if (machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.SOLAR_CLAY_FABRICATOR)
+                && !level.canSeeSky(worldPosition.above())) {
+            stopReason = StopReason.NO_SKY_ACCESS;
+            return;
+        }
         Optional<RecipeHolder<MachineRecipe>> recipe = resolveRecipe(machineBlock);
         if (recipe.isEmpty()) {
             stopReason = recipeInput().isEmpty() ? StopReason.NO_INPUT : StopReason.NO_RECIPE;
@@ -482,7 +487,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     private boolean acceptsEnergeticClay() {
-        return machineTier().progressionIndex() >= 4;
+        MachineBlock block = machineBlock();
+        return machineTier().progressionIndex() >= 4
+                && (block == null || !block.machineId().equals(
+                        net.claustra01.clayium.machine.ClayiumMachineIds.SOLAR_CLAY_FABRICATOR));
     }
 
     private List<ItemStack> inputStacks() {
@@ -874,6 +882,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         NO_RECIPE,
         INSUFFICIENT_ENERGY,
         OUTPUT_BLOCKED,
+        NO_SKY_ACCESS,
         INVALID_BLOCK;
 
         public static StopReason byOrdinal(int ordinal) {
