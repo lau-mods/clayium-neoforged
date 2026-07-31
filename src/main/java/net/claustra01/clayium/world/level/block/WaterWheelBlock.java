@@ -78,7 +78,9 @@ public final class WaterWheelBlock extends BaseEntityBlock {
                     Component.translatable(
                             "message.clayium_neoforged.water_wheel_status",
                             wheel.surroundingFlowingWater(),
-                            ClayEnergyFormatter.format(wheel.generatedClayEnergyPerCycle())),
+                            ClayEnergyFormatter.formatRatio(
+                                    wheel.surroundingFlowingWater(),
+                                    WaterWheelBlockEntity.GENERATION_RATE_DENOMINATOR)),
                     true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
