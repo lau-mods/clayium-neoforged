@@ -8,7 +8,7 @@ import net.claustra01.clayium.data.FilterSettings;
 import net.claustra01.clayium.data.IoMemory;
 import net.claustra01.clayium.logistics.LogisticsKind;
 import net.claustra01.clayium.logistics.ConfigurableItemDevice;
-import net.claustra01.clayium.logistics.SideMode;
+import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.registry.ClayiumDataComponents;
 import net.claustra01.clayium.world.inventory.LogisticsMenu;
@@ -23,6 +23,9 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -40,7 +43,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public static final int INVENTORY_SLOTS = 54;
     public static final int MAX_SLOTS = 60;
     private NonNullList<ItemStack> items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
-    private final SideMode[] sideModes = new SideMode[6];
+    private int[] insertionRoutes = new int[]{-1, -1, -1, 0, -1, -1};
+    private int[] extractionRoutes = new int[]{-1, -1, -1, -1, -1, -1};
     private final FilterSettings[] filters = new FilterSettings[6];
     private final EnumMap<Direction, IItemHandler> handlers = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
@@ -52,24 +56,16 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     public LogisticsBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(), pos, state);
-        java.util.Arrays.fill(sideModes, SideMode.DISABLED);
         java.util.Arrays.fill(filters, FilterSettings.DEFAULT);
-        Direction front = state.hasProperty(LogisticsBlock.FACING)
-                ? state.getValue(LogisticsBlock.FACING)
-                : Direction.NORTH;
         LogisticsKind initialKind = state.getBlock() instanceof LogisticsBlock block
                 ? block.kind()
                 : LogisticsKind.BUFFER;
         if (initialKind == LogisticsKind.DISTRIBUTOR) {
-            java.util.Arrays.fill(sideModes, SideMode.OUTPUT);
-            sideModes[front.getOpposite().ordinal()] = SideMode.INPUT;
+            extractionRoutes = new int[]{0, 0, 0, -1, 0, 0};
         } else if (initialKind == LogisticsKind.STORAGE_CONTAINER) {
-            java.util.Arrays.fill(sideModes, SideMode.INPUT_OUTPUT);
+            insertionRoutes = new int[]{-1, 0, -1, -1, -1, -1};
         } else if (initialKind == LogisticsKind.VOID_CONTAINER) {
-            java.util.Arrays.fill(sideModes, SideMode.INPUT);
-        } else {
-            sideModes[front.ordinal()] = SideMode.OUTPUT;
-            sideModes[front.getOpposite().ordinal()] = SideMode.INPUT;
+            insertionRoutes = new int[]{-1, 0, -1, -1, -1, -1};
         }
         for (Direction direction : Direction.values()) {
             handlers.put(direction, new SidedHandler(direction));
@@ -79,23 +75,27 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public static void serverTick(Level level, BlockPos pos, BlockState state, LogisticsBlockEntity blockEntity) {
         if (++blockEntity.transferCooldown >= blockEntity.transferInterval()) {
             blockEntity.transferCooldown = 0;
-            blockEntity.pushItems();
+            blockEntity.transferItems();
         }
     }
 
-    private void pushItems() {
-        if (level == null || kind() == LogisticsKind.VOID_CONTAINER) {
+    private void transferItems() {
+        if (level == null) {
             return;
         }
         Direction[] directions = Direction.values();
         int start = kind() == LogisticsKind.DISTRIBUTOR ? distributorSide : 0;
         for (int offset = 0; offset < directions.length; offset++) {
             Direction direction = directions[(start + offset) % directions.length];
-            if (!sideModes[direction.ordinal()].allowsExtract()) {
+            int relative = relativeIndex(direction);
+            if (insertionRoutes[relative] >= 0 && pullFrom(direction, insertionRoutes[relative])) {
+                return;
+            }
+            if (kind() == LogisticsKind.VOID_CONTAINER || extractionRoutes[relative] < 0) {
                 continue;
             }
             IItemHandler target = targetHandler(direction);
-            if (target != null && transferTo(target, transferLimit())) {
+            if (target != null && transferTo(target, transferLimit(), extractionRoutes[relative])) {
                 if (kind() == LogisticsKind.DISTRIBUTOR) {
                     distributorSide = (direction.ordinal() + 1) % directions.length;
                 }
@@ -103,6 +103,41 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 return;
             }
         }
+    }
+
+    private boolean pullFrom(Direction direction, int route) {
+        IItemHandler source = targetHandler(direction);
+        if (source == null) {
+            return false;
+        }
+        IItemHandler destination = itemHandler(direction);
+        for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
+            ItemStack offered = source.extractItem(sourceSlot, transferLimit(), true);
+            if (offered.isEmpty()) {
+                continue;
+            }
+            ItemStack remainder = offered;
+            for (int targetSlot : slotsForRoute(route)) {
+                if (remainder.isEmpty()) {
+                    break;
+                }
+                remainder = destination.insertItem(targetSlot, remainder, true);
+            }
+            int accepted = offered.getCount() - remainder.getCount();
+            if (accepted <= 0) {
+                continue;
+            }
+            ItemStack extracted = source.extractItem(sourceSlot, accepted, false);
+            ItemStack uninserted = extracted;
+            for (int targetSlot : slotsForRoute(route)) {
+                if (uninserted.isEmpty()) {
+                    break;
+                }
+                uninserted = destination.insertItem(targetSlot, uninserted, false);
+            }
+            return uninserted.isEmpty();
+        }
+        return false;
     }
 
     private IItemHandler targetHandler(Direction direction) {
@@ -122,8 +157,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 .getCapability();
     }
 
-    private boolean transferTo(IItemHandler target, int maximum) {
-        for (int sourceSlot = 0; sourceSlot < activeSlots(); sourceSlot++) {
+    private boolean transferTo(IItemHandler target, int maximum, int route) {
+        for (int sourceSlot : slotsForRoute(route)) {
             ItemStack source = getItem(sourceSlot);
             if (source.isEmpty()) {
                 continue;
@@ -154,32 +189,69 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         return handlers.get(direction);
     }
 
-    public SideMode cycleSide(Direction direction) {
-        int index = direction.ordinal();
-        sideModes[index] = sideModes[index].next();
-        setChanged();
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition);
+    public int cycleInsertRoute(Direction direction) {
+        int index = relativeIndex(direction);
+        insertionRoutes[index] = nextRoute(insertionRoutes[index]);
+        configurationChanged();
+        return insertionRoutes[index];
+    }
+
+    @Override
+    public int cycleExtractRoute(Direction direction) {
+        int index = relativeIndex(direction);
+        extractionRoutes[index] = nextRoute(extractionRoutes[index]);
+        configurationChanged();
+        return extractionRoutes[index];
+    }
+
+    @Override
+    public boolean togglePipe() {
+        if (level == null) {
+            return false;
         }
-        return sideModes[index];
+        boolean pipe = !getBlockState().getValue(LogisticsBlock.PIPE);
+        level.setBlock(worldPosition, getBlockState().setValue(LogisticsBlock.PIPE, pipe), 3);
+        configurationChanged();
+        return pipe;
+    }
+
+    @Override
+    public boolean rotate(Direction clickedFace) {
+        if (level == null || !clickedFace.getAxis().isHorizontal()) {
+            return false;
+        }
+        Direction current = getBlockState().getValue(LogisticsBlock.FACING);
+        Direction next = clickedFace == current ? clickedFace.getOpposite() : clickedFace;
+        level.setBlock(worldPosition, getBlockState().setValue(LogisticsBlock.FACING, next), 3);
+        configurationChanged();
+        return true;
     }
 
     public void setFilter(Direction direction, FilterSettings filter) {
-        filters[direction.ordinal()] = filter;
-        setChanged();
+        filters[relativeIndex(direction)] = filter;
+        configurationChanged();
     }
 
     public IoMemory saveIoMemory() {
-        return IoMemory.of(sideModes);
+        return IoMemory.of(
+                insertionRoutes,
+                extractionRoutes,
+                getBlockState().getValue(LogisticsBlock.PIPE),
+                getBlockState().getValue(LogisticsBlock.FACING).getName());
     }
 
     public void loadIoMemory(IoMemory memory) {
-        SideMode[] loaded = memory.modesOrDefault(sideModes);
-        System.arraycopy(loaded, 0, sideModes, 0, sideModes.length);
-        setChanged();
+        insertionRoutes = sanitizeRoutes(memory.insertionRoutesOrDefault(insertionRoutes), routeCount());
+        extractionRoutes = sanitizeRoutes(memory.extractionRoutesOrDefault(extractionRoutes), routeCount());
         if (level != null) {
-            level.invalidateCapabilities(worldPosition);
+            Direction facing = Direction.byName(memory.facing());
+            BlockState state = getBlockState().setValue(LogisticsBlock.PIPE, memory.pipe());
+            if (facing != null && facing.getAxis().isHorizontal()) {
+                state = state.setValue(LogisticsBlock.FACING, facing);
+            }
+            level.setBlock(worldPosition, state, 3);
         }
+        configurationChanged();
     }
 
     public int activeSlots() {
@@ -190,6 +262,20 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public int filterSlots() {
         LogisticsBlock block = logisticsBlock();
         return block == null ? 0 : block.kind().tracks(block.tier());
+    }
+
+    public int inventoryColumns() {
+        LogisticsBlock block = logisticsBlock();
+        return block == null ? 1 : block.kind().columns(block.tier());
+    }
+
+    public int inventoryRows() {
+        LogisticsBlock block = logisticsBlock();
+        return block == null ? 1 : block.kind().rows(block.tier());
+    }
+
+    public boolean isMultitrack() {
+        return kind() == LogisticsKind.MULTITRACK_BUFFER;
     }
 
     public int filterSlotIndex(int filter) {
@@ -227,7 +313,11 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     private int transferInterval() {
         LogisticsBlock block = logisticsBlock();
-        return block != null && block.kind() == LogisticsKind.DISTRIBUTOR ? 1 : 8;
+        if (block == null) {
+            return 8;
+        }
+        int tier = block.tier();
+        return tier <= 4 ? 8 : tier == 5 ? 4 : tier == 6 ? 2 : 1;
     }
 
     private LogisticsKind kind() {
@@ -347,10 +437,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         ContainerHelper.loadAllItems(tag, items, registries);
         storedCount = Math.max(items.get(0).getCount(), tag.getLong("StoredCount"));
         syncStorageDisplay();
-        int[] savedModes = tag.getIntArray("SideModes");
-        for (int index = 0; index < Math.min(6, savedModes.length); index++) {
-            sideModes[index] = SideMode.values()[Math.max(0, Math.min(SideMode.values().length - 1, savedModes[index]))];
-        }
+        insertionRoutes = loadRoutes(tag, "InsertionRoutes", insertionRoutes, routeCount());
+        extractionRoutes = loadRoutes(tag, "ExtractionRoutes", extractionRoutes, routeCount());
         distributorSide = Math.floorMod(tag.getInt("DistributorSide"), 6);
         ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
         for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
@@ -374,7 +462,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (kind() == LogisticsKind.STORAGE_CONTAINER) {
             tag.putLong("StoredCount", storedCount);
         }
-        tag.putIntArray("SideModes", java.util.Arrays.stream(sideModes).mapToInt(Enum::ordinal).toArray());
+        tag.putIntArray("InsertionRoutes", insertionRoutes);
+        tag.putIntArray("ExtractionRoutes", extractionRoutes);
         tag.putInt("DistributorSide", distributorSide);
         ListTag savedFilters = new ListTag();
         for (FilterSettings filter : filters) {
@@ -386,6 +475,130 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             savedFilters.add(saved);
         }
         tag.put("Filters", savedFilters);
+    }
+
+    public int insertionRoute(Direction side) {
+        return insertionRoutes[relativeIndex(side)];
+    }
+
+    public int extractionRoute(Direction side) {
+        return extractionRoutes[relativeIndex(side)];
+    }
+
+    public boolean hasFilter(Direction side) {
+        return !filters[relativeIndex(side)].equals(FilterSettings.DEFAULT);
+    }
+
+    public boolean isPassivePipeEndpoint() {
+        return kind() == LogisticsKind.BUFFER
+                || kind() == LogisticsKind.MULTITRACK_BUFFER
+                || kind() == LogisticsKind.STORAGE_CONTAINER;
+    }
+
+    public boolean pipeConnects(Direction side) {
+        if (level == null) {
+            return false;
+        }
+        boolean ownActive = insertionRoute(side) >= 0 || extractionRoute(side) >= 0;
+        var neighbor = level.getBlockEntity(worldPosition.relative(side));
+        if (neighbor instanceof ConfigurableItemDevice device) {
+            boolean neighborActive =
+                    device.insertionRoute(side.getOpposite()) >= 0
+                            || device.extractionRoute(side.getOpposite()) >= 0;
+            boolean neighborPassive =
+                    neighbor instanceof LogisticsBlockEntity logistics && logistics.isPassivePipeEndpoint();
+            return ownActive && (neighborActive || neighborPassive)
+                    || isPassivePipeEndpoint() && neighborActive;
+        }
+        return ownActive && neighbor != null;
+    }
+
+    public String insertionIcon(Direction side) {
+        int route = insertionRoute(side);
+        if (route < 0) {
+            return "";
+        }
+        return kind() == LogisticsKind.MULTITRACK_BUFFER ? "import_m" + route : "import";
+    }
+
+    public String extractionIcon(Direction side) {
+        int route = extractionRoute(side);
+        if (route < 0) {
+            return "";
+        }
+        return kind() == LogisticsKind.MULTITRACK_BUFFER ? "export_m" + route : "export";
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
+    }
+
+    private int relativeIndex(Direction direction) {
+        Direction front = getBlockState().getValue(LogisticsBlock.FACING);
+        return RelativeFace.index(front, direction);
+    }
+
+    private void configurationChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    private int nextRoute(int route) {
+        return route + 1 >= routeCount() ? -1 : route + 1;
+    }
+
+    private int routeCount() {
+        return kind() == LogisticsKind.MULTITRACK_BUFFER ? filterSlots() + 1 : 1;
+    }
+
+    private int[] slotsForRoute(int route) {
+        if (route < 0 || route >= routeCount()) {
+            return new int[0];
+        }
+        if (kind() != LogisticsKind.MULTITRACK_BUFFER || route == 0) {
+            int[] slots = new int[activeSlots()];
+            java.util.Arrays.setAll(slots, index -> index);
+            return slots;
+        }
+        int trackSize = activeSlots() / filterSlots();
+        int[] slots = new int[trackSize];
+        java.util.Arrays.setAll(slots, index -> (route - 1) * trackSize + index);
+        return slots;
+    }
+
+    private boolean routeContains(int route, int slot) {
+        for (int candidate : slotsForRoute(route)) {
+            if (candidate == slot) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int[] loadRoutes(CompoundTag tag, String key, int[] defaults, int routeCount) {
+        return tag.contains(key) ? sanitizeRoutes(tag.getIntArray(key), routeCount) : defaults;
+    }
+
+    private static int[] sanitizeRoutes(int[] routes, int routeCount) {
+        if (routes.length != RelativeFace.COUNT) {
+            return new int[]{-1, -1, -1, -1, -1, -1};
+        }
+        int[] result = routes.clone();
+        for (int index = 0; index < result.length; index++) {
+            if (result[index] < -1 || result[index] >= routeCount) {
+                result[index] = -1;
+            }
+        }
+        return result;
     }
 
     private final class SidedHandler implements IItemHandler {
@@ -410,8 +623,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             validate(slot);
             if (stack.isEmpty()
-                    || !sideModes[side.ordinal()].allowsInsert()
-                    || !filters[side.ordinal()].matches(stack)
+                    || !routeContains(insertionRoutes[relativeIndex(side)], slot)
+                    || !filters[relativeIndex(side)].matches(stack)
                     || !matchesTrackFilter(slot, stack)) {
                 return stack;
             }
@@ -460,7 +673,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             validate(slot);
-            if (!sideModes[side.ordinal()].allowsExtract() || amount <= 0) {
+            if (!routeContains(extractionRoutes[relativeIndex(side)], slot) || amount <= 0) {
                 return ItemStack.EMPTY;
             }
             ItemStack current = getItem(slot);
@@ -486,8 +699,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             validate(slot);
-            return sideModes[side.ordinal()].allowsInsert()
-                    && filters[side.ordinal()].matches(stack)
+            return routeContains(insertionRoutes[relativeIndex(side)], slot)
+                    && filters[relativeIndex(side)].matches(stack)
                     && matchesTrackFilter(slot, stack);
         }
 

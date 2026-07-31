@@ -19,7 +19,9 @@ public final class LogisticsMenu extends AbstractContainerMenu {
     private final Container container;
     private final int deviceSlots;
     private final int rows;
+    private final int columns;
     private final int filterSlots;
+    private final boolean multitrack;
 
     public LogisticsMenu(int id, Inventory inventory, RegistryFriendlyByteBuf data) {
         this(
@@ -42,12 +44,20 @@ public final class LogisticsMenu extends AbstractContainerMenu {
                 ? logistics.filterSlots()
                 : 0;
         this.deviceSlots = inventorySlots + filterSlots;
-        this.rows = Math.max(1, (inventorySlots + 8) / 9);
+        this.columns = container instanceof LogisticsBlockEntity logistics
+                ? logistics.inventoryColumns()
+                : 9;
+        this.rows = container instanceof LogisticsBlockEntity logistics
+                ? logistics.inventoryRows()
+                : Math.max(1, (inventorySlots + 8) / 9);
+        this.multitrack = container instanceof LogisticsBlockEntity logistics && logistics.isMultitrack();
+        int inventoryWidth = columns * 18 + (multitrack ? 22 : 0);
+        int inventoryX = (176 - inventoryWidth) / 2 + 1;
         for (int row = 0; row < rows; row++) {
-            for (int column = 0; column < 9; column++) {
-                int slot = column + row * 9;
+            for (int column = 0; column < columns; column++) {
+                int slot = column + row * columns;
                 if (slot < inventorySlots) {
-                    addSlot(new Slot(container, slot, 8 + column * 18, 18 + row * 18));
+                    addSlot(new Slot(container, slot, inventoryX + column * 18, 18 + row * 18));
                 }
             }
         }
@@ -55,8 +65,8 @@ public final class LogisticsMenu extends AbstractContainerMenu {
             addSlot(new Slot(
                     container,
                     LogisticsBlockEntity.INVENTORY_SLOTS + filter,
-                    35 + filter * 18,
-                    24 + rows * 18));
+                    multitrack ? inventoryX + columns * 18 + 4 : 35 + filter * 18,
+                    multitrack ? 18 + filter * 18 : 24 + rows * 18));
         }
         int playerY = 32 + rows * 18 + (filterSlots > 0 ? 24 : 0);
         for (int row = 0; row < 3; row++) {
@@ -111,6 +121,14 @@ public final class LogisticsMenu extends AbstractContainerMenu {
 
     public int filterSlots() {
         return filterSlots;
+    }
+
+    public int columns() {
+        return columns;
+    }
+
+    public boolean multitrack() {
+        return multitrack;
     }
 
     @Override

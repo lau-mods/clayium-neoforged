@@ -172,9 +172,18 @@ public final class ClayiumRegistries {
     public static final DeferredItem<Item> RAW_CLAY_ROLLING_PIN = item("raw_clay_rolling_pin");
     public static final DeferredItem<Item> RAW_CLAY_SLICER = item("raw_clay_slicer");
     public static final DeferredItem<Item> RAW_CLAY_SPATULA = item("raw_clay_spatula");
-    public static final DeferredItem<Item> CLAY_ROLLING_PIN = durableItem("clay_rolling_pin", 60);
-    public static final DeferredItem<Item> CLAY_SLICER = durableItem("clay_slicer", 60);
-    public static final DeferredItem<Item> CLAY_SPATULA = durableItem("clay_spatula", 36);
+    public static final DeferredItem<Item> CLAY_ROLLING_PIN = ITEMS.register(
+            "clay_rolling_pin", () -> new ClayConfiguratorItem(
+                    new Item.Properties().durability(60), ClayConfiguratorItem.Mode.INSERT));
+    public static final DeferredItem<Item> CLAY_SLICER = ITEMS.register(
+            "clay_slicer", () -> new ClayConfiguratorItem(
+                    new Item.Properties().durability(60), ClayConfiguratorItem.Mode.EXTRACT));
+    public static final DeferredItem<Item> CLAY_SPATULA = ITEMS.register(
+            "clay_spatula", () -> new ClayConfiguratorItem(
+                    new Item.Properties().durability(36), ClayConfiguratorItem.Mode.PIPE));
+    public static final DeferredItem<Item> CLAY_WRENCH = ITEMS.register(
+            "clay_wrench", () -> new ClayConfiguratorItem(
+                    new Item.Properties().durability(128), ClayConfiguratorItem.Mode.ROTATE));
     public static final DeferredItem<ShovelItem> CLAY_SHOVEL = ITEMS.register(
             "clay_shovel",
             () -> new ShovelItem(
@@ -187,11 +196,16 @@ public final class ClayiumRegistries {
                     new Item.Properties().attributes(PickaxeItem.createAttributes(Tiers.STONE, 1.0F, -2.8F))));
     public static final Map<String, DeferredItem<Item>> PHASE4_ITEMS = registerPhase4Items();
     public static final DeferredItem<ClayConfiguratorItem> CLAY_CONFIGURATOR = ITEMS.register(
-            "clay_configurator", () -> new ClayConfiguratorItem(new Item.Properties().stacksTo(1), false));
+            "clay_configurator", () -> new ClayConfiguratorItem(
+                    new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.IO_COMBINED));
+    public static final DeferredItem<ClayConfiguratorItem> PIPING_CONFIGURATOR = ITEMS.register(
+            "piping_configurator", () -> new ClayConfiguratorItem(
+                    new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.PIPE_COMBINED));
     public static final DeferredItem<ClayConfiguratorItem> IO_MEMORY_CARD = ITEMS.register(
             "io_memory_card", () -> new ClayConfiguratorItem(new Item.Properties()
                     .stacksTo(1)
-                    .component(ClayiumDataComponents.IO_MEMORY.get(), net.claustra01.clayium.data.IoMemory.DEFAULT), true));
+                    .component(ClayiumDataComponents.IO_MEMORY.get(), net.claustra01.clayium.data.IoMemory.DEFAULT),
+                    ClayConfiguratorItem.Mode.MEMORY));
     public static final DeferredItem<SmartFilterItem> SMART_FILTER = ITEMS.register(
             "smart_filter", () -> new SmartFilterItem(new Item.Properties()
                     .stacksTo(1)

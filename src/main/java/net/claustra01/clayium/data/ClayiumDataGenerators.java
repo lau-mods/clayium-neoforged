@@ -54,7 +54,11 @@ public final class ClayiumDataGenerators {
                 add("gui." + Clayium.MODID + ".tier", "Tier %s");
                 add("message." + Clayium.MODID + ".water_wheel_status",
                         "Flowing water: %s, generation: %s/s");
-                add("message." + Clayium.MODID + ".side_mode", "%s side: %s");
+                add("message." + Clayium.MODID + ".insert_route",
+                        "%s insertion route: %s (-1 = disabled)");
+                add("message." + Clayium.MODID + ".extract_route",
+                        "%s extraction route: %s (-1 = disabled)");
+                add("message." + Clayium.MODID + ".pipe_mode", "Pipe shape: %s");
                 add("message." + Clayium.MODID + ".io_saved", "I/O configuration saved");
                 add("message." + Clayium.MODID + ".io_loaded", "I/O configuration loaded");
                 add("message." + Clayium.MODID + ".filter_applied", "Smart Filter applied");
@@ -170,13 +174,15 @@ public final class ClayiumDataGenerators {
         language.add("item." + Clayium.MODID + ".clay_rolling_pin", "Clay Rolling Pin");
         language.add("item." + Clayium.MODID + ".clay_slicer", "Clay Slicer");
         language.add("item." + Clayium.MODID + ".clay_spatula", "Clay Spatula");
+        language.add("item." + Clayium.MODID + ".clay_wrench", "Clay Wrench");
         language.add("item." + Clayium.MODID + ".clay_shovel", "Clay Shovel");
         language.add("item." + Clayium.MODID + ".clay_pickaxe", "Clay Pickaxe");
         for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }
-        language.add("item." + Clayium.MODID + ".clay_configurator", "Clay Configurator");
-        language.add("item." + Clayium.MODID + ".io_memory_card", "I/O Memory Card");
+        language.add("item." + Clayium.MODID + ".clay_configurator", "Clay IO Configurator");
+        language.add("item." + Clayium.MODID + ".piping_configurator", "Clay Piping Configurator");
+        language.add("item." + Clayium.MODID + ".io_memory_card", "Memory Card");
         language.add("item." + Clayium.MODID + ".smart_filter", "Smart Filter");
     }
 

@@ -85,7 +85,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
         for (int index = 0; index < recipe.results().size(); index++) {
             int y = 32 + 18 * index - 9 * (recipe.results().size() - 1);
             builder.addOutputSlot(124, y)
-                    .setOutputSlotBackground()
+                    .setStandardSlotBackground()
                     .addItemStack(recipe.results().get(index));
         }
     }

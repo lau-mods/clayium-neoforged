@@ -27,6 +27,11 @@ public final class Phase4CraftingRecipes {
         circuits(output);
         hulls(output);
         machines(output);
+        shaped(output, "clay_wrench", ClayiumRegistries.CLAY_WRENCH.get(),
+                "B B", " S ", " | ",
+                'B', item("dense_clay_blade"),
+                'S', item("dense_clay_spindle"),
+                '|', ClayiumRegistries.DENSE_CLAY_STICK.get());
         ShapelessRecipeBuilder.shapeless(RecipeCategory.REDSTONE, ClayiumRegistries.CLAY_WATER_WHEEL.get())
                 .requires(ClayiumRegistries.CLAY_MACHINE_HULL.get())
                 .requires(item("clay_water_wheel_component"))

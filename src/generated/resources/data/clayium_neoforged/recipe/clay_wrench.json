@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "clayium_neoforged:dense_clay_blade"
+    },
+    "S": {
+      "item": "clayium_neoforged:dense_clay_spindle"
+    },
+    "|": {
+      "item": "clayium_neoforged:dense_clay_stick"
+    }
+  },
+  "pattern": [
+    "B B",
+    " S ",
+    " | "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_wrench"
+  }
+}

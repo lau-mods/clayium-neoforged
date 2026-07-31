@@ -18,6 +18,8 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -28,11 +30,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** Shared block shell for the first item-processing machines. */
 public final class MachineBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
+    private static final VoxelShape PIPE_CENTER = Block.box(5, 5, 5, 11, 11, 11);
     public static final MapCodec<MachineBlock> CODEC = simpleCodec(
             properties -> new MachineBlock(properties, ResourceLocation.withDefaultNamespace("air"), ClayTier.RAW));
 
@@ -43,7 +51,7 @@ public final class MachineBlock extends BaseEntityBlock {
         super(properties);
         this.machineId = machineId;
         this.tier = tier;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(PIPE, false));
     }
 
     public ResourceLocation machineId() {
@@ -61,17 +69,47 @@ public final class MachineBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, PIPE);
     }
 
     @Override
     public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(PIPE, false);
     }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    protected VoxelShape getShape(
+            BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (!state.getValue(PIPE)) {
+            return Shapes.block();
+        }
+        VoxelShape shape = PIPE_CENTER;
+        if (level.getBlockEntity(pos) instanceof MachineBlockEntity machine) {
+            for (Direction side : Direction.values()) {
+                if (machine.pipeConnects(side)) {
+                    shape = Shapes.or(shape, pipeArm(side));
+                }
+            }
+        }
+        return shape;
+    }
+
+    private static VoxelShape pipeArm(Direction side) {
+        return switch (side) {
+            case DOWN -> Block.box(5, 0, 5, 11, 5, 11);
+            case UP -> Block.box(5, 11, 5, 11, 16, 11);
+            case NORTH -> Block.box(5, 5, 0, 11, 11, 5);
+            case SOUTH -> Block.box(5, 5, 11, 11, 11, 16);
+            case WEST -> Block.box(0, 5, 5, 5, 11, 11);
+            case EAST -> Block.box(11, 5, 5, 16, 11, 11);
+        };
     }
 
     @Override

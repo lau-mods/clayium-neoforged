@@ -137,7 +137,10 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     }
 
     private void drawMachineSlots(GuiGraphics graphics) {
-        graphics.blit(SLOT, leftPos + 146, topPos + 53, 0, 0, 18, 18);
+        if (menu.tier() >= 4) {
+            // Container slots point at the item origin; the original 18px frame surrounds it.
+            graphics.blit(SLOT, leftPos + 145, topPos + 52, 0, 0, 18, 18);
+        }
         if (menu.layout() == MachineLayout.ASSEMBLER) {
             graphics.blit(SLOT, leftPos + 32, topPos + 35, 32, 0, 18, 18);
             graphics.blit(SLOT, leftPos + 50, topPos + 35, 32, 32, 18, 18);

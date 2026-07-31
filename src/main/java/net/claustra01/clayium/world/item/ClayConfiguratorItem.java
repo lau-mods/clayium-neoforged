@@ -12,13 +12,27 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 
-/** Unified replacement for the original input/output/piping tools and memory card. */
+/** Original Clayium I/O tools and their combined variants. */
 public final class ClayConfiguratorItem extends Item {
-    private final boolean memory;
+    public enum Mode {
+        INSERT,
+        EXTRACT,
+        PIPE,
+        ROTATE,
+        IO_COMBINED,
+        PIPE_COMBINED,
+        MEMORY
+    }
 
-    public ClayConfiguratorItem(Properties properties, boolean memory) {
+    private final Mode mode;
+
+    public ClayConfiguratorItem(Properties properties, Mode mode) {
         super(properties);
-        this.memory = memory;
+        this.mode = mode;
+    }
+
+    public boolean showsPipingOverlay() {
+        return mode == Mode.IO_COMBINED || mode == Mode.PIPE_COMBINED || mode == Mode.MEMORY;
     }
 
     @Override
@@ -30,7 +44,7 @@ public final class ClayConfiguratorItem extends Item {
         if (context.getLevel().isClientSide) {
             return InteractionResult.SUCCESS;
         }
-        if (memory) {
+        if (mode == Mode.MEMORY) {
             if (context.getPlayer() != null && context.getPlayer().isShiftKeyDown()) {
                 context.getItemInHand().set(ClayiumDataComponents.IO_MEMORY.get(), device.saveIoMemory());
                 context.getPlayer().displayClientMessage(
@@ -46,16 +60,37 @@ public final class ClayConfiguratorItem extends Item {
                             true);
                 }
             }
-        } else {
-            var mode = device.cycleSide(context.getClickedFace());
+        } else if (mode == Mode.INSERT
+                || mode == Mode.IO_COMBINED && (context.getPlayer() == null || !context.getPlayer().isShiftKeyDown())) {
+            int route = device.cycleInsertRoute(context.getClickedFace());
             if (context.getPlayer() != null) {
                 context.getPlayer().displayClientMessage(
                         Component.translatable(
-                                "message.clayium_neoforged.side_mode",
+                                "message.clayium_neoforged.insert_route",
                                 context.getClickedFace().getName(),
-                                mode.name()),
+                                route),
                         true);
             }
+        } else if (mode == Mode.EXTRACT || mode == Mode.IO_COMBINED) {
+            int route = device.cycleExtractRoute(context.getClickedFace());
+            if (context.getPlayer() != null) {
+                context.getPlayer().displayClientMessage(
+                        Component.translatable(
+                                "message.clayium_neoforged.extract_route",
+                                context.getClickedFace().getName(),
+                                route),
+                        true);
+            }
+        } else if (mode == Mode.PIPE
+                || mode == Mode.PIPE_COMBINED && (context.getPlayer() == null || !context.getPlayer().isShiftKeyDown())) {
+            boolean pipe = device.togglePipe();
+            if (context.getPlayer() != null) {
+                context.getPlayer().displayClientMessage(
+                        Component.translatable("message.clayium_neoforged.pipe_mode", pipe),
+                        true);
+            }
+        } else if (mode == Mode.ROTATE || mode == Mode.PIPE_COMBINED) {
+            device.rotate(context.getClickedFace());
         }
         return InteractionResult.CONSUME;
     }

@@ -116,13 +116,16 @@ public final class MachineMenu extends AbstractContainerMenu {
                 yield outputs.length + 1;
             }
         };
-        addSlot(new Slot(container, MachineLayout.ENERGY_SLOT, 146, 53) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return EnergeticClayFuel.isFuel(stack);
-            }
-        });
-        return processingSlots + 1;
+        if (tier.progressionIndex() >= 4) {
+            addSlot(new Slot(container, MachineLayout.ENERGY_SLOT, 146, 53) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return EnergeticClayFuel.isFuel(stack);
+                }
+            });
+            return processingSlots + 1;
+        }
+        return processingSlots;
     }
 
     private void addOutputSlot(int inventorySlot, int x, int y) {
@@ -215,7 +218,7 @@ public final class MachineMenu extends AbstractContainerMenu {
             }
         } else {
             int energyMenuSlot = deviceSlotCount - 1;
-            if (EnergeticClayFuel.isFuel(stack)) {
+            if (tier.progressionIndex() >= 4 && EnergeticClayFuel.isFuel(stack)) {
                 if (!moveItemStackTo(stack, energyMenuSlot, energyMenuSlot + 1, false)) {
                     return ItemStack.EMPTY;
                 }

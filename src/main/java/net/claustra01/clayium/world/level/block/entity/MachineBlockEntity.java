@@ -15,7 +15,7 @@ import net.claustra01.clayium.energy.EnergeticClayFuel;
 import net.claustra01.clayium.data.FilterSettings;
 import net.claustra01.clayium.data.IoMemory;
 import net.claustra01.clayium.logistics.ConfigurableItemDevice;
-import net.claustra01.clayium.logistics.SideMode;
+import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.MachinePerformance;
 import net.claustra01.clayium.recipe.MachineIngredient;
@@ -35,6 +35,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
@@ -72,7 +75,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     private int recipeRecheckDelay;
     private long activeEnergyPerTick;
     private StopReason stopReason = StopReason.NO_RECIPE;
-    private final SideMode[] sideModes = new SideMode[6];
+    private int[] insertionRoutes = new int[]{-1, 0, -1, 1, -1, -1};
+    private int[] extractionRoutes = new int[]{0, -1, -1, -1, -1, -1};
     private final FilterSettings[] filters = new FilterSettings[6];
     private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
@@ -141,7 +145,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             if ((!machineLayout().isInputSlot(slot) && slot != MachineLayout.ENERGY_SLOT) || stack.isEmpty()) {
                 return stack;
             }
-            if (slot == MachineLayout.ENERGY_SLOT && !EnergeticClayFuel.isFuel(stack)) {
+            if (slot == MachineLayout.ENERGY_SLOT
+                    && (!acceptsEnergeticClay() || !EnergeticClayFuel.isFuel(stack))) {
                 return stack;
             }
             ItemStack current = getItem(slot);
@@ -192,7 +197,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         public boolean isItemValid(int slot, ItemStack stack) {
             validateSlot(slot);
             return machineLayout().isInputSlot(slot)
-                    || slot == MachineLayout.ENERGY_SLOT && EnergeticClayFuel.isFuel(stack);
+                    || slot == MachineLayout.ENERGY_SLOT
+                            && acceptsEnergeticClay()
+                            && EnergeticClayFuel.isFuel(stack);
         }
 
         private void validateSlot(int slot) {
@@ -204,13 +211,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     public MachineBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(), pos, state);
-        java.util.Arrays.fill(sideModes, SideMode.DISABLED);
         java.util.Arrays.fill(filters, FilterSettings.DEFAULT);
-        Direction front = state.hasProperty(MachineBlock.FACING)
-                ? state.getValue(MachineBlock.FACING)
-                : Direction.NORTH;
-        sideModes[front.ordinal()] = SideMode.OUTPUT;
-        sideModes[front.getOpposite().ordinal()] = SideMode.INPUT;
+        if (machineLayout() == MachineLayout.ASSEMBLER) {
+            insertionRoutes = new int[]{-1, 2, -1, 3, -1, -1};
+        }
         for (Direction direction : Direction.values()) {
             sidedHandlers.put(direction, new SidedMachineHandler(direction));
         }
@@ -222,24 +226,29 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     private void tickAutomation() {
-        if (level == null || ++automationCooldown < 8) {
+        if (level == null || machineTier().progressionIndex() < 3
+                || ++automationCooldown < automationInterval()) {
             return;
         }
         automationCooldown = 0;
         for (Direction direction : Direction.values()) {
-            if (!sideModes[direction.ordinal()].allowsExtract()) {
+            int relative = relativeIndex(direction);
+            if (insertionRoutes[relative] >= 0 && pullFrom(direction, insertionRoutes[relative])) {
+                return;
+            }
+            if (extractionRoutes[relative] < 0) {
                 continue;
             }
             IItemHandler target = targetHandler(direction);
             if (target == null) {
                 continue;
             }
-            for (int outputSlot : machineLayout().outputSlots(machineTier())) {
+            for (int outputSlot : extractionSlots(extractionRoutes[relative])) {
                 ItemStack output = getItem(outputSlot);
                 if (output.isEmpty()) {
                     continue;
                 }
-                ItemStack offered = output.copyWithCount(Math.min(64, output.getCount()));
+                ItemStack offered = output.copyWithCount(Math.min(automationLimit(), output.getCount()));
                 ItemStack remainder = offered;
                 for (int slot = 0; slot < target.getSlots() && !remainder.isEmpty(); slot++) {
                     remainder = target.insertItem(slot, remainder, false);
@@ -252,6 +261,47 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
                 }
             }
         }
+    }
+
+    private boolean pullFrom(Direction direction, int route) {
+        IItemHandler source = targetHandler(direction);
+        if (source == null) {
+            return false;
+        }
+        IItemHandler destination = itemHandler(direction);
+        for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
+            ItemStack offered = source.extractItem(sourceSlot, automationLimit(), true);
+            if (offered.isEmpty()) {
+                continue;
+            }
+            int accepted = 0;
+            ItemStack remainder = offered;
+            for (int slot : insertionSlots(route)) {
+                ItemStack next = destination.insertItem(slot, remainder, true);
+                accepted += remainder.getCount() - next.getCount();
+                remainder = next;
+            }
+            if (accepted <= 0) {
+                continue;
+            }
+            ItemStack extracted = source.extractItem(sourceSlot, accepted, false);
+            ItemStack uninserted = extracted;
+            for (int slot : insertionSlots(route)) {
+                uninserted = destination.insertItem(slot, uninserted, false);
+            }
+            return uninserted.isEmpty();
+        }
+        return false;
+    }
+
+    private int automationInterval() {
+        int tier = machineTier().progressionIndex();
+        return tier <= 4 ? 20 : tier == 5 ? 2 : 1;
+    }
+
+    private int automationLimit() {
+        int tier = machineTier().progressionIndex();
+        return tier <= 4 ? 8 : tier == 5 ? 16 : 64;
     }
 
     private IItemHandler targetHandler(Direction direction) {
@@ -311,6 +361,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     private boolean consumeOneEnergeticClay() {
+        if (!acceptsEnergeticClay()) {
+            return false;
+        }
         ItemStack fuel = getItem(MachineLayout.ENERGY_SLOT);
         long value = EnergeticClayFuel.value(fuel);
         if (value <= 0 || energy.energyStored() > Long.MAX_VALUE - value) {
@@ -429,6 +482,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         return block == null ? net.claustra01.clayium.tier.ClayTier.RAW : block.tier();
     }
 
+    private boolean acceptsEnergeticClay() {
+        return machineTier().progressionIndex() >= 4;
+    }
+
     private List<ItemStack> inputStacks() {
         return java.util.Arrays.stream(machineLayout().inputSlots())
                 .mapToObj(this::getItem)
@@ -448,35 +505,72 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     @Override
-    public SideMode cycleSide(Direction direction) {
-        int index = direction.ordinal();
-        sideModes[index] = sideModes[index].next();
-        setChanged();
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition);
+    public int cycleInsertRoute(Direction direction) {
+        int index = relativeIndex(direction);
+        insertionRoutes[index] = nextRoute(insertionRoutes[index], insertionRouteCount());
+        configurationChanged();
+        return insertionRoutes[index];
+    }
+
+    @Override
+    public int cycleExtractRoute(Direction direction) {
+        int index = relativeIndex(direction);
+        extractionRoutes[index] = nextRoute(extractionRoutes[index], 1);
+        configurationChanged();
+        return extractionRoutes[index];
+    }
+
+    @Override
+    public boolean togglePipe() {
+        if (level == null) {
+            return false;
         }
-        return sideModes[index];
+        boolean pipe = !getBlockState().getValue(MachineBlock.PIPE);
+        level.setBlock(worldPosition, getBlockState().setValue(MachineBlock.PIPE, pipe), 3);
+        configurationChanged();
+        return pipe;
+    }
+
+    @Override
+    public boolean rotate(Direction clickedFace) {
+        if (level == null || !clickedFace.getAxis().isHorizontal()) {
+            return false;
+        }
+        Direction current = getBlockState().getValue(MachineBlock.FACING);
+        Direction next = clickedFace == current ? clickedFace.getOpposite() : clickedFace;
+        level.setBlock(worldPosition, getBlockState().setValue(MachineBlock.FACING, next), 3);
+        configurationChanged();
+        return true;
     }
 
     @Override
     public void setFilter(Direction direction, FilterSettings filter) {
-        filters[direction.ordinal()] = filter;
-        setChanged();
+        filters[relativeIndex(direction)] = filter;
+        configurationChanged();
     }
 
     @Override
     public IoMemory saveIoMemory() {
-        return IoMemory.of(sideModes);
+        return IoMemory.of(
+                insertionRoutes,
+                extractionRoutes,
+                getBlockState().getValue(MachineBlock.PIPE),
+                getBlockState().getValue(MachineBlock.FACING).getName());
     }
 
     @Override
     public void loadIoMemory(IoMemory memory) {
-        SideMode[] loaded = memory.modesOrDefault(sideModes);
-        System.arraycopy(loaded, 0, sideModes, 0, sideModes.length);
-        setChanged();
+        insertionRoutes = sanitizeRoutes(memory.insertionRoutesOrDefault(insertionRoutes), insertionRouteCount());
+        extractionRoutes = sanitizeRoutes(memory.extractionRoutesOrDefault(extractionRoutes), 1);
         if (level != null) {
-            level.invalidateCapabilities(worldPosition);
+            Direction facing = Direction.byName(memory.facing());
+            BlockState state = getBlockState().setValue(MachineBlock.PIPE, memory.pipe());
+            if (facing != null && facing.getAxis().isHorizontal()) {
+                state = state.setValue(MachineBlock.FACING, facing);
+            }
+            level.setBlock(worldPosition, state, 3);
         }
+        configurationChanged();
     }
 
     @Override
@@ -542,7 +636,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
         return machineLayout().isInputSlot(slot)
-                || slot == MachineLayout.ENERGY_SLOT && EnergeticClayFuel.isFuel(stack);
+                || slot == MachineLayout.ENERGY_SLOT
+                        && acceptsEnergeticClay()
+                        && EnergeticClayFuel.isFuel(stack);
     }
 
     @Override
@@ -565,10 +661,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
                 : null;
         progress = Math.max(0, tag.getInt("Progress"));
         totalProgress = Math.max(0, tag.getInt("TotalProgress"));
-        int[] savedModes = tag.getIntArray("SideModes");
-        for (int index = 0; index < Math.min(6, savedModes.length); index++) {
-            sideModes[index] = SideMode.values()[Math.max(0, Math.min(SideMode.values().length - 1, savedModes[index]))];
-        }
+        insertionRoutes = loadRoutes(tag, "InsertionRoutes", insertionRoutes, insertionRouteCount());
+        extractionRoutes = loadRoutes(tag, "ExtractionRoutes", extractionRoutes, 1);
         ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
         for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
             CompoundTag saved = savedFilters.getCompound(index);
@@ -594,7 +688,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
         tag.putInt("Progress", progress);
         tag.putInt("TotalProgress", totalProgress);
-        tag.putIntArray("SideModes", java.util.Arrays.stream(sideModes).mapToInt(Enum::ordinal).toArray());
+        tag.putIntArray("InsertionRoutes", insertionRoutes);
+        tag.putIntArray("ExtractionRoutes", extractionRoutes);
         ListTag savedFilters = new ListTag();
         for (FilterSettings filter : filters) {
             CompoundTag saved = new CompoundTag();
@@ -605,6 +700,132 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             savedFilters.add(saved);
         }
         tag.put("Filters", savedFilters);
+    }
+
+    public int insertionRoute(Direction side) {
+        return insertionRoutes[relativeIndex(side)];
+    }
+
+    public int extractionRoute(Direction side) {
+        return extractionRoutes[relativeIndex(side)];
+    }
+
+    public boolean hasFilter(Direction side) {
+        return !filters[relativeIndex(side)].equals(FilterSettings.DEFAULT);
+    }
+
+    public boolean pipeConnects(Direction side) {
+        if (level == null || insertionRoute(side) < 0 && extractionRoute(side) < 0) {
+            return false;
+        }
+        var neighbor = level.getBlockEntity(worldPosition.relative(side));
+        if (neighbor instanceof ConfigurableItemDevice device) {
+            boolean neighborActive =
+                    device.insertionRoute(side.getOpposite()) >= 0
+                            || device.extractionRoute(side.getOpposite()) >= 0;
+            return neighborActive
+                    || neighbor instanceof LogisticsBlockEntity logistics && logistics.isPassivePipeEndpoint();
+        }
+        return neighbor != null;
+    }
+
+    public String insertionIcon(Direction side) {
+        int route = insertionRoute(side);
+        if (machineLayout() == MachineLayout.ASSEMBLER) {
+            return switch (route) {
+                case 0 -> "import_1";
+                case 1 -> "import_2";
+                case 2 -> "import";
+                case 3 -> "import_energy";
+                default -> "";
+            };
+        }
+        return route == 0 ? "import" : route == 1 ? "import_energy" : "";
+    }
+
+    public String extractionIcon(Direction side) {
+        return extractionRoute(side) == 0 ? "export" : "";
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
+    }
+
+    private int relativeIndex(Direction direction) {
+        Direction front = getBlockState().getValue(MachineBlock.FACING);
+        return RelativeFace.index(front, direction);
+    }
+
+    private int insertionRouteCount() {
+        return machineLayout() == MachineLayout.ASSEMBLER ? 4 : 2;
+    }
+
+    private int[] insertionSlots(int route) {
+        if (route < 0) {
+            return new int[0];
+        }
+        if (machineLayout() == MachineLayout.ASSEMBLER) {
+            return switch (route) {
+                case 0 -> new int[]{0};
+                case 1 -> new int[]{1};
+                case 2 -> new int[]{0, 1};
+                case 3 -> acceptsEnergeticClay() ? new int[]{MachineLayout.ENERGY_SLOT} : new int[0];
+                default -> new int[0];
+            };
+        }
+        return switch (route) {
+            case 0 -> machineLayout().inputSlots();
+            case 1 -> acceptsEnergeticClay() ? new int[]{MachineLayout.ENERGY_SLOT} : new int[0];
+            default -> new int[0];
+        };
+    }
+
+    private int[] extractionSlots(int route) {
+        return route == 0 ? machineLayout().outputSlots(machineTier()) : new int[0];
+    }
+
+    private void configurationChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    private static int nextRoute(int route, int routeCount) {
+        return route + 1 >= routeCount ? -1 : route + 1;
+    }
+
+    private static int[] loadRoutes(CompoundTag tag, String key, int[] defaults, int routeCount) {
+        return tag.contains(key) ? sanitizeRoutes(tag.getIntArray(key), routeCount) : defaults;
+    }
+
+    private static int[] sanitizeRoutes(int[] routes, int routeCount) {
+        if (routes.length != RelativeFace.COUNT) {
+            return new int[]{-1, -1, -1, -1, -1, -1};
+        }
+        int[] result = routes.clone();
+        for (int index = 0; index < result.length; index++) {
+            if (result[index] < -1 || result[index] >= routeCount) {
+                result[index] = -1;
+            }
+        }
+        return result;
+    }
+
+    private static boolean contains(int[] slots, int wanted) {
+        for (int slot : slots) {
+            if (slot == wanted) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private final class SidedMachineHandler implements IItemHandler {
@@ -626,16 +847,17 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return sideModes[side.ordinal()].allowsInsert() && filters[side.ordinal()].matches(stack)
-                    ? itemHandler.insertItem(slot, stack, simulate)
-                    : stack;
+            int relative = relativeIndex(side);
+            int route = insertionRoutes[relative];
+            return contains(insertionSlots(route), slot) && filters[relative].matches(stack)
+                    ? itemHandler.insertItem(slot, stack, simulate) : stack;
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return sideModes[side.ordinal()].allowsExtract()
-                    ? itemHandler.extractItem(slot, amount, simulate)
-                    : ItemStack.EMPTY;
+            int route = extractionRoutes[relativeIndex(side)];
+            return contains(extractionSlots(route), slot)
+                    ? itemHandler.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
 
         @Override
@@ -645,8 +867,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return sideModes[side.ordinal()].allowsInsert()
-                    && filters[side.ordinal()].matches(stack)
+            int relative = relativeIndex(side);
+            return contains(insertionSlots(insertionRoutes[relative]), slot)
+                    && filters[relative].matches(stack)
                     && itemHandler.isItemValid(slot, stack);
         }
     }

@@ -8,7 +8,19 @@ import net.claustra01.clayium.data.IoMemory;
 import net.minecraft.core.Direction;
 
 public interface ConfigurableItemDevice {
-    SideMode cycleSide(Direction direction);
+    int cycleInsertRoute(Direction direction);
+
+    int cycleExtractRoute(Direction direction);
+
+    boolean togglePipe();
+
+    boolean rotate(Direction clickedFace);
+
+    int insertionRoute(Direction direction);
+
+    int extractionRoute(Direction direction);
+
+    boolean hasFilter(Direction direction);
 
     void setFilter(Direction direction, FilterSettings filter);
 
