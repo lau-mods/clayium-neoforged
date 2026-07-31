@@ -123,7 +123,7 @@ public final class ClayiumJeiPlugin implements IModPlugin {
             @Override public java.util.Collection<IGuiClickableArea> getGuiClickableAreas(
                     SpecialMachineScreen screen,double x,double y) {
                 return screen.getMenu().kind()==SpecialMachineKind.CHEMICAL_METAL_SEPARATOR
-                        ? java.util.List.of(IGuiClickableArea.createBasic(77,65,22,7,ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR))
+                        ? java.util.List.of(IGuiClickableArea.createBasic(55,44,24,17,ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR))
                         : java.util.List.of();
             }
         });

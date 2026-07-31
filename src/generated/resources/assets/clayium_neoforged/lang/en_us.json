@@ -318,7 +318,7 @@
   "jei.clayium_neoforged.category.smelter": "Smelter",
   "jei.clayium_neoforged.category.solar_clay_fabricator": "Solar Clay Fabricator",
   "jei.clayium_neoforged.category.wire_drawing_machine": "Wire Drawing Machine",
-  "jei.clayium_neoforged.chance": "Chance: %.2f%%",
+  "jei.clayium_neoforged.chance": "Chance: %s%%",
   "jei.clayium_neoforged.clay_energy_per_tick": "CE/t: %s",
   "jei.clayium_neoforged.input_count": "Input: %s",
   "jei.clayium_neoforged.minimum_tier": "Tier: %s",

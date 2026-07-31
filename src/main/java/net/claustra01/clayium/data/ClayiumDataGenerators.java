@@ -87,7 +87,7 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.solar_clay_fabricator", "Solar Clay Fabricator");
                 add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
                 add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");
-                add("jei." + Clayium.MODID + ".chance", "Chance: %.2f%%");
+                add("jei." + Clayium.MODID + ".chance", "Chance: %s%%");
                 add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
                 add("jei." + Clayium.MODID + ".required_actions", "Manual actions: %s");
                 add("jei." + Clayium.MODID + ".input_count", "Input: %s");

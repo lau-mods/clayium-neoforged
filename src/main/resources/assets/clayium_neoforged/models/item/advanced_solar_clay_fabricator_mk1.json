@@ -1,1 +1,1 @@
-{"parent":"clayium_neoforged:block/advanced_solar_clay_fabricator_mk1"}
+{"parent":"clayium_neoforged:block/solar_fabricator_item_template","textures":{"hull":"clayium_neoforged:block/machine_hull_advanced","solar":"clayium_neoforged:block/machine_solar_top"}}

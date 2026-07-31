@@ -26,20 +26,28 @@ public final class SpecialMachineMenu extends AbstractContainerMenu {
     private final int machineHeight;
 
     public SpecialMachineMenu(int id, Inventory inventory, RegistryFriendlyByteBuf buffer) {
-        this(id, inventory,
-                inventory.player.level().getBlockEntity(buffer.readBlockPos()) instanceof SpecialMachineBlockEntity machine
-                        ? machine : new SimpleContainer(SpecialMachineBlockEntity.MAX_SLOTS),
-                new SimpleContainerData(4));
+        this(id, inventory, ClientOpenData.read(inventory, buffer));
+    }
+
+    private SpecialMachineMenu(int id,Inventory inventory,ClientOpenData open) {
+        this(id,inventory,open.container(),new SimpleContainerData(4),open.kind(),open.tier());
     }
 
     public SpecialMachineMenu(int id, Inventory inventory, Container container, ContainerData data) {
+        this(id,inventory,container,data,
+                container instanceof SpecialMachineBlockEntity value?value.kind():SpecialMachineKind.AUTO_CLAY_CONDENSER,
+                container instanceof SpecialMachineBlockEntity value?value.tier():5);
+    }
+
+    private SpecialMachineMenu(int id,Inventory inventory,Container container,ContainerData data,
+                               SpecialMachineKind kind,int tier) {
         super(ClayiumRegistries.SPECIAL_MACHINE_MENU.get(), id);
         this.container = container;
         this.data = data;
-        SpecialMachineBlockEntity machine = container instanceof SpecialMachineBlockEntity value ? value : null;
-        this.kind = machine == null ? SpecialMachineKind.AUTO_CLAY_CONDENSER : machine.kind();
-        this.tier = machine == null ? 5 : machine.tier();
-        this.machineHeight = kind == SpecialMachineKind.AUTO_CLAY_CONDENSER ? 104 : 84;
+        this.kind = kind;
+        this.tier = tier;
+        this.machineHeight = kind == SpecialMachineKind.AUTO_CLAY_CONDENSER ? 104
+                : kind == SpecialMachineKind.CHEMICAL_METAL_SEPARATOR ? 96 : 84;
         container.startOpen(inventory.player);
         switch (kind) {
             case AUTO_CLAY_CONDENSER -> condenserSlots();
@@ -55,8 +63,8 @@ public final class SpecialMachineMenu extends AbstractContainerMenu {
 
     private void condenserSlots(){
         for(int row=0;row<4;row++)for(int column=0;column<5;column++)
-            addSlot(new RestrictedSlot(container,column+row*5,44+column*18,18+row*18));
-        addSlot(new GhostSlot(container,21,152,18));
+            addSlot(new RestrictedSlot(container,column+row*5,43+column*18,18+row*18));
+        addSlot(new GhostSlot(container,21,151,18));
     }
     private void crafterSlots(){
         for(int row=0;row<3;row++)for(int column=0;column<3;column++)
@@ -65,13 +73,13 @@ public final class SpecialMachineMenu extends AbstractContainerMenu {
             addSlot(new GhostSlot(container,15+column+row*3,5+column*18,18+row*18));
         for(int row=0;row<3;row++)for(int column=0;column<2;column++)
             addSlot(new OutputSlot(container,9+column+row*2,135+column*18,18+row*18));
-        if(tier>=6)addSlot(new RestrictedSlot(container,33,8,66));
+        if(tier>=6)addSlot(new RestrictedSlot(container,33,-12,machineHeight-16));
     }
     private void separatorSlots(){
-        addSlot(new RestrictedSlot(container,0,8,32));
-        for(int row=0;row<2;row++)for(int column=0;column<8;column++)
-            addSlot(new OutputSlot(container,1+column+row*8,26+column*18,18+row*18));
-        addSlot(new RestrictedSlot(container,18,152,54));
+        addSlot(new RestrictedSlot(container,0,25,44));
+        for(int row=0;row<4;row++)for(int column=0;column<4;column++)
+            addSlot(new OutputSlot(container,1+row*4+column,85+column*18,17+row*18));
+        addSlot(new RestrictedSlot(container,18,-12,machineHeight-16));
     }
 
     @Override public boolean stillValid(Player player){return container.stillValid(player);}
@@ -102,6 +110,9 @@ public final class SpecialMachineMenu extends AbstractContainerMenu {
     @Override public void removed(Player player){super.removed(player);container.stopOpen(player);}
     public SpecialMachineKind kind(){return kind;} public int tier(){return tier;} public int machineHeight(){return machineHeight;}
     public int progress(){return data.get(0);} public int totalProgress(){return data.get(1);}
+    public long energy(){return Integer.toUnsignedLong(data.get(2))|(Integer.toUnsignedLong(data.get(3))<<32);}
+    public long energyPerTick(){return kind==SpecialMachineKind.CHEMICAL_METAL_SEPARATOR?5_000L
+            :kind==SpecialMachineKind.AUTO_CRAFTER&&tier>=6?10L:0L;}
 
     private static final class RestrictedSlot extends Slot {
         RestrictedSlot(Container container,int index,int x,int y){super(container,index,x,y);}
@@ -115,5 +126,15 @@ public final class SpecialMachineMenu extends AbstractContainerMenu {
         GhostSlot(Container container,int index,int x,int y){super(container,index,x,y);}
         @Override public boolean mayPlace(ItemStack stack){return false;}
         @Override public boolean mayPickup(Player player){return false;}
+    }
+    private record ClientOpenData(Container container,SpecialMachineKind kind,int tier) {
+        private static ClientOpenData read(Inventory inventory,RegistryFriendlyByteBuf buffer) {
+            var pos=buffer.readBlockPos();int ordinal=buffer.readVarInt();int tier=buffer.readVarInt();
+            SpecialMachineKind[] values=SpecialMachineKind.values();
+            SpecialMachineKind kind=ordinal>=0&&ordinal<values.length?values[ordinal]:SpecialMachineKind.AUTO_CLAY_CONDENSER;
+            Container container=inventory.player.level().getBlockEntity(pos) instanceof SpecialMachineBlockEntity machine
+                    ?machine:new SimpleContainer(SpecialMachineBlockEntity.MAX_SLOTS);
+            return new ClientOpenData(container,kind,Math.clamp(tier,0,13));
+        }
     }
 }

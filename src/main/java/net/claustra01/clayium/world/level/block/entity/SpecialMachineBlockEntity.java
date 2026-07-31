@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
+import net.claustra01.clayium.energy.ClayEnergyReceiver;
 import net.claustra01.clayium.energy.EnergeticClayFuel;
 import net.claustra01.clayium.machine.SpecialMachineKind;
 import net.claustra01.clayium.machine.ChemicalMetalSeparatorProcess;
+import net.claustra01.clayium.machine.ConfigurableClayEnergyMachine;
 import net.claustra01.clayium.data.IoMemory;
 import net.claustra01.clayium.logistics.ConfigurableItemDevice;
 import net.claustra01.clayium.logistics.RelativeFace;
@@ -45,7 +47,8 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.minecraft.server.level.ServerLevel;
 
 /** Faithful server-owned runtimes for the original non-recipe special machines through tier 6. */
-public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity implements ConfigurableItemDevice {
+public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity
+        implements ConfigurableClayEnergyMachine {
     public static final int MAX_SLOTS = 43;
     private static final int METAL_INPUT = 0;
     private static final int METAL_OUTPUT_START = 1;
@@ -69,8 +72,8 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity im
                 case 0 -> progress;
                 case 1 -> kind() == SpecialMachineKind.CHEMICAL_METAL_SEPARATOR ? 40
                         : kind() == SpecialMachineKind.AUTO_CRAFTER ? (tier() >= 6 ? 1 : 20) : 1;
-                case 2 -> (int) energy.energyStored();
-                case 3 -> (int) (energy.energyStored() >>> 32);
+                case 2 -> (int) displayedEnergy();
+                case 3 -> (int) (displayedEnergy() >>> 32);
                 default -> 0;
             };
         }
@@ -254,7 +257,8 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity im
 
     private boolean isExternalOutput(int slot) { return switch(kind()){case AUTO_CLAY_CONDENSER->slot<20;case AUTO_CRAFTER->slot>=9&&slot<15;case CHEMICAL_METAL_SEPARATOR->slot>=1&&slot<17;}; }
     private boolean isExternalInput(int slot, ItemStack stack) { return switch(kind()){
-        case AUTO_CLAY_CONDENSER -> slot<15 && clayLevel(stack)>=0;
+        case AUTO_CLAY_CONDENSER -> slot<15 && clayLevel(stack)>=0
+                && clayLevel(stack)>=clayLevel(getItem(21));
         case AUTO_CRAFTER -> slot<9 && matchesPattern(getItem(slot+15),stack)
                 || slot==33 && tier()>=6 && EnergeticClayFuel.isFuel(stack);
         case CHEMICAL_METAL_SEPARATOR -> slot==0&&isIndustrialClayDust(stack)
@@ -278,6 +282,12 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity im
     @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries){super.saveAdditional(tag,registries);ContainerHelper.saveAllItems(tag,items,registries);energy.save(tag);tag.putInt("Progress",progress);tag.putIntArray("InsertionRoutes",insertionRoutes);tag.putIntArray("ExtractionRoutes",extractionRoutes);ListTag list=new ListTag();for(ItemStack filter:filters)list.add(filter.saveOptional(registries));tag.put("Filters",list);}
 
     private boolean acceptsEnergy(){return kind()==SpecialMachineKind.CHEMICAL_METAL_SEPARATOR||kind()==SpecialMachineKind.AUTO_CRAFTER&&tier()>=6;}
+    @Override public long receiveClayEnergy(long amount,boolean simulate){return acceptsEnergy()?energy.receive(amount,simulate):0;}
+    public long clayEnergyStored(){return energy.energyStored();}
+    private long displayedEnergy(){
+        if(kind()!=SpecialMachineKind.AUTO_CLAY_CONDENSER)return energy.energyStored();
+        long total=0;for(int clayLevel=0;clayLevel<=13;clayLevel++)total+=(long)Math.pow(10,clayLevel)*countClay(clayLevel);return total;
+    }
     private int relative(Direction side){return RelativeFace.index(getBlockState().getValue(SpecialMachineBlock.FACING),side);}
     @Override public int insertionRoute(Direction side){return insertionRoutes[relative(side)];}
     @Override public int extractionRoute(Direction side){return extractionRoutes[relative(side)];}

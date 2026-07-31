@@ -39,7 +39,9 @@ public final class SpecialProcessRecipeCategory implements IRecipeCategory<Speci
             for(int i=0;i<ChemicalMetalSeparatorProcess.PRODUCTS.size();i++){
                 var product=ChemicalMetalSeparatorProcess.PRODUCTS.get(i);
                 b.addOutputSlot(80+(i%5)*18,8+(i/5)*18).setStandardSlotBackground().addItemStack(product.stack())
-                        .addRichTooltipCallback((view,tooltip)->tooltip.add(Component.translatable("jei.clayium_neoforged.chance",100.0D*product.weight()/ChemicalMetalSeparatorProcess.TOTAL_WEIGHT)));
+                        .addRichTooltipCallback((view,tooltip)->tooltip.add(Component.translatable(
+                                "jei.clayium_neoforged.chance",
+                                String.format(java.util.Locale.ROOT,"%.2f",100.0D*product.weight()/ChemicalMetalSeparatorProcess.TOTAL_WEIGHT))));
             }
         }
     }

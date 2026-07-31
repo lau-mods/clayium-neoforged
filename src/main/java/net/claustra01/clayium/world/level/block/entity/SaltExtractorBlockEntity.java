@@ -27,7 +27,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 
 /** Server-authoritative implementation of the original adjacent-water Salt Extractor. */
 public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
-        implements ConfigurableItemDevice, ClayEnergyReceiver {
+        implements net.claustra01.clayium.machine.ConfigurableClayEnergyMachine {
     public static final int MAX_SLOTS = 13;
     private static final int PROGRESS_MAX = 100;
     private static final int ENERGY_PER_WORK = 30;

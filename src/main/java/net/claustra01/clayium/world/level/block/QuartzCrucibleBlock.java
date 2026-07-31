@@ -17,11 +17,14 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public final class QuartzCrucibleBlock extends BaseEntityBlock {
+    public static final IntegerProperty FILL = IntegerProperty.create("fill",0,9);
     public static final MapCodec<QuartzCrucibleBlock> CODEC = simpleCodec(QuartzCrucibleBlock::new);
     private static final VoxelShape SHAPE = Shapes.or(
             Block.box(0, 0, 0, 16, 1, 16),
@@ -30,9 +33,10 @@ public final class QuartzCrucibleBlock extends BaseEntityBlock {
             Block.box(1, 1, 0, 15, 12, 1),
             Block.box(1, 1, 15, 15, 12, 16));
 
-    public QuartzCrucibleBlock(BlockBehaviour.Properties properties) { super(properties); }
+    public QuartzCrucibleBlock(BlockBehaviour.Properties properties) { super(properties);registerDefaultState(stateDefinition.any().setValue(FILL,0)); }
     @Override protected MapCodec<? extends BaseEntityBlock> codec() { return CODEC; }
     @Override protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
+    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder){builder.add(FILL);}
     @Override protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) { return SHAPE; }
     @Override protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof QuartzCrucibleBlockEntity crucible) {

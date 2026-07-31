@@ -16,7 +16,6 @@ import net.claustra01.clayium.client.gui.screens.inventory.FluidBufferScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.SaltExtractorScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.SpecialMachineScreen;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
-import net.claustra01.clayium.client.renderer.blockentity.QuartzCrucibleRenderer;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -63,8 +62,6 @@ public final class ClayiumClientEvents {
                 ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.SPECIAL_MACHINE_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
-        event.registerBlockEntityRenderer(
-                ClayiumRegistries.QUARTZ_CRUCIBLE_BLOCK_ENTITY.get(), context -> new QuartzCrucibleRenderer());
     }
 
     @SubscribeEvent

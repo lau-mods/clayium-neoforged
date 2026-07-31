@@ -13,6 +13,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.claustra01.clayium.world.item.ClayConfiguratorItem;
+import net.claustra01.clayium.world.item.ClayFilterItem;
+import net.claustra01.clayium.world.item.RawClayCraftingToolItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -66,9 +73,21 @@ public final class SpecialMachineBlock extends BaseEntityBlock {
     private static VoxelShape arm(Direction side){return switch(side){case DOWN->box(5,0,5,11,5,11);case UP->box(5,11,5,11,16,11);case NORTH->box(5,5,0,11,11,5);case SOUTH->box(5,5,11,11,11,16);case WEST->box(0,5,5,5,11,11);case EAST->box(11,5,5,16,11,11);};}
     @Override protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof SpecialMachineBlockEntity machine) {
-            player.openMenu(machine, pos);
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.openMenu(machine, data -> {
+                    data.writeBlockPos(pos);
+                    data.writeVarInt(kind.ordinal());
+                    data.writeVarInt(tier.progressionIndex());
+                });
+            }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+    @Override protected ItemInteractionResult useItemOn(ItemStack stack,BlockState state,Level level,BlockPos pos,
+                                                         Player player,InteractionHand hand,BlockHitResult hit) {
+        if(stack.getItem() instanceof ClayConfiguratorItem||stack.getItem() instanceof ClayFilterItem
+                ||stack.getItem() instanceof RawClayCraftingToolItem)return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
     @Override protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moving) {
         if (!state.is(next.getBlock()) && level instanceof ServerLevel

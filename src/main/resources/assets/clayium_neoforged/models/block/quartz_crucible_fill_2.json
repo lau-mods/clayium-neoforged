@@ -1,0 +1,1 @@
+{"ambientocclusion":false,"textures":{"particle":"minecraft:block/iron_block","fill":"minecraft:block/iron_block"},"elements":[{"from":[1,1,1],"to":[15,3,15],"faces":{"down":{"texture":"#fill"},"up":{"texture":"#fill"},"north":{"texture":"#fill"},"south":{"texture":"#fill"},"west":{"texture":"#fill"},"east":{"texture":"#fill"}}}]}

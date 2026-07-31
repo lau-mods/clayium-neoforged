@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.claustra01.clayium.world.level.block.QuartzCrucibleBlock;
 
 public final class QuartzCrucibleBlockEntity extends BlockEntity {
     public static final int MAX_INGOTS = 9;
@@ -27,6 +28,9 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, QuartzCrucibleBlockEntity crucible) {
+        if(state.getValue(QuartzCrucibleBlock.FILL)!=crucible.ingotCount){
+            level.setBlock(pos,state.setValue(QuartzCrucibleBlock.FILL,crucible.ingotCount),3);
+        }
         if (crucible.ingotCount > 0 && crucible.heatingTicks < crucible.ingotCount * TICKS_PER_INGOT) {
             crucible.heatingTicks++;
             crucible.setChanged();
@@ -39,6 +43,7 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
         if (stack.is(ClayiumRegistries.PHASE6_ITEMS.get("impure_silicon_ingot").get()) && ingotCount < MAX_INGOTS) {
             stack.shrink(1);
             ingotCount++;
+            level.setBlock(worldPosition,getBlockState().setValue(QuartzCrucibleBlock.FILL,ingotCount),3);
             changedAndSync();
         } else if (stack.is(Items.STRING) && ingotCount > 0 && heatingTicks >= ingotCount * TICKS_PER_INGOT) {
             stack.shrink(1);
@@ -47,6 +52,7 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
                     worldPosition.getZ() + 0.5D, result));
             ingotCount = 0;
             heatingTicks = 0;
+            level.setBlock(worldPosition,getBlockState().setValue(QuartzCrucibleBlock.FILL,0),3);
             changedAndSync();
         }
         if (stack.isEmpty()) itemEntity.discard();

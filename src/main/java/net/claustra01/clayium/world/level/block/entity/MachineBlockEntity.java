@@ -17,6 +17,7 @@ import net.claustra01.clayium.logistics.ConfigurableItemDevice;
 import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.MachinePerformance;
+import net.claustra01.clayium.machine.ConfigurableClayEnergyMachine;
 import net.claustra01.clayium.recipe.MachineIngredient;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.recipe.MachineRecipeInput;
@@ -54,7 +55,7 @@ import net.minecraft.server.level.ServerLevel;
 
 /** Server-owned runtime for the common Clayium machine recipe layouts. */
 public final class MachineBlockEntity extends BaseContainerBlockEntity
-        implements ClayEnergyReceiver, ConfigurableItemDevice {
+        implements ConfigurableClayEnergyMachine {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
     public static final int SLOT_COUNT = MachineLayout.STORAGE_SLOT_COUNT;

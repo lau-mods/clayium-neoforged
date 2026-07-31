@@ -184,6 +184,49 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
+// Block-like item models must inherit a standard display-transform root. A model whose
+// parent chain ends at a raw elements-only block model renders flat or at the wrong scale.
+def validateItemModelTransforms = tasks.register('validateItemModelTransforms') {
+    def modelRoot = file('src/main/resources/assets/clayium_neoforged/models')
+    def itemModels = fileTree(new File(modelRoot, 'item')) { include '**/*.json' }
+    def blockModels = fileTree(new File(modelRoot, 'block')) { include '**/*.json' }
+    inputs.files(itemModels)
+    inputs.files(blockModels)
+    doLast {
+        def json = new groovy.json.JsonSlurper()
+        def failures = []
+        itemModels.files.each { itemModel ->
+            def current = itemModel
+            def visited = new LinkedHashSet<File>()
+            while (current != null) {
+                if (!visited.add(current)) {
+                    failures.add("${itemModel.name}: cyclic parent chain")
+                    break
+                }
+                def parsed = json.parse(current)
+                def parent = parsed.parent as String
+                if (parent == null) {
+                    if (parsed.display == null) failures.add("${itemModel.name}: parent chain ends at ${current.name} without display transforms")
+                    break
+                }
+                if (parent.startsWith('minecraft:')) break
+                if (!parent.startsWith('clayium_neoforged:')) break
+                def path = parent.substring('clayium_neoforged:'.length())
+                current = path.startsWith('block/')
+                        ? new File(modelRoot, path + '.json')
+                        : path.startsWith('item/') ? new File(modelRoot, path + '.json') : null
+                if (current != null && !current.isFile()) {
+                    failures.add("${itemModel.name}: missing local parent ${parent}")
+                    break
+                }
+            }
+        }
+        if (!failures.isEmpty()) throw new GradleException('Invalid item model transforms:\n' + failures.join('\n'))
+    }
+}
+
+tasks.named('check').configure { dependsOn(validateItemModelTransforms) }
+
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {
     module {

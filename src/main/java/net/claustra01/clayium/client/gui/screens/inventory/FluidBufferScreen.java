@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 
 public final class FluidBufferScreen extends AbstractContainerScreen<FluidBufferMenu> {
     private static final ResourceLocation PLAYER=Clayium.id("textures/gui/gui_playerinventory.png");
@@ -34,9 +36,10 @@ public final class FluidBufferScreen extends AbstractContainerScreen<FluidBuffer
         float alpha=((tint>>>24)&255)/255.0F;
         g.setColor(((tint>>>16)&255)/255.0F,((tint>>>8)&255)/255.0F,(tint&255)/255.0F,alpha==0?1.0F:alpha);
         int x=leftPos+81,bottom=topPos+63,top=bottom-height;
+        var sprite=Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS)
+                .apply(extensions.getStillTexture(fluid));
         g.enableScissor(x,top,x+14,bottom);
-        for(int y=bottom-16;y<bottom;y+=16)g.blitSprite(extensions.getStillTexture(fluid),x,y,14,16);
-        for(int y=bottom-32;y>=top-16;y-=16)g.blitSprite(extensions.getStillTexture(fluid),x,y,14,16);
+        for(int y=bottom-16;y>=top-16;y-=16)g.blit(x,y,0,14,16,sprite);
         g.disableScissor();
         g.setColor(1,1,1,1);
     }
