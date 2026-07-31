@@ -84,7 +84,7 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(
                 MachineScreen.class,
                 76,
-                32,
+                35,
                 24,
                 17,
                 ClayiumJeiRecipeTypes.CLAY_BENDING_MACHINE,

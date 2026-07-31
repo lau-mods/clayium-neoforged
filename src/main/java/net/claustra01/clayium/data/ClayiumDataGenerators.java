@@ -46,6 +46,8 @@ public final class ClayiumDataGenerators {
                 addItemNames(this);
                 add("container." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
                 add("container." + Clayium.MODID + ".machine", "Clayium Machine");
+                add("gui." + Clayium.MODID + ".energy", "%s");
+                add("gui." + Clayium.MODID + ".tier", "Tier %s");
                 add("message." + Clayium.MODID + ".water_wheel_status",
                         "Flowing water: %s, generation: %s CE/s");
                 add("jei." + Clayium.MODID + ".category.clay_work_table", "Clay Work Table");
@@ -229,8 +231,6 @@ public final class ClayiumDataGenerators {
         smelt(output, ClayiumRegistries.RAW_CLAY_ROLLING_PIN.get(), ClayiumRegistries.CLAY_ROLLING_PIN.get(), 200);
         smelt(output, ClayiumRegistries.RAW_CLAY_SLICER.get(), ClayiumRegistries.CLAY_SLICER.get(), 200);
         smelt(output, ClayiumRegistries.RAW_CLAY_SPATULA.get(), ClayiumRegistries.CLAY_SPATULA.get(), 200);
-        smelt(output, ClayiumRegistries.DENSE_CLAY_ORE.get(), ClayiumRegistries.DENSE_CLAY.get(), 200);
-        smelt(output, ClayiumRegistries.LARGE_DENSE_CLAY_ORE.get(), ClayiumRegistries.COMPRESSED_CLAY.get(), 400);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ClayiumRegistries.RAW_CLAY_MACHINE_HULL.get())
                 .define('P', ClayiumRegistries.LARGE_CLAY_PLATE.get())

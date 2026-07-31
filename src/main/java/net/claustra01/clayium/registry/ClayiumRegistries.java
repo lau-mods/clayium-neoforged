@@ -25,6 +25,8 @@ import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DropExperienceBlock;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -52,9 +54,15 @@ public final class ClayiumRegistries {
                     .strength(2.0F, 2.0F)
                     .sound(SoundType.STONE));
 
-    public static final DeferredBlock<Block> CLAY_ORE = registerBlock(
-            "clay_ore", BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3.0F, 5.0F).sound(SoundType.STONE));
+    public static final DeferredBlock<DropExperienceBlock> CLAY_ORE = BLOCKS.register(
+            "clay_ore",
+            () -> new DropExperienceBlock(
+                    UniformInt.of(0, 1),
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .requiresCorrectToolForDrops()
+                            .strength(3.0F, 5.0F)
+                            .sound(SoundType.STONE)));
     public static final DeferredBlock<Block> DENSE_CLAY_ORE = registerBlock(
             "dense_clay_ore", BlockBehaviour.Properties.of()
                     .mapColor(MapColor.DEEPSLATE).requiresCorrectToolForDrops().strength(4.0F, 6.0F).sound(SoundType.DEEPSLATE));

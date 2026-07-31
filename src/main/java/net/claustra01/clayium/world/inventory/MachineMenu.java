@@ -24,7 +24,7 @@ public final class MachineMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public MachineMenu(int containerId, Inventory inventory) {
-        this(containerId, inventory, new SimpleContainer(DEVICE_SLOTS), new SimpleContainerData(5));
+        this(containerId, inventory, new SimpleContainer(DEVICE_SLOTS), new SimpleContainerData(6));
     }
 
     public MachineMenu(int containerId, Inventory inventory, Container container, ContainerData data) {
@@ -32,10 +32,10 @@ public final class MachineMenu extends AbstractContainerMenu {
         this.container = container;
         this.data = data;
         checkContainerSize(container, DEVICE_SLOTS);
-        checkContainerDataCount(data, 5);
+        checkContainerDataCount(data, 6);
         container.startOpen(inventory.player);
-        addSlot(new Slot(container, MachineBlockEntity.INPUT_SLOT, 35, 31));
-        addSlot(new Slot(container, MachineBlockEntity.OUTPUT_SLOT, 125, 31) {
+        addSlot(new Slot(container, MachineBlockEntity.INPUT_SLOT, 44, 35));
+        addSlot(new Slot(container, MachineBlockEntity.OUTPUT_SLOT, 116, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
@@ -78,6 +78,10 @@ public final class MachineMenu extends AbstractContainerMenu {
 
     public MachineBlockEntity.StopReason stopReason() {
         return MachineBlockEntity.StopReason.byOrdinal(data.get(4));
+    }
+
+    public int tier() {
+        return data.get(5);
     }
 
     @Override

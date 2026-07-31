@@ -61,6 +61,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
                 case 2 -> (int) energy.energyStored();
                 case 3 -> (int) energy.capacity();
                 case 4 -> stopReason.ordinal();
+                case 5 -> {
+                    MachineBlock block = machineBlock();
+                    yield block == null ? 0 : block.tier().progressionIndex();
+                }
                 default -> 0;
             };
         }
@@ -79,7 +83,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
     };
 
@@ -278,6 +282,13 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
     public boolean addManualEnergy() {
         if (level == null || level.isClientSide) {
+            return false;
+        }
+        MachineBlock block = machineBlock();
+        Optional<RecipeHolder<MachineRecipe>> recipe = block == null
+                ? Optional.empty()
+                : resolveRecipe(block);
+        if (recipe.isEmpty() || !canOutput(recipe.get().value().result())) {
             return false;
         }
         long accepted = energy.receive(5, false);

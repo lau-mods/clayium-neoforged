@@ -14,6 +14,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.claustra01.clayium.recipe.MachineRecipe;
+import net.claustra01.clayium.energy.ClayEnergyFormatter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -98,7 +99,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                 font,
                 Component.translatable(
                         "jei.clayium_neoforged.clay_energy_per_tick",
-                        recipe.clayEnergyPerTick()),
+                        ClayEnergyFormatter.format(recipe.clayEnergyPerTick())),
                 8,
                 64,
                 TEXT_COLOR,
@@ -107,7 +108,8 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                 font,
                 Component.translatable(
                         "jei.clayium_neoforged.total_clay_energy",
-                        recipe.clayEnergyPerTick() * recipe.processingTimeTicks()),
+                        ClayEnergyFormatter.format(
+                                recipe.clayEnergyPerTick() * recipe.processingTimeTicks())),
                 88,
                 52,
                 TEXT_COLOR,
@@ -116,7 +118,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                 font,
                 Component.translatable(
                         "jei.clayium_neoforged.minimum_tier",
-                        recipe.minimumTier().displayName()),
+                        recipe.minimumTier().progressionIndex()),
                 88,
                 64,
                 TEXT_COLOR,

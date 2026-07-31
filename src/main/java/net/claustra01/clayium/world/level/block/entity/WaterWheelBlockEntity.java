@@ -7,6 +7,7 @@ package net.claustra01.clayium.world.level.block.entity;
 
 import net.claustra01.clayium.energy.ClayEnergyReceiver;
 import net.claustra01.clayium.registry.ClayiumRegistries;
+import net.claustra01.clayium.world.level.block.WaterWheelBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -33,6 +34,11 @@ public final class WaterWheelBlockEntity extends BlockEntity {
         }
         wheel.tickCounter = 0;
         wheel.surroundingFlowingWater = wheel.countFlowingWater();
+        boolean active = wheel.surroundingFlowingWater > 0;
+        if (state.hasProperty(WaterWheelBlock.ACTIVE)
+                && state.getValue(WaterWheelBlock.ACTIVE) != active) {
+            level.setBlock(pos, state.setValue(WaterWheelBlock.ACTIVE, active), 3);
+        }
         if (wheel.surroundingFlowingWater <= 0) {
             return;
         }

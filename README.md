@@ -22,6 +22,8 @@ Machine Recipe JSONはMinecraft 1.21.1のdatapack構造に従い、`data/<namesp
 
 最初の共通機械はサーバー側でレシピを解決・実行し、入力1枠、出力1枠、内部CE、進捗、停止理由を共通実装で管理します。水車は周囲3×3×3の流動水を1秒ごとに評価し、隣接するClayium機械へCEを供給します。
 
+通常のClay Oreは採掘時に粘土玉を直接ドロップします。Dense Clay OreおよびLarge Dense Clay Oreは初期炉で精錬せず、後続PhaseのGrinderとCondenserによる圧縮粘土Shard系列へ接続します。CE表示は本家と同じく値に応じて`uCE`、`mCE`、`CE`などの接頭辞を使用し、Tierは数値で表示します。
+
 本家Jarの解析結果や一時的な移植用スクリプトなど、配布対象外の作業ファイルは `.tmp/` に置きます。このディレクトリはGit管理対象外です。
 
 ## ビルド

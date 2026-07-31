@@ -11,8 +11,10 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
+import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -67,6 +69,21 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<ClayWo
         builder.addOutputSlot(124, 26)
                 .setOutputSlotBackground()
                 .addItemStack(recipe.result());
+        switch (recipe.operation()) {
+            case ROLL -> builder.addSlot(RecipeIngredientRole.CATALYST, 79, 26)
+                    .setStandardSlotBackground()
+                    .addItemStack(ClayiumRegistries.CLAY_ROLLING_PIN.get().getDefaultInstance());
+            case SLICE, DIVIDE -> builder.addSlot(RecipeIngredientRole.CATALYST, 79, 26)
+                    .setStandardSlotBackground()
+                    .addItemStacks(java.util.List.of(
+                            ClayiumRegistries.CLAY_SLICER.get().getDefaultInstance(),
+                            ClayiumRegistries.CLAY_SPATULA.get().getDefaultInstance()));
+            case PUNCH -> builder.addSlot(RecipeIngredientRole.CATALYST, 79, 26)
+                    .setStandardSlotBackground()
+                    .addItemStack(ClayiumRegistries.CLAY_SPATULA.get().getDefaultInstance());
+            default -> {
+            }
+        }
     }
 
     @Override
@@ -76,7 +93,9 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<ClayWo
             GuiGraphics graphics,
             double mouseX,
             double mouseY) {
-        arrow.draw(graphics, 78, 30);
+        if (recipe.operation().buttonId() < 3) {
+            arrow.draw(graphics, 78, 30);
+        }
         Font font = Minecraft.getInstance().font;
         graphics.drawString(
                 font,
@@ -122,27 +141,9 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<ClayWo
         graphics.drawString(
                 font,
                 Component.translatable(
-                        "jei.clayium_neoforged.clay_energy_per_tick",
-                        0),
-                8,
-                69,
-                TEXT_COLOR,
-                false);
-        graphics.drawString(
-                font,
-                Component.translatable(
-                        "jei.clayium_neoforged.total_clay_energy",
-                        0),
-                8,
-                81,
-                TEXT_COLOR,
-                false);
-        graphics.drawString(
-                font,
-                Component.translatable(
                         "jei.clayium_neoforged.minimum_tier",
-                        recipe.minimumTier().displayName()),
-                100,
+                        recipe.minimumTier().progressionIndex()),
+                8,
                 69,
                 TEXT_COLOR,
                 false);

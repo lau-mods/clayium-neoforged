@@ -1,1 +1,12 @@
-{"variants":{"":{"model":"clayium_neoforged:block/clay_water_wheel"}}}
+{
+  "variants": {
+    "facing=north,lit=false": {"model": "clayium_neoforged:block/clay_water_wheel"},
+    "facing=east,lit=false": {"model": "clayium_neoforged:block/clay_water_wheel", "y": 90},
+    "facing=south,lit=false": {"model": "clayium_neoforged:block/clay_water_wheel", "y": 180},
+    "facing=west,lit=false": {"model": "clayium_neoforged:block/clay_water_wheel", "y": 270},
+    "facing=north,lit=true": {"model": "clayium_neoforged:block/clay_water_wheel_active"},
+    "facing=east,lit=true": {"model": "clayium_neoforged:block/clay_water_wheel_active", "y": 90},
+    "facing=south,lit=true": {"model": "clayium_neoforged:block/clay_water_wheel_active", "y": 180},
+    "facing=west,lit=true": {"model": "clayium_neoforged:block/clay_water_wheel_active", "y": 270}
+  }
+}
