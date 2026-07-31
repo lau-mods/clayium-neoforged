@@ -94,10 +94,10 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         tile(graphics, BOTTOM, leftPos + 4, topPos + 162, 168, 4, 1, 4);
         tile(graphics, LEFT, leftPos, topPos + 4, 4, 158, 4, 1);
         tile(graphics, RIGHT, leftPos + 172, topPos + 4, 4, 158, 4, 1);
-        graphics.blit(TOP_LEFT, leftPos, topPos, 0, 0, 4, 4);
-        graphics.blit(TOP_RIGHT, leftPos + 172, topPos, 0, 0, 4, 4);
-        graphics.blit(BOTTOM_LEFT, leftPos, topPos + 162, 0, 0, 4, 4);
-        graphics.blit(BOTTOM_RIGHT, leftPos + 172, topPos + 162, 0, 0, 4, 4);
+        blitWhole(graphics, TOP_LEFT, leftPos, topPos, 4, 4);
+        blitWhole(graphics, TOP_RIGHT, leftPos + 172, topPos, 4, 4);
+        blitWhole(graphics, BOTTOM_LEFT, leftPos, topPos + 162, 4, 4);
+        blitWhole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + 162, 4, 4);
         graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 94);
         graphics.blit(SLOT, leftPos + 39, topPos + 30, 0, 32, 26, 26);
         graphics.blit(SLOT, leftPos + 111, topPos + 30, 0, 32, 26, 26);
@@ -138,9 +138,37 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
             for (int drawX = 0; drawX < width; drawX += textureWidth) {
                 int drawWidth = Math.min(textureWidth, width - drawX);
                 int drawHeight = Math.min(textureHeight, height - drawY);
-                graphics.blit(texture, x + drawX, y + drawY, 0, 0, drawWidth, drawHeight);
+                graphics.blit(
+                        texture,
+                        x + drawX,
+                        y + drawY,
+                        0.0F,
+                        0.0F,
+                        drawWidth,
+                        drawHeight,
+                        textureWidth,
+                        textureHeight);
             }
         }
+    }
+
+    private static void blitWhole(
+            GuiGraphics graphics,
+            ResourceLocation texture,
+            int x,
+            int y,
+            int textureWidth,
+            int textureHeight) {
+        graphics.blit(
+                texture,
+                x,
+                y,
+                0.0F,
+                0.0F,
+                textureWidth,
+                textureHeight,
+                textureWidth,
+                textureHeight);
     }
 
     private static final class ManualCraftButton extends Button {

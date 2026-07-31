@@ -39,8 +39,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
     public static final int OUTPUT_SLOT = 1;
     public static final int SLOT_COUNT = 2;
     private static final int IDLE_RECIPE_RECHECK_TICKS = 20;
-    private static final long ENERGY_CAPACITY = 10_000;
-    private static final long ENERGY_TRANSFER_LIMIT = 100;
+    // The original machines did not have a shared finite internal CE capacity.
+    // Long.MAX_VALUE is an overflow guard, not a gameplay storage limit.
+    private static final long ENERGY_CAPACITY = Long.MAX_VALUE;
+    private static final long ENERGY_TRANSFER_LIMIT = Long.MAX_VALUE;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private final ClayEnergyStorage energy =
@@ -59,7 +61,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
                 case 0 -> progress;
                 case 1 -> totalProgress;
                 case 2 -> (int) energy.energyStored();
-                case 3 -> (int) energy.capacity();
+                case 3 -> 0; // No finite capacity in the original machine model.
                 case 4 -> stopReason.ordinal();
                 case 5 -> {
                     MachineBlock block = machineBlock();
@@ -278,6 +280,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
     @Override
     public long receiveClayEnergy(long amount, boolean simulate) {
         return energy.receive(amount, simulate);
+    }
+
+    public long clayEnergyStored() {
+        return energy.energyStored();
     }
 
     public boolean addManualEnergy() {

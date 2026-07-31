@@ -7,6 +7,7 @@ package net.claustra01.clayium.world.level.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
+import net.claustra01.clayium.energy.ClayEnergyFormatter;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -77,7 +78,7 @@ public final class WaterWheelBlock extends BaseEntityBlock {
                     Component.translatable(
                             "message.clayium_neoforged.water_wheel_status",
                             wheel.surroundingFlowingWater(),
-                            wheel.generatedClayEnergyPerCycle()),
+                            ClayEnergyFormatter.format(wheel.generatedClayEnergyPerCycle())),
                     true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);

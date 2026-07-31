@@ -49,7 +49,7 @@ public final class ClayiumDataGenerators {
                 add("gui." + Clayium.MODID + ".energy", "%s");
                 add("gui." + Clayium.MODID + ".tier", "Tier %s");
                 add("message." + Clayium.MODID + ".water_wheel_status",
-                        "Flowing water: %s, generation: %s CE/s");
+                        "Flowing water: %s, generation: %s/s");
                 add("jei." + Clayium.MODID + ".category.clay_work_table", "Clay Work Table");
                 add("jei." + Clayium.MODID + ".category.clay_bending_machine", "Clay Bending Machine");
                 add("jei." + Clayium.MODID + ".category.elemental_milling_machine", "Elemental Milling Machine");

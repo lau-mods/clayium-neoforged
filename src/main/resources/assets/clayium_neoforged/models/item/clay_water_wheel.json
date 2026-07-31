@@ -1,1 +1,7 @@
-{"parent":"clayium_neoforged:block/clay_water_wheel"}
+{
+  "parent": "clayium_neoforged:block/machine_item_template",
+  "textures": {
+    "hull": "clayium_neoforged:block/clay_machine_hull",
+    "overlay": "clayium_neoforged:block/clay_water_wheel"
+  }
+}

@@ -5,7 +5,6 @@
  */
 package net.claustra01.clayium.world.level.block.entity;
 
-import net.claustra01.clayium.energy.ClayEnergyReceiver;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.WaterWheelBlock;
 import net.minecraft.core.BlockPos;
@@ -20,6 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 /** Deterministic bounded water scan and adjacent CE emission. */
 public final class WaterWheelBlockEntity extends BlockEntity {
     private static final int GENERATION_INTERVAL = 20;
+    private static final long ENERGY_PER_GENERATION = 1;
+    private static final long SUPPLY_STOP_THRESHOLD = 5;
     private int tickCounter;
     private int surroundingFlowingWater;
 
@@ -42,14 +43,11 @@ public final class WaterWheelBlockEntity extends BlockEntity {
         if (wheel.surroundingFlowingWater <= 0) {
             return;
         }
-        long available = wheel.surroundingFlowingWater;
         for (Direction direction : Direction.values()) {
-            if (available <= 0) {
-                break;
-            }
             BlockEntity adjacent = level.getBlockEntity(pos.relative(direction));
-            if (adjacent instanceof ClayEnergyReceiver receiver) {
-                available -= receiver.receiveClayEnergy(available, false);
+            if (adjacent instanceof MachineBlockEntity machine
+                    && machine.clayEnergyStored() < SUPPLY_STOP_THRESHOLD) {
+                machine.receiveClayEnergy(ENERGY_PER_GENERATION, false);
             }
         }
         wheel.setChanged();
@@ -78,7 +76,7 @@ public final class WaterWheelBlockEntity extends BlockEntity {
     }
 
     public long generatedClayEnergyPerCycle() {
-        return surroundingFlowingWater;
+        return surroundingFlowingWater > 0 ? ENERGY_PER_GENERATION : 0;
     }
 
     @Override

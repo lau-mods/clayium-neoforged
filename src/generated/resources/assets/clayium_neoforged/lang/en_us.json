@@ -82,5 +82,5 @@
   "jei.clayium_neoforged.tool.roll": "Clay Rolling Pin",
   "jei.clayium_neoforged.tool.slice": "Clay Slicer or Spatula",
   "jei.clayium_neoforged.total_clay_energy": "Total CE: %s",
-  "message.clayium_neoforged.water_wheel_status": "Flowing water: %s, generation: %s CE/s"
+  "message.clayium_neoforged.water_wheel_status": "Flowing water: %s, generation: %s/s"
 }
