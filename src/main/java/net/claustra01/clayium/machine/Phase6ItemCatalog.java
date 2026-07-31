@@ -14,10 +14,22 @@ public final class Phase6ItemCatalog {
             item("quartz_dust", "Quartz Dust", "quartzdust"),
             item("impure_silicon_ingot", "Impure Silicon Ingot", "impuresiliconingot"),
             item("impure_silicon_dust", "Impure Silicon Dust", "dust_base"),
+            item("impure_silicon_large_plate", "Large Impure Silicon Plate", "largeplate_base"),
+            item("silicone_dust", "Silicone Dust", "dust_base"),
+            item("silicone_ingot", "Silicone Ingot", "ingot_base"),
+            item("silicone_plate", "Silicone Plate", "plate_base"),
+            item("silicone_large_plate", "Large Silicone Plate", "largeplate_base"),
+            item("silicon_dust", "Silicon Dust", "dust_base"),
+            item("silicon_ingot", "Silicon Ingot", "ingot_base"),
+            item("silicon_large_plate", "Large Silicon Plate", "largeplate_base"),
             item("impure_aluminium_dust", "Impure Aluminium Dust", "dust_base"),
             item("aluminium_dust", "Aluminium Dust", "dust_base"),
+            item("aluminium_ingot", "Aluminium Ingot", "ingot_base"),
+            item("aluminium_plate", "Aluminium Plate", "plate_base"),
+            item("aluminium_large_plate", "Large Aluminium Plate", "largeplate_base"),
             item("impure_magnesium_dust", "Impure Magnesium Dust", "dust_base"),
             item("magnesium_dust", "Magnesium Dust", "dust_base"),
+            item("magnesium_ingot", "Magnesium Ingot", "ingot_base"),
             item("impure_sodium_dust", "Impure Sodium Dust", "dust_base"),
             item("sodium_dust", "Sodium Dust", "dust_base"),
             item("impure_lithium_dust", "Impure Lithium Dust", "dust_base"),
@@ -25,7 +37,14 @@ public final class Phase6ItemCatalog {
             item("impure_zirconium_dust", "Impure Zirconium Dust", "dust_base"),
             item("zirconium_dust", "Zirconium Dust", "dust_base"),
             item("impure_zinc_dust", "Impure Zinc Dust", "dust_base"),
-            item("zinc_dust", "Zinc Dust", "dust_base"));
+            item("zinc_dust", "Zinc Dust", "dust_base"),
+            item("zinc_ingot", "Zinc Ingot", "ingot_base"),
+            item("zincalminium_dust", "Zincalminium Dust", "dust_base"),
+            item("zincalminium_ingot", "Zincalminium Ingot", "ingot_base"),
+            item("az91d_dust", "AZ91D Dust", "dust_base"),
+            item("az91d_ingot", "AZ91D Ingot", "ingot_base"),
+            item("az91d_plate", "AZ91D Plate", "plate_base"),
+            item("az91d_large_plate", "Large AZ91D Plate", "largeplate_base"));
 
     private Phase6ItemCatalog() {}
 

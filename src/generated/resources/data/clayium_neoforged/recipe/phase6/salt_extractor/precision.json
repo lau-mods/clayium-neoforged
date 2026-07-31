@@ -16,7 +16,7 @@
     }
   ],
   "machine": "clayium_neoforged:assembler",
-  "minimum_tier": "precision",
+  "minimum_tier": "basic",
   "processing_time_ticks": 40,
   "results": [
     {

@@ -46,9 +46,9 @@ public final class ClayCraftingTableScreen extends AbstractContainerScreen<ClayC
         whole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + 68);
         graphics.blit(PLAYER, leftPos, topPos + 72, 0, 0, 176, 94);
         for (int row = 0; row < 3; row++) for (int column = 0; column < 3; column++) {
-            graphics.blit(SLOT, leftPos + 29 + column * 18, topPos + 16 + row * 18, 0, 0, 18, 18, 18, 18);
+            graphics.blit(SLOT, leftPos + 29 + column * 18, topPos + 16 + row * 18, 0, 0, 18, 18);
         }
-        graphics.blit(SLOT, leftPos + 123, topPos + 34, 0, 0, 18, 18, 18, 18);
+        graphics.blit(SLOT, leftPos + 123, topPos + 34, 0, 0, 18, 18);
         graphics.blit(OVERLAY, leftPos, topPos, 0, 0, 176, 72, 256, 256);
     }
 

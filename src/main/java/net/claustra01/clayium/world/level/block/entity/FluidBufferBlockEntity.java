@@ -6,6 +6,7 @@ package net.claustra01.clayium.world.level.block.entity;
 import java.util.EnumMap;
 import net.claustra01.clayium.data.IoMemory;
 import net.claustra01.clayium.logistics.ConfigurableItemDevice;
+import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.inventory.FluidBufferMenu;
 import net.claustra01.clayium.world.level.block.FluidBufferBlock;
@@ -86,17 +87,31 @@ public final class FluidBufferBlockEntity extends BlockEntity implements MenuPro
         return level.getCapability(Capabilities.FluidHandler.BLOCK, worldPosition.relative(side), side.getOpposite()) != null;
     }
 
-    @Override public int cycleInsertRoute(Direction d) { int i=d.ordinal(); insertionRoutes[i]=insertionRoutes[i] < 0 ? 0 : -1; configurationChanged(); return insertionRoutes[i]; }
-    @Override public int cycleExtractRoute(Direction d) { int i=d.ordinal(); extractionRoutes[i]=extractionRoutes[i] < 0 ? 0 : -1; configurationChanged(); return extractionRoutes[i]; }
-    @Override public int insertionRoute(Direction d) { return insertionRoutes[d.ordinal()]; }
-    @Override public int extractionRoute(Direction d) { return extractionRoutes[d.ordinal()]; }
+    @Override public int cycleInsertRoute(Direction d) { int i=relativeIndex(d); insertionRoutes[i]=insertionRoutes[i] < 0 ? 0 : -1; configurationChanged(); return insertionRoutes[i]; }
+    @Override public int cycleExtractRoute(Direction d) { int i=relativeIndex(d); extractionRoutes[i]=extractionRoutes[i] < 0 ? 0 : -1; configurationChanged(); return extractionRoutes[i]; }
+    @Override public int insertionRoute(Direction d) { return insertionRoutes[relativeIndex(d)]; }
+    @Override public int extractionRoute(Direction d) { return extractionRoutes[relativeIndex(d)]; }
     @Override public boolean hasFilter(Direction d) { return false; }
     @Override public ItemStack filter(Direction d) { return ItemStack.EMPTY; }
     @Override public void setFilter(Direction d, ItemStack filter) {}
     @Override public boolean togglePipe() { if (level == null) return false; boolean value=!getBlockState().getValue(FluidBufferBlock.PIPE); level.setBlock(worldPosition,getBlockState().setValue(FluidBufferBlock.PIPE,value),3); configurationChanged(); return value; }
     @Override public boolean rotate(Direction clicked) { if(level==null || !clicked.getAxis().isHorizontal()) return false; level.setBlock(worldPosition,getBlockState().setValue(FluidBufferBlock.FACING,clicked),3); configurationChanged(); return true; }
     @Override public IoMemory saveIoMemory() { return IoMemory.of(insertionRoutes,extractionRoutes,getBlockState().getValue(FluidBufferBlock.PIPE),getBlockState().getValue(FluidBufferBlock.FACING).getName()); }
-    @Override public void loadIoMemory(IoMemory m) { insertionRoutes=m.insertionRoutesOrDefault(insertionRoutes); extractionRoutes=m.extractionRoutesOrDefault(extractionRoutes); configurationChanged(); }
+    @Override public void loadIoMemory(IoMemory m) {
+        insertionRoutes=m.insertionRoutesOrDefault(insertionRoutes);
+        extractionRoutes=m.extractionRoutesOrDefault(extractionRoutes);
+        if (level != null) {
+            Direction facing=Direction.byName(m.facing());
+            BlockState state=getBlockState().setValue(FluidBufferBlock.PIPE,m.pipe());
+            if (facing != null && facing.getAxis().isHorizontal()) state=state.setValue(FluidBufferBlock.FACING,facing);
+            level.setBlock(worldPosition,state,3);
+        }
+        configurationChanged();
+    }
+
+    private int relativeIndex(Direction side) {
+        return RelativeFace.index(getBlockState().getValue(FluidBufferBlock.FACING), side);
+    }
 
     private void configurationChanged() { setChanged(); if(level!=null){ level.invalidateCapabilities(worldPosition); level.sendBlockUpdated(worldPosition,getBlockState(),getBlockState(),3); } }
     @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider p) { super.saveAdditional(tag,p); tag.put("Tank",tank.writeToNBT(p,new CompoundTag())); tag.putIntArray("InsertionRoutes",insertionRoutes); tag.putIntArray("ExtractionRoutes",extractionRoutes); }

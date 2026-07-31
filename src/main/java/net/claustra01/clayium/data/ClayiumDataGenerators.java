@@ -83,6 +83,7 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.energetic_clay_condenser", "Energetic Clay Condenser");
                 add("jei." + Clayium.MODID + ".category.chemical_reactor", "Chemical Reactor");
                 add("jei." + Clayium.MODID + ".category.electrolysis_reactor", "Electrolysis Reactor");
+                add("jei." + Clayium.MODID + ".category.alloy_smelter", "Alloy Smelter");
                 add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
                 add("jei." + Clayium.MODID + ".required_actions", "Manual actions: %s");
                 add("jei." + Clayium.MODID + ".input_count", "Input: %s");
@@ -370,6 +371,7 @@ public final class ClayiumDataGenerators {
                 .save(output);
 
         Phase4CraftingRecipes.build(output);
+        Phase6CraftingRecipes.build(output);
     }
 
     private static void compression(RecipeOutput output, String id, ItemLike input, ItemLike outputBlock) {

@@ -63,10 +63,18 @@ public final class ClayiumClientEvents {
     @SubscribeEvent
     public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
         dust(event, "impure_silicon_dust", colors(151,143,152, 83,55,100, 169,165,165));
+        material(event, colors(151,143,152, 83,55,100, 169,165,165), "impure_silicon_large_plate");
+        material(event, colors(210,210,210, 180,180,180, 240,240,240),
+                "silicone_dust", "silicone_ingot", "silicone_plate", "silicone_large_plate");
+        material(event, colors(40,28,40, 6,4,6, 255,255,255),
+                "silicon_dust", "silicon_ingot", "silicon_large_plate");
         impureDust(event, "impure_aluminium_dust", 190,200,202);
         pureDust(event, "aluminium_dust", 190,200,202, 31,33,33);
+        material(event, colors(190,200,202, 31,33,33, 255,255,255),
+                "aluminium_ingot", "aluminium_plate", "aluminium_large_plate");
         impureDust(event, "impure_magnesium_dust", 150,220,150);
         pureDust(event, "magnesium_dust", 150,210,150, 120,120,120);
+        material(event, colors(150,210,150, 120,120,120, 255,255,255), "magnesium_ingot");
         impureDust(event, "impure_sodium_dust", 170,170,230);
         pureDust(event, "sodium_dust", 170,170,222, 120,120,120);
         impureDust(event, "impure_lithium_dust", 220,220,150);
@@ -75,6 +83,11 @@ public final class ClayiumClientEvents {
         pureDust(event, "zirconium_dust", 190,170,122, 120,120,120);
         impureDust(event, "impure_zinc_dust", 230,170,170);
         pureDust(event, "zinc_dust", 230,170,170, 120,120,120);
+        material(event, colors(230,170,170, 120,120,120, 255,255,255), "zinc_ingot");
+        material(event, colors(240,190,220, 160,0,0, 255,255,255),
+                "zincalminium_dust", "zincalminium_ingot");
+        material(event, colors(130,140,135, 10,40,10, 255,255,255),
+                "az91d_dust", "az91d_ingot", "az91d_plate", "az91d_large_plate");
     }
 
     private static void impureDust(RegisterColorHandlersEvent.Item event, String id, int r, int g, int b) {
@@ -96,5 +109,9 @@ public final class ClayiumClientEvents {
     private static void dust(RegisterColorHandlersEvent.Item event, String id, int[] colors) {
         event.register((stack, tintIndex) -> tintIndex >= 0 && tintIndex < colors.length ? colors[tintIndex] : 0xffffffff,
                 ClayiumRegistries.PHASE6_ITEMS.get(id).get());
+    }
+
+    private static void material(RegisterColorHandlersEvent.Item event, int[] colors, String... ids) {
+        for (String id : ids) dust(event, id, colors);
     }
 }

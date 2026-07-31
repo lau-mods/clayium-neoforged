@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000,
+  "ingredients": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:magnesium_ingot"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:zincalminium_ingot"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:alloy_smelter",
+  "minimum_tier": "precision",
+  "processing_time_ticks": 500,
+  "results": [
+    {
+      "count": 10,
+      "id": "clayium_neoforged:az91d_ingot"
+    }
+  ]
+}

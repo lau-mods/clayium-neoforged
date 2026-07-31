@@ -329,6 +329,11 @@ public final class Phase4MachineRecipes {
                     hull(tier), 1, item("clay_spindle"), 1,
                     phaseMachine("lathe", tier), 1, tierEnergy(tier), 120, 4);
         }
+        for (int tier = 5; tier <= 6; tier++) {
+            two(output, "assembler/machines/bending_machine_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
+                    hull(tier), 1, ClayiumRegistries.DENSE_CLAY_PLATE.get(), (tier - 4) * 3,
+                    phaseMachine("bending_machine", tier), 1, tierEnergy(tier), 120, 4);
+        }
         for (int tier = 2; tier <= 6; tier++) {
             two(output, "assembler/machines/grinder_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("dense_clay_grinding_head"), 1,
@@ -345,6 +350,12 @@ public final class Phase4MachineRecipes {
                     : item("industrial_clay_large_plate");
             two(output, "assembler/machines/condenser_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, materialLargePlate, 1,
+                    phaseMachine("condenser", tier), 1, tierEnergy(tier), 120, 4);
+        }
+        for (int tier = 4; tier <= 5; tier++) {
+            two(output, "assembler/machines/condenser_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
+                    hull(tier), 1,
+                    ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(ClayTier.byLegacyIndex(tier).id() + "_buffer").get(), 1,
                     phaseMachine("condenser", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 3; tier <= 4; tier++) {
@@ -368,6 +379,12 @@ public final class Phase4MachineRecipes {
                     hull(tier), 1, item("simple_circuit"), tier - 3,
                     phaseMachine("smelter", tier), 1, tierEnergy(tier), 120, 4);
         }
+        two(output, "assembler/machines/assembler_tier_6", ClayiumMachineIds.ASSEMBLER,
+                hull(6), 1, ClayiumRegistries.DENSE_CLAY_GEAR.get(), 4,
+                phaseMachine("assembler", 6), 1, tierEnergy(6), 40, 4);
+        two(output, "assembler/machines/assembler_tier_6_upgrade", ClayiumMachineIds.ASSEMBLER,
+                phaseMachine("assembler", 4), 1, item("precision_circuit"), 1,
+                phaseMachine("assembler", 6), 1, tierEnergy(6), 40, 4);
     }
 
     private static void inscriber(RecipeOutput output) {

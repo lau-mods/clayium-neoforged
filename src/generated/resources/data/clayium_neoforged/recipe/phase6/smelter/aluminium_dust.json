@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 500,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:aluminium_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:smelter",
+  "minimum_tier": "advanced",
+  "processing_time_ticks": 200,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:aluminium_ingot"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.0,
+  "ingredient": {
+    "item": "clayium_neoforged:silicone_dust"
+  },
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:silicone_ingot"
+  }
+}

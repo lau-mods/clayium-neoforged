@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 2000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:az91d_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:smelter",
+  "minimum_tier": "precision",
+  "processing_time_ticks": 400,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:az91d_ingot"
+    }
+  ]
+}

@@ -112,6 +112,15 @@ public final class Phase4CraftingRecipes {
                 '#', item("advanced_industrial_clay_large_plate"),
                 'C', item("basic_circuit"),
                 'E', item("clay_energy_excitor"));
+        shaped(output, "advanced_machine_hull", hull(5), "#E#", "*C*", "#*#",
+                '#', phase6("impure_silicon_large_plate"),
+                '*', phase6("silicone_large_plate"),
+                'C', item("advanced_circuit"),
+                'E', item("clay_energy_excitor"));
+        shaped(output, "precision_machine_hull", hull(6), "#E#", "#C#", "###",
+                '#', phase6("aluminium_large_plate"),
+                'C', item("precision_circuit"),
+                'E', item("clay_energy_excitor"));
     }
 
     private static void machines(RecipeOutput output) {
@@ -218,7 +227,9 @@ public final class Phase4CraftingRecipes {
             case 2 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("dense_clay_machine_hull").get();
             case 3 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("simple_machine_hull").get();
             case 4 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("basic_machine_hull").get();
-            default -> throw new IllegalArgumentException("No Phase 4 crafting-grid hull for tier " + tier);
+            case 5 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("advanced_machine_hull").get();
+            case 6 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("precision_machine_hull").get();
+            default -> throw new IllegalArgumentException("No crafting-grid hull for tier " + tier);
         };
     }
 
@@ -230,6 +241,10 @@ public final class Phase4CraftingRecipes {
 
     private static ItemLike item(String id) {
         return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+    }
+
+    private static ItemLike phase6(String id) {
+        return ClayiumRegistries.PHASE6_ITEMS.get(id).get();
     }
 
     private static net.minecraft.advancements.Criterion<net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance>

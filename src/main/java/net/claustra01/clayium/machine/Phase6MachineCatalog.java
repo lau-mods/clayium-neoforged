@@ -13,7 +13,8 @@ public final class Phase6MachineCatalog {
     public static final List<Entry> ENTRIES = List.of(
             entry(4, "chemical_reactor", "Chemical Reactor", ClayiumMachineIds.CHEMICAL_REACTOR, "chemicalreactor"),
             entry(5, "chemical_reactor", "Chemical Reactor", ClayiumMachineIds.CHEMICAL_REACTOR, "chemicalreactor"),
-            entry(6, "electrolysis_reactor", "Electrolysis Reactor", ClayiumMachineIds.ELECTROLYSIS_REACTOR, "electrolysisreactor"));
+            entry(6, "electrolysis_reactor", "Electrolysis Reactor", ClayiumMachineIds.ELECTROLYSIS_REACTOR, "electrolysisreactor"),
+            entry(6, "alloy_smelter", "Alloy Smelter", ClayiumMachineIds.ALLOY_SMELTER, "alloysmelter"));
 
     private Phase6MachineCatalog() {}
 

@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:impure_silicon_ingot"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_bending_machine",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:impure_silicon_plate"
+    }
+  ]
+}

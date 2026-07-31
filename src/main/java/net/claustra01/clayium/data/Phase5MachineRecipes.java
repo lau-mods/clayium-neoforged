@@ -23,8 +23,10 @@ public final class Phase5MachineRecipes {
 
     public static void build(RecipeOutput output) {
         logisticsTier(output, "basic", "industrial_clay_plate", "industrial_clay_large_plate", "basic_circuit", 4, 100);
-        logisticsTier(output, "advanced", "advanced_industrial_clay_plate", "advanced_industrial_clay_large_plate",
-                "advanced_circuit", 5, 1_000);
+        logisticsTier(output, "advanced", phase6("impure_silicon_plate"), phase6("impure_silicon_large_plate"),
+                item("advanced_circuit"), 1_000);
+        logisticsTier(output, "precision", phase6("aluminium_plate"), phase6("aluminium_large_plate"),
+                item("precision_circuit"), 10_000);
         recipe(output, "phase5/tools/clay_io_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_ROLLING_PIN.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_SLICER.get(), 1)),
@@ -59,14 +61,24 @@ public final class Phase5MachineRecipes {
             String circuit,
             int minimumTier,
             long energy) {
+        logisticsTier(output, tier, item(plate), item(largePlate), item(circuit), energy);
+    }
+
+    private static void logisticsTier(
+            RecipeOutput output,
+            String tier,
+            ItemLike plate,
+            ItemLike largePlate,
+            ItemLike circuit,
+            long energy) {
         ItemLike buffer = ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(tier + "_buffer").get();
         ItemLike multitrack = ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(tier + "_multitrack_buffer").get();
         recipe(output, "phase5/" + tier + "_buffer",
-                List.of(ingredient(item(plate), 1), ingredient(item(circuit), 1)),
-                buffer, 16, energy, 40, minimumTier);
+                List.of(ingredient(plate, 1), ingredient(circuit, 1)),
+                buffer, 16, energy, 40, 4);
         recipe(output, "phase5/" + tier + "_multitrack_buffer",
-                List.of(ingredient(buffer, 6), ingredient(item(largePlate), 1)),
-                multitrack, 1, energy, 40, minimumTier);
+                List.of(ingredient(buffer, 6), ingredient(largePlate, 1)),
+                multitrack, 1, energy, 40, 4);
     }
 
     private static void recipe(
@@ -96,5 +108,10 @@ public final class Phase5MachineRecipes {
 
     private static ItemLike item(String id) {
         return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+    }
+
+    private static ItemLike phase6(String id) {
+        if (ClayiumRegistries.PHASE4_ITEMS.containsKey(id)) return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+        return ClayiumRegistries.PHASE6_ITEMS.get(id).get();
     }
 }

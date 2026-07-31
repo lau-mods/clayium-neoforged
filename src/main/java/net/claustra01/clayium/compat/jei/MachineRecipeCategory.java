@@ -75,18 +75,32 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
     public void setRecipe(IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
         for (int index = 0; index < recipe.ingredients().size(); index++) {
             var ingredient = recipe.ingredients().get(index);
-            int x = recipe.ingredients().size() == 1 ? 34 : 24 + index * 20;
-            builder.addInputSlot(x, 28)
-                    .setStandardSlotBackground()
-                    .addItemStacks(java.util.Arrays.stream(ingredient.ingredient().getItems())
+            int x = layout == MachineLayout.ASSEMBLER || layout == MachineLayout.CHEMICAL
+                    ? 32 + index * 18
+                    : 44;
+            var slot = builder.addInputSlot(x, 35);
+            if (layout == MachineLayout.SIMPLE || layout == MachineLayout.CENTRIFUGE) {
+                slot.setOutputSlotBackground();
+            } else {
+                slot.setStandardSlotBackground();
+            }
+            slot.addItemStacks(java.util.Arrays.stream(ingredient.ingredient().getItems())
                             .map(stack -> stack.copyWithCount(ingredient.count()))
                             .toList());
         }
         for (int index = 0; index < recipe.results().size(); index++) {
-            int y = 32 + 18 * index - 9 * (recipe.results().size() - 1);
-            builder.addOutputSlot(124, y)
-                    .setStandardSlotBackground()
-                    .addItemStack(recipe.results().get(index));
+            int y = layout == MachineLayout.CHEMICAL
+                    ? 26 + 18 * index
+                    : layout == MachineLayout.CENTRIFUGE
+                            ? 35 + 18 * index - 9 * (recipe.results().size() - 1)
+                            : 35;
+            var slot = builder.addOutputSlot(116, y);
+            if (layout == MachineLayout.SIMPLE || layout == MachineLayout.ASSEMBLER) {
+                slot.setOutputSlotBackground();
+            } else {
+                slot.setStandardSlotBackground();
+            }
+            slot.addItemStack(recipe.results().get(index));
         }
     }
 
@@ -97,7 +111,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
             GuiGraphics graphics,
             double mouseX,
             double mouseY) {
-        arrow.draw(graphics, 78, 32);
+        arrow.draw(graphics, 76, 35);
         Font font = Minecraft.getInstance().font;
         graphics.drawString(
                 font,

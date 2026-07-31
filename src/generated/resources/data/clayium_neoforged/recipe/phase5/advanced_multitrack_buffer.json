@@ -1,1 +1,27 @@
-{"type":"clayium_neoforged:machine","clay_energy_per_tick":1000,"ingredients":[{"count":6,"ingredient":{"item":"clayium_neoforged:advanced_buffer"}},{"count":1,"ingredient":{"item":"clayium_neoforged:advanced_industrial_clay_large_plate"}}],"machine":"clayium_neoforged:assembler","minimum_tier":"advanced","processing_time_ticks":40,"results":[{"count":1,"id":"clayium_neoforged:advanced_multitrack_buffer"}]}
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000,
+  "ingredients": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_buffer"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:impure_silicon_large_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 40,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_multitrack_buffer"
+    }
+  ]
+}
