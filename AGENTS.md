@@ -717,7 +717,6 @@ clayium_neoforged:laser_components
 
 * 汎用Fluid Capability
 * Fluid Buffer
-* Clay Canister
 * Chemical Reactor
 * Electrolysis Reactor
 * Salt Extractor
@@ -728,9 +727,10 @@ clayium_neoforged:laser_components
 完了条件:
 
 * 他Modの一般的なFluid Containerと相互運用する
+* Fluid Canisterは実装しない
 * 専用カプセルなしで機械へ液体を搬入できる
 * JEIで液体量と入出力方向が確認できる
-* Phase 10で実装する特殊な機能を持ったものを除き、Tier 6までの全てのコンテンツが正常に移植されている
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 6までの全てのコンテンツとレシピが正常に移植されている
 
 ### Phase 7: Clay Steelと初期多ブロック
 
@@ -748,7 +748,7 @@ clayium_neoforged:laser_components
 * 多ブロックがチャンク再ロード後に再構築される
 * 構成Tierが処理条件へ反映される
 * 不完全構造で処理を開始しない
-* Phase 10で実装する特殊な機能を持ったものを除き、Tier 7までの全てのコンテンツが正常に移植されている
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 7までの全てのコンテンツとレシピが正常に移植されている
 
 ### Phase 8: ClayiumおよびUltimate
 
@@ -769,7 +769,7 @@ clayium_neoforged:laser_components
 * レーザー条件がJEIで確認できる
 * CE-FE変換で増殖ループが発生しない
 * ClayiumおよびUltimate Tierへ到達できる
-* Phase 10で実装する特殊な機能を持ったものを除き、Tier 9までの全てのコンテンツが正常に移植されている
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 9までの全てのコンテンツとレシピが正常に移植されている
 
 ### Phase 9: Antimatter、OEC、OPA、PAN
 
@@ -793,7 +793,7 @@ clayium_neoforged:laser_components
 * CA Reactorの構造検証が決定論的である
 * 大規模構造探索がサーバー負荷上の上限を持つ
 * 全特殊RecipeがJEIで説明される
-* Phase 10で実装する特殊な機能を持ったものを除き、Tier 13までの全てのコンテンツが正常に移植されている
+* Phase 10で実装する特殊な機能を持ったものを除き、Tier 13までの全てのコンテンツとレシピが正常に移植されている
 
 ### Phase 10: 周辺機能
 
