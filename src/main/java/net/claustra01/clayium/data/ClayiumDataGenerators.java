@@ -12,6 +12,7 @@ import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.Phase4MachineCatalog;
 import net.claustra01.clayium.machine.Phase4ItemCatalog;
+import net.claustra01.clayium.logistics.Phase5LogisticsCatalog;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.data.PackOutput;
@@ -43,6 +44,7 @@ public final class ClayiumDataGenerators {
                 for (ClayTier tier : ClayTier.values()) {
                     add(tier.translationKey(), tier.displayName());
                 }
+                add("itemGroup." + Clayium.MODID, "Clayium Neoforged");
                 add("block." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
                 addBlockNames(this);
                 addItemNames(this);
@@ -52,6 +54,12 @@ public final class ClayiumDataGenerators {
                 add("gui." + Clayium.MODID + ".tier", "Tier %s");
                 add("message." + Clayium.MODID + ".water_wheel_status",
                         "Flowing water: %s, generation: %s/s");
+                add("message." + Clayium.MODID + ".side_mode", "%s side: %s");
+                add("message." + Clayium.MODID + ".io_saved", "I/O configuration saved");
+                add("message." + Clayium.MODID + ".io_loaded", "I/O configuration loaded");
+                add("message." + Clayium.MODID + ".filter_applied", "Smart Filter applied");
+                add("message." + Clayium.MODID + ".filter_added", "Added %s to Smart Filter");
+                add("message." + Clayium.MODID + ".filter_mode", "Smart Filter mode: %s");
                 add("jei." + Clayium.MODID + ".category.clay_work_table", "Clay Work Table");
                 add("jei." + Clayium.MODID + ".category.clay_bending_machine", "Clay Bending Machine");
                 add("jei." + Clayium.MODID + ".category.elemental_milling_machine", "Elemental Milling Machine");
@@ -114,6 +122,13 @@ public final class ClayiumDataGenerators {
                     "block." + Clayium.MODID + "." + entry.blockId(),
                     entry.tier().displayName() + " " + entry.displayTypeName());
         }
+        for (Phase5LogisticsCatalog.Entry entry : Phase5LogisticsCatalog.ENTRIES) {
+            language.add(
+                    "block." + Clayium.MODID + "." + entry.blockId(),
+                    entry.blockId().equals("storage_container") || entry.blockId().equals("void_container")
+                            ? entry.displayTypeName()
+                            : entry.tier().displayName() + " " + entry.displayTypeName());
+        }
         addBlockName(language, "industrial_clay", "Industrial Clay");
         addBlockName(language, "advanced_industrial_clay", "Advanced Industrial Clay");
         addBlockName(language, "energetic_clay", "Energetic Clay");
@@ -160,6 +175,9 @@ public final class ClayiumDataGenerators {
         for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }
+        language.add("item." + Clayium.MODID + ".clay_configurator", "Clay Configurator");
+        language.add("item." + Clayium.MODID + ".io_memory_card", "I/O Memory Card");
+        language.add("item." + Clayium.MODID + ".smart_filter", "Smart Filter");
     }
 
     private static String titleCase(String id) {
@@ -326,5 +344,6 @@ public final class ClayiumDataGenerators {
 
     private static void buildMachineRecipes(RecipeOutput output) {
         Phase4MachineRecipes.build(output);
+        Phase5MachineRecipes.build(output);
     }
 }

@@ -7,6 +7,8 @@ package net.claustra01.clayium.registry;
 
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.data.MachineTierData;
+import net.claustra01.clayium.data.FilterSettings;
+import net.claustra01.clayium.data.IoMemory;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
@@ -26,6 +28,18 @@ public final class ClayiumDataComponents {
             DATA_COMPONENTS.register("machine_tier", () -> DataComponentType.<MachineTierData>builder()
                     .persistent(MachineTierData.CODEC)
                     .networkSynchronized(MachineTierData.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FilterSettings>> FILTER_SETTINGS =
+            DATA_COMPONENTS.register("filter_settings", () -> DataComponentType.<FilterSettings>builder()
+                    .persistent(FilterSettings.CODEC)
+                    .networkSynchronized(FilterSettings.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<IoMemory>> IO_MEMORY =
+            DATA_COMPONENTS.register("io_memory", () -> DataComponentType.<IoMemory>builder()
+                    .persistent(IoMemory.CODEC)
+                    .networkSynchronized(IoMemory.STREAM_CODEC)
                     .cacheEncoding()
                     .build());
 

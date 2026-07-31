@@ -1,0 +1,1 @@
+{"type":"clayium_neoforged:machine","clay_energy_per_tick":100,"ingredients":[{"count":1,"ingredient":{"item":"clayium_neoforged:industrial_clay_plate"}},{"count":1,"ingredient":{"item":"clayium_neoforged:basic_circuit"}}],"machine":"clayium_neoforged:assembler","minimum_tier":"basic","processing_time_ticks":40,"results":[{"count":16,"id":"clayium_neoforged:basic_buffer"}]}

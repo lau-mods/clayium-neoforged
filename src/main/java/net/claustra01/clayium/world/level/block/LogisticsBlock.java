@@ -1,0 +1,109 @@
+/*
+ * SPDX-License-Identifier: CC-BY-4.0
+ */
+package net.claustra01.clayium.world.level.block;
+
+import com.mojang.serialization.MapCodec;
+import javax.annotation.Nullable;
+import net.claustra01.clayium.logistics.LogisticsKind;
+import net.claustra01.clayium.registry.ClayiumRegistries;
+import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.BlockHitResult;
+
+public final class LogisticsBlock extends BaseEntityBlock {
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final MapCodec<LogisticsBlock> CODEC =
+            simpleCodec(properties -> new LogisticsBlock(properties, LogisticsKind.BUFFER, 4));
+    private final LogisticsKind kind;
+    private final int tier;
+
+    public LogisticsBlock(Properties properties, LogisticsKind kind, int tier) {
+        super(properties);
+        this.kind = kind;
+        this.tier = tier;
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    public LogisticsKind kind() {
+        return kind;
+    }
+
+    public int tier() {
+        return tier;
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
+        builder.add(FACING);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(
+            BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof LogisticsBlockEntity logistics) {
+            player.openMenu(logistics, pos);
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moving) {
+        if (!state.is(next.getBlock())
+                && level instanceof ServerLevel
+                && level.getBlockEntity(pos) instanceof LogisticsBlockEntity logistics
+                && kind != LogisticsKind.VOID_CONTAINER) {
+            if (kind == LogisticsKind.STORAGE_CONTAINER) {
+                logistics.dropAllStoredContents();
+            } else {
+                Containers.dropContents(level, pos, logistics);
+            }
+        }
+        super.onRemove(state, level, pos, next, moving);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new LogisticsBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide ? null : createTickerHelper(
+                type, ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(), LogisticsBlockEntity::serverTick);
+    }
+}

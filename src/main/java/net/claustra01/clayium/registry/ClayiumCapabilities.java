@@ -21,6 +21,13 @@ public final class ClayiumCapabilities {
         event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,
                 ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(),
-                (blockEntity, direction) -> blockEntity.itemHandler());
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> direction == null
+                        ? blockEntity.itemHandler(net.minecraft.core.Direction.UP)
+                        : blockEntity.itemHandler(direction));
     }
 }

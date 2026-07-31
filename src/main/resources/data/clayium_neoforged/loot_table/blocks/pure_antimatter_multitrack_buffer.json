@@ -1,0 +1,1 @@
+{"type":"minecraft:block","pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"clayium_neoforged:pure_antimatter_multitrack_buffer"}],"conditions":[{"condition":"minecraft:survives_explosion"}]}]}

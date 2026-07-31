@@ -6,6 +6,7 @@
 package net.claustra01.clayium.world.inventory;
 
 import net.claustra01.clayium.machine.MachineLayout;
+import net.claustra01.clayium.energy.EnergeticClayFuel;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
@@ -94,7 +95,7 @@ public final class MachineMenu extends AbstractContainerMenu {
     }
 
     private int addMachineSlots() {
-        return switch (layout) {
+        int processingSlots = switch (layout) {
             case SIMPLE -> {
                 addSlot(new Slot(container, 0, 44, 35));
                 addOutputSlot(1, 116, 35);
@@ -115,6 +116,13 @@ public final class MachineMenu extends AbstractContainerMenu {
                 yield outputs.length + 1;
             }
         };
+        addSlot(new Slot(container, MachineLayout.ENERGY_SLOT, 146, 53) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return EnergeticClayFuel.isFuel(stack);
+            }
+        });
+        return processingSlots + 1;
     }
 
     private void addOutputSlot(int inventorySlot, int x, int y) {
@@ -205,8 +213,15 @@ public final class MachineMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(stack, deviceSlotCount, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(stack, 0, inputSlotCount(), false)) {
-            return ItemStack.EMPTY;
+        } else {
+            int energyMenuSlot = deviceSlotCount - 1;
+            if (EnergeticClayFuel.isFuel(stack)) {
+                if (!moveItemStackTo(stack, energyMenuSlot, energyMenuSlot + 1, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!moveItemStackTo(stack, 0, inputSlotCount(), false)) {
+                return ItemStack.EMPTY;
+            }
         }
         if (stack.isEmpty()) {
             slot.setByPlayer(ItemStack.EMPTY);

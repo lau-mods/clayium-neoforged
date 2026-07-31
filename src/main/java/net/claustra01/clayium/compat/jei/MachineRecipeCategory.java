@@ -24,7 +24,7 @@ import net.minecraft.network.chat.Component;
 /** JEI presentation shared by the first common machine recipes. */
 public final class MachineRecipeCategory implements IRecipeCategory<MachineRecipe> {
     private static final int WIDTH = 176;
-    private static final int HEIGHT = 88;
+    private static final int HEIGHT = 112;
     private static final int TEXT_COLOR = 0xFF555555;
 
     private final RecipeType<MachineRecipe> recipeType;
@@ -76,14 +76,14 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
         for (int index = 0; index < recipe.ingredients().size(); index++) {
             var ingredient = recipe.ingredients().get(index);
             int x = recipe.ingredients().size() == 1 ? 34 : 24 + index * 20;
-            builder.addInputSlot(x, 24)
+            builder.addInputSlot(x, 28)
                     .setStandardSlotBackground()
                     .addItemStacks(java.util.Arrays.stream(ingredient.ingredient().getItems())
                             .map(stack -> stack.copyWithCount(ingredient.count()))
                             .toList());
         }
         for (int index = 0; index < recipe.results().size(); index++) {
-            int y = 24 + 18 * index - 9 * (recipe.results().size() - 1);
+            int y = 32 + 18 * index - 9 * (recipe.results().size() - 1);
             builder.addOutputSlot(124, y)
                     .setOutputSlotBackground()
                     .addItemStack(recipe.results().get(index));
@@ -97,7 +97,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
             GuiGraphics graphics,
             double mouseX,
             double mouseY) {
-        arrow.draw(graphics, 78, 28);
+        arrow.draw(graphics, 78, 32);
         Font font = Minecraft.getInstance().font;
         graphics.drawString(
                 font,
@@ -105,7 +105,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                         "jei.clayium_neoforged.processing_time",
                         recipe.processingTimeTicks()),
                 8,
-                52,
+                80,
                 TEXT_COLOR,
                 false);
         graphics.drawString(
@@ -114,7 +114,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                         "jei.clayium_neoforged.clay_energy_per_tick",
                         ClayEnergyFormatter.format(recipe.clayEnergyPerTick())),
                 8,
-                64,
+                92,
                 TEXT_COLOR,
                 false);
         graphics.drawString(
@@ -124,7 +124,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                         ClayEnergyFormatter.format(
                                 recipe.clayEnergyPerTick() * recipe.processingTimeTicks())),
                 88,
-                52,
+                80,
                 TEXT_COLOR,
                 false);
         graphics.drawString(
@@ -133,7 +133,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                         "jei.clayium_neoforged.minimum_tier",
                         recipe.minimumTier().progressionIndex()),
                 88,
-                64,
+                92,
                 TEXT_COLOR,
                 false);
     }

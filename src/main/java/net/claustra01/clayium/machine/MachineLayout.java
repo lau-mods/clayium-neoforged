@@ -14,7 +14,8 @@ public enum MachineLayout {
     ASSEMBLER(new int[]{0, 1}, new int[]{2}),
     CENTRIFUGE(new int[]{0}, new int[]{1, 2, 3, 4});
 
-    public static final int STORAGE_SLOT_COUNT = 5;
+    public static final int ENERGY_SLOT = 5;
+    public static final int STORAGE_SLOT_COUNT = 6;
 
     private final int[] inputSlots;
     private final int[] outputSlots;

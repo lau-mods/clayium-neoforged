@@ -9,21 +9,31 @@ import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.Phase4MachineCatalog;
 import net.claustra01.clayium.machine.Phase4ItemCatalog;
+import net.claustra01.clayium.logistics.Phase5LogisticsCatalog;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
 import net.claustra01.clayium.world.inventory.MachineMenu;
+import net.claustra01.clayium.world.inventory.LogisticsMenu;
 import net.claustra01.clayium.world.level.block.ClayWorkTableBlock;
 import net.claustra01.clayium.world.level.block.MachineBlock;
+import net.claustra01.clayium.world.level.block.LogisticsBlock;
 import net.claustra01.clayium.world.level.block.WaterWheelBlock;
 import net.claustra01.clayium.world.level.block.entity.ClayWorkTableBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
+import net.claustra01.clayium.world.item.ClayConfiguratorItem;
+import net.claustra01.clayium.world.item.SmartFilterItem;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.Tiers;
@@ -40,6 +50,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
 public final class ClayiumRegistries {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Clayium.MODID);
@@ -48,6 +59,8 @@ public final class ClayiumRegistries {
             DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Clayium.MODID);
     public static final DeferredRegister<MenuType<?>> MENU_TYPES =
             DeferredRegister.create(BuiltInRegistries.MENU, Clayium.MODID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Clayium.MODID);
 
     public static final DeferredBlock<ClayWorkTableBlock> CLAY_WORK_TABLE = BLOCKS.registerBlock(
             "clay_work_table",
@@ -104,6 +117,8 @@ public final class ClayiumRegistries {
             () -> new WaterWheelBlock(machineProperties(), ClayTier.DENSE_CLAY));
     public static final Map<String, DeferredBlock<MachineBlock>> PHASE4_MACHINE_BLOCKS =
             registerPhase4MachineBlocks();
+    public static final Map<String, DeferredBlock<LogisticsBlock>> PHASE5_LOGISTICS_BLOCKS =
+            registerPhase5LogisticsBlocks();
 
     public static final DeferredItem<BlockItem> CLAY_WORK_TABLE_ITEM = ITEMS.register(
             "clay_work_table",
@@ -133,6 +148,8 @@ public final class ClayiumRegistries {
             registerBlockItem("dense_clay_water_wheel", DENSE_CLAY_WATER_WHEEL);
     public static final Map<String, DeferredItem<BlockItem>> PHASE4_MACHINE_ITEMS =
             registerPhase4MachineItems();
+    public static final Map<String, DeferredItem<BlockItem>> PHASE5_LOGISTICS_ITEMS =
+            registerBlockItems(PHASE5_LOGISTICS_BLOCKS);
 
     public static final DeferredItem<Item> CLAY_STICK = ITEMS.register(
             "clay_stick",
@@ -169,6 +186,18 @@ public final class ClayiumRegistries {
                     Tiers.STONE,
                     new Item.Properties().attributes(PickaxeItem.createAttributes(Tiers.STONE, 1.0F, -2.8F))));
     public static final Map<String, DeferredItem<Item>> PHASE4_ITEMS = registerPhase4Items();
+    public static final DeferredItem<ClayConfiguratorItem> CLAY_CONFIGURATOR = ITEMS.register(
+            "clay_configurator", () -> new ClayConfiguratorItem(new Item.Properties().stacksTo(1), false));
+    public static final DeferredItem<ClayConfiguratorItem> IO_MEMORY_CARD = ITEMS.register(
+            "io_memory_card", () -> new ClayConfiguratorItem(new Item.Properties()
+                    .stacksTo(1)
+                    .component(ClayiumDataComponents.IO_MEMORY.get(), net.claustra01.clayium.data.IoMemory.DEFAULT), true));
+    public static final DeferredItem<SmartFilterItem> SMART_FILTER = ITEMS.register(
+            "smart_filter", () -> new SmartFilterItem(new Item.Properties()
+                    .stacksTo(1)
+                    .component(
+                            ClayiumDataComponents.FILTER_SETTINGS.get(),
+                            net.claustra01.clayium.data.FilterSettings.DEFAULT)));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayWorkTableBlockEntity>>
             CLAY_WORK_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
                     "clay_work_table",
@@ -188,6 +217,14 @@ public final class ClayiumRegistries {
                             WaterWheelBlockEntity::new,
                             CLAY_WATER_WHEEL.get(),
                             DENSE_CLAY_WATER_WHEEL.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LogisticsBlockEntity>>
+            LOGISTICS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+                    "logistics",
+                    () -> BlockEntityType.Builder.of(
+                            LogisticsBlockEntity::new,
+                            PHASE5_LOGISTICS_BLOCKS.values().stream()
+                                    .map(DeferredBlock::get)
+                                    .toArray(Block[]::new)).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<ClayWorkTableMenu>> CLAY_WORK_TABLE_MENU =
             MENU_TYPES.register(
                     "clay_work_table",
@@ -216,6 +253,19 @@ public final class ClayiumRegistries {
             MENU_TYPES.register(
                     "centrifuge_machine_4",
                     () -> new MenuType<>(MachineMenu::centrifugeTier6, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<LogisticsMenu>> LOGISTICS_MENU =
+            MENU_TYPES.register(
+                    "logistics",
+                    () -> IMenuTypeExtension.create(LogisticsMenu::new));
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLAYIUM_CREATIVE_TAB =
+            CREATIVE_MODE_TABS.register(
+                    "clayium",
+                    () -> CreativeModeTab.builder()
+                            .title(Component.translatable("itemGroup." + Clayium.MODID))
+                            .icon(() -> new ItemStack(CLAY_WORK_TABLE_ITEM.get()))
+                            .displayItems((parameters, output) ->
+                                    ITEMS.getEntries().forEach(item -> output.accept(item.get())))
+                            .build());
 
     private ClayiumRegistries() {
     }
@@ -240,6 +290,17 @@ public final class ClayiumRegistries {
         Map<String, DeferredItem<BlockItem>> items = new LinkedHashMap<>();
         PHASE4_MACHINE_BLOCKS.forEach((id, block) -> items.put(id, registerBlockItem(id, block)));
         return Map.copyOf(items);
+    }
+
+    private static Map<String, DeferredBlock<LogisticsBlock>> registerPhase5LogisticsBlocks() {
+        Map<String, DeferredBlock<LogisticsBlock>> blocks = new LinkedHashMap<>();
+        for (Phase5LogisticsCatalog.Entry entry : Phase5LogisticsCatalog.ENTRIES) {
+            blocks.put(entry.blockId(), BLOCKS.register(
+                    entry.blockId(),
+                    () -> new LogisticsBlock(
+                            machineProperties(), entry.kind(), entry.tier().progressionIndex())));
+        }
+        return Map.copyOf(blocks);
     }
 
     private static Map<String, DeferredBlock<Block>> registerCompressedClayBlocks() {
@@ -336,5 +397,6 @@ public final class ClayiumRegistries {
         ITEMS.register(modEventBus);
         BLOCK_ENTITY_TYPES.register(modEventBus);
         MENU_TYPES.register(modEventBus);
+        CREATIVE_MODE_TABS.register(modEventBus);
     }
 }

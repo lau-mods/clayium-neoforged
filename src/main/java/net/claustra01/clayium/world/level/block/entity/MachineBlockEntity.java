@@ -7,9 +7,15 @@ package net.claustra01.clayium.world.level.block.entity;
 
 import java.util.Optional;
 import java.util.List;
+import java.util.EnumMap;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergyReceiver;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
+import net.claustra01.clayium.energy.EnergeticClayFuel;
+import net.claustra01.clayium.data.FilterSettings;
+import net.claustra01.clayium.data.IoMemory;
+import net.claustra01.clayium.logistics.ConfigurableItemDevice;
+import net.claustra01.clayium.logistics.SideMode;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.MachinePerformance;
 import net.claustra01.clayium.recipe.MachineIngredient;
@@ -23,7 +29,11 @@ import net.claustra01.clayium.world.level.block.MachineBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.ContainerHelper;
@@ -36,9 +46,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.minecraft.server.level.ServerLevel;
 
 /** Server-owned runtime for the common Clayium machine recipe layouts. */
-public final class MachineBlockEntity extends BaseContainerBlockEntity implements ClayEnergyReceiver {
+public final class MachineBlockEntity extends BaseContainerBlockEntity
+        implements ClayEnergyReceiver, ConfigurableItemDevice {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
     public static final int SLOT_COUNT = MachineLayout.STORAGE_SLOT_COUNT;
@@ -58,6 +72,12 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
     private int recipeRecheckDelay;
     private long activeEnergyPerTick;
     private StopReason stopReason = StopReason.NO_RECIPE;
+    private final SideMode[] sideModes = new SideMode[6];
+    private final FilterSettings[] filters = new FilterSettings[6];
+    private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
+            new EnumMap<>(Direction.class);
+    private int automationCooldown;
 
     private final ContainerData menuData = new ContainerData() {
         @Override
@@ -118,7 +138,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             validateSlot(slot);
-            if (!machineLayout().isInputSlot(slot) || stack.isEmpty()) {
+            if ((!machineLayout().isInputSlot(slot) && slot != MachineLayout.ENERGY_SLOT) || stack.isEmpty()) {
+                return stack;
+            }
+            if (slot == MachineLayout.ENERGY_SLOT && !EnergeticClayFuel.isFuel(stack)) {
                 return stack;
             }
             ItemStack current = getItem(slot);
@@ -168,7 +191,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             validateSlot(slot);
-            return machineLayout().isInputSlot(slot);
+            return machineLayout().isInputSlot(slot)
+                    || slot == MachineLayout.ENERGY_SLOT && EnergeticClayFuel.isFuel(stack);
         }
 
         private void validateSlot(int slot) {
@@ -180,10 +204,71 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
     public MachineBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(), pos, state);
+        java.util.Arrays.fill(sideModes, SideMode.DISABLED);
+        java.util.Arrays.fill(filters, FilterSettings.DEFAULT);
+        Direction front = state.hasProperty(MachineBlock.FACING)
+                ? state.getValue(MachineBlock.FACING)
+                : Direction.NORTH;
+        sideModes[front.ordinal()] = SideMode.OUTPUT;
+        sideModes[front.getOpposite().ordinal()] = SideMode.INPUT;
+        for (Direction direction : Direction.values()) {
+            sidedHandlers.put(direction, new SidedMachineHandler(direction));
+        }
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, MachineBlockEntity machine) {
+        machine.tickAutomation();
         machine.serverTick();
+    }
+
+    private void tickAutomation() {
+        if (level == null || ++automationCooldown < 8) {
+            return;
+        }
+        automationCooldown = 0;
+        for (Direction direction : Direction.values()) {
+            if (!sideModes[direction.ordinal()].allowsExtract()) {
+                continue;
+            }
+            IItemHandler target = targetHandler(direction);
+            if (target == null) {
+                continue;
+            }
+            for (int outputSlot : machineLayout().outputSlots(machineTier())) {
+                ItemStack output = getItem(outputSlot);
+                if (output.isEmpty()) {
+                    continue;
+                }
+                ItemStack offered = output.copyWithCount(Math.min(64, output.getCount()));
+                ItemStack remainder = offered;
+                for (int slot = 0; slot < target.getSlots() && !remainder.isEmpty(); slot++) {
+                    remainder = target.insertItem(slot, remainder, false);
+                }
+                int moved = offered.getCount() - remainder.getCount();
+                if (moved > 0) {
+                    removeItem(outputSlot, moved);
+                    setChanged();
+                    return;
+                }
+            }
+        }
+    }
+
+    private IItemHandler targetHandler(Direction direction) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return null;
+        }
+        return neighborCaches.computeIfAbsent(
+                        direction,
+                        side -> BlockCapabilityCache.create(
+                                Capabilities.ItemHandler.BLOCK,
+                                serverLevel,
+                                worldPosition.relative(side),
+                                side.getOpposite(),
+                                () -> !isRemoved(),
+                                () -> {
+                                }))
+                .getCapability();
     }
 
     private void serverTick() {
@@ -192,7 +277,6 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
             stopReason = StopReason.INVALID_BLOCK;
             return;
         }
-
         Optional<RecipeHolder<MachineRecipe>> recipe = resolveRecipe(machineBlock);
         if (recipe.isEmpty()) {
             stopReason = recipeInput().isEmpty() ? StopReason.NO_INPUT : StopReason.NO_RECIPE;
@@ -210,8 +294,11 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         if (energy.extract(energyPerTick, true) != energyPerTick) {
-            stopReason = StopReason.INSUFFICIENT_ENERGY;
-            return;
+            if (!consumeOneEnergeticClay()
+                    || energy.extract(energyPerTick, true) != energyPerTick) {
+                stopReason = StopReason.INSUFFICIENT_ENERGY;
+                return;
+            }
         }
 
         energy.extract(energyPerTick, false);
@@ -221,6 +308,21 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
             complete(value);
         }
         setChanged();
+    }
+
+    private boolean consumeOneEnergeticClay() {
+        ItemStack fuel = getItem(MachineLayout.ENERGY_SLOT);
+        long value = EnergeticClayFuel.value(fuel);
+        if (value <= 0 || energy.energyStored() > Long.MAX_VALUE - value) {
+            return false;
+        }
+        if (energy.receive(value, true) == value) {
+            energy.receive(value, false);
+            fuel.shrink(1);
+            setChanged();
+            return true;
+        }
+        return false;
     }
 
     private Optional<RecipeHolder<MachineRecipe>> resolveRecipe(MachineBlock block) {
@@ -338,7 +440,43 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
     }
 
     public IItemHandler itemHandler() {
-        return itemHandler;
+        return itemHandler(Direction.UP);
+    }
+
+    public IItemHandler itemHandler(Direction direction) {
+        return sidedHandlers.get(direction);
+    }
+
+    @Override
+    public SideMode cycleSide(Direction direction) {
+        int index = direction.ordinal();
+        sideModes[index] = sideModes[index].next();
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+        }
+        return sideModes[index];
+    }
+
+    @Override
+    public void setFilter(Direction direction, FilterSettings filter) {
+        filters[direction.ordinal()] = filter;
+        setChanged();
+    }
+
+    @Override
+    public IoMemory saveIoMemory() {
+        return IoMemory.of(sideModes);
+    }
+
+    @Override
+    public void loadIoMemory(IoMemory memory) {
+        SideMode[] loaded = memory.modesOrDefault(sideModes);
+        System.arraycopy(loaded, 0, sideModes, 0, sideModes.length);
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+        }
     }
 
     @Override
@@ -403,7 +541,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return machineLayout().isInputSlot(slot);
+        return machineLayout().isInputSlot(slot)
+                || slot == MachineLayout.ENERGY_SLOT && EnergeticClayFuel.isFuel(stack);
     }
 
     @Override
@@ -426,6 +565,23 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
                 : null;
         progress = Math.max(0, tag.getInt("Progress"));
         totalProgress = Math.max(0, tag.getInt("TotalProgress"));
+        int[] savedModes = tag.getIntArray("SideModes");
+        for (int index = 0; index < Math.min(6, savedModes.length); index++) {
+            sideModes[index] = SideMode.values()[Math.max(0, Math.min(SideMode.values().length - 1, savedModes[index]))];
+        }
+        ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
+        for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
+            CompoundTag saved = savedFilters.getCompound(index);
+            ListTag ids = saved.getList("Items", Tag.TAG_STRING);
+            java.util.ArrayList<ResourceLocation> itemIds = new java.util.ArrayList<>();
+            for (int itemIndex = 0; itemIndex < ids.size(); itemIndex++) {
+                ResourceLocation id = ResourceLocation.tryParse(ids.getString(itemIndex));
+                if (id != null) {
+                    itemIds.add(id);
+                }
+            }
+            filters[index] = new FilterSettings(saved.getBoolean("Blacklist"), itemIds);
+        }
     }
 
     @Override
@@ -438,6 +594,61 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity implement
         }
         tag.putInt("Progress", progress);
         tag.putInt("TotalProgress", totalProgress);
+        tag.putIntArray("SideModes", java.util.Arrays.stream(sideModes).mapToInt(Enum::ordinal).toArray());
+        ListTag savedFilters = new ListTag();
+        for (FilterSettings filter : filters) {
+            CompoundTag saved = new CompoundTag();
+            saved.putBoolean("Blacklist", filter.blacklist());
+            ListTag ids = new ListTag();
+            filter.itemIds().forEach(id -> ids.add(StringTag.valueOf(id.toString())));
+            saved.put("Items", ids);
+            savedFilters.add(saved);
+        }
+        tag.put("Filters", savedFilters);
+    }
+
+    private final class SidedMachineHandler implements IItemHandler {
+        private final Direction side;
+
+        private SidedMachineHandler(Direction side) {
+            this.side = side;
+        }
+
+        @Override
+        public int getSlots() {
+            return itemHandler.getSlots();
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return itemHandler.getStackInSlot(slot);
+        }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            return sideModes[side.ordinal()].allowsInsert() && filters[side.ordinal()].matches(stack)
+                    ? itemHandler.insertItem(slot, stack, simulate)
+                    : stack;
+        }
+
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return sideModes[side.ordinal()].allowsExtract()
+                    ? itemHandler.extractItem(slot, amount, simulate)
+                    : ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return sideModes[side.ordinal()].allowsInsert()
+                    && filters[side.ordinal()].matches(stack)
+                    && itemHandler.isItemValid(slot, stack);
+        }
     }
 
     public enum StopReason {

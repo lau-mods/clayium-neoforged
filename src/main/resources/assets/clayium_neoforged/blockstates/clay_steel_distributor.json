@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"clayium_neoforged:block/clay_steel_distributor"},"facing=east":{"model":"clayium_neoforged:block/clay_steel_distributor","y":90},"facing=south":{"model":"clayium_neoforged:block/clay_steel_distributor","y":180},"facing=west":{"model":"clayium_neoforged:block/clay_steel_distributor","y":270}}}
