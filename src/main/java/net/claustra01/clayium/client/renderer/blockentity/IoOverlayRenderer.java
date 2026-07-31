@@ -293,6 +293,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         consumer.addVertex(poses.last().pose(), x, y, z)
                 .setColor(255, 255, 255, 255)
                 .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(LightTexture.FULL_BRIGHT)
                 .setNormal(poses.last(), 0.0F, 1.0F, 0.0F);
     }
