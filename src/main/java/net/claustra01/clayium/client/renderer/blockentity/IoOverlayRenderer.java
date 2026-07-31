@@ -11,6 +11,10 @@ import net.claustra01.clayium.world.level.block.LogisticsBlock;
 import net.claustra01.clayium.world.level.block.MachineBlock;
 import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
+import net.claustra01.clayium.world.level.block.FluidBufferBlock;
+import net.claustra01.clayium.world.level.block.entity.FluidBufferBlockEntity;
+import net.claustra01.clayium.world.level.block.SaltExtractorBlock;
+import net.claustra01.clayium.world.level.block.entity.SaltExtractorBlockEntity;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -34,9 +38,13 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
             MultiBufferSource buffers,
             int packedLight,
             int packedOverlay) {
-        boolean pipe = blockEntity.getBlockState().hasProperty(MachineBlock.PIPE)
+        boolean pipe = blockEntity.getBlockState().getBlock() instanceof MachineBlock
                 ? blockEntity.getBlockState().getValue(MachineBlock.PIPE)
-                : blockEntity.getBlockState().getValue(LogisticsBlock.PIPE);
+                : blockEntity.getBlockState().getBlock() instanceof LogisticsBlock
+                        ? blockEntity.getBlockState().getValue(LogisticsBlock.PIPE)
+                        : blockEntity.getBlockState().getBlock() instanceof FluidBufferBlock
+                                ? blockEntity.getBlockState().getValue(FluidBufferBlock.PIPE)
+                                : blockEntity.getBlockState().getValue(SaltExtractorBlock.PIPE);
         if (pipe) {
             ResourceLocation hull = hullTexture(blockEntity);
             for (Direction side : Direction.values()) {
@@ -66,7 +74,11 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
     private static boolean pipeConnects(ConfigurableItemDevice device, Direction side) {
         return device instanceof MachineBlockEntity machine
                 ? machine.pipeConnects(side)
-                : device instanceof LogisticsBlockEntity logistics && logistics.pipeConnects(side);
+                : device instanceof LogisticsBlockEntity logistics
+                        ? logistics.pipeConnects(side)
+                        : device instanceof FluidBufferBlockEntity fluid
+                                ? fluid.pipeConnects(side)
+                                : device instanceof SaltExtractorBlockEntity salt && salt.pipeConnects(side);
     }
 
     private static ResourceLocation hullTexture(BlockEntity blockEntity) {
@@ -82,6 +94,12 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
             }
             return Clayium.id("block/machine_hull_"
                     + net.claustra01.clayium.tier.ClayTier.byLegacyIndex(logistics.tier()).id());
+        }
+        if (blockEntity.getBlockState().getBlock() instanceof FluidBufferBlock fluid) {
+            return Clayium.id("block/machine_hull_" + fluid.tier().id());
+        }
+        if (blockEntity.getBlockState().getBlock() instanceof SaltExtractorBlock salt) {
+            return Clayium.id("block/machine_hull_" + salt.tier().id());
         }
         return Clayium.id("block/clay_machine_hull");
     }
@@ -147,14 +165,22 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         if (device instanceof MachineBlockEntity machine) {
             return machine.insertionIcon(side);
         }
-        return device instanceof LogisticsBlockEntity logistics ? logistics.insertionIcon(side) : "";
+        if (device instanceof LogisticsBlockEntity logistics) {
+            return logistics.insertionIcon(side);
+        }
+        if (device instanceof FluidBufferBlockEntity fluid) return fluid.insertionRoute(side) >= 0 ? "import" : "";
+        return device instanceof SaltExtractorBlockEntity salt && salt.insertionRoute(side) >= 0 ? "import_energy" : "";
     }
 
     private static String extractionIcon(ConfigurableItemDevice device, Direction side) {
         if (device instanceof MachineBlockEntity machine) {
             return machine.extractionIcon(side);
         }
-        return device instanceof LogisticsBlockEntity logistics ? logistics.extractionIcon(side) : "";
+        if (device instanceof LogisticsBlockEntity logistics) {
+            return logistics.extractionIcon(side);
+        }
+        if (device instanceof FluidBufferBlockEntity fluid) return fluid.extractionRoute(side) >= 0 ? "export" : "";
+        return device instanceof SaltExtractorBlockEntity salt && salt.extractionRoute(side) >= 0 ? "export" : "";
     }
 
     private static void drawFace(

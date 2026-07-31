@@ -1,0 +1,31 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000,
+  "ingredients": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:salt_dust"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:calcareous_clay_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:chemical_reactor",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 120,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:calcium_chloride_dust"
+    },
+    {
+      "count": 1,
+      "id": "clayium_neoforged:sodium_carbonate_dust"
+    }
+  ]
+}

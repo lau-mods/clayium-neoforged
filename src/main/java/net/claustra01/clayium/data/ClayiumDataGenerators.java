@@ -11,6 +11,8 @@ import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.Phase4MachineCatalog;
+import net.claustra01.clayium.machine.Phase6MachineCatalog;
+import net.claustra01.clayium.machine.Phase6ItemCatalog;
 import net.claustra01.clayium.machine.Phase4ItemCatalog;
 import net.claustra01.clayium.logistics.Phase5LogisticsCatalog;
 import net.claustra01.clayium.registry.ClayiumRegistries;
@@ -76,6 +78,8 @@ public final class ClayiumDataGenerators {
                         "centrifuge", "smelter")) {
                     add("jei." + Clayium.MODID + ".category." + path, titleCase(path));
                 }
+                add("jei." + Clayium.MODID + ".category.chemical_reactor", "Chemical Reactor");
+                add("jei." + Clayium.MODID + ".category.electrolysis_reactor", "Electrolysis Reactor");
                 add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
                 add("jei." + Clayium.MODID + ".required_actions", "Manual actions: %s");
                 add("jei." + Clayium.MODID + ".input_count", "Input: %s");
@@ -129,6 +133,16 @@ public final class ClayiumDataGenerators {
                     "block." + Clayium.MODID + "." + entry.blockId(),
                     entry.tier().displayName() + " " + entry.displayTypeName());
         }
+        for (Phase6MachineCatalog.Entry entry : Phase6MachineCatalog.ENTRIES) {
+            language.add("block." + Clayium.MODID + "." + entry.blockId(),
+                    entry.tier().displayName() + " " + entry.displayTypeName());
+        }
+        language.add("block." + Clayium.MODID + ".basic_fluid_buffer", "Basic Fluid Buffer");
+        language.add("block." + Clayium.MODID + ".advanced_fluid_buffer", "Advanced Fluid Buffer");
+        language.add("block." + Clayium.MODID + ".precision_fluid_buffer", "Precision Fluid Buffer");
+        language.add("block." + Clayium.MODID + ".basic_salt_extractor", "Basic Salt Extractor");
+        language.add("block." + Clayium.MODID + ".advanced_salt_extractor", "Advanced Salt Extractor");
+        language.add("block." + Clayium.MODID + ".precision_salt_extractor", "Precision Salt Extractor");
         for (Phase5LogisticsCatalog.Entry entry : Phase5LogisticsCatalog.ENTRIES) {
             language.add(
                     "block." + Clayium.MODID + "." + entry.blockId(),
@@ -181,6 +195,9 @@ public final class ClayiumDataGenerators {
         language.add("item." + Clayium.MODID + ".clay_shovel", "Clay Shovel");
         language.add("item." + Clayium.MODID + ".clay_pickaxe", "Clay Pickaxe");
         for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
+            language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
+        }
+        for (Phase6ItemCatalog.Entry entry : Phase6ItemCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }
         language.add("item." + Clayium.MODID + ".clay_io_tool", "Clay IO Configurator");
@@ -400,5 +417,6 @@ public final class ClayiumDataGenerators {
     private static void buildMachineRecipes(RecipeOutput output) {
         Phase4MachineRecipes.build(output);
         Phase5MachineRecipes.build(output);
+        Phase6MachineRecipes.build(output);
     }
 }

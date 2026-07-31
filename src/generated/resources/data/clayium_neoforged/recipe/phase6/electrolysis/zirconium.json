@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:impure_zirconium_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:electrolysis_reactor",
+  "minimum_tier": "precision",
+  "processing_time_ticks": 100,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:zirconium_dust"
+    }
+  ]
+}

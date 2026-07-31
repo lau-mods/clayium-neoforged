@@ -10,6 +10,7 @@ import net.claustra01.clayium.energy.ClayEnergyFormatter;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.Phase4MachineCatalog;
+import net.claustra01.clayium.machine.Phase6MachineCatalog;
 import net.claustra01.clayium.world.inventory.MachineMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -65,9 +66,15 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         if (blockId.equals("elemental_milling_machine")) {
             return ClayiumMachineIds.ELEMENTAL_MILLING_MACHINE;
         }
-        return Phase4MachineCatalog.ENTRIES.stream()
+        ResourceLocation phase4 = Phase4MachineCatalog.ENTRIES.stream()
                 .filter(entry -> entry.blockId().equals(blockId))
                 .map(Phase4MachineCatalog.Entry::machineId)
+                .findFirst()
+                .orElse(null);
+        if (phase4 != null) return phase4;
+        return Phase6MachineCatalog.ENTRIES.stream()
+                .filter(entry -> entry.blockId().equals(blockId))
+                .map(Phase6MachineCatalog.Entry::machineId)
                 .findFirst()
                 .orElse(ClayiumMachineIds.CLAY_BENDING_MACHINE);
     }
@@ -138,9 +145,14 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     }
 
     private void drawMachineSlots(GuiGraphics graphics) {
-        if (menu.layout() == MachineLayout.ASSEMBLER) {
+        if (menu.layout() == MachineLayout.ASSEMBLER || menu.layout() == MachineLayout.CHEMICAL) {
             graphics.blit(SLOT, leftPos + 31, topPos + 34, 32, 0, 18, 18);
             graphics.blit(SLOT, leftPos + 49, topPos + 34, 32, 32, 18, 18);
+            if (menu.layout() == MachineLayout.CHEMICAL) {
+                graphics.blit(SLOT, leftPos + 115, topPos + 25, 0, 0, 18, 18);
+                graphics.blit(SLOT, leftPos + 115, topPos + 43, 0, 0, 18, 18);
+                return;
+            }
             graphics.blit(SLOT, leftPos + 111, topPos + 30, 0, 32, 26, 26);
             return;
         }

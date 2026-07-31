@@ -29,5 +29,16 @@ public final class ClayiumCapabilities {
                 (blockEntity, direction) -> direction == null
                         ? blockEntity.itemHandler(net.minecraft.core.Direction.UP)
                         : blockEntity.itemHandler(direction));
+        event.registerBlockEntity(
+                Capabilities.FluidHandler.BLOCK,
+                ClayiumRegistries.FLUID_BUFFER_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> direction == null
+                        ? blockEntity.unrestrictedFluidHandler()
+                        : blockEntity.fluidHandler(direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.SALT_EXTRACTOR_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
     }
 }

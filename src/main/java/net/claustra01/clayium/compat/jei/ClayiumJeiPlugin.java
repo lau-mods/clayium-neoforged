@@ -21,6 +21,7 @@ import net.claustra01.clayium.client.gui.screens.inventory.MachineScreen;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.Phase4MachineCatalog;
+import net.claustra01.clayium.machine.Phase6MachineCatalog;
 import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.recipe.SmelterRecipeAdapter;
@@ -77,6 +78,11 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                     ClayiumRegistries.PHASE4_MACHINE_ITEMS.get(entry.blockId()).get(),
                     ClayiumJeiRecipeTypes.MACHINES.get(entry.machineId()));
         }
+        for (Phase6MachineCatalog.Entry entry : Phase6MachineCatalog.ENTRIES) {
+            registration.addRecipeCatalyst(
+                    ClayiumRegistries.PHASE6_MACHINE_ITEMS.get(entry.blockId()).get(),
+                    ClayiumJeiRecipeTypes.MACHINES.get(entry.machineId()));
+        }
     }
 
     @Override
@@ -123,6 +129,8 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                         recipeType,
                         2,
                         3);
+            } else if (layout == MachineLayout.CHEMICAL) {
+                registerTransfer(registration, ClayiumRegistries.CHEMICAL_MACHINE_MENU.get(), recipeType, 2, 4);
             } else if (layout == MachineLayout.CENTRIFUGE) {
                 registerTransfer(registration, ClayiumRegistries.CENTRIFUGE_MACHINE_MENU_1.get(), recipeType, 1, 2);
                 registerTransfer(registration, ClayiumRegistries.CENTRIFUGE_MACHINE_MENU_2.get(), recipeType, 1, 3);
@@ -191,6 +199,10 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                         .get(entry.blockId())
                         .get()
                         .getDefaultInstance())
-                .orElse(ItemStack.EMPTY);
+                .orElseGet(() -> Phase6MachineCatalog.ENTRIES.stream()
+                        .filter(entry -> entry.machineId().equals(machineId))
+                        .findFirst()
+                        .map(entry -> ClayiumRegistries.PHASE6_MACHINE_ITEMS.get(entry.blockId()).get().getDefaultInstance())
+                        .orElse(ItemStack.EMPTY));
     }
 }

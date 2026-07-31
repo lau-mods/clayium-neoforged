@@ -24,6 +24,8 @@ public final class ClayiumMachineIds {
     public static final ResourceLocation ASSEMBLER = Clayium.id("assembler");
     public static final ResourceLocation INSCRIBER = Clayium.id("inscriber");
     public static final ResourceLocation CENTRIFUGE = Clayium.id("centrifuge");
+    public static final ResourceLocation CHEMICAL_REACTOR = Clayium.id("chemical_reactor");
+    public static final ResourceLocation ELECTROLYSIS_REACTOR = Clayium.id("electrolysis_reactor");
 
     private ClayiumMachineIds() {
     }

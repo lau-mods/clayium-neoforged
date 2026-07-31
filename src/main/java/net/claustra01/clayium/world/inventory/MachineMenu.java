@@ -36,6 +36,10 @@ public final class MachineMenu extends AbstractContainerMenu {
         return new MachineMenu(containerId, inventory, MachineLayout.ASSEMBLER, ClayTier.SIMPLE);
     }
 
+    public static MachineMenu chemical(int containerId, Inventory inventory) {
+        return new MachineMenu(containerId, inventory, MachineLayout.CHEMICAL, ClayTier.BASIC);
+    }
+
     public static MachineMenu centrifugeTier3(int containerId, Inventory inventory) {
         return new MachineMenu(containerId, inventory, MachineLayout.CENTRIFUGE, ClayTier.SIMPLE);
     }
@@ -107,6 +111,13 @@ public final class MachineMenu extends AbstractContainerMenu {
                 addOutputSlot(2, 116, 35);
                 yield 3;
             }
+            case CHEMICAL -> {
+                addSlot(new Slot(container, 0, 32, 35));
+                addSlot(new Slot(container, 1, 50, 35));
+                addOutputSlot(2, 116, 26);
+                addOutputSlot(3, 116, 44);
+                yield 4;
+            }
             case CENTRIFUGE -> {
                 addSlot(new Slot(container, 0, 44, 35));
                 int[] outputs = layout.outputSlots(tier);
@@ -130,6 +141,9 @@ public final class MachineMenu extends AbstractContainerMenu {
     private static MenuType<MachineMenu> menuType(MachineLayout layout, ClayTier tier) {
         if (layout == MachineLayout.ASSEMBLER) {
             return ClayiumRegistries.ASSEMBLER_MACHINE_MENU.get();
+        }
+        if (layout == MachineLayout.CHEMICAL) {
+            return ClayiumRegistries.CHEMICAL_MACHINE_MENU.get();
         }
         if (layout == MachineLayout.CENTRIFUGE) {
             return switch (Math.max(1, Math.min(4, tier.progressionIndex() - 2))) {

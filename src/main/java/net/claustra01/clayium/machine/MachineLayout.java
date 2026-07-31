@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 public enum MachineLayout {
     SIMPLE(new int[]{0}, new int[]{1}),
     ASSEMBLER(new int[]{0, 1}, new int[]{2}),
+    CHEMICAL(new int[]{0, 1}, new int[]{2, 3}),
     CENTRIFUGE(new int[]{0}, new int[]{1, 2, 3, 4});
 
     public static final int ENERGY_SLOT = 5;
@@ -62,6 +63,9 @@ public enum MachineLayout {
         }
         if (ClayiumMachineIds.CENTRIFUGE.equals(machineId)) {
             return CENTRIFUGE;
+        }
+        if (ClayiumMachineIds.CHEMICAL_REACTOR.equals(machineId)) {
+            return CHEMICAL;
         }
         return SIMPLE;
     }
