@@ -32,18 +32,15 @@ public final class ClayCraftingTableScreen extends AbstractContainerScreen<ClayC
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        for (int y = 4; y < 68; y += 8) for (int x = 4; x < 172; x += 8) {
-            graphics.blit(BACK, leftPos + x, topPos + y, 0, 0,
-                    Math.min(8, 172 - x), Math.min(8, 68 - y), 8, 8);
-        }
+        tile(graphics, BACK, leftPos + 4, topPos + 4, 168, imageHeight - 8, 8, 8);
         tile(graphics, TOP, leftPos + 4, topPos, 168, 4, 1, 4);
-        tile(graphics, BOTTOM, leftPos + 4, topPos + 68, 168, 4, 1, 4);
-        tile(graphics, LEFT, leftPos, topPos + 4, 4, 64, 4, 1);
-        tile(graphics, RIGHT, leftPos + 172, topPos + 4, 4, 64, 4, 1);
+        tile(graphics, BOTTOM, leftPos + 4, topPos + imageHeight - 4, 168, 4, 1, 4);
+        tile(graphics, LEFT, leftPos, topPos + 4, 4, imageHeight - 8, 4, 1);
+        tile(graphics, RIGHT, leftPos + 172, topPos + 4, 4, imageHeight - 8, 4, 1);
         whole(graphics, TOP_LEFT, leftPos, topPos);
         whole(graphics, TOP_RIGHT, leftPos + 172, topPos);
-        whole(graphics, BOTTOM_LEFT, leftPos, topPos + 68);
-        whole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + 68);
+        whole(graphics, BOTTOM_LEFT, leftPos, topPos + imageHeight - 4);
+        whole(graphics, BOTTOM_RIGHT, leftPos + 172, topPos + imageHeight - 4);
         graphics.blit(PLAYER, leftPos, topPos + 72, 0, 0, 176, 94);
         for (int row = 0; row < 3; row++) for (int column = 0; column < 3; column++) {
             graphics.blit(SLOT, leftPos + 29 + column * 18, topPos + 16 + row * 18, 0, 0, 18, 18);

@@ -15,9 +15,9 @@ public final class FluidBufferScreen extends AbstractContainerScreen<FluidBuffer
     private static final ResourceLocation TOP=Clayium.id("textures/gui/gui_t.png"),BOTTOM=Clayium.id("textures/gui/gui_b.png"),LEFT=Clayium.id("textures/gui/gui_l.png"),RIGHT=Clayium.id("textures/gui/gui_r.png"),TOP_LEFT=Clayium.id("textures/gui/gui_tl.png"),TOP_RIGHT=Clayium.id("textures/gui/gui_tr.png"),BOTTOM_LEFT=Clayium.id("textures/gui/gui_bl.png"),BOTTOM_RIGHT=Clayium.id("textures/gui/gui_br.png");
     public FluidBufferScreen(FluidBufferMenu menu, Inventory inv, Component title){super(menu,inv,title);imageHeight=166;inventoryLabelY=72;}
     @Override protected void renderBg(GuiGraphics g,float partial,int mx,int my){
-        for(int y=4;y<68;y+=8) for(int x=4;x<172;x+=8) g.blit(BACK,leftPos+x,topPos+y,0,0,Math.min(8,172-x),Math.min(8,68-y),8,8);
-        tile(g,TOP,leftPos+4,topPos,168,4,1,4);tile(g,BOTTOM,leftPos+4,topPos+68,168,4,1,4);tile(g,LEFT,leftPos,topPos+4,4,64,4,1);tile(g,RIGHT,leftPos+172,topPos+4,4,64,4,1);
-        whole(g,TOP_LEFT,leftPos,topPos);whole(g,TOP_RIGHT,leftPos+172,topPos);whole(g,BOTTOM_LEFT,leftPos,topPos+68);whole(g,BOTTOM_RIGHT,leftPos+172,topPos+68);
+        tile(g,BACK,leftPos+4,topPos+4,168,imageHeight-8,8,8);
+        tile(g,TOP,leftPos+4,topPos,168,4,1,4);tile(g,BOTTOM,leftPos+4,topPos+imageHeight-4,168,4,1,4);tile(g,LEFT,leftPos,topPos+4,4,imageHeight-8,4,1);tile(g,RIGHT,leftPos+172,topPos+4,4,imageHeight-8,4,1);
+        whole(g,TOP_LEFT,leftPos,topPos);whole(g,TOP_RIGHT,leftPos+172,topPos);whole(g,BOTTOM_LEFT,leftPos,topPos+imageHeight-4);whole(g,BOTTOM_RIGHT,leftPos+172,topPos+imageHeight-4);
         g.blit(PLAYER,leftPos,topPos+72,0,0,176,94);
         g.fill(leftPos+79,topPos+17,leftPos+97,topPos+65,0xff202020);
         int h=menu.capacity()<=0?0:(int)(46L*menu.amount()/menu.capacity());

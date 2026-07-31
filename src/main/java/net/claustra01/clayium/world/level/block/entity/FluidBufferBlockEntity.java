@@ -83,8 +83,19 @@ public final class FluidBufferBlockEntity extends BlockEntity implements MenuPro
     public FluidStack fluid() { return tank.getFluid().copy(); }
     public int capacity() { return tank.getCapacity(); }
     public boolean pipeConnects(Direction side) {
-        if (level == null || insertionRoute(side) < 0 && extractionRoute(side) < 0) return false;
-        return level.getCapability(Capabilities.FluidHandler.BLOCK, worldPosition.relative(side), side.getOpposite()) != null;
+        if (level == null) return false;
+        boolean ownActive = insertionRoute(side) >= 0 || extractionRoute(side) >= 0;
+        var neighbor = level.getBlockEntity(worldPosition.relative(side));
+        if (neighbor instanceof ConfigurableItemDevice device) {
+            boolean neighborActive = device.insertionRoute(side.getOpposite()) >= 0
+                    || device.extractionRoute(side.getOpposite()) >= 0;
+            boolean neighborPassive = neighbor instanceof FluidBufferBlockEntity;
+            return ownActive && (neighborActive || neighborPassive) || neighborActive;
+        }
+        return ownActive && level.getCapability(
+                Capabilities.FluidHandler.BLOCK,
+                worldPosition.relative(side),
+                side.getOpposite()) != null;
     }
 
     @Override public int cycleInsertRoute(Direction d) { int i=relativeIndex(d); insertionRoutes[i]=insertionRoutes[i] < 0 ? 0 : -1; configurationChanged(); return insertionRoutes[i]; }
@@ -124,9 +135,9 @@ public final class FluidBufferBlockEntity extends BlockEntity implements MenuPro
     private final class SidedFluidHandler implements IFluidHandler {
         private final Direction side; private SidedFluidHandler(Direction side){this.side=side;}
         @Override public int getTanks(){return 1;} @Override public FluidStack getFluidInTank(int i){return tank.getFluidInTank(i);} @Override public int getTankCapacity(int i){return tank.getTankCapacity(i);}
-        @Override public boolean isFluidValid(int i,FluidStack stack){return insertionRoute(side)>=0 && tank.isFluidValid(i,stack);}
-        @Override public int fill(FluidStack stack,FluidAction action){return insertionRoute(side)>=0?tank.fill(stack,action):0;}
-        @Override public FluidStack drain(FluidStack stack,FluidAction action){return extractionRoute(side)>=0?tank.drain(stack,action):FluidStack.EMPTY;}
-        @Override public FluidStack drain(int amount,FluidAction action){return extractionRoute(side)>=0?tank.drain(amount,action):FluidStack.EMPTY;}
+        @Override public boolean isFluidValid(int i,FluidStack stack){return tank.isFluidValid(i,stack);}
+        @Override public int fill(FluidStack stack,FluidAction action){return tank.fill(stack,action);}
+        @Override public FluidStack drain(FluidStack stack,FluidAction action){return tank.drain(stack,action);}
+        @Override public FluidStack drain(int amount,FluidAction action){return tank.drain(amount,action);}
     }
 }

@@ -1,4 +1,5 @@
 {
+  "render_type": "minecraft:cutout",
   "textures": {
     "particle": "clayium_neoforged:block/compressed_clay",
     "side": "clayium_neoforged:block/compressed_clay",
