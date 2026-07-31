@@ -26,6 +26,16 @@ public interface ConfigurableItemDevice {
         return IoTransportKind.ITEM;
     }
 
+    /** True when another device may push into this unconfigured face. */
+    default boolean allowsPassiveInsertion(Direction side) {
+        return false;
+    }
+
+    /** True when another device may pull from this unconfigured face. */
+    default boolean allowsPassiveExtraction(Direction side) {
+        return false;
+    }
+
     default Direction ioFacing() {
         return ioOwner().getBlockState().getValue(ioFacingProperty());
     }
@@ -90,7 +100,7 @@ public interface ConfigurableItemDevice {
         return ioOwner().getBlockState().getValue(ioPipeProperty());
     }
 
-    /** Pipe arms join every adjacent Clayium device in the same transport domain. */
+    /** A pipe arm exists only where a complementary input/output pair can transfer. */
     default boolean pipeConnects(Direction side) {
         return SideConfiguration.pipeConnects(this, side);
     }

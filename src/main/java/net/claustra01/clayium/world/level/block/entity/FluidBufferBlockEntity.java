@@ -55,6 +55,8 @@ public final class FluidBufferBlockEntity extends BlockEntity implements MenuPro
     @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return FluidBufferBlock.PIPE;}
     @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return FluidBufferBlock.FACING;}
     @Override public net.claustra01.clayium.logistics.IoTransportKind ioTransportKind(){return net.claustra01.clayium.logistics.IoTransportKind.FLUID;}
+    @Override public boolean allowsPassiveInsertion(Direction side){return true;}
+    @Override public boolean allowsPassiveExtraction(Direction side){return true;}
     @Override public void ioConfigurationChanged(){configurationChanged();}
 
     private int capacityForState() {

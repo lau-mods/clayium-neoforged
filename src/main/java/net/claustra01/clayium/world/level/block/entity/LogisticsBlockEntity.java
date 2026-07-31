@@ -495,6 +495,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 || kind() == LogisticsKind.VOID_CONTAINER;
     }
 
+    @Override public boolean allowsPassiveInsertion(Direction side){return isPassivePipeEndpoint();}
+    @Override public boolean allowsPassiveExtraction(Direction side){return isPassivePipeEndpoint();}
+
     public String insertionIcon(Direction side) {
         int route = insertionRoute(side);
         if (route < 0) {
