@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10000000,
+  "ingredients": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:septuple_compressed_energetic_clay"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:energetic_clay_condenser",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 64,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:octuple_compressed_energetic_clay"
+    }
+  ]
+}

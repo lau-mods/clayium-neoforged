@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_large_plate"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:simple_circuit"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 40,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_cobblestone_generator"
+    }
+  ]
+}

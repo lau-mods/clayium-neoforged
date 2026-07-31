@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:simple_machine_hull"
+    },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "C": {
+      "item": "clayium_neoforged:simple_circuit"
+    },
+    "E": {
+      "item": "clayium_neoforged:clay_energy_excitor"
+    },
+    "P": {
+      "item": "clayium_neoforged:industrial_clay_plate"
+    }
+  },
+  "pattern": [
+    "P*P",
+    "E#E",
+    "PCP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:simple_energetic_clay_condenser"
+  }
+}

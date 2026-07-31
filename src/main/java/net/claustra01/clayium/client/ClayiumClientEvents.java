@@ -7,6 +7,8 @@ package net.claustra01.clayium.client;
 
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayWorkTableScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.ClayCraftingTableScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.CobblestoneGeneratorScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.MachineScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.LogisticsScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ItemFilterScreen;
@@ -29,6 +31,8 @@ public final class ClayiumClientEvents {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ClayiumRegistries.CLAY_WORK_TABLE_MENU.get(), ClayWorkTableScreen::new);
+        event.register(ClayiumRegistries.CLAY_CRAFTING_TABLE_MENU.get(), ClayCraftingTableScreen::new);
+        event.register(ClayiumRegistries.COBBLESTONE_GENERATOR_MENU.get(), CobblestoneGeneratorScreen::new);
         event.register(ClayiumRegistries.MACHINE_MENU.get(), MachineScreen::new);
         event.register(ClayiumRegistries.ASSEMBLER_MACHINE_MENU.get(), MachineScreen::new);
         event.register(ClayiumRegistries.CHEMICAL_MACHINE_MENU.get(), MachineScreen::new);
@@ -52,6 +56,8 @@ public final class ClayiumClientEvents {
                 ClayiumRegistries.FLUID_BUFFER_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.SALT_EXTRACTOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
     }
 
     @SubscribeEvent

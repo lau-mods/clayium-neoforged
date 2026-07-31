@@ -40,5 +40,10 @@ public final class ClayiumCapabilities {
                 ClayiumRegistries.SALT_EXTRACTOR_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> blockEntity.itemHandler(
                         direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.NORTH : direction));
     }
 }

@@ -8,6 +8,7 @@ package net.claustra01.clayium.data;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.machine.Phase4MachineCatalog;
 import net.claustra01.clayium.registry.ClayiumRegistries;
+import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -114,6 +115,22 @@ public final class Phase4CraftingRecipes {
     }
 
     private static void machines(RecipeOutput output) {
+        for (int tier = 1; tier <= 4; tier++) {
+            String material = switch (tier) {
+                case 1 -> "clay";
+                case 2 -> "dense_clay";
+                case 3 -> "industrial_clay";
+                default -> "advanced_industrial_clay";
+            };
+            // Original CRecipes uses clay forms for tier 1 and dense-clay mechanism
+            // parts for tiers 2-4; the hull material alone advances with the tier.
+            ItemLike gear = tier == 1 ? ClayiumRegistries.CLAY_GEAR.get() : ClayiumRegistries.DENSE_CLAY_GEAR.get();
+            ItemLike pipe = tier == 1 ? item("clay_pipe") : item("dense_clay_pipe");
+            shaped(output, material + "_cobblestone_generator",
+                    ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCKS.get(
+                            ClayTier.byLegacyIndex(tier).id() + "_cobblestone_generator").get(),
+                    " * ", "=#=", " * ", '#', hull(tier), '*', gear, '=', pipe);
+        }
         shaped(output, "clay_bending_machine", ClayiumRegistries.CLAY_BENDING_MACHINE.get(),
                 "o-*", "P#P", "o-*",
                 '#', ClayiumRegistries.CLAY_MACHINE_HULL.get(),
@@ -183,6 +200,13 @@ public final class Phase4CraftingRecipes {
                 case "smelter" -> {
                     // In the original this machine is assembled in the Assembler, not a crafting grid.
                 }
+                case "energetic_clay_condenser" -> shaped(output, entry.blockId(), machine,
+                        "P*P", "E#E", "PCP",
+                        '#', machineHull,
+                        'P', tier == 3 ? item("industrial_clay_plate") : item("advanced_industrial_clay_plate"),
+                        '*', ClayiumRegistries.DENSE_CLAY_GEAR.get(),
+                        'C', circuit,
+                        'E', item("clay_energy_excitor"));
                 default -> throw new IllegalStateException("Unhandled Phase 4 machine type: " + entry.typeId());
             }
         }

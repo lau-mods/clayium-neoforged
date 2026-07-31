@@ -15,13 +15,19 @@ import net.claustra01.clayium.logistics.Phase5LogisticsCatalog;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
+import net.claustra01.clayium.world.inventory.ClayCraftingTableMenu;
+import net.claustra01.clayium.world.inventory.CobblestoneGeneratorMenu;
 import net.claustra01.clayium.world.inventory.MachineMenu;
 import net.claustra01.clayium.world.inventory.LogisticsMenu;
 import net.claustra01.clayium.world.level.block.ClayWorkTableBlock;
+import net.claustra01.clayium.world.level.block.ClayCraftingTableBlock;
+import net.claustra01.clayium.world.level.block.CobblestoneGeneratorBlock;
 import net.claustra01.clayium.world.level.block.MachineBlock;
 import net.claustra01.clayium.world.level.block.LogisticsBlock;
 import net.claustra01.clayium.world.level.block.WaterWheelBlock;
 import net.claustra01.clayium.world.level.block.entity.ClayWorkTableBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.ClayCraftingTableBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.CobblestoneGeneratorBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
@@ -81,6 +87,13 @@ public final class ClayiumRegistries {
                     .requiresCorrectToolForDrops()
                     .strength(2.0F, 2.0F)
                     .sound(SoundType.STONE));
+    public static final DeferredBlock<ClayCraftingTableBlock> CLAY_CRAFTING_TABLE = BLOCKS.registerBlock(
+            "clay_crafting_table",
+            ClayCraftingTableBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.CLAY)
+                    .strength(1.0F, 4.0F)
+                    .sound(SoundType.GRAVEL));
 
     public static final DeferredBlock<DropExperienceBlock> CLAY_ORE = BLOCKS.register(
             "clay_ore",
@@ -126,6 +139,8 @@ public final class ClayiumRegistries {
     public static final DeferredBlock<WaterWheelBlock> DENSE_CLAY_WATER_WHEEL = BLOCKS.register(
             "dense_clay_water_wheel",
             () -> new WaterWheelBlock(machineProperties(), ClayTier.DENSE_CLAY));
+    public static final Map<String, DeferredBlock<CobblestoneGeneratorBlock>> COBBLESTONE_GENERATOR_BLOCKS =
+            registerCobblestoneGenerators();
     public static final Map<String, DeferredBlock<MachineBlock>> PHASE4_MACHINE_BLOCKS =
             registerPhase4MachineBlocks();
     public static final Map<String, DeferredBlock<MachineBlock>> PHASE6_MACHINE_BLOCKS =
@@ -138,6 +153,8 @@ public final class ClayiumRegistries {
     public static final DeferredItem<BlockItem> CLAY_WORK_TABLE_ITEM = ITEMS.register(
             "clay_work_table",
             () -> new BlockItem(CLAY_WORK_TABLE.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> CLAY_CRAFTING_TABLE_ITEM =
+            registerBlockItem("clay_crafting_table", CLAY_CRAFTING_TABLE);
 
     public static final DeferredItem<BlockItem> CLAY_ORE_ITEM = registerBlockItem("clay_ore", CLAY_ORE);
     public static final DeferredItem<BlockItem> DENSE_CLAY_ORE_ITEM = registerBlockItem("dense_clay_ore", DENSE_CLAY_ORE);
@@ -161,6 +178,8 @@ public final class ClayiumRegistries {
             registerBlockItem("clay_water_wheel", CLAY_WATER_WHEEL);
     public static final DeferredItem<BlockItem> DENSE_CLAY_WATER_WHEEL_ITEM =
             registerBlockItem("dense_clay_water_wheel", DENSE_CLAY_WATER_WHEEL);
+    public static final Map<String, DeferredItem<BlockItem>> COBBLESTONE_GENERATOR_ITEMS =
+            registerBlockItems(COBBLESTONE_GENERATOR_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> PHASE4_MACHINE_ITEMS =
             registerPhase4MachineItems();
     public static final Map<String, DeferredItem<BlockItem>> PHASE6_MACHINE_ITEMS =
@@ -256,6 +275,12 @@ public final class ClayiumRegistries {
                     () -> BlockEntityType.Builder.of(
                             ClayWorkTableBlockEntity::new,
                             CLAY_WORK_TABLE.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayCraftingTableBlockEntity>>
+            CLAY_CRAFTING_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+                    "clay_crafting_table",
+                    () -> BlockEntityType.Builder.of(
+                            ClayCraftingTableBlockEntity::new,
+                            CLAY_CRAFTING_TABLE.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineBlockEntity>>
             MACHINE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
                     "machine",
@@ -269,6 +294,13 @@ public final class ClayiumRegistries {
                             WaterWheelBlockEntity::new,
                             CLAY_WATER_WHEEL.get(),
                             DENSE_CLAY_WATER_WHEEL.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CobblestoneGeneratorBlockEntity>>
+            COBBLESTONE_GENERATOR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+                    "cobblestone_generator",
+                    () -> BlockEntityType.Builder.of(
+                            CobblestoneGeneratorBlockEntity::new,
+                            COBBLESTONE_GENERATOR_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new))
+                            .build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LogisticsBlockEntity>>
             LOGISTICS_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
                     "logistics",
@@ -287,6 +319,12 @@ public final class ClayiumRegistries {
             MENU_TYPES.register(
                     "clay_work_table",
                     () -> new MenuType<>(ClayWorkTableMenu::new, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<ClayCraftingTableMenu>> CLAY_CRAFTING_TABLE_MENU =
+            MENU_TYPES.register(
+                    "clay_crafting_table",
+                    () -> new MenuType<>(ClayCraftingTableMenu::new, FeatureFlags.DEFAULT_FLAGS));
+    public static final DeferredHolder<MenuType<?>, MenuType<CobblestoneGeneratorMenu>> COBBLESTONE_GENERATOR_MENU =
+            MENU_TYPES.register("cobblestone_generator", () -> IMenuTypeExtension.create(CobblestoneGeneratorMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> MACHINE_MENU =
             MENU_TYPES.register(
                     "machine",
@@ -387,6 +425,16 @@ public final class ClayiumRegistries {
         for(ClayTier tier : new ClayTier[]{ClayTier.BASIC,ClayTier.ADVANCED,ClayTier.PRECISION}) {
             String id=tier.id()+"_fluid_buffer";
             blocks.put(id,BLOCKS.register(id,()->new FluidBufferBlock(machineProperties(),tier)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<CobblestoneGeneratorBlock>> registerCobblestoneGenerators() {
+        Map<String, DeferredBlock<CobblestoneGeneratorBlock>> blocks = new LinkedHashMap<>();
+        for (ClayTier tier : new ClayTier[]{ClayTier.CLAY, ClayTier.DENSE_CLAY, ClayTier.SIMPLE,
+                ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION}) {
+            String id = tier.id() + "_cobblestone_generator";
+            blocks.put(id, BLOCKS.register(id, () -> new CobblestoneGeneratorBlock(machineProperties(), tier)));
         }
         return Map.copyOf(blocks);
     }

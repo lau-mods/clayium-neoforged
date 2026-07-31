@@ -57,7 +57,8 @@ public final class FluidBufferBlock extends BaseEntityBlock {
         if (stack.getItem() instanceof ClayConfiguratorItem) {
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
-        if (FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection())) {
+        if (level.getBlockEntity(pos) instanceof FluidBufferBlockEntity buffer
+                && FluidUtil.interactWithFluidHandler(player, hand, buffer.unrestrictedFluidHandler())) {
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

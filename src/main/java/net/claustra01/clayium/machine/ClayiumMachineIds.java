@@ -26,6 +26,7 @@ public final class ClayiumMachineIds {
     public static final ResourceLocation CENTRIFUGE = Clayium.id("centrifuge");
     public static final ResourceLocation CHEMICAL_REACTOR = Clayium.id("chemical_reactor");
     public static final ResourceLocation ELECTROLYSIS_REACTOR = Clayium.id("electrolysis_reactor");
+    public static final ResourceLocation ENERGETIC_CLAY_CONDENSER = Clayium.id("energetic_clay_condenser");
 
     private ClayiumMachineIds() {
     }

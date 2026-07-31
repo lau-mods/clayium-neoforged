@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:clay_crafting_table"
+    }
+  ],
+  "result": {
+    "count": 3,
+    "id": "clayium_neoforged:dense_clay"
+  }
+}

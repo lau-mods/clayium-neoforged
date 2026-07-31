@@ -32,6 +32,7 @@ public final class ClayiumJeiRecipeTypes {
     public static final RecipeType<MachineRecipe> CENTRIFUGE = machine("centrifuge");
     public static final RecipeType<MachineRecipe> CHEMICAL_REACTOR = machine("chemical_reactor");
     public static final RecipeType<MachineRecipe> ELECTROLYSIS_REACTOR = machine("electrolysis_reactor");
+    public static final RecipeType<MachineRecipe> ENERGETIC_CLAY_CONDENSER = machine("energetic_clay_condenser");
 
     public static final Map<ResourceLocation, RecipeType<MachineRecipe>> MACHINES = createMachineTypes();
 
@@ -59,6 +60,7 @@ public final class ClayiumJeiRecipeTypes {
         result.put(ClayiumMachineIds.CENTRIFUGE, CENTRIFUGE);
         result.put(ClayiumMachineIds.CHEMICAL_REACTOR, CHEMICAL_REACTOR);
         result.put(ClayiumMachineIds.ELECTROLYSIS_REACTOR, ELECTROLYSIS_REACTOR);
+        result.put(ClayiumMachineIds.ENERGETIC_CLAY_CONDENSER, ENERGETIC_CLAY_CONDENSER);
         return Map.copyOf(result);
     }
 }

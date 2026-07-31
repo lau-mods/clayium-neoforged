@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:block",
+  "pools": [{
+    "rolls": 1,
+    "entries": [{"type":"minecraft:item","name":"clayium_neoforged:clay_crafting_table"}],
+    "conditions": [{"condition":"minecraft:survives_explosion"}]
+  }],
+  "random_sequence": "clayium_neoforged:blocks/clay_crafting_table"
+}

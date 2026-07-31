@@ -39,6 +39,7 @@ public final class Phase4MachineRecipes {
         assembler(output);
         inscriber(output);
         centrifuge(output);
+        energeticClayCondenser(output);
     }
 
     private static void bending(RecipeOutput output) {
@@ -251,6 +252,26 @@ public final class Phase4MachineRecipes {
     }
 
     private static void assembler(RecipeOutput output) {
+        String[] generatorMaterials = {"", "clay", "dense_clay", "industrial_clay"};
+        for (int tier = 1; tier <= 3; tier++) {
+            ItemLike largePlate = tier == 1 ? ClayiumRegistries.LARGE_CLAY_PLATE.get()
+                    : item(generatorMaterials[tier] + "_large_plate");
+            two(output, "assembler/cobblestone_generator_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
+                    largePlate, 1, item("simple_circuit"), 1,
+                    cobblestoneGenerator(tier), 1, tierEnergy(tier), 40, 4);
+        }
+        for (int tier = 4; tier <= 6; tier++) {
+            String buffer = ClayTier.byLegacyIndex(tier).id() + "_buffer";
+            two(output, "assembler/cobblestone_generator_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
+                    ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(buffer).get(), 1, item("simple_circuit"), 1,
+                    cobblestoneGenerator(tier), 1, tierEnergy(tier), 40, 4);
+        }
+        two(output, "assembler/energetic_clay_condenser", ClayiumMachineIds.ASSEMBLER,
+                hull(3), 1, item("clay_energy_excitor"), 2,
+                phaseMachine("energetic_clay_condenser", 3), 1, tierEnergy(3), 120, 4);
+        two(output, "assembler/energetic_clay_condenser_mk2", ClayiumMachineIds.ASSEMBLER,
+                hull(4), 1, item("clay_energy_excitor"), 2,
+                phaseMachine("energetic_clay_condenser", 4), 1, tierEnergy(4), 120, 4);
         one(output, "assembler/clay_sticks_to_gear", ClayiumMachineIds.ASSEMBLER,
                 ClayiumRegistries.CLAY_STICK.get(), 5, ClayiumRegistries.CLAY_GEAR.get(), 1, 10, 20, 3);
         one(output, "assembler/short_clay_sticks_to_gear", ClayiumMachineIds.ASSEMBLER,
@@ -392,6 +413,21 @@ public final class Phase4MachineRecipes {
                 10_000, 12, 4);
     }
 
+    private static void energeticClayCondenser(RecipeOutput output) {
+        String[] levels = {"advanced_industrial_clay", "energetic_clay", "compressed_energetic_clay", "double_compressed_energetic_clay",
+                "triple_compressed_energetic_clay", "quadruple_compressed_energetic_clay",
+                "quintuple_compressed_energetic_clay", "sextuple_compressed_energetic_clay",
+                "septuple_compressed_energetic_clay", "octuple_compressed_energetic_clay"};
+        long[] energy = {1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 10_000_000};
+        int[] time = {16, 32, 64, 64, 64, 64, 64, 64, 64};
+        for (int index = 0; index < levels.length - 1; index++) {
+            int minimumTier = index < 3 ? 3 : 4;
+            one(output, "energetic_clay_condenser/" + levels[index], ClayiumMachineIds.ENERGETIC_CLAY_CONDENSER,
+                    block(levels[index]), 9, block(levels[index + 1]), 1,
+                    energy[index], time[index], minimumTier);
+        }
+    }
+
     private static ItemLike materialForm(String material, String form) {
         if (material.equals("clay")) {
             return switch (form) {
@@ -448,6 +484,11 @@ public final class Phase4MachineRecipes {
                 .map(entry -> ClayiumRegistries.PHASE4_MACHINE_BLOCKS.get(entry.blockId()).get())
                 .orElseThrow(() -> new IllegalStateException(
                         "Missing Phase 4 machine " + typeId + " tier " + tier));
+    }
+
+    private static ItemLike cobblestoneGenerator(int tier) {
+        String id = ClayTier.byLegacyIndex(tier).id() + "_cobblestone_generator";
+        return ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCKS.get(id).get();
     }
 
     private static long tierEnergy(int tier) {

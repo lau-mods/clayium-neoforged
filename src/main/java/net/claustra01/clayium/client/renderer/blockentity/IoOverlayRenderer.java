@@ -15,6 +15,8 @@ import net.claustra01.clayium.world.level.block.FluidBufferBlock;
 import net.claustra01.clayium.world.level.block.entity.FluidBufferBlockEntity;
 import net.claustra01.clayium.world.level.block.SaltExtractorBlock;
 import net.claustra01.clayium.world.level.block.entity.SaltExtractorBlockEntity;
+import net.claustra01.clayium.world.level.block.CobblestoneGeneratorBlock;
+import net.claustra01.clayium.world.level.block.entity.CobblestoneGeneratorBlockEntity;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -44,7 +46,9 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
                         ? blockEntity.getBlockState().getValue(LogisticsBlock.PIPE)
                         : blockEntity.getBlockState().getBlock() instanceof FluidBufferBlock
                                 ? blockEntity.getBlockState().getValue(FluidBufferBlock.PIPE)
-                                : blockEntity.getBlockState().getValue(SaltExtractorBlock.PIPE);
+                                : blockEntity.getBlockState().getBlock() instanceof SaltExtractorBlock
+                                        ? blockEntity.getBlockState().getValue(SaltExtractorBlock.PIPE)
+                                        : blockEntity.getBlockState().getValue(CobblestoneGeneratorBlock.PIPE);
         if (pipe) {
             ResourceLocation hull = hullTexture(blockEntity);
             for (Direction side : Direction.values()) {
@@ -78,7 +82,9 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
                         ? logistics.pipeConnects(side)
                         : device instanceof FluidBufferBlockEntity fluid
                                 ? fluid.pipeConnects(side)
-                                : device instanceof SaltExtractorBlockEntity salt && salt.pipeConnects(side);
+                                : device instanceof SaltExtractorBlockEntity salt
+                                        ? salt.pipeConnects(side)
+                                        : device instanceof CobblestoneGeneratorBlockEntity generator && generator.pipeConnects(side);
     }
 
     private static ResourceLocation hullTexture(BlockEntity blockEntity) {
@@ -100,6 +106,11 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         }
         if (blockEntity.getBlockState().getBlock() instanceof SaltExtractorBlock salt) {
             return Clayium.id("block/machine_hull_" + salt.tier().id());
+        }
+        if (blockEntity.getBlockState().getBlock() instanceof CobblestoneGeneratorBlock generator) {
+            return generator.tier().progressionIndex() == 1
+                    ? Clayium.id("block/clay_machine_hull")
+                    : Clayium.id("block/machine_hull_" + generator.tier().id());
         }
         return Clayium.id("block/clay_machine_hull");
     }
@@ -180,7 +191,8 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
             return logistics.extractionIcon(side);
         }
         if (device instanceof FluidBufferBlockEntity fluid) return fluid.extractionRoute(side) >= 0 ? "export" : "";
-        return device instanceof SaltExtractorBlockEntity salt && salt.extractionRoute(side) >= 0 ? "export" : "";
+        if (device instanceof SaltExtractorBlockEntity salt) return salt.extractionRoute(side) >= 0 ? "export" : "";
+        return device instanceof CobblestoneGeneratorBlockEntity generator && generator.extractionRoute(side) >= 0 ? "export" : "";
     }
 
     private static void drawFace(
@@ -193,7 +205,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         ResourceLocation texture = Clayium.id("block/" + textureName);
         var sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(texture);
         VertexConsumer consumer = sprite.wrap(
-                buffers.getBuffer(RenderType.cutout()));
+                buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS)));
         float min = pipe ? 5.0F / 16.0F : 0.001F;
         float max = pipe ? 11.0F / 16.0F : 0.999F;
         float low = -0.02F;

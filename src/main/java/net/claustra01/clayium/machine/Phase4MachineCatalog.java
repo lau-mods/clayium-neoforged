@@ -54,6 +54,8 @@ public final class Phase4MachineCatalog {
                 ClayiumMachineIds.CENTRIFUGE, "centrifuge", 3, 4, 5, 6);
         add(entries, "smelter", "Smelter",
                 ClayiumMachineIds.SMELTER, "smelter", 4, 5, 6);
+        add(entries, "energetic_clay_condenser", "Energetic Clay Condenser",
+                ClayiumMachineIds.ENERGETIC_CLAY_CONDENSER, "eccondenser", 3, 4);
         return List.copyOf(entries);
     }
 

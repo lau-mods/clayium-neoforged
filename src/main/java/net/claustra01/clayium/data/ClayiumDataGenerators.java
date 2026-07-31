@@ -48,9 +48,11 @@ public final class ClayiumDataGenerators {
                 }
                 add("itemGroup." + Clayium.MODID, "Clayium Neoforged");
                 add("block." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
+                add("block." + Clayium.MODID + ".clay_crafting_table", "Clay Crafting Table");
                 addBlockNames(this);
                 addItemNames(this);
                 add("container." + Clayium.MODID + ".clay_work_table", "Clay Work Table");
+                add("container." + Clayium.MODID + ".clay_crafting_table", "Clay Crafting Table");
                 add("container." + Clayium.MODID + ".machine", "Clayium Machine");
                 add("gui." + Clayium.MODID + ".energy", "%s");
                 add("gui." + Clayium.MODID + ".tier", "Tier %s");
@@ -78,6 +80,7 @@ public final class ClayiumDataGenerators {
                         "centrifuge", "smelter")) {
                     add("jei." + Clayium.MODID + ".category." + path, titleCase(path));
                 }
+                add("jei." + Clayium.MODID + ".category.energetic_clay_condenser", "Energetic Clay Condenser");
                 add("jei." + Clayium.MODID + ".category.chemical_reactor", "Chemical Reactor");
                 add("jei." + Clayium.MODID + ".category.electrolysis_reactor", "Electrolysis Reactor");
                 add("jei." + Clayium.MODID + ".processing_time", "Time: %s ticks");
@@ -128,6 +131,11 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".elemental_milling_machine", "Elemental Milling Machine");
         language.add("block." + Clayium.MODID + ".clay_water_wheel", "Clay Water Wheel");
         language.add("block." + Clayium.MODID + ".dense_clay_water_wheel", "Dense Clay Water Wheel");
+        for (ClayTier tier : new ClayTier[]{ClayTier.CLAY, ClayTier.DENSE_CLAY, ClayTier.SIMPLE,
+                ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION}) {
+            language.add("block." + Clayium.MODID + "." + tier.id() + "_cobblestone_generator",
+                    tier.displayName() + " Cobblestone Generator");
+        }
         for (Phase4MachineCatalog.Entry entry : Phase4MachineCatalog.ENTRIES) {
             language.add(
                     "block." + Clayium.MODID + "." + entry.blockId(),
@@ -277,6 +285,15 @@ public final class ClayiumDataGenerators {
     }
 
     private static void buildCraftingRecipes(RecipeOutput output) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ClayiumRegistries.CLAY_CRAFTING_TABLE.get())
+                .define('D', ClayiumRegistries.DENSE_CLAY.get())
+                .pattern("DDD")
+                .unlockedBy("has_dense_clay", has(ClayiumRegistries.DENSE_CLAY.get()))
+                .save(output);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ClayiumRegistries.DENSE_CLAY.get(), 3)
+                .requires(ClayiumRegistries.CLAY_CRAFTING_TABLE.get())
+                .unlockedBy("has_clay_crafting_table", has(ClayiumRegistries.CLAY_CRAFTING_TABLE.get()))
+                .save(output, Clayium.id("clay_crafting_table_unpack"));
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ClayiumRegistries.CLAY_WORK_TABLE.get())
                 .define('D', ClayiumRegistries.DENSE_CLAY.get())
                 .pattern("DD").pattern("DD")
@@ -292,28 +309,6 @@ public final class ClayiumDataGenerators {
                 .save(output);
         compression(output, "dense_clay", Items.CLAY, ClayiumRegistries.DENSE_CLAY.get());
         compression(output, "compressed_clay", ClayiumRegistries.DENSE_CLAY.get(), ClayiumRegistries.COMPRESSED_CLAY.get());
-        compression(output, "industrial_clay", ClayiumRegistries.COMPRESSED_CLAY.get(),
-                ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("industrial_clay").get());
-        compression(output, "advanced_industrial_clay",
-                ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("industrial_clay").get(),
-                ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("advanced_industrial_clay").get());
-        String[] energeticLevels = {
-            "energetic_clay",
-            "compressed_energetic_clay",
-            "double_compressed_energetic_clay",
-            "triple_compressed_energetic_clay",
-            "quadruple_compressed_energetic_clay",
-            "quintuple_compressed_energetic_clay",
-            "sextuple_compressed_energetic_clay",
-            "septuple_compressed_energetic_clay",
-            "octuple_compressed_energetic_clay"
-        };
-        ItemLike previous = ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("advanced_industrial_clay").get();
-        for (String level : energeticLevels) {
-            ItemLike next = ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get(level).get();
-            compression(output, level, previous, next);
-            previous = next;
-        }
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ClayiumRegistries.RAW_CLAY_ROLLING_PIN.get())
                 .define('S', ClayiumRegistries.SHORT_CLAY_STICK.get())
                 .define('C', ClayiumRegistries.CLAY_CYLINDER.get())
