@@ -39,7 +39,17 @@ public final class MachineRecipeLookup {
             return Optional.empty();
         }
         if (machineId.equals(ClayiumMachineIds.SMELTER)) {
-            return SmelterRecipeAdapter.find(level, inputs.getFirst());
+            MachineRecipeInput recipeInput = new MachineRecipeInput(inputs);
+            Optional<RecipeHolder<MachineRecipe>> clayiumRecipe = level.getRecipeManager()
+                    .getAllRecipesFor(ClayiumRecipes.MACHINE_RECIPE_TYPE.get())
+                    .stream()
+                    .filter(holder -> holder.value().machine().equals(machineId))
+                    .filter(holder -> availableTier.isAtLeast(holder.value().minimumTier()))
+                    .filter(holder -> holder.value().matches(recipeInput, level))
+                    .findFirst();
+            return clayiumRecipe.isPresent()
+                    ? clayiumRecipe
+                    : SmelterRecipeAdapter.find(level, inputs.getFirst());
         }
 
         MachineRecipeInput recipeInput = new MachineRecipeInput(inputs);

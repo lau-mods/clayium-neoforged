@@ -195,11 +195,19 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 .map(holder -> holder.value())
                 .toList();
         ClayiumJeiRecipeTypes.MACHINES.forEach((machineId, recipeType) -> {
-            List<MachineRecipe> recipes = machineId.equals(ClayiumMachineIds.SMELTER)
-                    ? SmelterRecipeAdapter.all(level)
-                    : machineRecipes.stream()
-                            .filter(recipe -> recipe.machine().equals(machineId))
-                            .toList();
+            List<MachineRecipe> recipes;
+            if (machineId.equals(ClayiumMachineIds.SMELTER)) {
+                java.util.ArrayList<MachineRecipe> smelterRecipes = new java.util.ArrayList<>();
+                smelterRecipes.addAll(machineRecipes.stream()
+                        .filter(recipe -> recipe.machine().equals(machineId))
+                        .toList());
+                smelterRecipes.addAll(SmelterRecipeAdapter.all(level));
+                recipes = List.copyOf(smelterRecipes);
+            } else {
+                recipes = machineRecipes.stream()
+                        .filter(recipe -> recipe.machine().equals(machineId))
+                        .toList();
+            }
             registration.addRecipes(recipeType, recipes);
         });
         registration.addRecipes(ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE,
