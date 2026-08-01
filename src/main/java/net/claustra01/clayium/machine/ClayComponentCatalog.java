@@ -7,8 +7,8 @@ package net.claustra01.clayium.machine;
 
 import java.util.List;
 
-/** Phase 4 item forms present in the original Clayium progression. */
-public final class Phase4ItemCatalog {
+/** Clay components and circuits used throughout the original progression. */
+public final class ClayComponentCatalog {
     public record Entry(String id, String displayName, String originalTexture) {
     }
 
@@ -60,7 +60,7 @@ public final class Phase4ItemCatalog {
             item("impure_silicon_plate", "Impure Silicon Plate", "impuresiliconplate"),
             item("silicon_plate", "Silicon Plate", "siliconplate"));
 
-    private Phase4ItemCatalog() {
+    private ClayComponentCatalog() {
     }
 
     private static Entry item(String id, String displayName, String originalTexture) {

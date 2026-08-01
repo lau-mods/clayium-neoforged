@@ -24,7 +24,7 @@ import net.minecraft.resources.ResourceLocation;
  * it is not a persistence format. The first fourteen entries mirror the
  * original Clayium 1.7.10 tier prefix sequence. PAN content is deliberately
  * not assigned a new numeric tier; its dedicated progression rules will be
- * defined in the later PAN phase.</p>
+ * defined by the later PAN progression.</p>
  */
 public enum ClayTier {
     RAW("raw", 0, "Raw"),

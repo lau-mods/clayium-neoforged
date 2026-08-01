@@ -16,38 +16,38 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
-/** Phase 5 recipes whose material tiers are already reachable in the current vertical slice. */
-public final class Phase5MachineRecipes {
-    private Phase5MachineRecipes() {
+/** Assembler recipes for logistics devices, filters, and configuration tools. */
+public final class LogisticsRecipes {
+    private LogisticsRecipes() {
     }
 
     public static void build(RecipeOutput output) {
         logisticsTier(output, "basic", "industrial_clay_plate", "industrial_clay_large_plate", "basic_circuit", 4, 100);
-        logisticsTier(output, "advanced", phase6("impure_silicon_plate"), phase6("impure_silicon_large_plate"),
+        logisticsTier(output, "advanced", material("impure_silicon_plate"), material("impure_silicon_large_plate"),
                 item("advanced_circuit"), 1_000);
-        logisticsTier(output, "precision", phase6("aluminium_plate"), phase6("aluminium_large_plate"),
+        logisticsTier(output, "precision", material("aluminium_plate"), material("aluminium_large_plate"),
                 item("precision_circuit"), 10_000);
-        recipe(output, "phase5/tools/clay_io_tool",
+        recipe(output, "logistics/tools/clay_io_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_ROLLING_PIN.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_SLICER.get(), 1)),
                 ClayiumRegistries.CLAY_IO_TOOL.get(), 1, 10_000, 20, 6);
-        recipe(output, "phase5/tools/clay_piping_tool",
+        recipe(output, "logistics/tools/clay_piping_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_SPATULA.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_WRENCH.get(), 1)),
                 ClayiumRegistries.CLAY_PIPING_TOOL.get(), 1, 10_000, 20, 6);
-        recipe(output, "phase5/tools/io_memory_card",
+        recipe(output, "logistics/tools/io_memory_card",
                 List.of(ingredient(ClayiumRegistries.CLAY_IO_TOOL.get(), 1),
                         ingredient(item("precision_circuit"), 2)),
                 ClayiumRegistries.IO_MEMORY_CARD.get(), 1, 10_000, 20, 6);
-        recipe(output, "phase5/tools/filter_whitelist",
+        recipe(output, "logistics/tools/filter_whitelist",
                 List.of(ingredient(item("industrial_clay_plate"), 3),
                         ingredient(item("basic_circuit"), 1)),
                 ClayiumRegistries.FILTER_WHITELIST.get(), 1, 8, 20, 4);
-        recipe(output, "phase5/tools/filter_item_name",
+        recipe(output, "logistics/tools/filter_item_name",
                 List.of(ingredient(item("industrial_clay_plate"), 3),
                         ingredient(item("advanced_circuit"), 1)),
                 ClayiumRegistries.FILTER_ITEM_NAME.get(), 1, 8, 20, 4);
-        recipe(output, "phase5/tools/filter_fuzzy",
+        recipe(output, "logistics/tools/filter_fuzzy",
                 List.of(ingredient(item("industrial_clay_plate"), 3),
                         ingredient(item("precision_circuit"), 1)),
                 ClayiumRegistries.FILTER_FUZZY.get(), 1, 8, 20, 4);
@@ -71,12 +71,12 @@ public final class Phase5MachineRecipes {
             ItemLike largePlate,
             ItemLike circuit,
             long energy) {
-        ItemLike buffer = ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(tier + "_buffer").get();
-        ItemLike multitrack = ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(tier + "_multitrack_buffer").get();
-        recipe(output, "phase5/" + tier + "_buffer",
+        ItemLike buffer = ClayiumRegistries.LOGISTICS_BLOCKS.get(tier + "_buffer").get();
+        ItemLike multitrack = ClayiumRegistries.LOGISTICS_BLOCKS.get(tier + "_multitrack_buffer").get();
+        recipe(output, "logistics/" + tier + "_buffer",
                 List.of(ingredient(plate, 1), ingredient(circuit, 1)),
                 buffer, 16, energy, 40, 4);
-        recipe(output, "phase5/" + tier + "_multitrack_buffer",
+        recipe(output, "logistics/" + tier + "_multitrack_buffer",
                 List.of(ingredient(buffer, 6), ingredient(largePlate, 1)),
                 multitrack, 1, energy, 40, 4);
     }
@@ -107,11 +107,11 @@ public final class Phase5MachineRecipes {
     }
 
     private static ItemLike item(String id) {
-        return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+        return ClayiumRegistries.COMPONENT_ITEMS.get(id).get();
     }
 
-    private static ItemLike phase6(String id) {
-        if (ClayiumRegistries.PHASE4_ITEMS.containsKey(id)) return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
-        return ClayiumRegistries.PHASE6_ITEMS.get(id).get();
+    private static ItemLike material(String id) {
+        if (ClayiumRegistries.COMPONENT_ITEMS.containsKey(id)) return ClayiumRegistries.COMPONENT_ITEMS.get(id).get();
+        return ClayiumRegistries.MATERIAL_ITEMS.get(id).get();
     }
 }

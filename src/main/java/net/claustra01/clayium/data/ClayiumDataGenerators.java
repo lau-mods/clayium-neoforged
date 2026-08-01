@@ -10,11 +10,11 @@ import net.claustra01.clayium.recipe.ClayWorkTableOperation;
 import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
-import net.claustra01.clayium.machine.Phase4MachineCatalog;
-import net.claustra01.clayium.machine.Phase6MachineCatalog;
-import net.claustra01.clayium.machine.Phase6ItemCatalog;
-import net.claustra01.clayium.machine.Phase4ItemCatalog;
-import net.claustra01.clayium.logistics.Phase5LogisticsCatalog;
+import net.claustra01.clayium.machine.ManufacturingMachineCatalog;
+import net.claustra01.clayium.machine.SpecializedMachineCatalog;
+import net.claustra01.clayium.machine.MaterialCatalog;
+import net.claustra01.clayium.machine.ClayComponentCatalog;
+import net.claustra01.clayium.logistics.LogisticsCatalog;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.data.PackOutput;
@@ -146,12 +146,12 @@ public final class ClayiumDataGenerators {
             language.add("block." + Clayium.MODID + "." + tier.id() + "_cobblestone_generator",
                     tier.displayName() + " Cobblestone Generator");
         }
-        for (Phase4MachineCatalog.Entry entry : Phase4MachineCatalog.ENTRIES) {
+        for (ManufacturingMachineCatalog.Entry entry : ManufacturingMachineCatalog.ENTRIES) {
             language.add(
                     "block." + Clayium.MODID + "." + entry.blockId(),
                     entry.tier().displayName() + " " + entry.displayTypeName());
         }
-        for (Phase6MachineCatalog.Entry entry : Phase6MachineCatalog.ENTRIES) {
+        for (SpecializedMachineCatalog.Entry entry : SpecializedMachineCatalog.ENTRIES) {
             language.add("block." + Clayium.MODID + "." + entry.blockId(),
                     entry.tier().displayName() + " " + entry.displayTypeName());
         }
@@ -179,7 +179,7 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".advanced_auto_crafter", "Advanced Auto Crafter");
         language.add("block." + Clayium.MODID + ".precision_auto_crafter", "Precision Auto Crafter");
         language.add("block." + Clayium.MODID + ".precision_chemical_metal_separator", "Precision Chemical Metal Separator");
-        for (Phase5LogisticsCatalog.Entry entry : Phase5LogisticsCatalog.ENTRIES) {
+        for (LogisticsCatalog.Entry entry : LogisticsCatalog.ENTRIES) {
             language.add(
                     "block." + Clayium.MODID + "." + entry.blockId(),
                     entry.blockId().equals("storage_container") || entry.blockId().equals("void_container")
@@ -234,10 +234,10 @@ public final class ClayiumDataGenerators {
         language.add("item." + Clayium.MODID + ".clay_pickaxe", "Clay Pickaxe");
         language.add("item." + Clayium.MODID + ".clay_pickaxe.tooltip",
                 "Can harvest Clay Ores so fast and increase drops.");
-        for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
+        for (ClayComponentCatalog.Entry entry : ClayComponentCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }
-        for (Phase6ItemCatalog.Entry entry : Phase6ItemCatalog.ENTRIES) {
+        for (MaterialCatalog.Entry entry : MaterialCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }
         language.add("item." + Clayium.MODID + ".clay_io_tool", "Clay IO Configurator");
@@ -401,8 +401,8 @@ public final class ClayiumDataGenerators {
                 .unlockedBy("has_dense_clay_plate", has(ClayiumRegistries.DENSE_CLAY_PLATE.get()))
                 .save(output);
 
-        Phase4CraftingRecipes.build(output);
-        Phase6CraftingRecipes.build(output);
+        ComponentCraftingRecipes.build(output);
+        MaterialCraftingRecipes.build(output);
     }
 
     private static void compression(RecipeOutput output, String id, ItemLike input, ItemLike outputBlock) {
@@ -443,8 +443,8 @@ public final class ClayiumDataGenerators {
     }
 
     private static void buildMachineRecipes(RecipeOutput output) {
-        Phase4MachineRecipes.build(output);
-        Phase5MachineRecipes.build(output);
-        Phase6MachineRecipes.build(output);
+        ClayProcessingRecipes.build(output);
+        LogisticsRecipes.build(output);
+        MaterialProcessingRecipes.build(output);
     }
 }

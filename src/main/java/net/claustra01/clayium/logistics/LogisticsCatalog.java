@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import net.claustra01.clayium.tier.ClayTier;
 
-/** Original Phase 5 logistics variants and stable modern IDs. */
-public final class Phase5LogisticsCatalog {
+/** Logistics device variants and their stable registry IDs. */
+public final class LogisticsCatalog {
     public record Entry(String blockId, String displayTypeName, LogisticsKind kind, ClayTier tier) {
     }
 
     public static final List<Entry> ENTRIES = create();
 
-    private Phase5LogisticsCatalog() {
+    private LogisticsCatalog() {
     }
 
     private static List<Entry> create() {

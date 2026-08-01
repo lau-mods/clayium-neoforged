@@ -10,7 +10,7 @@ import net.minecraft.util.RandomSource;
 public final class ChemicalMetalSeparatorProcess {
     public record Product(String material, int weight) {
         public ItemStack stack() {
-            return new ItemStack(ClayiumRegistries.PHASE6_ITEMS.get("impure_" + material + "_dust").get());
+            return new ItemStack(ClayiumRegistries.MATERIAL_ITEMS.get("impure_" + material + "_dust").get());
         }
     }
     public static final List<Product> PRODUCTS = List.of(

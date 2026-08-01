@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-/** Original per-device Phase 5 container layouts. */
+/** Original per-device logistics container layouts. */
 public final class LogisticsMenu extends AbstractContainerMenu {
     private final Container container;
     private final LogisticsKind kind;

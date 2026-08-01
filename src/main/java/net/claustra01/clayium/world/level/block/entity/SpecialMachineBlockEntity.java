@@ -211,7 +211,7 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity
         if (getItem(METAL_INTERNAL).isEmpty()) {
             if (!isIndustrialClayDust(getItem(METAL_INPUT)) || !allMetalOutputsFit()) { progress = 0; return; }
             getItem(METAL_INPUT).shrink(1);
-            items.set(METAL_INTERNAL, phase4("industrial_clay_dust"));
+            items.set(METAL_INTERNAL, component("industrial_clay_dust"));
         }
         if (!allMetalOutputsFit()) return;
         if (energy.extract(5_000, true) != 5_000 && !consumeFuel(METAL_ENERGY)) return;
@@ -260,9 +260,9 @@ public final class SpecialMachineBlockEntity extends BaseContainerBlockEntity
 
     private static ItemStack clay(int value) { return switch(value){case 0->new ItemStack(Items.CLAY);case 1->new ItemStack(ClayiumRegistries.DENSE_CLAY.get());case 2->new ItemStack(ClayiumRegistries.COMPRESSED_CLAY.get());default->{String[] ids={"industrial_clay","advanced_industrial_clay","energetic_clay","compressed_energetic_clay","double_compressed_energetic_clay","triple_compressed_energetic_clay","quadruple_compressed_energetic_clay","quintuple_compressed_energetic_clay","sextuple_compressed_energetic_clay","septuple_compressed_energetic_clay","octuple_compressed_energetic_clay"};yield value-3<ids.length?new ItemStack(ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get(ids[value-3]).get()):ItemStack.EMPTY;}}; }
     public static int clayLevel(ItemStack stack){if(stack.isEmpty())return -1;for(int i=0;i<=13;i++)if(ItemStack.isSameItem(stack,clay(i)))return i;return -1;}
-    private static ItemStack phase4(String id){return new ItemStack(ClayiumRegistries.PHASE4_ITEMS.get(id).get());}
-    private static ItemStack phase6(String id){return new ItemStack(ClayiumRegistries.PHASE6_ITEMS.get(id).get());}
-    private static boolean isIndustrialClayDust(ItemStack stack){return ItemStack.isSameItem(stack,phase4("industrial_clay_dust"));}
+    private static ItemStack component(String id){return new ItemStack(ClayiumRegistries.COMPONENT_ITEMS.get(id).get());}
+    private static ItemStack material(String id){return new ItemStack(ClayiumRegistries.MATERIAL_ITEMS.get(id).get());}
+    private static boolean isIndustrialClayDust(ItemStack stack){return ItemStack.isSameItem(stack,component("industrial_clay_dust"));}
 
     private boolean isExternalOutput(int slot) { return switch(kind()){case AUTO_CLAY_CONDENSER->slot<20;case AUTO_CRAFTER->slot>=9&&slot<15;case CHEMICAL_METAL_SEPARATOR->slot>=1&&slot<17;}; }
     private boolean isExternalInput(int slot, ItemStack stack) { return switch(kind()){

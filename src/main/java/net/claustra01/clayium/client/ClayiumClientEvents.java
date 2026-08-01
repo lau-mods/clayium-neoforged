@@ -150,7 +150,7 @@ public final class ClayiumClientEvents {
 
     private static void dust(RegisterColorHandlersEvent.Item event, String id, int[] colors) {
         event.register((stack, tintIndex) -> tintIndex >= 0 && tintIndex < colors.length ? colors[tintIndex] : 0xffffffff,
-                ClayiumRegistries.PHASE6_ITEMS.get(id).get());
+                ClayiumRegistries.MATERIAL_ITEMS.get(id).get());
     }
 
     private static void material(RegisterColorHandlersEvent.Item event, int[] colors, String... ids) {

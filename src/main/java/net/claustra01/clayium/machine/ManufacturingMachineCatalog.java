@@ -10,8 +10,8 @@ import java.util.List;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.resources.ResourceLocation;
 
-/** Original Phase 4 machine variants through Precision tier. */
-public final class Phase4MachineCatalog {
+/** Manufacturing machine variants available through Precision tier. */
+public final class ManufacturingMachineCatalog {
     public record Entry(
             String blockId,
             String typeId,
@@ -23,7 +23,7 @@ public final class Phase4MachineCatalog {
 
     public static final List<Entry> ENTRIES = createEntries();
 
-    private Phase4MachineCatalog() {
+    private ManufacturingMachineCatalog() {
     }
 
     private static List<Entry> createEntries() {

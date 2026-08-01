@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
-import net.claustra01.clayium.machine.Phase4MachineCatalog;
+import net.claustra01.clayium.machine.ManufacturingMachineCatalog;
 import net.claustra01.clayium.recipe.MachineIngredient;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.registry.ClayiumRegistries;
@@ -21,9 +21,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
-/** Original Phase 4 processing recipes represented by the common recipe model. */
-public final class Phase4MachineRecipes {
-    private Phase4MachineRecipes() {
+/** Clay and component processing recipes represented by the common recipe model. */
+public final class ClayProcessingRecipes {
+    private ClayProcessingRecipes() {
     }
 
     public static void build(RecipeOutput output) {
@@ -270,15 +270,15 @@ public final class Phase4MachineRecipes {
         for (int tier = 4; tier <= 6; tier++) {
             String buffer = ClayTier.byLegacyIndex(tier).id() + "_buffer";
             two(output, "assembler/cobblestone_generator_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
-                    ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(buffer).get(), 1, item("simple_circuit"), 1,
+                    ClayiumRegistries.LOGISTICS_BLOCKS.get(buffer).get(), 1, item("simple_circuit"), 1,
                     cobblestoneGenerator(tier), 1, tierEnergy(tier), 40, 4);
         }
         two(output, "assembler/energetic_clay_condenser", ClayiumMachineIds.ASSEMBLER,
                 hull(3), 1, item("clay_energy_excitor"), 2,
-                phaseMachine("energetic_clay_condenser", 3), 1, tierEnergy(3), 120, 4);
+                machineByTypeAndTier("energetic_clay_condenser", 3), 1, tierEnergy(3), 120, 4);
         two(output, "assembler/energetic_clay_condenser_mk2", ClayiumMachineIds.ASSEMBLER,
                 hull(4), 1, item("clay_energy_excitor"), 2,
-                phaseMachine("energetic_clay_condenser", 4), 1, tierEnergy(4), 120, 4);
+                machineByTypeAndTier("energetic_clay_condenser", 4), 1, tierEnergy(4), 120, 4);
         one(output, "assembler/clay_sticks_to_gear", ClayiumMachineIds.ASSEMBLER,
                 ClayiumRegistries.CLAY_STICK.get(), 5, ClayiumRegistries.CLAY_GEAR.get(), 1, 10, 20, 3);
         one(output, "assembler/short_clay_sticks_to_gear", ClayiumMachineIds.ASSEMBLER,
@@ -322,34 +322,34 @@ public final class Phase4MachineRecipes {
         for (int tier = 1; tier <= 4; tier++) {
             two(output, "assembler/machines/bending_machine_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, ClayiumRegistries.DENSE_CLAY_PLATE.get(), 3,
-                    phaseMachine("bending_machine", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("bending_machine", tier), 1, tierEnergy(tier), 120, 4);
             two(output, "assembler/machines/wire_drawing_machine_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("dense_clay_pipe"), 2,
-                    phaseMachine("wire_drawing_machine", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("wire_drawing_machine", tier), 1, tierEnergy(tier), 120, 4);
             two(output, "assembler/machines/pipe_drawing_machine_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("dense_clay_cylinder"), 2,
-                    phaseMachine("pipe_drawing_machine", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("pipe_drawing_machine", tier), 1, tierEnergy(tier), 120, 4);
             two(output, "assembler/machines/cutting_machine_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("clay_cutting_head"), 1,
-                    phaseMachine("cutting_machine", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("cutting_machine", tier), 1, tierEnergy(tier), 120, 4);
             two(output, "assembler/machines/lathe_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("clay_spindle"), 1,
-                    phaseMachine("lathe", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("lathe", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 5; tier <= 6; tier++) {
             two(output, "assembler/machines/bending_machine_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, ClayiumRegistries.DENSE_CLAY_PLATE.get(), (tier - 4) * 3,
-                    phaseMachine("bending_machine", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("bending_machine", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 2; tier <= 6; tier++) {
             two(output, "assembler/machines/grinder_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("dense_clay_grinding_head"), 1,
-                    phaseMachine("grinder", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("grinder", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 2; tier <= 4; tier++) {
             two(output, "assembler/machines/decomposer_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, ClayiumRegistries.CLAY_GEAR.get(), 4,
-                    phaseMachine("decomposer", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("decomposer", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 2; tier <= 3; tier++) {
             ItemLike materialLargePlate = tier == 2
@@ -357,41 +357,41 @@ public final class Phase4MachineRecipes {
                     : item("industrial_clay_large_plate");
             two(output, "assembler/machines/condenser_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, materialLargePlate, 1,
-                    phaseMachine("condenser", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("condenser", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 4; tier <= 5; tier++) {
             two(output, "assembler/machines/condenser_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1,
-                    ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get(ClayTier.byLegacyIndex(tier).id() + "_buffer").get(), 1,
-                    phaseMachine("condenser", tier), 1, tierEnergy(tier), 120, 4);
+                    ClayiumRegistries.LOGISTICS_BLOCKS.get(ClayTier.byLegacyIndex(tier).id() + "_buffer").get(), 1,
+                    machineByTypeAndTier("condenser", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 3; tier <= 4; tier++) {
             two(output, "assembler/machines/milling_machine_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("dense_clay_cutting_head"), 1,
-                    phaseMachine("milling_machine", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("milling_machine", tier), 1, tierEnergy(tier), 120, 4);
             two(output, "assembler/machines/assembler_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, ClayiumRegistries.DENSE_CLAY_GEAR.get(), 4,
-                    phaseMachine("assembler", tier), 1, tierEnergy(tier), 40, 4);
+                    machineByTypeAndTier("assembler", tier), 1, tierEnergy(tier), 40, 4);
             two(output, "assembler/machines/inscriber_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
-                    phaseMachine("assembler", tier), 1, item("basic_circuit"), 1,
-                    phaseMachine("inscriber", tier), 1, tierEnergy(tier), 40, 4);
+                    machineByTypeAndTier("assembler", tier), 1, item("basic_circuit"), 1,
+                    machineByTypeAndTier("inscriber", tier), 1, tierEnergy(tier), 40, 4);
         }
         for (int tier = 3; tier <= 6; tier++) {
             two(output, "assembler/machines/centrifuge_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("dense_clay_spindle"), Math.max(tier - 4, 1),
-                    phaseMachine("centrifuge", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("centrifuge", tier), 1, tierEnergy(tier), 120, 4);
         }
         for (int tier = 4; tier <= 6; tier++) {
             two(output, "assembler/machines/smelter_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     hull(tier), 1, item("simple_circuit"), tier - 3,
-                    phaseMachine("smelter", tier), 1, tierEnergy(tier), 120, 4);
+                    machineByTypeAndTier("smelter", tier), 1, tierEnergy(tier), 120, 4);
         }
         two(output, "assembler/machines/assembler_tier_6", ClayiumMachineIds.ASSEMBLER,
                 hull(6), 1, ClayiumRegistries.DENSE_CLAY_GEAR.get(), 4,
-                phaseMachine("assembler", 6), 1, tierEnergy(6), 40, 4);
+                machineByTypeAndTier("assembler", 6), 1, tierEnergy(6), 40, 4);
         two(output, "assembler/machines/assembler_tier_6_upgrade", ClayiumMachineIds.ASSEMBLER,
-                phaseMachine("assembler", 4), 1, item("precision_circuit"), 1,
-                phaseMachine("assembler", 6), 1, tierEnergy(6), 40, 4);
+                machineByTypeAndTier("assembler", 4), 1, item("precision_circuit"), 1,
+                machineByTypeAndTier("assembler", 6), 1, tierEnergy(6), 40, 4);
     }
 
     private static void inscriber(RecipeOutput output) {
@@ -478,7 +478,7 @@ public final class Phase4MachineRecipes {
     }
 
     private static ItemLike item(String id) {
-        return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+        return ClayiumRegistries.COMPONENT_ITEMS.get(id).get();
     }
 
     private static ItemLike block(String id) {
@@ -493,21 +493,21 @@ public final class Phase4MachineRecipes {
             case 4 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("basic_machine_hull").get();
             case 5 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("advanced_machine_hull").get();
             case 6 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("precision_machine_hull").get();
-            default -> throw new IllegalArgumentException("Unsupported Phase 4 hull tier " + tier);
+            default -> throw new IllegalArgumentException("Unsupported machine hull tier " + tier);
         };
     }
 
-    private static ItemLike phaseMachine(String typeId, int tier) {
+    private static ItemLike machineByTypeAndTier(String typeId, int tier) {
         if (typeId.equals("bending_machine") && tier == 1) {
             return ClayiumRegistries.CLAY_BENDING_MACHINE.get();
         }
-        return Phase4MachineCatalog.ENTRIES.stream()
+        return ManufacturingMachineCatalog.ENTRIES.stream()
                 .filter(entry -> entry.typeId().equals(typeId)
                         && entry.tier().progressionIndex() == tier)
                 .findFirst()
-                .map(entry -> ClayiumRegistries.PHASE4_MACHINE_BLOCKS.get(entry.blockId()).get())
+                .map(entry -> ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get(entry.blockId()).get())
                 .orElseThrow(() -> new IllegalStateException(
-                        "Missing Phase 4 machine " + typeId + " tier " + tier));
+                        "Missing manufacturing machine " + typeId + " tier " + tier));
     }
 
     private static ItemLike cobblestoneGenerator(int tier) {

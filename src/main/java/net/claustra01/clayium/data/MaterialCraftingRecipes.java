@@ -16,8 +16,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 /** Furnace conversions retained from the original silicon progression. */
-public final class Phase6CraftingRecipes {
-    private Phase6CraftingRecipes() {}
+public final class MaterialCraftingRecipes {
+    private MaterialCraftingRecipes() {}
 
     public static void build(RecipeOutput output) {
         smelt(output, "impure_silicon_dust", item("impure_silicon_dust"), item("impure_silicon_ingot"));
@@ -51,7 +51,7 @@ public final class Phase6CraftingRecipes {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,
                         ClayiumRegistries.OTHER_HULL_BLOCKS.get("zk60a_machine_hull").get())
                 .define('P', item("zk60a_large_plate"))
-                .define('C', phase4("precision_circuit"))
+                .define('C', component("precision_circuit"))
                 .pattern("PPP").pattern("PCP").pattern("PPP")
                 .unlockedBy("has_plate", InventoryChangeTrigger.TriggerInstance.hasItems(item("zk60a_large_plate")))
                 .save(output, Clayium.id("machine_hulls/zk60a"));
@@ -64,14 +64,14 @@ public final class Phase6CraftingRecipes {
     }
 
     private static ItemLike item(String id) {
-        if (ClayiumRegistries.PHASE4_ITEMS.containsKey(id)) {
-            return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+        if (ClayiumRegistries.COMPONENT_ITEMS.containsKey(id)) {
+            return ClayiumRegistries.COMPONENT_ITEMS.get(id).get();
         }
-        return ClayiumRegistries.PHASE6_ITEMS.get(id).get();
+        return ClayiumRegistries.MATERIAL_ITEMS.get(id).get();
     }
 
-    private static ItemLike phase4(String id) {
-        return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+    private static ItemLike component(String id) {
+        return ClayiumRegistries.COMPONENT_ITEMS.get(id).get();
     }
 
     private static Item dye(DyeColor color) {

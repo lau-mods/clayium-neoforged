@@ -7,12 +7,12 @@ package net.claustra01.clayium.registry;
 
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
-import net.claustra01.clayium.machine.Phase4MachineCatalog;
-import net.claustra01.clayium.machine.Phase4ItemCatalog;
-import net.claustra01.clayium.machine.Phase6MachineCatalog;
-import net.claustra01.clayium.machine.Phase6ItemCatalog;
+import net.claustra01.clayium.machine.ManufacturingMachineCatalog;
+import net.claustra01.clayium.machine.ClayComponentCatalog;
+import net.claustra01.clayium.machine.SpecializedMachineCatalog;
+import net.claustra01.clayium.machine.MaterialCatalog;
 import net.claustra01.clayium.machine.SpecialMachineKind;
-import net.claustra01.clayium.logistics.Phase5LogisticsCatalog;
+import net.claustra01.clayium.logistics.LogisticsCatalog;
 import net.claustra01.clayium.logistics.LogisticsKind;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -175,14 +175,14 @@ public final class ClayiumRegistries {
             () -> new WaterWheelBlock(machineProperties(), ClayTier.DENSE_CLAY));
     public static final Map<String, DeferredBlock<CobblestoneGeneratorBlock>> COBBLESTONE_GENERATOR_BLOCKS =
             registerCobblestoneGenerators();
-    public static final Map<String, DeferredBlock<MachineBlock>> PHASE4_MACHINE_BLOCKS =
-            registerPhase4MachineBlocks();
-    public static final Map<String, DeferredBlock<MachineBlock>> PHASE6_MACHINE_BLOCKS =
-            registerPhase6MachineBlocks();
-    public static final Map<String, DeferredBlock<LogisticsBlock>> PHASE5_LOGISTICS_BLOCKS =
-            registerPhase5LogisticsBlocks();
-    public static final Map<String, DeferredBlock<LogisticsBlock>> PHASE6_INTERFACE_BLOCKS =
-            registerPhase6InterfaceBlocks();
+    public static final Map<String, DeferredBlock<MachineBlock>> MANUFACTURING_MACHINE_BLOCKS =
+            registerManufacturingMachineBlocks();
+    public static final Map<String, DeferredBlock<MachineBlock>> SPECIALIZED_MACHINE_BLOCKS =
+            registerSpecializedMachineBlocks();
+    public static final Map<String, DeferredBlock<LogisticsBlock>> LOGISTICS_BLOCKS =
+            registerLogisticsBlocks();
+    public static final Map<String, DeferredBlock<LogisticsBlock>> INTERFACE_BLOCKS =
+            registerInterfaceBlocks();
     public static final Map<String, DeferredBlock<Block>> MATERIAL_BLOCKS = registerMaterialBlocks();
     public static final Map<String, DeferredBlock<ColoredSiliconeBlock>> COLORED_SILICONE_BLOCKS =
             registerColoredSiliconeBlocks();
@@ -231,14 +231,14 @@ public final class ClayiumRegistries {
             registerBlockItem("dense_clay_water_wheel", DENSE_CLAY_WATER_WHEEL);
     public static final Map<String, DeferredItem<BlockItem>> COBBLESTONE_GENERATOR_ITEMS =
             registerBlockItems(COBBLESTONE_GENERATOR_BLOCKS);
-    public static final Map<String, DeferredItem<BlockItem>> PHASE4_MACHINE_ITEMS =
-            registerPhase4MachineItems();
-    public static final Map<String, DeferredItem<BlockItem>> PHASE6_MACHINE_ITEMS =
-            registerBlockItems(PHASE6_MACHINE_BLOCKS);
-    public static final Map<String, DeferredItem<BlockItem>> PHASE5_LOGISTICS_ITEMS =
-            registerBlockItems(PHASE5_LOGISTICS_BLOCKS);
-    public static final Map<String, DeferredItem<BlockItem>> PHASE6_INTERFACE_ITEMS =
-            registerBlockItems(PHASE6_INTERFACE_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> MANUFACTURING_MACHINE_ITEMS =
+            registerManufacturingMachineItems();
+    public static final Map<String, DeferredItem<BlockItem>> SPECIALIZED_MACHINE_ITEMS =
+            registerBlockItems(SPECIALIZED_MACHINE_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> LOGISTICS_ITEMS =
+            registerBlockItems(LOGISTICS_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> INTERFACE_ITEMS =
+            registerBlockItems(INTERFACE_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> MATERIAL_BLOCK_ITEMS = registerBlockItems(MATERIAL_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> COLORED_SILICONE_ITEMS =
             registerBlockItems(COLORED_SILICONE_BLOCKS);
@@ -289,8 +289,8 @@ public final class ClayiumRegistries {
             "clay_pickaxe",
             () -> new ClayPickaxeItem(
                     new Item.Properties().attributes(PickaxeItem.createAttributes(ClayToolTier.PICKAXE, 1.0F, -2.8F))));
-    public static final Map<String, DeferredItem<Item>> PHASE4_ITEMS = registerPhase4Items();
-    public static final Map<String, DeferredItem<Item>> PHASE6_ITEMS = registerPhase6Items();
+    public static final Map<String, DeferredItem<Item>> COMPONENT_ITEMS = registerComponentItems();
+    public static final Map<String, DeferredItem<Item>> MATERIAL_ITEMS = registerMaterialItems();
     public static final DeferredItem<ClayConfiguratorItem> CLAY_IO_TOOL = ITEMS.register(
             "clay_io_tool", () -> new ClayConfiguratorItem(
                     new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.IO_COMBINED));
@@ -447,9 +447,9 @@ public final class ClayiumRegistries {
         return BLOCKS.register(name, () -> new Block(properties));
     }
 
-    private static Map<String, DeferredBlock<MachineBlock>> registerPhase4MachineBlocks() {
+    private static Map<String, DeferredBlock<MachineBlock>> registerManufacturingMachineBlocks() {
         Map<String, DeferredBlock<MachineBlock>> blocks = new LinkedHashMap<>();
-        for (Phase4MachineCatalog.Entry entry : Phase4MachineCatalog.ENTRIES) {
+        for (ManufacturingMachineCatalog.Entry entry : ManufacturingMachineCatalog.ENTRIES) {
             blocks.put(
                     entry.blockId(),
                     BLOCKS.register(
@@ -459,24 +459,24 @@ public final class ClayiumRegistries {
         return Map.copyOf(blocks);
     }
 
-    private static Map<String, DeferredItem<BlockItem>> registerPhase4MachineItems() {
+    private static Map<String, DeferredItem<BlockItem>> registerManufacturingMachineItems() {
         Map<String, DeferredItem<BlockItem>> items = new LinkedHashMap<>();
-        PHASE4_MACHINE_BLOCKS.forEach((id, block) -> items.put(id, registerBlockItem(id, block)));
+        MANUFACTURING_MACHINE_BLOCKS.forEach((id, block) -> items.put(id, registerBlockItem(id, block)));
         return Map.copyOf(items);
     }
 
-    private static Map<String, DeferredBlock<MachineBlock>> registerPhase6MachineBlocks() {
+    private static Map<String, DeferredBlock<MachineBlock>> registerSpecializedMachineBlocks() {
         Map<String, DeferredBlock<MachineBlock>> blocks = new LinkedHashMap<>();
-        for (Phase6MachineCatalog.Entry entry : Phase6MachineCatalog.ENTRIES) {
+        for (SpecializedMachineCatalog.Entry entry : SpecializedMachineCatalog.ENTRIES) {
             blocks.put(entry.blockId(), BLOCKS.register(entry.blockId(),
                     () -> new MachineBlock(machineProperties(), entry.machineId(), entry.tier())));
         }
         return Map.copyOf(blocks);
     }
 
-    private static Map<String, DeferredBlock<LogisticsBlock>> registerPhase5LogisticsBlocks() {
+    private static Map<String, DeferredBlock<LogisticsBlock>> registerLogisticsBlocks() {
         Map<String, DeferredBlock<LogisticsBlock>> blocks = new LinkedHashMap<>();
-        for (Phase5LogisticsCatalog.Entry entry : Phase5LogisticsCatalog.ENTRIES) {
+        for (LogisticsCatalog.Entry entry : LogisticsCatalog.ENTRIES) {
             blocks.put(entry.blockId(), BLOCKS.register(
                     entry.blockId(),
                     () -> new LogisticsBlock(
@@ -485,7 +485,7 @@ public final class ClayiumRegistries {
         return Map.copyOf(blocks);
     }
 
-    private static Map<String, DeferredBlock<LogisticsBlock>> registerPhase6InterfaceBlocks() {
+    private static Map<String, DeferredBlock<LogisticsBlock>> registerInterfaceBlocks() {
         Map<String, DeferredBlock<LogisticsBlock>> blocks = new LinkedHashMap<>();
         for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION}) {
             String prefix = tier.id();
@@ -532,8 +532,8 @@ public final class ClayiumRegistries {
 
     private static Block[] allLogisticsBlocks() {
         java.util.List<Block> blocks = new java.util.ArrayList<>();
-        PHASE5_LOGISTICS_BLOCKS.values().forEach(block -> blocks.add(block.get()));
-        PHASE6_INTERFACE_BLOCKS.values().forEach(block -> blocks.add(block.get()));
+        LOGISTICS_BLOCKS.values().forEach(block -> blocks.add(block.get()));
+        INTERFACE_BLOCKS.values().forEach(block -> blocks.add(block.get()));
         return blocks.toArray(Block[]::new);
     }
 
@@ -627,31 +627,31 @@ public final class ClayiumRegistries {
         return Map.copyOf(items);
     }
 
-    private static Map<String, DeferredItem<Item>> registerPhase4Items() {
+    private static Map<String, DeferredItem<Item>> registerComponentItems() {
         Map<String, DeferredItem<Item>> items = new LinkedHashMap<>();
-        for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
+        for (ClayComponentCatalog.Entry entry : ClayComponentCatalog.ENTRIES) {
             items.put(entry.id(), item(entry.id()));
         }
         return Map.copyOf(items);
     }
 
-    private static Map<String, DeferredItem<Item>> registerPhase6Items() {
+    private static Map<String, DeferredItem<Item>> registerMaterialItems() {
         Map<String, DeferredItem<Item>> items = new LinkedHashMap<>();
-        for (Phase6ItemCatalog.Entry entry : Phase6ItemCatalog.ENTRIES) {
+        for (MaterialCatalog.Entry entry : MaterialCatalog.ENTRIES) {
             items.put(entry.id(), item(entry.id()));
         }
         return Map.copyOf(items);
     }
 
     private static Block[] allMachineBlocks() {
-        Block[] blocks = new Block[PHASE4_MACHINE_BLOCKS.size() + PHASE6_MACHINE_BLOCKS.size() + 2];
+        Block[] blocks = new Block[MANUFACTURING_MACHINE_BLOCKS.size() + SPECIALIZED_MACHINE_BLOCKS.size() + 2];
         blocks[0] = CLAY_BENDING_MACHINE.get();
         blocks[1] = ELEMENTAL_MILLING_MACHINE.get();
         int index = 2;
-        for (DeferredBlock<MachineBlock> block : PHASE4_MACHINE_BLOCKS.values()) {
+        for (DeferredBlock<MachineBlock> block : MANUFACTURING_MACHINE_BLOCKS.values()) {
             blocks[index++] = block.get();
         }
-        for (DeferredBlock<MachineBlock> block : PHASE6_MACHINE_BLOCKS.values()) {
+        for (DeferredBlock<MachineBlock> block : SPECIALIZED_MACHINE_BLOCKS.values()) {
             blocks[index++] = block.get();
         }
         return blocks;

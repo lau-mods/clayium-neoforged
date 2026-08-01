@@ -9,7 +9,7 @@ import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.resources.ResourceLocation;
 
-/** Original per-tier processing multipliers for Phase 4 machines. */
+/** Per-tier processing multipliers used by manufacturing machines. */
 public final class MachinePerformance {
     private MachinePerformance() {
     }

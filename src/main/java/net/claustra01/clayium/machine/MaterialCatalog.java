@@ -4,7 +4,7 @@ package net.claustra01.clayium.machine;
 import java.util.List;
 
 /** Chemical materials introduced by the original progression through Precision tier. */
-public final class Phase6ItemCatalog {
+public final class MaterialCatalog {
     public record Entry(String id, String displayName, String originalTexture) {}
 
     public static final List<Entry> ENTRIES = List.of(
@@ -72,7 +72,7 @@ public final class Phase6ItemCatalog {
             item("zk60a_large_plate", "Large ZK60A Plate", "largeplate_base"),
             item("manipulator", "Manipulator", "manipulator"));
 
-    private Phase6ItemCatalog() {}
+    private MaterialCatalog() {}
 
     private static Entry item(String id, String name, String texture) {
         return new Entry(id, name, texture);

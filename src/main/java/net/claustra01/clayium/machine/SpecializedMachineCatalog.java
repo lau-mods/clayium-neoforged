@@ -6,7 +6,7 @@ import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.resources.ResourceLocation;
 
 /** Original chemical-processing machine variants available through Precision tier. */
-public final class Phase6MachineCatalog {
+public final class SpecializedMachineCatalog {
     public record Entry(String blockId, String displayTypeName, ResourceLocation machineId,
                         ClayTier tier, String originalOverlay) {}
 
@@ -18,7 +18,7 @@ public final class Phase6MachineCatalog {
             entry(5, "solar_clay_fabricator_mk1", "Solar Clay Fabricator MK1", ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, "solar"),
             entry(6, "solar_clay_fabricator_mk2", "Solar Clay Fabricator MK2", ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, "solar"));
 
-    private Phase6MachineCatalog() {}
+    private SpecializedMachineCatalog() {}
 
     private static Entry entry(int tier, String suffix, String name, ResourceLocation machineId, String overlay) {
         ClayTier clayTier = ClayTier.byLegacyIndex(tier);

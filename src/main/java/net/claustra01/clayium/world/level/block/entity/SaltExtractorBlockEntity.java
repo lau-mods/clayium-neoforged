@@ -86,11 +86,11 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
         energy.receive(value,false); fuel.shrink(1); return true;
     }
     private boolean hasOutputSpace() {
-        for(int slot=0;slot<outputSlots();slot++){ItemStack s=getItem(slot); if(s.isEmpty() || s.is(ClayiumRegistries.PHASE6_ITEMS.get("salt_dust").get()) && s.getCount()<s.getMaxStackSize()) return true;}
+        for(int slot=0;slot<outputSlots();slot++){ItemStack s=getItem(slot); if(s.isEmpty() || s.is(ClayiumRegistries.MATERIAL_ITEMS.get("salt_dust").get()) && s.getCount()<s.getMaxStackSize()) return true;}
         return false;
     }
     private void insertSalt() {
-        for(int slot=0;slot<outputSlots();slot++){ItemStack s=getItem(slot); if(s.isEmpty()){setItem(slot,new ItemStack(ClayiumRegistries.PHASE6_ITEMS.get("salt_dust").get()));return;} if(s.is(ClayiumRegistries.PHASE6_ITEMS.get("salt_dust").get())&&s.getCount()<s.getMaxStackSize()){s.grow(1);return;}}
+        for(int slot=0;slot<outputSlots();slot++){ItemStack s=getItem(slot); if(s.isEmpty()){setItem(slot,new ItemStack(ClayiumRegistries.MATERIAL_ITEMS.get("salt_dust").get()));return;} if(s.is(ClayiumRegistries.MATERIAL_ITEMS.get("salt_dust").get())&&s.getCount()<s.getMaxStackSize()){s.grow(1);return;}}
     }
     public int tier(){return getBlockState().getBlock() instanceof SaltExtractorBlock block?block.tier().progressionIndex():4;}
     public int outputSlots(){return switch(tier()){case 4->2;case 5->6;default->12;};}

@@ -40,14 +40,14 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
     public void accept(Entity entity) {
         if (!(entity instanceof ItemEntity itemEntity) || entity.getY() - worldPosition.getY() >= 0.2D) return;
         ItemStack stack = itemEntity.getItem();
-        if (stack.is(ClayiumRegistries.PHASE6_ITEMS.get("impure_silicon_ingot").get()) && ingotCount < MAX_INGOTS) {
+        if (stack.is(ClayiumRegistries.MATERIAL_ITEMS.get("impure_silicon_ingot").get()) && ingotCount < MAX_INGOTS) {
             stack.shrink(1);
             ingotCount++;
             level.setBlock(worldPosition,getBlockState().setValue(QuartzCrucibleBlock.FILL,ingotCount),3);
             changedAndSync();
         } else if (stack.is(Items.STRING) && ingotCount > 0 && heatingTicks >= ingotCount * TICKS_PER_INGOT) {
             stack.shrink(1);
-            ItemStack result = new ItemStack(ClayiumRegistries.PHASE6_ITEMS.get("silicon_ingot").get(), ingotCount);
+            ItemStack result = new ItemStack(ClayiumRegistries.MATERIAL_ITEMS.get("silicon_ingot").get(), ingotCount);
             level.addFreshEntity(new ItemEntity(level, worldPosition.getX() + 0.5D, worldPosition.getY() + 0.3D,
                     worldPosition.getZ() + 0.5D, result));
             ingotCount = 0;

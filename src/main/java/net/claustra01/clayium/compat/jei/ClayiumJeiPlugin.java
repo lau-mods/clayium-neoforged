@@ -22,8 +22,8 @@ import net.claustra01.clayium.client.gui.screens.inventory.SpecialMachineScreen;
 import net.claustra01.clayium.machine.SpecialMachineKind;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.MachineLayout;
-import net.claustra01.clayium.machine.Phase4MachineCatalog;
-import net.claustra01.clayium.machine.Phase6MachineCatalog;
+import net.claustra01.clayium.machine.ManufacturingMachineCatalog;
+import net.claustra01.clayium.machine.SpecializedMachineCatalog;
 import net.claustra01.clayium.recipe.ClayWorkTableRecipe;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.recipe.SmelterRecipeAdapter;
@@ -81,14 +81,14 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(
                 ClayiumRegistries.ELEMENTAL_MILLING_MACHINE_ITEM.get(),
                 ClayiumJeiRecipeTypes.ELEMENTAL_MILLING_MACHINE);
-        for (Phase4MachineCatalog.Entry entry : Phase4MachineCatalog.ENTRIES) {
+        for (ManufacturingMachineCatalog.Entry entry : ManufacturingMachineCatalog.ENTRIES) {
             registration.addRecipeCatalyst(
-                    ClayiumRegistries.PHASE4_MACHINE_ITEMS.get(entry.blockId()).get(),
+                    ClayiumRegistries.MANUFACTURING_MACHINE_ITEMS.get(entry.blockId()).get(),
                     ClayiumJeiRecipeTypes.MACHINES.get(entry.machineId()));
         }
-        for (Phase6MachineCatalog.Entry entry : Phase6MachineCatalog.ENTRIES) {
+        for (SpecializedMachineCatalog.Entry entry : SpecializedMachineCatalog.ENTRIES) {
             registration.addRecipeCatalyst(
-                    ClayiumRegistries.PHASE6_MACHINE_ITEMS.get(entry.blockId()).get(),
+                    ClayiumRegistries.SPECIALIZED_MACHINE_ITEMS.get(entry.blockId()).get(),
                     ClayiumJeiRecipeTypes.MACHINES.get(entry.machineId()));
         }
         registration.addRecipeCatalyst(ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get(), ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE);
@@ -224,17 +224,17 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         if (ClayiumMachineIds.ELEMENTAL_MILLING_MACHINE.equals(machineId)) {
             return ClayiumRegistries.ELEMENTAL_MILLING_MACHINE_ITEM.get().getDefaultInstance();
         }
-        return Phase4MachineCatalog.ENTRIES.stream()
+        return ManufacturingMachineCatalog.ENTRIES.stream()
                 .filter(entry -> entry.machineId().equals(machineId))
                 .findFirst()
-                .map(entry -> ClayiumRegistries.PHASE4_MACHINE_ITEMS
+                .map(entry -> ClayiumRegistries.MANUFACTURING_MACHINE_ITEMS
                         .get(entry.blockId())
                         .get()
                         .getDefaultInstance())
-                .orElseGet(() -> Phase6MachineCatalog.ENTRIES.stream()
+                .orElseGet(() -> SpecializedMachineCatalog.ENTRIES.stream()
                         .filter(entry -> entry.machineId().equals(machineId))
                         .findFirst()
-                        .map(entry -> ClayiumRegistries.PHASE6_MACHINE_ITEMS.get(entry.blockId()).get().getDefaultInstance())
+                        .map(entry -> ClayiumRegistries.SPECIALIZED_MACHINE_ITEMS.get(entry.blockId()).get().getDefaultInstance())
                         .orElse(ItemStack.EMPTY));
     }
 }

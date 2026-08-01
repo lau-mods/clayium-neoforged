@@ -31,11 +31,11 @@ public final class SpecialProcessRecipeCategory implements IRecipeCategory<Speci
     @Override public int getWidth(){return 176;} @Override public int getHeight(){return kind==SpecialProcessRecipe.Kind.QUARTZ_CRUCIBLE?78:112;} @Override public IDrawable getIcon(){return icon;}
     @Override public void setRecipe(IRecipeLayoutBuilder b,SpecialProcessRecipe recipe,IFocusGroup focuses){
         if(kind==SpecialProcessRecipe.Kind.QUARTZ_CRUCIBLE){
-            b.addInputSlot(20,22).setStandardSlotBackground().addItemStack(new ItemStack(ClayiumRegistries.PHASE6_ITEMS.get("impure_silicon_ingot").get(),recipe.amount()));
+            b.addInputSlot(20,22).setStandardSlotBackground().addItemStack(new ItemStack(ClayiumRegistries.MATERIAL_ITEMS.get("impure_silicon_ingot").get(),recipe.amount()));
             b.addInputSlot(44,22).setStandardSlotBackground().addItemStack(new ItemStack(Items.STRING));
-            b.addOutputSlot(116,22).setOutputSlotBackground().addItemStack(new ItemStack(ClayiumRegistries.PHASE6_ITEMS.get("silicon_ingot").get(),recipe.amount()));
+            b.addOutputSlot(116,22).setOutputSlotBackground().addItemStack(new ItemStack(ClayiumRegistries.MATERIAL_ITEMS.get("silicon_ingot").get(),recipe.amount()));
         } else {
-            b.addInputSlot(8,18).setStandardSlotBackground().addItemStack(new ItemStack(ClayiumRegistries.PHASE4_ITEMS.get("industrial_clay_dust").get()));
+            b.addInputSlot(8,18).setStandardSlotBackground().addItemStack(new ItemStack(ClayiumRegistries.COMPONENT_ITEMS.get("industrial_clay_dust").get()));
             for(int i=0;i<ChemicalMetalSeparatorProcess.PRODUCTS.size();i++){
                 var product=ChemicalMetalSeparatorProcess.PRODUCTS.get(i);
                 b.addOutputSlot(80+(i%5)*18,8+(i/5)*18).setStandardSlotBackground().addItemStack(product.stack())
