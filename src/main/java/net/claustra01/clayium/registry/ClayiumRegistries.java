@@ -22,6 +22,7 @@ import net.claustra01.clayium.world.inventory.MachineMenu;
 import net.claustra01.clayium.world.inventory.LogisticsMenu;
 import net.claustra01.clayium.world.level.block.ClayWorkTableBlock;
 import net.claustra01.clayium.world.level.block.ClayCraftingTableBlock;
+import net.claustra01.clayium.world.level.block.ClayOreBlock;
 import net.claustra01.clayium.world.level.block.CobblestoneGeneratorBlock;
 import net.claustra01.clayium.world.level.block.MachineBlock;
 import net.claustra01.clayium.world.level.block.LogisticsBlock;
@@ -34,6 +35,9 @@ import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.claustra01.clayium.world.item.ClayCraftingToolItem;
 import net.claustra01.clayium.world.item.ClayFilterItem;
+import net.claustra01.clayium.world.item.ClayPickaxeItem;
+import net.claustra01.clayium.world.item.ClayShovelItem;
+import net.claustra01.clayium.world.item.ClayToolTier;
 import net.claustra01.clayium.world.item.RawClayCraftingToolItem;
 import net.claustra01.clayium.world.inventory.ItemFilterMenu;
 import net.claustra01.clayium.world.inventory.FluidBufferMenu;
@@ -59,10 +63,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
@@ -101,21 +103,36 @@ public final class ClayiumRegistries {
                     .strength(1.0F, 4.0F)
                     .sound(SoundType.GRAVEL));
 
-    public static final DeferredBlock<DropExperienceBlock> CLAY_ORE = BLOCKS.register(
+    public static final DeferredBlock<ClayOreBlock> CLAY_ORE = BLOCKS.register(
             "clay_ore",
-            () -> new DropExperienceBlock(
+            () -> new ClayOreBlock(
+                    true,
                     UniformInt.of(0, 1),
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.STONE)
                             .requiresCorrectToolForDrops()
                             .strength(3.0F, 5.0F)
                             .sound(SoundType.STONE)));
-    public static final DeferredBlock<Block> DENSE_CLAY_ORE = registerBlock(
-            "dense_clay_ore", BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.DEEPSLATE).requiresCorrectToolForDrops().strength(4.0F, 6.0F).sound(SoundType.DEEPSLATE));
-    public static final DeferredBlock<Block> LARGE_DENSE_CLAY_ORE = registerBlock(
-            "large_dense_clay_ore", BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.DEEPSLATE).requiresCorrectToolForDrops().strength(5.0F, 7.0F).sound(SoundType.DEEPSLATE));
+    public static final DeferredBlock<ClayOreBlock> DENSE_CLAY_ORE = BLOCKS.register(
+            "dense_clay_ore",
+            () -> new ClayOreBlock(
+                    false,
+                    UniformInt.of(0, 0),
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .requiresCorrectToolForDrops()
+                            .strength(3.0F, 5.0F)
+                            .sound(SoundType.STONE)));
+    public static final DeferredBlock<ClayOreBlock> LARGE_DENSE_CLAY_ORE = BLOCKS.register(
+            "large_dense_clay_ore",
+            () -> new ClayOreBlock(
+                    false,
+                    UniformInt.of(0, 0),
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .requiresCorrectToolForDrops()
+                            .strength(3.0F, 5.0F)
+                            .sound(SoundType.STONE)));
     public static final DeferredBlock<Block> DENSE_CLAY = registerBlock(
             "dense_clay", BlockBehaviour.Properties.of()
                     .mapColor(MapColor.CLAY).strength(2.5F, 4.0F).sound(SoundType.STONE));
@@ -235,16 +252,14 @@ public final class ClayiumRegistries {
     public static final DeferredItem<Item> CLAY_WRENCH = ITEMS.register(
             "clay_wrench", () -> new ClayConfiguratorItem(
                     new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.ROTATE));
-    public static final DeferredItem<ShovelItem> CLAY_SHOVEL = ITEMS.register(
+    public static final DeferredItem<ClayShovelItem> CLAY_SHOVEL = ITEMS.register(
             "clay_shovel",
-            () -> new ShovelItem(
-                    Tiers.WOOD,
-                    new Item.Properties().attributes(ShovelItem.createAttributes(Tiers.WOOD, 1.5F, -3.0F))));
-    public static final DeferredItem<PickaxeItem> CLAY_PICKAXE = ITEMS.register(
+            () -> new ClayShovelItem(
+                    new Item.Properties().attributes(ShovelItem.createAttributes(ClayToolTier.SHOVEL, 1.5F, -3.0F))));
+    public static final DeferredItem<ClayPickaxeItem> CLAY_PICKAXE = ITEMS.register(
             "clay_pickaxe",
-            () -> new PickaxeItem(
-                    Tiers.STONE,
-                    new Item.Properties().attributes(PickaxeItem.createAttributes(Tiers.STONE, 1.0F, -2.8F))));
+            () -> new ClayPickaxeItem(
+                    new Item.Properties().attributes(PickaxeItem.createAttributes(ClayToolTier.PICKAXE, 1.0F, -2.8F))));
     public static final Map<String, DeferredItem<Item>> PHASE4_ITEMS = registerPhase4Items();
     public static final Map<String, DeferredItem<Item>> PHASE6_ITEMS = registerPhase6Items();
     public static final DeferredItem<ClayConfiguratorItem> CLAY_IO_TOOL = ITEMS.register(

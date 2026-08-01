@@ -211,7 +211,11 @@ public final class ClayiumDataGenerators {
         language.add("item." + Clayium.MODID + ".clay_spatula", "Clay Spatula");
         language.add("item." + Clayium.MODID + ".clay_wrench", "Clay Wrench");
         language.add("item." + Clayium.MODID + ".clay_shovel", "Clay Shovel");
+        language.add("item." + Clayium.MODID + ".clay_shovel.tooltip",
+                "Can dig Clay Ores and increase drops.");
         language.add("item." + Clayium.MODID + ".clay_pickaxe", "Clay Pickaxe");
+        language.add("item." + Clayium.MODID + ".clay_pickaxe.tooltip",
+                "Can harvest Clay Ores so fast and increase drops.");
         for (Phase4ItemCatalog.Entry entry : Phase4ItemCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }
