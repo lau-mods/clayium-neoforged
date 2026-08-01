@@ -207,10 +207,17 @@ public final class Phase4MachineRecipes {
     private static void grinder(RecipeOutput output) {
         one(output, "grinder/clay_ore_to_shards", ClayiumMachineIds.GRINDER,
                 ClayiumRegistries.CLAY_ORE.get(), 1, item("compressed_clay_shard"), 2, 1, 3, 0);
+        one(output, "grinder/deepslate_clay_ore_to_shards", ClayiumMachineIds.GRINDER,
+                ClayiumRegistries.DEEPSLATE_CLAY_ORE.get(), 1, item("compressed_clay_shard"), 2, 1, 3, 0);
         one(output, "grinder/dense_clay_ore_to_shards", ClayiumMachineIds.GRINDER,
                 ClayiumRegistries.DENSE_CLAY_ORE.get(), 1, item("industrial_clay_shard"), 3, 1, 6, 0);
+        one(output, "grinder/deepslate_dense_clay_ore_to_shards", ClayiumMachineIds.GRINDER,
+                ClayiumRegistries.DEEPSLATE_DENSE_CLAY_ORE.get(), 1, item("industrial_clay_shard"), 3, 1, 6, 0);
         one(output, "grinder/large_dense_clay_ore_to_shards", ClayiumMachineIds.GRINDER,
                 ClayiumRegistries.LARGE_DENSE_CLAY_ORE.get(), 1,
+                item("advanced_industrial_clay_shard"), 5, 1, 9, 0);
+        one(output, "grinder/deepslate_large_dense_clay_ore_to_shards", ClayiumMachineIds.GRINDER,
+                ClayiumRegistries.DEEPSLATE_LARGE_DENSE_CLAY_ORE.get(), 1,
                 item("advanced_industrial_clay_shard"), 5, 1, 9, 0);
         one(output, "grinder/clay_block_to_dust", ClayiumMachineIds.GRINDER,
                 Items.CLAY, 1, item("clay_dust"), 1, 1, 3, 0);

@@ -1,1 +1,1 @@
-{"parent":"minecraft:block/cube_all","textures":{"all":"clayium_neoforged:block/large_dense_clay_ore"}}
+{"parent":"clayium_neoforged:block/clay_ore_base","textures":{"base":"minecraft:block/stone","overlay":"clayium_neoforged:block/large_dense_clay_ore_overlay"}}

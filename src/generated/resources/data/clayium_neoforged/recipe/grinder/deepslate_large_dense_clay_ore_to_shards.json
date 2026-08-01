@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:deepslate_large_dense_clay_ore"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:grinder",
+  "minimum_tier": "raw",
+  "processing_time_ticks": 9,
+  "results": [
+    {
+      "count": 5,
+      "id": "clayium_neoforged:advanced_industrial_clay_shard"
+    }
+  ]
+}

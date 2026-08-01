@@ -127,8 +127,11 @@ public final class ClayiumDataGenerators {
 
     private static void addBlockNames(LanguageProvider language) {
         language.add("block." + Clayium.MODID + ".clay_ore", "Clay Ore");
+        language.add("block." + Clayium.MODID + ".deepslate_clay_ore", "Deepslate Clay Ore");
         language.add("block." + Clayium.MODID + ".dense_clay_ore", "Dense Clay Ore");
+        language.add("block." + Clayium.MODID + ".deepslate_dense_clay_ore", "Deepslate Dense Clay Ore");
         language.add("block." + Clayium.MODID + ".large_dense_clay_ore", "Large Dense Clay Ore");
+        language.add("block." + Clayium.MODID + ".deepslate_large_dense_clay_ore", "Deepslate Large Dense Clay Ore");
         language.add("block." + Clayium.MODID + ".dense_clay", "Dense Clay");
         language.add("block." + Clayium.MODID + ".compressed_clay", "Compressed Clay");
         language.add("block." + Clayium.MODID + ".raw_clay_machine_hull", "Raw Clay Machine Hull");

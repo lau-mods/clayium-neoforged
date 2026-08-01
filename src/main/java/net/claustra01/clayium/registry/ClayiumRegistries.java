@@ -69,6 +69,7 @@ import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
@@ -112,31 +113,37 @@ public final class ClayiumRegistries {
             () -> new ClayOreBlock(
                     true,
                     UniformInt.of(0, 1),
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.STONE)
-                            .requiresCorrectToolForDrops()
-                            .strength(3.0F, 5.0F)
-                            .sound(SoundType.STONE)));
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE)));
+    public static final DeferredBlock<ClayOreBlock> DEEPSLATE_CLAY_ORE = BLOCKS.register(
+            "deepslate_clay_ore",
+            () -> new ClayOreBlock(
+                    true,
+                    UniformInt.of(0, 1),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE)));
     public static final DeferredBlock<ClayOreBlock> DENSE_CLAY_ORE = BLOCKS.register(
             "dense_clay_ore",
             () -> new ClayOreBlock(
                     false,
                     UniformInt.of(0, 0),
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.STONE)
-                            .requiresCorrectToolForDrops()
-                            .strength(3.0F, 5.0F)
-                            .sound(SoundType.STONE)));
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE)));
+    public static final DeferredBlock<ClayOreBlock> DEEPSLATE_DENSE_CLAY_ORE = BLOCKS.register(
+            "deepslate_dense_clay_ore",
+            () -> new ClayOreBlock(
+                    false,
+                    UniformInt.of(0, 0),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE)));
     public static final DeferredBlock<ClayOreBlock> LARGE_DENSE_CLAY_ORE = BLOCKS.register(
             "large_dense_clay_ore",
             () -> new ClayOreBlock(
                     false,
                     UniformInt.of(0, 0),
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.STONE)
-                            .requiresCorrectToolForDrops()
-                            .strength(3.0F, 5.0F)
-                            .sound(SoundType.STONE)));
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE)));
+    public static final DeferredBlock<ClayOreBlock> DEEPSLATE_LARGE_DENSE_CLAY_ORE = BLOCKS.register(
+            "deepslate_large_dense_clay_ore",
+            () -> new ClayOreBlock(
+                    false,
+                    UniformInt.of(0, 0),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE)));
     public static final DeferredBlock<Block> DENSE_CLAY = registerBlock(
             "dense_clay", BlockBehaviour.Properties.of()
                     .mapColor(MapColor.CLAY).strength(2.5F, 4.0F).sound(SoundType.STONE));
@@ -195,9 +202,15 @@ public final class ClayiumRegistries {
             registerBlockItem("clay_crafting_table", CLAY_CRAFTING_TABLE);
 
     public static final DeferredItem<BlockItem> CLAY_ORE_ITEM = registerBlockItem("clay_ore", CLAY_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_CLAY_ORE_ITEM =
+            registerBlockItem("deepslate_clay_ore", DEEPSLATE_CLAY_ORE);
     public static final DeferredItem<BlockItem> DENSE_CLAY_ORE_ITEM = registerBlockItem("dense_clay_ore", DENSE_CLAY_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_DENSE_CLAY_ORE_ITEM =
+            registerBlockItem("deepslate_dense_clay_ore", DEEPSLATE_DENSE_CLAY_ORE);
     public static final DeferredItem<BlockItem> LARGE_DENSE_CLAY_ORE_ITEM =
             registerBlockItem("large_dense_clay_ore", LARGE_DENSE_CLAY_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_LARGE_DENSE_CLAY_ORE_ITEM =
+            registerBlockItem("deepslate_large_dense_clay_ore", DEEPSLATE_LARGE_DENSE_CLAY_ORE);
     public static final DeferredItem<BlockItem> DENSE_CLAY_ITEM = registerBlockItem("dense_clay", DENSE_CLAY);
     public static final DeferredItem<BlockItem> COMPRESSED_CLAY_ITEM = registerBlockItem("compressed_clay", COMPRESSED_CLAY);
     public static final DeferredItem<BlockItem> RAW_CLAY_MACHINE_HULL_ITEM =

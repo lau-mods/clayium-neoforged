@@ -27,7 +27,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 /**
- * Common implementation for all three modern Clay Ore blocks.
+ * Common implementation for all Stone and Deepslate Clay Ore blocks.
  *
  * <p>The original mod used one metadata block.  The current port exposes
  * stable block IDs, so the metadata-dependent drop behavior is represented by
