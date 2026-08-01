@@ -1,1 +1,7 @@
-{"variants":{"":{"model":"clayium_neoforged:block/large_dense_clay_ore"}}}
+{
+  "variants": {
+    "": {
+      "model": "clayium_neoforged:block/large_dense_clay_ore"
+    }
+  }
+}

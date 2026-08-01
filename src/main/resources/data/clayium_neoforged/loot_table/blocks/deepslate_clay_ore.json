@@ -1,1 +1,210 @@
-{"type":"minecraft:block","pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"clayium_neoforged:deepslate_clay_ore","conditions":[{"condition":"minecraft:match_tool","predicate":{"predicates":{"minecraft:enchantments":[{"enchantments":"minecraft:silk_touch","levels":{"min":1}}]}}}]}]},{"rolls":1,"conditions":[{"condition":"minecraft:inverted","term":{"condition":"minecraft:match_tool","predicate":{"predicates":{"minecraft:enchantments":[{"enchantments":"minecraft:silk_touch","levels":{"min":1}}]}}}}],"entries":[{"type":"minecraft:alternatives","children":[{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.4}],"functions":[{"function":"minecraft:set_count","count":4}]},{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.083333336}],"functions":[{"function":"minecraft:set_count","count":5}]},{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.18181819}],"functions":[{"function":"minecraft:set_count","count":6}]},{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.22222222}],"functions":[{"function":"minecraft:set_count","count":7}]},{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.2857143}],"functions":[{"function":"minecraft:set_count","count":8}]},{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.4}],"functions":[{"function":"minecraft:set_count","count":10}]},{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.33333334}],"functions":[{"function":"minecraft:set_count","count":12}]},{"type":"minecraft:item","name":"minecraft:clay_ball","conditions":[{"condition":"minecraft:random_chance","chance":0.5}],"functions":[{"function":"minecraft:set_count","count":13}]},{"type":"minecraft:item","name":"minecraft:clay_ball","functions":[{"function":"minecraft:set_count","count":16}]}]}],"functions":[{"function":"minecraft:apply_bonus","enchantment":"minecraft:fortune","formula":"minecraft:ore_drops"},{"function":"minecraft:explosion_decay"}]}],"random_sequence":"clayium_neoforged:blocks/deepslate_clay_ore"}
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "clayium_neoforged:deepslate_clay_ore",
+          "conditions": [
+            {
+              "condition": "minecraft:match_tool",
+              "predicate": {
+                "predicates": {
+                  "minecraft:enchantments": [
+                    {
+                      "enchantments": "minecraft:silk_touch",
+                      "levels": {
+                        "min": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "predicates": {
+                "minecraft:enchantments": [
+                  {
+                    "enchantments": "minecraft:silk_touch",
+                    "levels": {
+                      "min": 1
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.4
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 4
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.083333336
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 5
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.18181819
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 6
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.22222222
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 7
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.2857143
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.4
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 10
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.33333334
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 12
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "conditions": [
+                {
+                  "condition": "minecraft:random_chance",
+                  "chance": 0.5
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 13
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:clay_ball",
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 16
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:apply_bonus",
+          "enchantment": "minecraft:fortune",
+          "formula": "minecraft:ore_drops"
+        },
+        {
+          "function": "minecraft:explosion_decay"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "clayium_neoforged:blocks/deepslate_clay_ore"
+}

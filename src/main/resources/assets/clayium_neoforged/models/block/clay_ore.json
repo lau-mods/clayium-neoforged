@@ -1,1 +1,7 @@
-{"parent":"clayium_neoforged:block/clay_ore_base","textures":{"base":"minecraft:block/stone","overlay":"clayium_neoforged:block/clay_ore_overlay"}}
+{
+  "parent": "clayium_neoforged:block/clay_ore_base",
+  "textures": {
+    "base": "minecraft:block/stone",
+    "overlay": "clayium_neoforged:block/clay_ore_overlay"
+  }
+}

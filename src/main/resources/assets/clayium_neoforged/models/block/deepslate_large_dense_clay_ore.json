@@ -1,1 +1,7 @@
-{"parent":"clayium_neoforged:block/clay_ore_base","textures":{"base":"minecraft:block/deepslate","overlay":"clayium_neoforged:block/large_dense_clay_ore_overlay"}}
+{
+  "parent": "clayium_neoforged:block/clay_ore_base",
+  "textures": {
+    "base": "minecraft:block/deepslate",
+    "overlay": "clayium_neoforged:block/large_dense_clay_ore_overlay"
+  }
+}

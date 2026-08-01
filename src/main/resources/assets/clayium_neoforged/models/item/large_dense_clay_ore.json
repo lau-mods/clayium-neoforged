@@ -1,1 +1,3 @@
-{"parent":"clayium_neoforged:block/large_dense_clay_ore"}
+{
+  "parent": "clayium_neoforged:block/large_dense_clay_ore"
+}
