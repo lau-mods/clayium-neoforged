@@ -27,6 +27,7 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -150,6 +151,20 @@ public final class ClayiumDataGenerators {
         for (Phase6MachineCatalog.Entry entry : Phase6MachineCatalog.ENTRIES) {
             language.add("block." + Clayium.MODID + "." + entry.blockId(),
                     entry.tier().displayName() + " " + entry.displayTypeName());
+        }
+        language.add("block." + Clayium.MODID + ".advanced_clay_interface", "Advanced Clay Interface");
+        language.add("block." + Clayium.MODID + ".precision_clay_interface", "Precision Clay Interface");
+        language.add("block." + Clayium.MODID + ".advanced_redstone_interface", "Advanced Redstone Interface");
+        language.add("block." + Clayium.MODID + ".precision_redstone_interface", "Precision Redstone Interface");
+        language.add("block." + Clayium.MODID + ".impure_silicon_block", "Block of Impure Silicon");
+        language.add("block." + Clayium.MODID + ".silicone_block", "Block of Silicone");
+        language.add("block." + Clayium.MODID + ".silicon_block", "Block of Silicon");
+        language.add("block." + Clayium.MODID + ".aluminium_block", "Block of Aluminium");
+        language.add("block." + Clayium.MODID + ".az91d_machine_hull", "AZ91D Machine Hull");
+        language.add("block." + Clayium.MODID + ".zk60a_machine_hull", "ZK60A Machine Hull");
+        for (DyeColor color : DyeColor.values()) {
+            language.add("block." + Clayium.MODID + "." + color.getSerializedName() + "_silicone_block",
+                    titleCase(color.getSerializedName()) + " Silicone Block");
         }
         language.add("block." + Clayium.MODID + ".basic_fluid_buffer", "Basic Fluid Buffer");
         language.add("block." + Clayium.MODID + ".advanced_fluid_buffer", "Advanced Fluid Buffer");

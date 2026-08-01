@@ -74,6 +74,12 @@ public final class Phase6MachineRecipes {
         machine(output, "alloy_smelter/az91d", ClayiumMachineIds.ALLOY_SMELTER,
                 List.of(ingredient(item("magnesium_ingot"), 9), ingredient(item("zincalminium_ingot"), 1)),
                 List.of(stack(item("az91d_ingot"), 10)), 500, energy(7), ClayTier.PRECISION);
+        machine(output, "alloy_smelter/zinconium", ClayiumMachineIds.ALLOY_SMELTER,
+                List.of(ingredient(item("zinc_ingot"), 9), ingredient(item("zirconium_ingot"), 1)),
+                List.of(stack(item("zinconium_ingot"), 10)), 50, energy(7), ClayTier.PRECISION);
+        machine(output, "alloy_smelter/zk60a", ClayiumMachineIds.ALLOY_SMELTER,
+                List.of(ingredient(item("magnesium_ingot"), 19), ingredient(item("zinconium_ingot"), 1)),
+                List.of(stack(item("zk60a_ingot"), 20)), 500, energy(7), ClayTier.PRECISION);
     }
 
     private static void solarFabricator(RecipeOutput output) {
@@ -130,6 +136,10 @@ public final class Phase6MachineRecipes {
                 item("aluminium_plate"), 1, 20);
         bending(output, "aluminium_plates_to_large_plate", item("aluminium_plate"), 4,
                 item("aluminium_large_plate"), 1, 40);
+        bending(output, "impure_aluminium_ingot_to_plate", item("impure_aluminium_ingot"), 1,
+                item("impure_aluminium_plate"), 1, 20);
+        bending(output, "impure_aluminium_plates_to_large_plate", item("impure_aluminium_plate"), 4,
+                item("impure_aluminium_large_plate"), 1, 40);
 
         machine(output, "smelter/aluminium_dust", ClayiumMachineIds.SMELTER,
                 List.of(ingredient(item("aluminium_dust"), 1)),
@@ -137,7 +147,13 @@ public final class Phase6MachineRecipes {
         machine(output, "smelter/zinc_dust", ClayiumMachineIds.SMELTER,
                 List.of(ingredient(item("zinc_dust"), 1)),
                 List.of(stack(item("zinc_ingot"), 1)), 200, 500, ClayTier.ADVANCED);
-        for (String material : List.of("magnesium", "zincalminium", "az91d")) {
+        machine(output, "smelter/sodium_dust", ClayiumMachineIds.SMELTER,
+                List.of(ingredient(item("sodium_dust"), 1)),
+                List.of(stack(item("sodium_ingot"), 1)), 200, 500, ClayTier.ADVANCED);
+        machine(output, "smelter/impure_aluminium_dust", ClayiumMachineIds.SMELTER,
+                List.of(ingredient(item("impure_aluminium_dust"), 1)),
+                List.of(stack(item("impure_aluminium_ingot"), 1)), 200, 500, ClayTier.ADVANCED);
+        for (String material : List.of("magnesium", "lithium", "zirconium", "zincalminium", "zinconium", "az91d", "zk60a")) {
             machine(output, "smelter/" + material + "_dust", ClayiumMachineIds.SMELTER,
                     List.of(ingredient(item(material + "_dust"), 1)),
                     List.of(stack(item(material + "_ingot"), 1)), 400, 2_000, ClayTier.PRECISION);
@@ -147,6 +163,10 @@ public final class Phase6MachineRecipes {
                 item("az91d_plate"), 1, 20);
         bending(output, "az91d_plates_to_large_plate", item("az91d_plate"), 4,
                 item("az91d_large_plate"), 1, 40);
+        bending(output, "zk60a_ingot_to_plate", item("zk60a_ingot"), 1,
+                item("zk60a_plate"), 1, 20);
+        bending(output, "zk60a_plates_to_large_plate", item("zk60a_plate"), 4,
+                item("zk60a_large_plate"), 1, 40);
 
         grinder(output, "impure_silicon_ingot", item("impure_silicon_ingot"), 1, item("impure_silicon_dust"), 1, 80);
         grinder(output, "impure_silicon_plate", phase4("impure_silicon_plate"), 1, item("impure_silicon_dust"), 1, 80);
@@ -160,12 +180,21 @@ public final class Phase6MachineRecipes {
         grinder(output, "aluminium_ingot", item("aluminium_ingot"), 1, item("aluminium_dust"), 1, 80);
         grinder(output, "aluminium_plate", item("aluminium_plate"), 1, item("aluminium_dust"), 1, 80);
         grinder(output, "aluminium_large_plate", item("aluminium_large_plate"), 1, item("aluminium_dust"), 4, 80);
+        grinder(output, "impure_aluminium_ingot", item("impure_aluminium_ingot"), 1, item("impure_aluminium_dust"), 1, 80);
+        grinder(output, "impure_aluminium_plate", item("impure_aluminium_plate"), 1, item("impure_aluminium_dust"), 1, 80);
+        grinder(output, "impure_aluminium_large_plate", item("impure_aluminium_large_plate"), 1, item("impure_aluminium_dust"), 4, 80);
         grinder(output, "magnesium_ingot", item("magnesium_ingot"), 1, item("magnesium_dust"), 1, 80);
+        grinder(output, "sodium_ingot", item("sodium_ingot"), 1, item("sodium_dust"), 1, 80);
+        grinder(output, "lithium_ingot", item("lithium_ingot"), 1, item("lithium_dust"), 1, 80);
         grinder(output, "zinc_ingot", item("zinc_ingot"), 1, item("zinc_dust"), 1, 80);
         grinder(output, "zincalminium_ingot", item("zincalminium_ingot"), 1, item("zincalminium_dust"), 1, 80);
+        grinder(output, "zinconium_ingot", item("zinconium_ingot"), 1, item("zinconium_dust"), 1, 80);
         grinder(output, "az91d_ingot", item("az91d_ingot"), 1, item("az91d_dust"), 1, 80);
         grinder(output, "az91d_plate", item("az91d_plate"), 1, item("az91d_dust"), 1, 80);
         grinder(output, "az91d_large_plate", item("az91d_large_plate"), 1, item("az91d_dust"), 4, 80);
+        grinder(output, "zk60a_ingot", item("zk60a_ingot"), 1, item("zk60a_dust"), 1, 80);
+        grinder(output, "zk60a_plate", item("zk60a_plate"), 1, item("zk60a_dust"), 1, 80);
+        grinder(output, "zk60a_large_plate", item("zk60a_large_plate"), 1, item("zk60a_dust"), 4, 80);
     }
 
     private static void bending(RecipeOutput output, String id, ItemLike input, int inputCount,
@@ -212,6 +241,23 @@ public final class Phase6MachineRecipes {
                         ingredient(phase4("precision_circuit"), 1)),
                 List.of(stack(ClayiumRegistries.PHASE6_MACHINE_BLOCKS.get("precision_alloy_smelter").get(), 1)),
                 40, energy(6), ClayTier.BASIC);
+        machine(output, "machine/az91d_machine_hull", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(item("az91d_large_plate"), 4), ingredient(phase4("precision_circuit"), 1)),
+                List.of(stack(ClayiumRegistries.OTHER_HULL_BLOCKS.get("az91d_machine_hull").get(), 1)),
+                120, energy(6), ClayTier.BASIC);
+        for (String prefix : List.of("advanced", "precision")) {
+            ClayTier tier = prefix.equals("advanced") ? ClayTier.ADVANCED : ClayTier.PRECISION;
+            machine(output, "machine/" + prefix + "_clay_interface", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get(prefix + "_machine_hull").get(), 1),
+                            ingredient(ClayiumRegistries.PHASE5_LOGISTICS_BLOCKS.get("precision_buffer").get(), 1)),
+                    List.of(stack(ClayiumRegistries.PHASE6_INTERFACE_BLOCKS.get(prefix + "_clay_interface").get(), 1)),
+                    40, energy(tier.progressionIndex()), ClayTier.BASIC);
+            machine(output, "machine/" + prefix + "_redstone_interface", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.PHASE6_INTERFACE_BLOCKS.get(prefix + "_clay_interface").get(), 1),
+                            ingredient(phase4("energetic_clay_dust"), 16)),
+                    List.of(stack(ClayiumRegistries.PHASE6_INTERFACE_BLOCKS.get(prefix + "_redstone_interface").get(), 1)),
+                    40, energy(tier.progressionIndex()), ClayTier.BASIC);
+        }
         machine(output, "machine/advanced_solar_clay_fabricator_mk1", ClayiumMachineIds.ASSEMBLER,
                 List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("advanced_machine_hull").get(), 1),
                         ingredient(phase4("silicon_plate"), 8)),
@@ -242,6 +288,9 @@ public final class Phase6MachineRecipes {
                         ingredient(ClayiumRegistries.PHASE4_MACHINE_BLOCKS.get("precision_smelter").get(), 1)),
                 List.of(stack(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("precision_chemical_metal_separator").get(), 1)),
                 40, energy(6), ClayTier.BASIC);
+        machine(output, "machine/manipulator", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(item("az91d_ingot"), 16), ingredient(phase4("precision_circuit"), 1)),
+                List.of(stack(item("manipulator"), 1)), 20, energy(4), ClayTier.BASIC);
     }
 
     private static void machine(RecipeOutput output, String id, net.minecraft.resources.ResourceLocation machine,

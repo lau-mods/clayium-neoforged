@@ -39,7 +39,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public final class LogisticsBlock extends BaseEntityBlock {
+public class LogisticsBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
     private static final VoxelShape PIPE_CENTER = Block.box(5, 5, 5, 11, 11, 11);

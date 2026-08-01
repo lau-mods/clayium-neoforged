@@ -13,6 +13,7 @@ import net.claustra01.clayium.machine.Phase6MachineCatalog;
 import net.claustra01.clayium.machine.Phase6ItemCatalog;
 import net.claustra01.clayium.machine.SpecialMachineKind;
 import net.claustra01.clayium.logistics.Phase5LogisticsCatalog;
+import net.claustra01.clayium.logistics.LogisticsKind;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
@@ -23,9 +24,11 @@ import net.claustra01.clayium.world.inventory.LogisticsMenu;
 import net.claustra01.clayium.world.level.block.ClayWorkTableBlock;
 import net.claustra01.clayium.world.level.block.ClayCraftingTableBlock;
 import net.claustra01.clayium.world.level.block.ClayOreBlock;
+import net.claustra01.clayium.world.level.block.ColoredSiliconeBlock;
 import net.claustra01.clayium.world.level.block.CobblestoneGeneratorBlock;
 import net.claustra01.clayium.world.level.block.MachineBlock;
 import net.claustra01.clayium.world.level.block.LogisticsBlock;
+import net.claustra01.clayium.world.level.block.RedstoneInterfaceBlock;
 import net.claustra01.clayium.world.level.block.WaterWheelBlock;
 import net.claustra01.clayium.world.level.block.entity.ClayWorkTableBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.ClayCraftingTableBlockEntity;
@@ -61,6 +64,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.inventory.MenuType;
@@ -170,6 +174,12 @@ public final class ClayiumRegistries {
             registerPhase6MachineBlocks();
     public static final Map<String, DeferredBlock<LogisticsBlock>> PHASE5_LOGISTICS_BLOCKS =
             registerPhase5LogisticsBlocks();
+    public static final Map<String, DeferredBlock<LogisticsBlock>> PHASE6_INTERFACE_BLOCKS =
+            registerPhase6InterfaceBlocks();
+    public static final Map<String, DeferredBlock<Block>> MATERIAL_BLOCKS = registerMaterialBlocks();
+    public static final Map<String, DeferredBlock<ColoredSiliconeBlock>> COLORED_SILICONE_BLOCKS =
+            registerColoredSiliconeBlocks();
+    public static final Map<String, DeferredBlock<Block>> OTHER_HULL_BLOCKS = registerOtherHullBlocks();
     public static final Map<String, DeferredBlock<FluidBufferBlock>> FLUID_BUFFER_BLOCKS = registerFluidBuffers();
     public static final Map<String, DeferredBlock<SaltExtractorBlock>> SALT_EXTRACTOR_BLOCKS = registerSaltExtractors();
     public static final DeferredBlock<QuartzCrucibleBlock> QUARTZ_CRUCIBLE = BLOCKS.registerBlock(
@@ -214,6 +224,12 @@ public final class ClayiumRegistries {
             registerBlockItems(PHASE6_MACHINE_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> PHASE5_LOGISTICS_ITEMS =
             registerBlockItems(PHASE5_LOGISTICS_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> PHASE6_INTERFACE_ITEMS =
+            registerBlockItems(PHASE6_INTERFACE_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> MATERIAL_BLOCK_ITEMS = registerBlockItems(MATERIAL_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> COLORED_SILICONE_ITEMS =
+            registerBlockItems(COLORED_SILICONE_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> OTHER_HULL_ITEMS = registerBlockItems(OTHER_HULL_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> FLUID_BUFFER_ITEMS = registerBlockItems(FLUID_BUFFER_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> SALT_EXTRACTOR_ITEMS = registerBlockItems(SALT_EXTRACTOR_BLOCKS);
     public static final DeferredItem<BlockItem> QUARTZ_CRUCIBLE_ITEM = registerBlockItem("quartz_crucible", QUARTZ_CRUCIBLE);
@@ -334,9 +350,7 @@ public final class ClayiumRegistries {
                     "logistics",
                     () -> BlockEntityType.Builder.of(
                             LogisticsBlockEntity::new,
-                            PHASE5_LOGISTICS_BLOCKS.values().stream()
-                                    .map(DeferredBlock::get)
-                                    .toArray(Block[]::new)).build(null));
+                            allLogisticsBlocks()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluidBufferBlockEntity>> FLUID_BUFFER_BLOCK_ENTITY =
             BLOCK_ENTITY_TYPES.register("fluid_buffer", () -> BlockEntityType.Builder.of(
                     FluidBufferBlockEntity::new, FLUID_BUFFER_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
@@ -456,6 +470,58 @@ public final class ClayiumRegistries {
                             machineProperties(), entry.kind(), entry.tier().progressionIndex())));
         }
         return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<LogisticsBlock>> registerPhase6InterfaceBlocks() {
+        Map<String, DeferredBlock<LogisticsBlock>> blocks = new LinkedHashMap<>();
+        for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION}) {
+            String prefix = tier.id();
+            blocks.put(prefix + "_clay_interface", BLOCKS.register(
+                    prefix + "_clay_interface",
+                    () -> new LogisticsBlock(machineProperties(), LogisticsKind.INTERFACE, tier.progressionIndex())));
+            blocks.put(prefix + "_redstone_interface", BLOCKS.register(
+                    prefix + "_redstone_interface",
+                    () -> new RedstoneInterfaceBlock(machineProperties(), tier.progressionIndex())));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<Block>> registerMaterialBlocks() {
+        Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
+        for (String id : new String[]{"impure_silicon", "silicone", "silicon", "aluminium"}) {
+            blocks.put(id + "_block", registerBlock(
+                    id + "_block",
+                    BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                            .requiresCorrectToolForDrops().strength(3.0F, 5.0F).sound(SoundType.METAL)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<ColoredSiliconeBlock>> registerColoredSiliconeBlocks() {
+        Map<String, DeferredBlock<ColoredSiliconeBlock>> blocks = new LinkedHashMap<>();
+        for (DyeColor color : DyeColor.values()) {
+            String id = color.getSerializedName() + "_silicone_block";
+            blocks.put(id, BLOCKS.register(id, () -> new ColoredSiliconeBlock(
+                    color,
+                    BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                            .requiresCorrectToolForDrops().strength(3.0F, 5.0F).sound(SoundType.METAL))));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<Block>> registerOtherHullBlocks() {
+        Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
+        for (String id : new String[]{"az91d_machine_hull", "zk60a_machine_hull"}) {
+            blocks.put(id, registerBlock(id, machineProperties()));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Block[] allLogisticsBlocks() {
+        java.util.List<Block> blocks = new java.util.ArrayList<>();
+        PHASE5_LOGISTICS_BLOCKS.values().forEach(block -> blocks.add(block.get()));
+        PHASE6_INTERFACE_BLOCKS.values().forEach(block -> blocks.add(block.get()));
+        return blocks.toArray(Block[]::new);
     }
 
     private static Map<String, DeferredBlock<FluidBufferBlock>> registerFluidBuffers() {

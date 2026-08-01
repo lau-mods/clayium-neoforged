@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "clayium_neoforged:precision_circuit"
+    },
+    "P": {
+      "item": "clayium_neoforged:zk60a_large_plate"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "PCP",
+    "PPP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:zk60a_machine_hull"
+  }
+}

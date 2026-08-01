@@ -241,6 +241,21 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         return storedCount;
     }
 
+    /** Redstone output used by the Tier 5/6 redstone interface. */
+    public int redstoneSignal() {
+        if (kind() != LogisticsKind.REDSTONE_INTERFACE) {
+            return 0;
+        }
+        int occupied = 0;
+        for (int slot = 0; slot < activeSlots(); slot++) {
+            if (!getItem(slot).isEmpty()) {
+                occupied++;
+            }
+        }
+        int capacity = Math.max(1, activeSlots());
+        return Math.min(15, (occupied * 15 + capacity - 1) / capacity);
+    }
+
     public int filterSlotIndex(int filter) {
         return INVENTORY_SLOTS + filter;
     }
@@ -491,6 +506,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public boolean isPassivePipeEndpoint() {
         return kind() == LogisticsKind.BUFFER
                 || kind() == LogisticsKind.MULTITRACK_BUFFER
+                || kind() == LogisticsKind.INTERFACE
+                || kind() == LogisticsKind.REDSTONE_INTERFACE
                 || kind() == LogisticsKind.STORAGE_CONTAINER
                 || kind() == LogisticsKind.VOID_CONTAINER;
     }

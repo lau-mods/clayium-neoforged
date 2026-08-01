@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 25,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:zinconium_ingot"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:grinder",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 80,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:zinconium_dust"
+    }
+  ]
+}

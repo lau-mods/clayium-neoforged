@@ -6,8 +6,13 @@ import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 /** Furnace conversions retained from the original silicon progression. */
@@ -19,6 +24,37 @@ public final class Phase6CraftingRecipes {
         smelt(output, "impure_silicon_to_silicone", item("impure_silicon_ingot"), item("silicone_ingot"));
         smelt(output, "silicone_dust", item("silicone_dust"), item("silicone_ingot"));
         smelt(output, "silicon_dust", item("silicon_dust"), item("silicon_ingot"));
+        for (String material : new String[]{"impure_silicon", "silicone", "silicon", "aluminium"}) {
+            ItemLike block = ClayiumRegistries.MATERIAL_BLOCKS.get(material + "_block").get();
+            ItemLike ingot = item(material + "_ingot");
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, block)
+                    .define('I', ingot)
+                    .pattern("III").pattern("III").pattern("III")
+                    .unlockedBy("has_ingot", InventoryChangeTrigger.TriggerInstance.hasItems(ingot))
+                    .save(output, Clayium.id("material_blocks/" + material));
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ingot, 9)
+                    .requires(block)
+                    .unlockedBy("has_block", InventoryChangeTrigger.TriggerInstance.hasItems(block))
+                    .save(output, Clayium.id("material_blocks/" + material + "_unpack"));
+        }
+        for (DyeColor color : DyeColor.values()) {
+            ItemLike colored = ClayiumRegistries.COLORED_SILICONE_BLOCKS
+                    .get(color.getSerializedName() + "_silicone_block").get();
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, colored, 8)
+                    .define('S', ClayiumRegistries.MATERIAL_BLOCKS.get("silicone_block").get())
+                    .define('D', dye(color))
+                    .pattern("SSS").pattern("SDS").pattern("SSS")
+                    .unlockedBy("has_silicone", InventoryChangeTrigger.TriggerInstance.hasItems(
+                            ClayiumRegistries.MATERIAL_BLOCKS.get("silicone_block").get()))
+                    .save(output, Clayium.id("silicone_blocks/" + color.getSerializedName()));
+        }
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,
+                        ClayiumRegistries.OTHER_HULL_BLOCKS.get("zk60a_machine_hull").get())
+                .define('P', item("zk60a_large_plate"))
+                .define('C', phase4("precision_circuit"))
+                .pattern("PPP").pattern("PCP").pattern("PPP")
+                .unlockedBy("has_plate", InventoryChangeTrigger.TriggerInstance.hasItems(item("zk60a_large_plate")))
+                .save(output, Clayium.id("machine_hulls/zk60a"));
     }
 
     private static void smelt(RecipeOutput output, String id, ItemLike input, ItemLike result) {
@@ -28,6 +64,34 @@ public final class Phase6CraftingRecipes {
     }
 
     private static ItemLike item(String id) {
+        if (ClayiumRegistries.PHASE4_ITEMS.containsKey(id)) {
+            return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+        }
         return ClayiumRegistries.PHASE6_ITEMS.get(id).get();
+    }
+
+    private static ItemLike phase4(String id) {
+        return ClayiumRegistries.PHASE4_ITEMS.get(id).get();
+    }
+
+    private static Item dye(DyeColor color) {
+        return switch (color) {
+            case WHITE -> Items.WHITE_DYE;
+            case ORANGE -> Items.ORANGE_DYE;
+            case MAGENTA -> Items.MAGENTA_DYE;
+            case LIGHT_BLUE -> Items.LIGHT_BLUE_DYE;
+            case YELLOW -> Items.YELLOW_DYE;
+            case LIME -> Items.LIME_DYE;
+            case PINK -> Items.PINK_DYE;
+            case GRAY -> Items.GRAY_DYE;
+            case LIGHT_GRAY -> Items.LIGHT_GRAY_DYE;
+            case CYAN -> Items.CYAN_DYE;
+            case PURPLE -> Items.PURPLE_DYE;
+            case BLUE -> Items.BLUE_DYE;
+            case BROWN -> Items.BROWN_DYE;
+            case GREEN -> Items.GREEN_DYE;
+            case RED -> Items.RED_DYE;
+            case BLACK -> Items.BLACK_DYE;
+        };
     }
 }

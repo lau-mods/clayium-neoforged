@@ -17,12 +17,14 @@ import net.claustra01.clayium.client.gui.screens.inventory.SaltExtractorScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.SpecialMachineScreen;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
 import net.claustra01.clayium.registry.ClayiumRegistries;
+import net.claustra01.clayium.world.level.block.ColoredSiliconeBlock;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.minecraft.world.item.DyeColor;
 
 @EventBusSubscriber(modid = Clayium.MODID, value = Dist.CLIENT)
 public final class ClayiumClientEvents {
@@ -73,6 +75,8 @@ public final class ClayiumClientEvents {
         material(event, colors(40,28,40, 6,4,6, 255,255,255),
                 "silicon_dust", "silicon_ingot", "silicon_large_plate");
         impureDust(event, "impure_aluminium_dust", 190,200,202);
+        material(event, colors(190,200,202, 120,120,60, 220,220,220),
+                "impure_aluminium_ingot", "impure_aluminium_plate", "impure_aluminium_large_plate");
         pureDust(event, "aluminium_dust", 190,200,202, 31,33,33);
         material(event, colors(190,200,202, 31,33,33, 255,255,255),
                 "aluminium_ingot", "aluminium_plate", "aluminium_large_plate");
@@ -81,10 +85,13 @@ public final class ClayiumClientEvents {
         material(event, colors(150,210,150, 120,120,120, 255,255,255), "magnesium_ingot");
         impureDust(event, "impure_sodium_dust", 170,170,230);
         pureDust(event, "sodium_dust", 170,170,222, 120,120,120);
+        material(event, colors(170,170,222, 120,120,120, 255,255,255), "sodium_ingot");
         impureDust(event, "impure_lithium_dust", 220,220,150);
         pureDust(event, "lithium_dust", 210,210,150, 120,120,120);
+        material(event, colors(210,210,150, 120,120,120, 255,255,255), "lithium_ingot");
         impureDust(event, "impure_zirconium_dust", 190,170,122);
         pureDust(event, "zirconium_dust", 190,170,122, 120,120,120);
+        material(event, colors(190,170,122, 120,120,120, 255,255,255), "zirconium_ingot");
         impureDust(event, "impure_zinc_dust", 230,170,170);
         impureDust(event, "impure_manganese_dust", 190,240,240);
         impureDust(event, "impure_calcium_dust", 240,240,240);
@@ -103,8 +110,26 @@ public final class ClayiumClientEvents {
         material(event, colors(230,170,170, 120,120,120, 255,255,255), "zinc_ingot");
         material(event, colors(240,190,220, 160,0,0, 255,255,255),
                 "zincalminium_dust", "zincalminium_ingot");
+        material(event, colors(230,170,140, 120,0,0, 255,255,255),
+                "zinconium_dust", "zinconium_ingot");
         material(event, colors(130,140,135, 10,40,10, 255,255,255),
                 "az91d_dust", "az91d_ingot", "az91d_plate", "az91d_large_plate");
+        material(event, colors(75,85,80, 10,40,10, 255,255,255),
+                "zk60a_dust", "zk60a_ingot", "zk60a_plate", "zk60a_large_plate");
+        for (var entry : ClayiumRegistries.COLORED_SILICONE_ITEMS.entrySet()) {
+            String colorName = entry.getKey().substring(0, entry.getKey().length() - "_silicone_block".length());
+            DyeColor color = DyeColor.byName(colorName, DyeColor.WHITE);
+            event.register((stack, tintIndex) -> tintIndex == 0 ? color.getTextureDiffuseColor() : 0xffffffff,
+                    entry.getValue().get());
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
+        for (var entry : ClayiumRegistries.COLORED_SILICONE_BLOCKS.entrySet()) {
+            ColoredSiliconeBlock block = entry.getValue().get();
+            event.register((state, level, pos, tintIndex) -> block.color().getTextureDiffuseColor(), block);
+        }
     }
 
     private static void impureDust(RegisterColorHandlersEvent.Item event, String id, int r, int g, int b) {
