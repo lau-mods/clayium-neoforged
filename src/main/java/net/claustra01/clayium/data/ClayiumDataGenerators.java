@@ -86,6 +86,9 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.electrolysis_reactor", "Electrolysis Reactor");
                 add("jei." + Clayium.MODID + ".category.alloy_smelter", "Alloy Smelter");
                 add("jei." + Clayium.MODID + ".category.solar_clay_fabricator", "Solar Clay Fabricator");
+                add("jei." + Clayium.MODID + ".category.clay_blast_furnace", "Clay Blast Furnace");
+                add("jei." + Clayium.MODID + ".clay_blast_furnace.structure",
+                        "3x2x3: controller at front-bottom center; 17 Tier 5+ hulls/interfaces");
                 add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
                 add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");
                 add("jei." + Clayium.MODID + ".chance", "Chance: %s%%");
@@ -108,6 +111,11 @@ public final class ClayiumDataGenerators {
                 for (net.claustra01.clayium.world.level.block.entity.MachineBlockEntity.StopReason reason
                         : net.claustra01.clayium.world.level.block.entity.MachineBlockEntity.StopReason.values()) {
                     add("gui." + Clayium.MODID + ".stop_reason." + reason.name().toLowerCase(), reason.name());
+                }
+                String[] redstoneModes = {"None", "Emit if idle", "Emit if work scheduled", "Emit if doing work",
+                        "Do work", "Do not work", "Start work", "Stop work", "Do work once"};
+                for (int mode = 0; mode < redstoneModes.length; mode++) {
+                    add("gui." + Clayium.MODID + ".redstone_interface.mode." + mode, redstoneModes[mode]);
                 }
                 add(Clayium.MODID + ".config.log_registry_summary", "Log registry summary");
                 add(Clayium.MODID + ".config.ce_sync_interval_ticks", "Clay Energy sync interval");
@@ -142,7 +150,7 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".dense_clay_water_wheel", "Dense Clay Water Wheel");
         language.add("block." + Clayium.MODID + ".quartz_crucible", "Quartz Crucible");
         for (ClayTier tier : new ClayTier[]{ClayTier.CLAY, ClayTier.DENSE_CLAY, ClayTier.SIMPLE,
-                ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION}) {
+                ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
             language.add("block." + Clayium.MODID + "." + tier.id() + "_cobblestone_generator",
                     tier.displayName() + " Cobblestone Generator");
         }
@@ -159,10 +167,14 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".precision_clay_interface", "Precision Clay Interface");
         language.add("block." + Clayium.MODID + ".advanced_redstone_interface", "Advanced Redstone Interface");
         language.add("block." + Clayium.MODID + ".precision_redstone_interface", "Precision Redstone Interface");
+        language.add("block." + Clayium.MODID + ".clay_steel_clay_interface", "Clay Steel Clay Interface");
+        language.add("block." + Clayium.MODID + ".clay_steel_redstone_interface", "Clay Steel Redstone Interface");
+        language.add("block." + Clayium.MODID + ".clay_blast_furnace", "Clay Blast Furnace");
         language.add("block." + Clayium.MODID + ".impure_silicon_block", "Block of Impure Silicon");
         language.add("block." + Clayium.MODID + ".silicone_block", "Block of Silicone");
         language.add("block." + Clayium.MODID + ".silicon_block", "Block of Silicon");
         language.add("block." + Clayium.MODID + ".aluminium_block", "Block of Aluminium");
+        language.add("block." + Clayium.MODID + ".clay_steel_block", "Block of Clay Steel");
         language.add("block." + Clayium.MODID + ".az91d_machine_hull", "AZ91D Machine Hull");
         language.add("block." + Clayium.MODID + ".zk60a_machine_hull", "ZK60A Machine Hull");
         for (DyeColor color : DyeColor.values()) {
@@ -172,12 +184,15 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".basic_fluid_buffer", "Basic Fluid Buffer");
         language.add("block." + Clayium.MODID + ".advanced_fluid_buffer", "Advanced Fluid Buffer");
         language.add("block." + Clayium.MODID + ".precision_fluid_buffer", "Precision Fluid Buffer");
+        language.add("block." + Clayium.MODID + ".clay_steel_fluid_buffer", "Clay Steel Fluid Buffer");
         language.add("block." + Clayium.MODID + ".basic_salt_extractor", "Basic Salt Extractor");
         language.add("block." + Clayium.MODID + ".advanced_salt_extractor", "Advanced Salt Extractor");
         language.add("block." + Clayium.MODID + ".precision_salt_extractor", "Precision Salt Extractor");
+        language.add("block." + Clayium.MODID + ".clay_steel_salt_extractor", "Clay Steel Salt Extractor");
         language.add("block." + Clayium.MODID + ".advanced_auto_clay_condenser", "Advanced Auto Clay Condenser");
         language.add("block." + Clayium.MODID + ".advanced_auto_crafter", "Advanced Auto Crafter");
         language.add("block." + Clayium.MODID + ".precision_auto_crafter", "Precision Auto Crafter");
+        language.add("block." + Clayium.MODID + ".clay_steel_auto_crafter", "Clay Steel Auto Crafter");
         language.add("block." + Clayium.MODID + ".precision_chemical_metal_separator", "Precision Chemical Metal Separator");
         for (LogisticsCatalog.Entry entry : LogisticsCatalog.ENTRIES) {
             language.add(
@@ -234,6 +249,11 @@ public final class ClayiumDataGenerators {
         language.add("item." + Clayium.MODID + ".clay_pickaxe", "Clay Pickaxe");
         language.add("item." + Clayium.MODID + ".clay_pickaxe.tooltip",
                 "Can harvest Clay Ores so fast and increase drops.");
+        language.add("item." + Clayium.MODID + ".clay_steel_pickaxe", "Clay Steel Pickaxe");
+        language.add("item." + Clayium.MODID + ".clay_steel_shovel", "Clay Steel Shovel");
+        language.add("item." + Clayium.MODID + ".clay_steel_tool.mode", "Set mode %s");
+        language.add("item." + Clayium.MODID + ".clay_steel_tool.area", "Mining area: %s x %s");
+        language.add("item." + Clayium.MODID + ".clay_steel_tool.customized", "Customized shape: %s blocks");
         for (ClayComponentCatalog.Entry entry : ClayComponentCatalog.ENTRIES) {
             language.add("item." + Clayium.MODID + "." + entry.id(), entry.displayName());
         }

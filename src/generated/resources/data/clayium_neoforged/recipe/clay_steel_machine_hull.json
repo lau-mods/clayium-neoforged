@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:clay_steel_large_plate"
+    },
+    "C": {
+      "item": "clayium_neoforged:precision_circuit"
+    },
+    "E": {
+      "item": "clayium_neoforged:clay_energy_excitor"
+    }
+  },
+  "pattern": [
+    "#E#",
+    "#C#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_steel_machine_hull"
+  }
+}

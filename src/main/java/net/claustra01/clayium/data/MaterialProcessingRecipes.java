@@ -13,6 +13,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 
 /** Material, chemical, and specialized-machine recipes through Precision tier. */
@@ -30,7 +32,7 @@ public final class MaterialProcessingRecipes {
     }
 
     private static void fluidBuffers(RecipeOutput output) {
-        for (int tier = 4; tier <= 6; tier++) {
+        for (int tier = 4; tier <= 7; tier++) {
             ClayTier clayTier = ClayTier.byLegacyIndex(tier);
             machine(output, "fluid_buffer/" + clayTier.id(), ClayiumMachineIds.ASSEMBLER,
                     List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get(clayTier.id() + "_buffer").get(), 1),
@@ -64,6 +66,12 @@ public final class MaterialProcessingRecipes {
                     List.of(ingredient(item("impure_" + material + "_dust"), 1)),
                     List.of(stack(item(material + "_dust"), 1)),
                     100, energy(6), ClayTier.PRECISION);
+        }
+        for (String material : List.of("manganese", "calcium", "potassium", "hafnium", "strontium", "barium")) {
+            machine(output, "electrolysis/" + material, ClayiumMachineIds.ELECTROLYSIS_REACTOR,
+                    List.of(ingredient(item("impure_" + material + "_dust"), 1)),
+                    List.of(stack(item(material + "_dust"), 1)),
+                    300, 1_000_000, ClayTier.CLAY_STEEL);
         }
     }
 
@@ -195,6 +203,46 @@ public final class MaterialProcessingRecipes {
         grinder(output, "zk60a_ingot", item("zk60a_ingot"), 1, item("zk60a_dust"), 1, 80);
         grinder(output, "zk60a_plate", item("zk60a_plate"), 1, item("zk60a_dust"), 1, 80);
         grinder(output, "zk60a_large_plate", item("zk60a_large_plate"), 1, item("zk60a_dust"), 4, 80);
+
+        bending(output, "clay_steel_ingot_to_plate", item("clay_steel_ingot"), 1,
+                item("clay_steel_plate"), 1, 60);
+        bending(output, "clay_steel_plates_to_large_plate", item("clay_steel_plate"), 4,
+                item("clay_steel_large_plate"), 1, 120);
+        grinder(output, "clay_steel_ingot", item("clay_steel_ingot"), 1, item("clay_steel_dust"), 1, 240);
+        grinder(output, "clay_steel_plate", item("clay_steel_plate"), 1, item("clay_steel_dust"), 1, 240);
+        grinder(output, "clay_steel_large_plate", item("clay_steel_large_plate"), 1, item("clay_steel_dust"), 4, 240);
+        grinder(output, "steel_ingot", item("steel_ingot"), 1, item("steel_dust"), 1, 240);
+
+        machine(output, "blast_furnace/industrial_clay_and_manganese", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(component("industrial_clay_dust"), 2), ingredient(item("impure_manganese_dust"), 1)),
+                List.of(stack(item("clay_steel_ingot"), 2)), 200, 50_000, ClayTier.PRECISION);
+        machine(output, "blast_furnace/advanced_clay_and_manganese", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(component("advanced_industrial_clay_dust"), 1), ingredient(item("impure_manganese_dust"), 1)),
+                List.of(stack(item("clay_steel_ingot"), 1)), 5, 500_000, ClayTier.CLAY_STEEL);
+        machine(output, "blast_furnace/impure_silicon", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(component("advanced_industrial_clay_dust"), 1), ingredient(item("impure_silicon_ingot"), 1)),
+                List.of(stack(item("silicon_ingot"), 1)), 100, 100_000, ClayTier.CLAY_STEEL);
+        machine(output, "blast_furnace/steel", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(new MachineIngredient(Ingredient.of(Items.IRON_INGOT), 1),
+                        new MachineIngredient(Ingredient.of(Items.COAL, Items.CHARCOAL), 2)),
+                List.of(stack(item("steel_ingot"), 1)), 500, 10_000, ClayTier.PRECISION);
+        machine(output, "blast_furnace/steel_from_iron_dust", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(new MachineIngredient(Ingredient.of(ItemTags.create(
+                                ResourceLocation.fromNamespaceAndPath("c", "dusts/iron"))), 1),
+                        new MachineIngredient(Ingredient.of(Items.COAL, Items.CHARCOAL), 2)),
+                List.of(stack(item("steel_ingot"), 1)), 500, 10_000, ClayTier.PRECISION);
+        for (String material : List.of("clay_steel", "steel", "beryllium", "manganese", "calcium", "potassium", "hafnium", "strontium", "barium")) {
+            ClayTier required = List.of("calcium", "potassium").contains(material)
+                    ? ClayTier.ADVANCED
+                    : material.equals("clay_steel") || material.equals("steel")
+                            || material.equals("beryllium") || material.equals("hafnium")
+                            ? ClayTier.PRECISION : ClayTier.CLAY_STEEL;
+            long ce = required == ClayTier.CLAY_STEEL ? 200_000 : energy(required.progressionIndex());
+            int time = required == ClayTier.CLAY_STEEL ? 1_000 : 500;
+            machine(output, "blast_furnace/" + material + "_dust", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                    List.of(ingredient(item(material + "_dust"), 1)),
+                    List.of(stack(item(material + "_ingot"), 1)), time, ce, required);
+        }
     }
 
     private static void bending(RecipeOutput output, String id, ItemLike input, int inputCount,
@@ -216,7 +264,7 @@ public final class MaterialProcessingRecipes {
                 List.of(ingredient(item("quartz_dust"), 16)),
                 List.of(stack(ClayiumRegistries.QUARTZ_CRUCIBLE.get(), 1)),
                 20, 1_000, ClayTier.RAW);
-        for (int tier = 4; tier <= 6; tier++) {
+        for (int tier = 4; tier <= 7; tier++) {
             ClayTier clayTier = ClayTier.byLegacyIndex(tier);
             machine(output, "salt_extractor/" + clayTier.id(), ClayiumMachineIds.ASSEMBLER,
                     List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get(clayTier.id() + "_buffer").get(), 1),
@@ -245,8 +293,8 @@ public final class MaterialProcessingRecipes {
                 List.of(ingredient(item("az91d_large_plate"), 4), ingredient(component("precision_circuit"), 1)),
                 List.of(stack(ClayiumRegistries.OTHER_HULL_BLOCKS.get("az91d_machine_hull").get(), 1)),
                 120, energy(6), ClayTier.BASIC);
-        for (String prefix : List.of("advanced", "precision")) {
-            ClayTier tier = prefix.equals("advanced") ? ClayTier.ADVANCED : ClayTier.PRECISION;
+        for (String prefix : List.of("advanced", "precision", "clay_steel")) {
+            ClayTier tier = ClayTier.byIdOrRaw(prefix);
             machine(output, "machine/" + prefix + "_clay_interface", ClayiumMachineIds.ASSEMBLER,
                     List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get(prefix + "_machine_hull").get(), 1),
                             ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get("precision_buffer").get(), 1)),
@@ -268,6 +316,31 @@ public final class MaterialProcessingRecipes {
                         ingredient(component("silicon_plate"), 16)),
                 List.of(stack(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("precision_solar_clay_fabricator_mk2").get(), 1)),
                 120, energy(6), ClayTier.BASIC);
+        machine(output, "machine/clay_steel_electrolysis_reactor", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("advanced_chemical_reactor").get(), 1),
+                        ingredient(component("precision_circuit"), 1)),
+                List.of(stack(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("clay_steel_electrolysis_reactor").get(), 1)),
+                40, energy(7), ClayTier.PRECISION);
+        machine(output, "machine/clay_steel_lithium_solar_clay_fabricator", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1),
+                        ingredient(component("silicon_plate"), 16)),
+                List.of(stack(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("clay_steel_lithium_solar_clay_fabricator").get(), 1)),
+                120, energy(7), ClayTier.PRECISION);
+        machine(output, "machine/clay_blast_furnace", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get("precision_smelter").get(), 1),
+                        ingredient(ClayiumRegistries.INTERFACE_BLOCKS.get("precision_clay_interface").get(), 1)),
+                List.of(stack(ClayiumRegistries.CLAY_BLAST_FURNACE.get(), 1)),
+                120, energy(6), ClayTier.PRECISION);
+        machine(output, "machine/clay_steel_bending_machine", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1),
+                        ingredient(ClayiumRegistries.DENSE_CLAY_PLATE.get(), 9)),
+                List.of(stack(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get("clay_steel_bending_machine").get(), 1)),
+                120, energy(7), ClayTier.PRECISION);
+        machine(output, "machine/clay_steel_smelter", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1),
+                        ingredient(component("simple_circuit"), 4)),
+                List.of(stack(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get("clay_steel_smelter").get(), 1)),
+                120, energy(7), ClayTier.PRECISION);
         machine(output, "machine/advanced_auto_clay_condenser", ClayiumMachineIds.ASSEMBLER,
                 List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get("advanced_buffer").get(), 1),
                         ingredient(component("advanced_circuit"), 1)),
@@ -283,6 +356,11 @@ public final class MaterialProcessingRecipes {
                         ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("precision_machine_hull").get(), 1)),
                 List.of(stack(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("precision_auto_crafter").get(), 1)),
                 40, energy(6), ClayTier.BASIC);
+        machine(output, "machine/clay_steel_auto_crafter", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("precision_auto_crafter").get(), 1),
+                        ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1)),
+                List.of(stack(ClayiumRegistries.SPECIAL_MACHINE_BLOCKS.get("clay_steel_auto_crafter").get(), 1)),
+                40, energy(7), ClayTier.PRECISION);
         machine(output, "machine/precision_chemical_metal_separator", ClayiumMachineIds.ASSEMBLER,
                 List.of(ingredient(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("advanced_chemical_reactor").get(), 1),
                         ingredient(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get("precision_smelter").get(), 1)),

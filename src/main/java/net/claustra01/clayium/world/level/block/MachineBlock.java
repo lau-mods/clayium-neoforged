@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
+import net.claustra01.clayium.machine.ClayBlastFurnaceStructure;
+import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -46,6 +48,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public final class MachineBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
+    public static final BooleanProperty FORMED = BooleanProperty.create("formed");
     private static final VoxelShape PIPE_CENTER = Block.box(5, 5, 5, 11, 11, 11);
     public static final MapCodec<MachineBlock> CODEC = simpleCodec(
             properties -> new MachineBlock(properties, ResourceLocation.withDefaultNamespace("air"), ClayTier.RAW));
@@ -57,7 +60,8 @@ public final class MachineBlock extends BaseEntityBlock {
         super(properties);
         this.machineId = machineId;
         this.tier = tier;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(PIPE, false));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH)
+                .setValue(PIPE, false).setValue(FORMED, false));
     }
 
     public ResourceLocation machineId() {
@@ -75,14 +79,15 @@ public final class MachineBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING, PIPE);
+        builder.add(FACING, PIPE, FORMED);
     }
 
     @Override
     public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
         return defaultBlockState()
                 .setValue(FACING, context.getHorizontalDirection().getOpposite())
-                .setValue(PIPE, false);
+                .setValue(PIPE, false)
+                .setValue(FORMED, false);
     }
 
     @Override
@@ -153,6 +158,10 @@ public final class MachineBlock extends BaseEntityBlock {
         if (!state.is(newState.getBlock())
                 && level instanceof ServerLevel
                 && level.getBlockEntity(pos) instanceof MachineBlockEntity machine) {
+            if (machineId.equals(ClayiumMachineIds.CLAY_BLAST_FURNACE)) {
+                ClayBlastFurnaceStructure.unlinkExpectedInterfaces(
+                        (ServerLevel) level, pos, state.getValue(FACING));
+            }
             Containers.dropContents(level, pos, machine);
         }
         super.onRemove(state, level, pos, newState, isMoving);

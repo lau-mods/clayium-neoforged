@@ -17,6 +17,7 @@ import net.claustra01.clayium.logistics.ConfigurableItemDevice;
 import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.MachinePerformance;
+import net.claustra01.clayium.machine.ClayBlastFurnaceStructure;
 import net.claustra01.clayium.machine.ConfigurableClayEnergyMachine;
 import net.claustra01.clayium.recipe.MachineIngredient;
 import net.claustra01.clayium.recipe.MachineRecipe;
@@ -83,6 +84,11 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
             new EnumMap<>(Direction.class);
     private int automationCooldown;
+    private int structureCheckDelay;
+    private boolean structureFormed;
+    private net.claustra01.clayium.tier.ClayTier structureTier = net.claustra01.clayium.tier.ClayTier.RAW;
+    private boolean externalWorkEnabled = true;
+    private boolean externalSingleRun;
 
     private final ContainerData menuData = new ContainerData() {
         @Override
@@ -95,7 +101,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
                 case 4 -> stopReason.ordinal();
                 case 5 -> {
                     MachineBlock block = machineBlock();
-                    yield block == null ? 0 : block.tier().progressionIndex();
+                    yield block == null ? 0 : recipeTier().progressionIndex();
                 }
                 case 6 -> (int) activeEnergyPerTick;
                 case 7 -> (int) (activeEnergyPerTick >>> 32);
@@ -230,8 +236,36 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     @Override public void ioConfigurationChanged(){configurationChanged();}
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, MachineBlockEntity machine) {
-        machine.tickAutomation();
+        boolean mayRun = machine.refreshStructureState();
+        if (mayRun) {
+            machine.tickAutomation();
+        }
         machine.serverTick();
+    }
+
+    private boolean refreshStructureState() {
+        MachineBlock block = machineBlock();
+        if (block == null || !block.machineId().equals(
+                net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)) {
+            return true;
+        }
+        if (structureCheckDelay-- > 0) {
+            return structureFormed;
+        }
+        structureCheckDelay = 20;
+        if (!(level instanceof ServerLevel serverLevel)) {
+            structureFormed = false;
+            structureTier = net.claustra01.clayium.tier.ClayTier.RAW;
+            return false;
+        }
+        ClayBlastFurnaceStructure.Result result = ClayBlastFurnaceStructure.validate(
+                serverLevel, worldPosition, getBlockState().getValue(MachineBlock.FACING));
+        structureFormed = result.formed();
+        structureTier = result.recipeTier();
+        if (getBlockState().getValue(MachineBlock.FORMED) != structureFormed) {
+            level.setBlock(worldPosition, getBlockState().setValue(MachineBlock.FORMED, structureFormed), 3);
+        }
+        return structureFormed;
     }
 
     private void tickAutomation() {
@@ -336,6 +370,17 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             stopReason = StopReason.INVALID_BLOCK;
             return;
         }
+        if (machineBlock.machineId().equals(
+                net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
+                && !structureFormed) {
+            stopReason = StopReason.INVALID_STRUCTURE;
+            resetProcessing();
+            return;
+        }
+        if (!externalWorkEnabled && !externalSingleRun) {
+            stopReason = StopReason.REDSTONE_DISABLED;
+            return;
+        }
         if (machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.SOLAR_CLAY_FABRICATOR)
                 && !level.canSeeSky(worldPosition.above())) {
             stopReason = StopReason.NO_SKY_ACCESS;
@@ -349,9 +394,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
 
         MachineRecipe value = recipe.get().value();
-        totalProgress = MachinePerformance.processingTime(value, machineBlock.machineId(), machineBlock.tier());
+        totalProgress = MachinePerformance.processingTime(value, machineBlock.machineId(), recipeTier());
         long energyPerTick =
-                MachinePerformance.clayEnergyPerTick(value, machineBlock.machineId(), machineBlock.tier());
+                MachinePerformance.clayEnergyPerTick(value, machineBlock.machineId(), recipeTier());
         activeEnergyPerTick = energyPerTick;
         if (!canOutput(value)) {
             stopReason = StopReason.OUTPUT_BLOCKED;
@@ -370,6 +415,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         stopReason = StopReason.RUNNING;
         if (progress >= totalProgress) {
             complete(value);
+            if (externalSingleRun) {
+                externalSingleRun = false;
+                externalWorkEnabled = false;
+            }
         }
         setChanged();
     }
@@ -405,11 +454,11 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
                     activeRecipeId);
             if (resolved.isPresent()
                     && resolved.get().value().machine().equals(block.machineId())
-                    && block.tier().isAtLeast(resolved.get().value().minimumTier())) {
+                    && recipeTier().isAtLeast(resolved.get().value().minimumTier())) {
                 return resolved;
             }
             Optional<RecipeHolder<MachineRecipe>> adapted =
-                    MachineRecipeLookup.find(level, block.machineId(), block.tier(), inputStacks());
+                    MachineRecipeLookup.find(level, block.machineId(), recipeTier(), inputStacks());
             if (adapted.isPresent() && adapted.get().id().equals(activeRecipeId)) {
                 return adapted;
             }
@@ -421,11 +470,11 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
         recipeRecheckDelay = IDLE_RECIPE_RECHECK_TICKS;
         Optional<RecipeHolder<MachineRecipe>> found =
-                MachineRecipeLookup.find(level, block.machineId(), block.tier(), inputStacks());
+                MachineRecipeLookup.find(level, block.machineId(), recipeTier(), inputStacks());
         found.ifPresent(holder -> {
             activeRecipeId = holder.id();
             totalProgress = MachinePerformance.processingTime(
-                    holder.value(), block.machineId(), block.tier());
+                    holder.value(), block.machineId(), recipeTier());
         });
         return found;
     }
@@ -496,6 +545,13 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         return block == null ? net.claustra01.clayium.tier.ClayTier.RAW : block.tier();
     }
 
+    private net.claustra01.clayium.tier.ClayTier recipeTier() {
+        MachineBlock block = machineBlock();
+        return block != null && block.machineId().equals(
+                net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
+                ? structureTier : machineTier();
+    }
+
     private boolean acceptsEnergeticClay() {
         MachineBlock block = machineBlock();
         return machineTier().progressionIndex() >= 4
@@ -521,6 +577,27 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         return sidedHandlers.get(direction);
     }
 
+    /** Core inventory view used by a synchronized Clay Interface's own side routes. */
+    public IItemHandler interfaceItemHandler(int insertRoute, int extractRoute, ItemStack filter) {
+        return new IItemHandler() {
+            @Override public int getSlots() { return itemHandler.getSlots(); }
+            @Override public ItemStack getStackInSlot(int slot) { return itemHandler.getStackInSlot(slot); }
+            @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+                return contains(insertionSlots(insertRoute), slot) && matchesFilter(filter, stack)
+                        ? itemHandler.insertItem(slot, stack, simulate) : stack;
+            }
+            @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                return contains(extractionSlots(extractRoute), slot)
+                        ? itemHandler.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+            }
+            @Override public int getSlotLimit(int slot) { return itemHandler.getSlotLimit(slot); }
+            @Override public boolean isItemValid(int slot, ItemStack stack) {
+                return contains(insertionSlots(insertRoute), slot)
+                        && matchesFilter(filter, stack) && itemHandler.isItemValid(slot, stack);
+            }
+        };
+    }
+
     @Override
     public long receiveClayEnergy(long amount, boolean simulate) {
         return energy.receive(amount, simulate);
@@ -528,6 +605,20 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     public long clayEnergyStored() {
         return energy.energyStored();
+    }
+
+    public boolean isWorkScheduled() { return activeRecipeId != null; }
+    public boolean isDoingWork() { return stopReason == StopReason.RUNNING; }
+    public void setExternalWorkEnabled(boolean enabled) {
+        if (externalWorkEnabled == enabled && !externalSingleRun) return;
+        externalWorkEnabled = enabled;
+        if (!enabled) externalSingleRun = false;
+        setChanged();
+    }
+    public void runOnce() {
+        externalSingleRun = true;
+        externalWorkEnabled = false;
+        setChanged();
     }
 
     public int machineTierIndex() {
@@ -609,6 +700,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
                 : null;
         progress = Math.max(0, tag.getInt("Progress"));
         totalProgress = Math.max(0, tag.getInt("TotalProgress"));
+        externalWorkEnabled = !tag.contains("ExternalWorkEnabled") || tag.getBoolean("ExternalWorkEnabled");
+        externalSingleRun = tag.getBoolean("ExternalSingleRun");
         sideConfiguration.replaceRoutes(
                 loadRoutes(tag, "InsertionRoutes", insertionRoutes, insertionRouteCount()),
                 loadRoutes(tag, "ExtractionRoutes", extractionRoutes, 1));
@@ -628,6 +721,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
         tag.putInt("Progress", progress);
         tag.putInt("TotalProgress", totalProgress);
+        tag.putBoolean("ExternalWorkEnabled", externalWorkEnabled);
+        tag.putBoolean("ExternalSingleRun", externalSingleRun);
         tag.putIntArray("InsertionRoutes", insertionRoutes);
         tag.putIntArray("ExtractionRoutes", extractionRoutes);
         ListTag savedFilters = new ListTag();
@@ -793,6 +888,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         INSUFFICIENT_ENERGY,
         OUTPUT_BLOCKED,
         NO_SKY_ACCESS,
+        INVALID_STRUCTURE,
+        REDSTONE_DISABLED,
         INVALID_BLOCK;
 
         public static StopReason byOrdinal(int ordinal) {

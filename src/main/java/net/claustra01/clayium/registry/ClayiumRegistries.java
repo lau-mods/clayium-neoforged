@@ -42,6 +42,9 @@ import net.claustra01.clayium.world.item.ClayPickaxeItem;
 import net.claustra01.clayium.world.item.ClayShovelItem;
 import net.claustra01.clayium.world.item.ClayToolTier;
 import net.claustra01.clayium.world.item.RawClayCraftingToolItem;
+import net.claustra01.clayium.world.item.ClaySteelPickaxeItem;
+import net.claustra01.clayium.world.item.ClaySteelShovelItem;
+import net.claustra01.clayium.world.item.ClaySteelToolTier;
 import net.claustra01.clayium.world.inventory.ItemFilterMenu;
 import net.claustra01.clayium.world.inventory.FluidBufferMenu;
 import net.claustra01.clayium.world.inventory.SaltExtractorMenu;
@@ -179,6 +182,9 @@ public final class ClayiumRegistries {
             registerManufacturingMachineBlocks();
     public static final Map<String, DeferredBlock<MachineBlock>> SPECIALIZED_MACHINE_BLOCKS =
             registerSpecializedMachineBlocks();
+    public static final DeferredBlock<MachineBlock> CLAY_BLAST_FURNACE = BLOCKS.register(
+            "clay_blast_furnace",
+            () -> new MachineBlock(machineProperties(), ClayiumMachineIds.CLAY_BLAST_FURNACE, ClayTier.PRECISION));
     public static final Map<String, DeferredBlock<LogisticsBlock>> LOGISTICS_BLOCKS =
             registerLogisticsBlocks();
     public static final Map<String, DeferredBlock<LogisticsBlock>> INTERFACE_BLOCKS =
@@ -235,6 +241,8 @@ public final class ClayiumRegistries {
             registerManufacturingMachineItems();
     public static final Map<String, DeferredItem<BlockItem>> SPECIALIZED_MACHINE_ITEMS =
             registerBlockItems(SPECIALIZED_MACHINE_BLOCKS);
+    public static final DeferredItem<BlockItem> CLAY_BLAST_FURNACE_ITEM =
+            registerBlockItem("clay_blast_furnace", CLAY_BLAST_FURNACE);
     public static final Map<String, DeferredItem<BlockItem>> LOGISTICS_ITEMS =
             registerBlockItems(LOGISTICS_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> INTERFACE_ITEMS =
@@ -291,6 +299,16 @@ public final class ClayiumRegistries {
                     new Item.Properties().attributes(PickaxeItem.createAttributes(ClayToolTier.PICKAXE, 1.0F, -2.8F))));
     public static final Map<String, DeferredItem<Item>> COMPONENT_ITEMS = registerComponentItems();
     public static final Map<String, DeferredItem<Item>> MATERIAL_ITEMS = registerMaterialItems();
+    public static final DeferredItem<ClaySteelPickaxeItem> CLAY_STEEL_PICKAXE = ITEMS.register(
+            "clay_steel_pickaxe", () -> new ClaySteelPickaxeItem(new Item.Properties()
+                    .attributes(PickaxeItem.createAttributes(ClaySteelToolTier.INSTANCE, 1.0F, -2.8F))
+                    .component(ClayiumDataComponents.CLAY_STEEL_TOOL_SETTINGS.get(),
+                            net.claustra01.clayium.data.ClaySteelToolSettings.DEFAULT)));
+    public static final DeferredItem<ClaySteelShovelItem> CLAY_STEEL_SHOVEL = ITEMS.register(
+            "clay_steel_shovel", () -> new ClaySteelShovelItem(new Item.Properties()
+                    .attributes(ShovelItem.createAttributes(ClaySteelToolTier.INSTANCE, 1.5F, -3.0F))
+                    .component(ClayiumDataComponents.CLAY_STEEL_TOOL_SETTINGS.get(),
+                            net.claustra01.clayium.data.ClaySteelToolSettings.DEFAULT)));
     public static final DeferredItem<ClayConfiguratorItem> CLAY_IO_TOOL = ITEMS.register(
             "clay_io_tool", () -> new ClayConfiguratorItem(
                     new Item.Properties().stacksTo(1), ClayConfiguratorItem.Mode.IO_COMBINED));
@@ -487,7 +505,7 @@ public final class ClayiumRegistries {
 
     private static Map<String, DeferredBlock<LogisticsBlock>> registerInterfaceBlocks() {
         Map<String, DeferredBlock<LogisticsBlock>> blocks = new LinkedHashMap<>();
-        for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION}) {
+        for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
             String prefix = tier.id();
             blocks.put(prefix + "_clay_interface", BLOCKS.register(
                     prefix + "_clay_interface",
@@ -501,7 +519,7 @@ public final class ClayiumRegistries {
 
     private static Map<String, DeferredBlock<Block>> registerMaterialBlocks() {
         Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
-        for (String id : new String[]{"impure_silicon", "silicone", "silicon", "aluminium"}) {
+        for (String id : new String[]{"impure_silicon", "silicone", "silicon", "aluminium", "clay_steel"}) {
             blocks.put(id + "_block", registerBlock(
                     id + "_block",
                     BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
@@ -539,7 +557,7 @@ public final class ClayiumRegistries {
 
     private static Map<String, DeferredBlock<FluidBufferBlock>> registerFluidBuffers() {
         Map<String, DeferredBlock<FluidBufferBlock>> blocks=new LinkedHashMap<>();
-        for(ClayTier tier : new ClayTier[]{ClayTier.BASIC,ClayTier.ADVANCED,ClayTier.PRECISION}) {
+        for(ClayTier tier : new ClayTier[]{ClayTier.BASIC,ClayTier.ADVANCED,ClayTier.PRECISION,ClayTier.CLAY_STEEL}) {
             String id=tier.id()+"_fluid_buffer";
             blocks.put(id,BLOCKS.register(id,()->new FluidBufferBlock(machineProperties(),tier)));
         }
@@ -549,7 +567,7 @@ public final class ClayiumRegistries {
     private static Map<String, DeferredBlock<CobblestoneGeneratorBlock>> registerCobblestoneGenerators() {
         Map<String, DeferredBlock<CobblestoneGeneratorBlock>> blocks = new LinkedHashMap<>();
         for (ClayTier tier : new ClayTier[]{ClayTier.CLAY, ClayTier.DENSE_CLAY, ClayTier.SIMPLE,
-                ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION}) {
+                ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
             String id = tier.id() + "_cobblestone_generator";
             blocks.put(id, BLOCKS.register(id, () -> new CobblestoneGeneratorBlock(machineProperties(), tier)));
         }
@@ -558,7 +576,7 @@ public final class ClayiumRegistries {
 
     private static Map<String, DeferredBlock<SaltExtractorBlock>> registerSaltExtractors() {
         Map<String, DeferredBlock<SaltExtractorBlock>> blocks = new LinkedHashMap<>();
-        for (ClayTier tier : new ClayTier[]{ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION}) {
+        for (ClayTier tier : new ClayTier[]{ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
             String id = tier.id() + "_salt_extractor";
             blocks.put(id, BLOCKS.register(id, () -> new SaltExtractorBlock(machineProperties(), tier)));
         }
@@ -570,6 +588,7 @@ public final class ClayiumRegistries {
         registerSpecial(blocks, "advanced_auto_clay_condenser", SpecialMachineKind.AUTO_CLAY_CONDENSER, ClayTier.ADVANCED);
         registerSpecial(blocks, "advanced_auto_crafter", SpecialMachineKind.AUTO_CRAFTER, ClayTier.ADVANCED);
         registerSpecial(blocks, "precision_auto_crafter", SpecialMachineKind.AUTO_CRAFTER, ClayTier.PRECISION);
+        registerSpecial(blocks, "clay_steel_auto_crafter", SpecialMachineKind.AUTO_CRAFTER, ClayTier.CLAY_STEEL);
         registerSpecial(blocks, "precision_chemical_metal_separator", SpecialMachineKind.CHEMICAL_METAL_SEPARATOR, ClayTier.PRECISION);
         return Map.copyOf(blocks);
     }
@@ -611,7 +630,8 @@ public final class ClayiumRegistries {
             "simple_machine_hull",
             "basic_machine_hull",
             "advanced_machine_hull",
-            "precision_machine_hull"
+            "precision_machine_hull",
+            "clay_steel_machine_hull"
         };
         Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
         for (String id : ids) {
@@ -644,7 +664,7 @@ public final class ClayiumRegistries {
     }
 
     private static Block[] allMachineBlocks() {
-        Block[] blocks = new Block[MANUFACTURING_MACHINE_BLOCKS.size() + SPECIALIZED_MACHINE_BLOCKS.size() + 2];
+        Block[] blocks = new Block[MANUFACTURING_MACHINE_BLOCKS.size() + SPECIALIZED_MACHINE_BLOCKS.size() + 3];
         blocks[0] = CLAY_BENDING_MACHINE.get();
         blocks[1] = ELEMENTAL_MILLING_MACHINE.get();
         int index = 2;
@@ -654,6 +674,7 @@ public final class ClayiumRegistries {
         for (DeferredBlock<MachineBlock> block : SPECIALIZED_MACHINE_BLOCKS.values()) {
             blocks[index++] = block.get();
         }
+        blocks[index] = CLAY_BLAST_FURNACE.get();
         return blocks;
     }
 

@@ -113,6 +113,11 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
             double mouseY) {
         arrow.draw(graphics, 76, 35);
         Font font = Minecraft.getInstance().font;
+        if (recipeType.equals(ClayiumJeiRecipeTypes.CLAY_BLAST_FURNACE)) {
+            graphics.drawString(font,
+                    Component.translatable("jei.clayium_neoforged.clay_blast_furnace.structure"),
+                    8, 68, TEXT_COLOR, false);
+        }
         graphics.drawString(
                 font,
                 Component.translatable(

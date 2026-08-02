@@ -106,6 +106,23 @@ public final class ClayiumClientEvents {
         impureDust(event, "impure_strontium_dust", 210,170,242);
         impureDust(event, "impure_barium_dust", 150,80,120);
         impureDust(event, "impure_copper_dust", 160,90,10);
+        pureDust(event, "manganese_dust", 190,240,240, 120,120,120);
+        material(event, colors(190,240,240, 120,120,120, 255,255,255), "manganese_ingot");
+        pureDust(event, "calcium_dust", 240,240,240, 120,120,120);
+        material(event, colors(240,240,240, 120,120,120, 255,255,255), "calcium_ingot");
+        pureDust(event, "potassium_dust", 240,240,190, 120,120,120);
+        material(event, colors(240,240,190, 120,120,120, 255,255,255), "potassium_ingot");
+        pureDust(event, "hafnium_dust", 240,210,170, 120,120,120);
+        material(event, colors(240,210,170, 120,120,120, 255,255,255), "hafnium_ingot");
+        pureDust(event, "strontium_dust", 210,170,242, 120,120,120);
+        material(event, colors(210,170,242, 120,120,120, 255,255,255), "strontium_ingot");
+        pureDust(event, "barium_dust", 150,80,120, 120,20,80);
+        material(event, colors(150,80,120, 120,20,80, 255,255,255), "barium_ingot");
+        pureDust(event, "beryllium_dust", 210,240,210, 120,120,120);
+        material(event, colors(210,240,210, 120,120,120, 255,255,255), "beryllium_ingot");
+        material(event, colors(136,144,173, 255,255,255, 255,255,255),
+                "clay_steel_dust", "clay_steel_ingot", "clay_steel_plate", "clay_steel_large_plate");
+        material(event, colors(216,216,216, 53,53,53, 255,255,255), "steel_dust", "steel_ingot");
         pureDust(event, "zinc_dust", 230,170,170, 120,120,120);
         material(event, colors(230,170,170, 120,120,120, 255,255,255), "zinc_ingot");
         material(event, colors(240,190,220, 160,0,0, 255,255,255),

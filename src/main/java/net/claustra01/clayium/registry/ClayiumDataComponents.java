@@ -9,6 +9,7 @@ import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.data.MachineTierData;
 import net.claustra01.clayium.data.FilterSettings;
 import net.claustra01.clayium.data.IoMemory;
+import net.claustra01.clayium.data.ClaySteelToolSettings;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
@@ -40,6 +41,12 @@ public final class ClayiumDataComponents {
             DATA_COMPONENTS.register("io_memory", () -> DataComponentType.<IoMemory>builder()
                     .persistent(IoMemory.CODEC)
                     .networkSynchronized(IoMemory.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ClaySteelToolSettings>> CLAY_STEEL_TOOL_SETTINGS =
+            DATA_COMPONENTS.register("clay_steel_tool_settings", () -> DataComponentType.<ClaySteelToolSettings>builder()
+                    .persistent(ClaySteelToolSettings.CODEC)
+                    .networkSynchronized(ClaySteelToolSettings.STREAM_CODEC)
                     .cacheEncoding()
                     .build());
 

@@ -267,7 +267,7 @@ public final class ClayProcessingRecipes {
                     largePlate, 1, item("simple_circuit"), 1,
                     cobblestoneGenerator(tier), 1, tierEnergy(tier), 40, 4);
         }
-        for (int tier = 4; tier <= 6; tier++) {
+        for (int tier = 4; tier <= 7; tier++) {
             String buffer = ClayTier.byLegacyIndex(tier).id() + "_buffer";
             two(output, "assembler/cobblestone_generator_tier_" + tier, ClayiumMachineIds.ASSEMBLER,
                     ClayiumRegistries.LOGISTICS_BLOCKS.get(buffer).get(), 1, item("simple_circuit"), 1,
@@ -493,6 +493,7 @@ public final class ClayProcessingRecipes {
             case 4 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("basic_machine_hull").get();
             case 5 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("advanced_machine_hull").get();
             case 6 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("precision_machine_hull").get();
+            case 7 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get();
             default -> throw new IllegalArgumentException("Unsupported machine hull tier " + tier);
         };
     }

@@ -65,7 +65,8 @@ public enum MachineLayout {
         if (ClayiumMachineIds.CENTRIFUGE.equals(machineId)) {
             return CENTRIFUGE;
         }
-        if (ClayiumMachineIds.CHEMICAL_REACTOR.equals(machineId)) {
+        if (ClayiumMachineIds.CHEMICAL_REACTOR.equals(machineId)
+                || ClayiumMachineIds.CLAY_BLAST_FURNACE.equals(machineId)) {
             return CHEMICAL;
         }
         return SIMPLE;

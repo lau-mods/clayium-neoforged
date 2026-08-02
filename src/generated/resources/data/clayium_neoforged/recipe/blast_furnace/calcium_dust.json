@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:calcium_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_blast_furnace",
+  "minimum_tier": "advanced",
+  "processing_time_ticks": 500,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:calcium_ingot"
+    }
+  ]
+}

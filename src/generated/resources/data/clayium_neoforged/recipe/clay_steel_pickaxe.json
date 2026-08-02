@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:clay_steel_ingot"
+    },
+    "|": {
+      "item": "clayium_neoforged:dense_clay_stick"
+    }
+  },
+  "pattern": [
+    "###",
+    " | ",
+    " | "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_steel_pickaxe"
+  }
+}

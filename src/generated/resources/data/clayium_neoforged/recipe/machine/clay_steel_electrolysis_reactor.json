@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_chemical_reactor"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:precision_circuit"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "precision",
+  "processing_time_ticks": 40,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_electrolysis_reactor"
+    }
+  ]
+}

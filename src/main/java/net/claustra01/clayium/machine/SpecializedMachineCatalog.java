@@ -14,9 +14,11 @@ public final class SpecializedMachineCatalog {
             entry(4, "chemical_reactor", "Chemical Reactor", ClayiumMachineIds.CHEMICAL_REACTOR, "chemicalreactor"),
             entry(5, "chemical_reactor", "Chemical Reactor", ClayiumMachineIds.CHEMICAL_REACTOR, "chemicalreactor"),
             entry(6, "electrolysis_reactor", "Electrolysis Reactor", ClayiumMachineIds.ELECTROLYSIS_REACTOR, "electrolysisreactor"),
+            entry(7, "electrolysis_reactor", "Electrolysis Reactor", ClayiumMachineIds.ELECTROLYSIS_REACTOR, "electrolysisreactor"),
             entry(6, "alloy_smelter", "Alloy Smelter", ClayiumMachineIds.ALLOY_SMELTER, "alloysmelter"),
             entry(5, "solar_clay_fabricator_mk1", "Solar Clay Fabricator MK1", ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, "solar"),
-            entry(6, "solar_clay_fabricator_mk2", "Solar Clay Fabricator MK2", ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, "solar"));
+            entry(6, "solar_clay_fabricator_mk2", "Solar Clay Fabricator MK2", ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, "solar"),
+            entry(7, "lithium_solar_clay_fabricator", "Lithium Solar Clay Fabricator", ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, "solar"));
 
     private SpecializedMachineCatalog() {}
 

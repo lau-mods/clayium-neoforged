@@ -27,6 +27,13 @@ public final class LogisticsRecipes {
                 item("advanced_circuit"), 1_000);
         logisticsTier(output, "precision", material("aluminium_plate"), material("aluminium_large_plate"),
                 item("precision_circuit"), 10_000);
+        logisticsTier(output, "clay_steel", material("clay_steel_plate"), material("clay_steel_large_plate"),
+                item("integrated_circuit"), 100_000);
+        recipe(output, "logistics/clay_steel_distributor",
+                List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_buffer").get(), 1),
+                        ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1)),
+                ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_distributor").get(), 1,
+                100_000, 120, 6);
         recipe(output, "logistics/tools/clay_io_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_ROLLING_PIN.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_SLICER.get(), 1)),

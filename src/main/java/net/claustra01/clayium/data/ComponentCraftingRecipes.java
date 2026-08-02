@@ -121,6 +121,20 @@ public final class ComponentCraftingRecipes {
                 '#', material("aluminium_large_plate"),
                 'C', item("precision_circuit"),
                 'E', item("clay_energy_excitor"));
+        shaped(output, "clay_steel_machine_hull", hull(7), "#E#", "#C#", "###",
+                '#', material("clay_steel_large_plate"),
+                'C', item("precision_circuit"),
+                'E', item("clay_energy_excitor"));
+        shaped(output, "clay_steel_block", ClayiumRegistries.MATERIAL_BLOCKS.get("clay_steel_block").get(),
+                "###", "###", "###", '#', material("clay_steel_ingot"));
+        shaped(output, "clay_steel_pickaxe", ClayiumRegistries.CLAY_STEEL_PICKAXE.get(),
+                "###", " | ", " | ", '#', material("clay_steel_ingot"),
+                '|', ClayiumRegistries.DENSE_CLAY_STICK.get());
+        shaped(output, "clay_steel_shovel", ClayiumRegistries.CLAY_STEEL_SHOVEL.get(),
+                " # ", " | ", " | ", '#', material("clay_steel_ingot"),
+                '|', ClayiumRegistries.DENSE_CLAY_STICK.get());
+        shapeless(output, "clay_steel_ingots_from_block", material("clay_steel_ingot"), 9,
+                ClayiumRegistries.MATERIAL_BLOCKS.get("clay_steel_block").get(), 1);
     }
 
     private static void machines(RecipeOutput output) {
@@ -229,6 +243,7 @@ public final class ComponentCraftingRecipes {
             case 4 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("basic_machine_hull").get();
             case 5 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("advanced_machine_hull").get();
             case 6 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("precision_machine_hull").get();
+            case 7 -> ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get();
             default -> throw new IllegalArgumentException("No crafting-grid hull for tier " + tier);
         };
     }
