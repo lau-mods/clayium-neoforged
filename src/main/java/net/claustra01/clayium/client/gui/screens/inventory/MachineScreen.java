@@ -152,8 +152,8 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
             graphics.blit(SLOT, leftPos + 31, topPos + 34, 32, 0, 18, 18);
             graphics.blit(SLOT, leftPos + 49, topPos + 34, 32, 32, 18, 18);
             if (menu.layout() == MachineLayout.CHEMICAL) {
-                graphics.blit(SLOT, leftPos + 115, topPos + 25, 0, 0, 18, 18);
-                graphics.blit(SLOT, leftPos + 115, topPos + 43, 0, 0, 18, 18);
+                graphics.blit(SLOT, leftPos + 109, topPos + 34, 64, 0, 18, 18);
+                graphics.blit(SLOT, leftPos + 127, topPos + 34, 64, 32, 18, 18);
                 return;
             }
             graphics.blit(SLOT, leftPos + 111, topPos + 30, 0, 32, 26, 26);

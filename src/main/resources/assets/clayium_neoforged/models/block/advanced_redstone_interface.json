@@ -1,1 +1,7 @@
-{"parent":"clayium_neoforged:block/advanced_grinder","textures":{"overlay":"clayium_neoforged:block/machine_redstone_interface_front"}}
+{
+  "parent": "clayium_neoforged:block/interface_all_faces",
+  "textures": {
+    "hull": "clayium_neoforged:block/machine_hull_advanced",
+    "overlay": "clayium_neoforged:block/machine_redstone_interface_front"
+  }
+}

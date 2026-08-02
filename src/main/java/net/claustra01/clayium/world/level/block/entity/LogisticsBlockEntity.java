@@ -88,10 +88,18 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty(){return LogisticsBlock.PIPE;}
     @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty(){return LogisticsBlock.FACING;}
     @Override public void ioConfigurationChanged(){configurationChanged();}
+    @Override public Direction ioFacing(){
+        return kind() == LogisticsKind.INTERFACE || kind() == LogisticsKind.REDSTONE_INTERFACE
+                ? Direction.NORTH : ConfigurableItemDevice.super.ioFacing();
+    }
+    @Override public boolean rotate(Direction clickedFace){
+        return kind() != LogisticsKind.INTERFACE && kind() != LogisticsKind.REDSTONE_INTERFACE
+                && ConfigurableItemDevice.super.rotate(clickedFace);
+    }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, LogisticsBlockEntity blockEntity) {
         blockEntity.tickRedstoneInterface();
-        if (blockEntity.linkedMachine != null) {
+        if (blockEntity.linkedMachine != null && blockEntity.kind() != LogisticsKind.INTERFACE) {
             return;
         }
         if (++blockEntity.transferCooldown >= blockEntity.transferInterval()) {
@@ -116,7 +124,11 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 continue;
             }
             IItemHandler target = targetHandler(direction);
-            if (target != null && transferTo(target, transferLimit(), extractionRoutes[relative])) {
+            boolean transferred = target != null
+                    && (linkedMachine != null && kind() == LogisticsKind.INTERFACE
+                            ? transferBetween(itemHandler(direction), target, transferLimit())
+                            : transferTo(target, transferLimit(), extractionRoutes[relative]));
+            if (transferred) {
                 if (kind() == LogisticsKind.DISTRIBUTOR) {
                     distributorSide = (direction.ordinal() + 1) % directions.length;
                 }
@@ -132,6 +144,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             return false;
         }
         IItemHandler destination = itemHandler(direction);
+        if (linkedMachine != null && kind() == LogisticsKind.INTERFACE) {
+            return transferBetween(source, destination, transferLimit());
+        }
         for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
             ItemStack offered = source.extractItem(sourceSlot, transferLimit(), true);
             if (offered.isEmpty()) {
@@ -157,6 +172,29 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                 uninserted = destination.insertItem(targetSlot, uninserted, false);
             }
             return uninserted.isEmpty();
+        }
+        return false;
+    }
+
+    private boolean transferBetween(IItemHandler source, IItemHandler destination, int maximum) {
+        for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
+            ItemStack offered = source.extractItem(sourceSlot, maximum, true);
+            if (offered.isEmpty()) {
+                continue;
+            }
+            ItemStack remainder = offered;
+            for (int targetSlot = 0; targetSlot < destination.getSlots() && !remainder.isEmpty(); targetSlot++) {
+                remainder = destination.insertItem(targetSlot, remainder, true);
+            }
+            int accepted = offered.getCount() - remainder.getCount();
+            if (accepted <= 0) {
+                continue;
+            }
+            ItemStack committed = source.extractItem(sourceSlot, accepted, false);
+            for (int targetSlot = 0; targetSlot < destination.getSlots() && !committed.isEmpty(); targetSlot++) {
+                committed = destination.insertItem(targetSlot, committed, false);
+            }
+            return committed.isEmpty();
         }
         return false;
     }
@@ -663,8 +701,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     }
 
     private int relativeIndex(Direction direction) {
-        Direction front = getBlockState().getValue(LogisticsBlock.FACING);
-        return RelativeFace.index(front, direction);
+        return RelativeFace.index(ioFacing(), direction);
     }
 
     private void configurationChanged() {
@@ -685,8 +722,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     private int extractionRouteCount() {
         MachineBlockEntity machine = linkedMachine();
-        if (kind() == LogisticsKind.INTERFACE && machine != null) {
-            return machine.interfaceExtractionRouteCount();
+        if (kind() == LogisticsKind.INTERFACE) {
+            return machine == null ? 3 : machine.interfaceExtractionRouteCount();
         }
         return storageRouteCount();
     }

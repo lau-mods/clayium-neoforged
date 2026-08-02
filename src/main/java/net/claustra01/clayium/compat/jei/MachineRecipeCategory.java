@@ -89,12 +89,12 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                             .toList());
         }
         for (int index = 0; index < recipe.results().size(); index++) {
-            int y = layout == MachineLayout.CHEMICAL
-                    ? recipe.results().size() == 1 ? 35 : 26 + 18 * index
-                    : layout == MachineLayout.CENTRIFUGE
+            int x = layout == MachineLayout.CHEMICAL && recipe.results().size() > 1
+                    ? 110 + 18 * index : 116;
+            int y = layout == MachineLayout.CENTRIFUGE
                             ? 35 + 18 * index - 9 * (recipe.results().size() - 1)
                             : 35;
-            var slot = builder.addOutputSlot(116, y);
+            var slot = builder.addOutputSlot(x, y);
             if (layout == MachineLayout.SIMPLE || layout == MachineLayout.ASSEMBLER) {
                 slot.setOutputSlotBackground();
             } else {

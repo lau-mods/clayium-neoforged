@@ -1,1 +1,7 @@
-{"parent":"clayium_neoforged:block/clay_steel_bending_machine","textures":{"overlay":"clayium_neoforged:block/machine_interface_front"}}
+{
+  "parent": "clayium_neoforged:block/interface_all_faces",
+  "textures": {
+    "hull": "clayium_neoforged:block/machine_hull_clay_steel",
+    "overlay": "clayium_neoforged:block/machine_interface_front"
+  }
+}

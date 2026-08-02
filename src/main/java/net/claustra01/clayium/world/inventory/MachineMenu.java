@@ -114,8 +114,8 @@ public final class MachineMenu extends AbstractContainerMenu {
             case CHEMICAL -> {
                 addSlot(new Slot(container, 0, 32, 35));
                 addSlot(new Slot(container, 1, 50, 35));
-                addOutputSlot(2, 116, 26);
-                addOutputSlot(3, 116, 44);
+                addOutputSlot(2, 110, 35);
+                addOutputSlot(3, 128, 35);
                 yield 4;
             }
             case CENTRIFUGE -> {

@@ -219,11 +219,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     public MachineBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(), pos, state);
         java.util.Arrays.fill(filters, ItemStack.EMPTY);
-        if (machineLayout() == MachineLayout.ASSEMBLER) {
-            System.arraycopy(new int[]{-1, 2, -1, 3, -1, -1}, 0, insertionRoutes, 0, 6);
-        }
         sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
-                insertionRoutes, extractionRoutes, filters, this::insertionRouteCount, () -> 1);
+                insertionRoutes, extractionRoutes, filters,
+                this::insertionRouteCount, this::extractionRouteCount);
         for (Direction direction : Direction.values()) {
             sidedHandlers.put(direction, new SidedMachineHandler(direction));
         }
@@ -708,7 +706,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         externalSingleRun = tag.getBoolean("ExternalSingleRun");
         sideConfiguration.replaceRoutes(
                 loadRoutes(tag, "InsertionRoutes", insertionRoutes, insertionRouteCount()),
-                loadRoutes(tag, "ExtractionRoutes", extractionRoutes, 1));
+                loadRoutes(tag, "ExtractionRoutes", extractionRoutes, extractionRouteCount()));
         ListTag savedFilters = tag.getList("Filters", Tag.TAG_COMPOUND);
         for (int index = 0; index < Math.min(6, savedFilters.size()); index++) {
             filters[index] = ItemStack.parseOptional(registries, savedFilters.getCompound(index));
@@ -745,12 +743,12 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     public String interfaceInsertionIcon(int route) {
-        if (machineLayout() == MachineLayout.ASSEMBLER) {
+        if (machineLayout() == MachineLayout.ASSEMBLER || machineLayout() == MachineLayout.CHEMICAL) {
             return switch (route) {
-                case 0 -> "import_1";
-                case 1 -> "import_2";
-                case 2 -> "import";
-                case 3 -> "import_energy";
+                case 0 -> "import";
+                case 1 -> "import_energy";
+                case 2 -> "import_1";
+                case 3 -> "import_2";
                 default -> "";
             };
         }
@@ -762,6 +760,14 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     public String interfaceExtractionIcon(int route) {
+        if (machineLayout() == MachineLayout.CHEMICAL) {
+            return switch (route) {
+                case 0 -> "export";
+                case 1 -> "export_1";
+                case 2 -> "export_2";
+                default -> "";
+            };
+        }
         return route == 0 ? "export" : "";
     }
 
@@ -781,7 +787,12 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     private int insertionRouteCount() {
-        return machineLayout() == MachineLayout.ASSEMBLER ? 4 : 2;
+        return machineLayout() == MachineLayout.ASSEMBLER || machineLayout() == MachineLayout.CHEMICAL
+                ? 4 : 2;
+    }
+
+    private int extractionRouteCount() {
+        return machineLayout() == MachineLayout.CHEMICAL ? 3 : 1;
     }
 
     public int interfaceInsertionRouteCount() {
@@ -789,19 +800,19 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     public int interfaceExtractionRouteCount() {
-        return 1;
+        return extractionRouteCount();
     }
 
     private int[] insertionSlots(int route) {
         if (route < 0) {
             return new int[0];
         }
-        if (machineLayout() == MachineLayout.ASSEMBLER) {
+        if (machineLayout() == MachineLayout.ASSEMBLER || machineLayout() == MachineLayout.CHEMICAL) {
             return switch (route) {
-                case 0 -> new int[]{0};
-                case 1 -> new int[]{1};
-                case 2 -> new int[]{0, 1};
-                case 3 -> acceptsEnergeticClay() ? new int[]{MachineLayout.ENERGY_SLOT} : new int[0];
+                case 0 -> new int[]{0, 1};
+                case 1 -> acceptsEnergeticClay() ? new int[]{MachineLayout.ENERGY_SLOT} : new int[0];
+                case 2 -> new int[]{0};
+                case 3 -> new int[]{1};
                 default -> new int[0];
             };
         }
@@ -813,6 +824,14 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     private int[] extractionSlots(int route) {
+        if (machineLayout() == MachineLayout.CHEMICAL) {
+            return switch (route) {
+                case 0 -> new int[]{2, 3};
+                case 1 -> new int[]{2};
+                case 2 -> new int[]{3};
+                default -> new int[0];
+            };
+        }
         return route == 0 ? machineLayout().outputSlots(machineTier()) : new int[0];
     }
 
