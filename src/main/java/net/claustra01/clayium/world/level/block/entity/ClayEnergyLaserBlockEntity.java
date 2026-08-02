@@ -59,6 +59,8 @@ public final class ClayEnergyLaserBlockEntity extends AbstractConfigurableMachin
         };
     }
 
+    public ClayLaser outputLaser() { return spectrum(); }
+
     public int beamLength() { return beamLength; }
     public boolean irradiating() { return irradiating; }
     @Override protected boolean acceptsClayEnergy() { return true; }
