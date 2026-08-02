@@ -86,6 +86,7 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.electrolysis_reactor", "Electrolysis Reactor");
                 add("jei." + Clayium.MODID + ".category.alloy_smelter", "Alloy Smelter");
                 add("jei." + Clayium.MODID + ".category.solar_clay_fabricator", "Solar Clay Fabricator");
+                add("jei." + Clayium.MODID + ".category.matter_transformer", "Matter Transformer");
                 add("jei." + Clayium.MODID + ".category.clay_blast_furnace", "Clay Blast Furnace");
                 add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
                 add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");

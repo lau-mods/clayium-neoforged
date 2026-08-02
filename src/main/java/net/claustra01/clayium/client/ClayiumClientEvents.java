@@ -144,6 +144,30 @@ public final class ClayiumClientEvents {
                 "az91d_dust", "az91d_ingot", "az91d_plate", "az91d_large_plate");
         material(event, colors(75,85,80, 10,40,10, 255,255,255),
                 "zk60a_dust", "zk60a_ingot", "zk60a_plate", "zk60a_large_plate");
+        material(event, colors(245,245,245, 235,0,0, 255,255,255), "rubidium_ingot");
+        material(event, colors(245,245,245, 150,150,0, 255,255,255), "caesium_ingot");
+        material(event, colors(245,245,245, 0,235,0, 255,255,255), "francium_ingot");
+        material(event, colors(245,245,245, 0,150,150, 255,255,255), "radium_ingot");
+        material(event, colors(245,245,245, 0,0,235, 255,255,255), "actinium_ingot");
+        material(event, colors(50,50,50, 120,120,120, 200,50,50), "thorium_ingot");
+        material(event, colors(50,50,50, 120,120,120, 50,50,100), "protactinium_ingot");
+        material(event, colors(50,255,50, 50,155,50, 50,255,50), "uranium_ingot");
+        material(event, colors(50,50,255, 50,50,155, 50,50,255), "neptunium_ingot");
+        material(event, colors(145,145,145, 235,0,0, 255,255,255), "lanthanum_ingot");
+        material(event, colors(145,145,145, 150,150,0, 255,255,255), "cerium_ingot");
+        material(event, colors(145,145,145, 0,235,0, 255,255,255), "praseodymium_ingot");
+        material(event, colors(145,145,145, 0,150,150, 255,255,255), "neodymium_ingot");
+        material(event, colors(210,240,240, 120,120,120, 255,255,255), "titanium_ingot");
+        material(event, colors(60,120,120, 120,120,120, 255,255,255), "vanadium_ingot");
+        material(event, colors(30,30,230, 120,120,120, 255,255,255), "cobalt_ingot");
+        material(event, colors(210,210,240, 120,120,120, 255,255,255), "nickel_ingot");
+        material(event, colors(151,70,70, 120,120,120, 255,255,255), "palladium_ingot");
+        material(event, colors(160,90,10, 70,35,5, 255,255,255), "copper_ingot");
+        material(event, colors(220,220,240, 120,120,120, 255,255,255), "silver_ingot");
+        material(event, colors(255,220,40, 120,90,0, 255,255,255), "gold_ingot");
+        material(event, colors(120,120,150, 80,80,100, 255,255,255),
+                "tantalum_ingot", "tungsten_ingot", "lead_ingot", "tin_ingot", "antimony_ingot", "bismuth_ingot");
+        material(event, colors(230,160,40, 120,80,20, 255,255,255), "phosphorus_dust", "sulfur_dust");
         for (var entry : ClayiumRegistries.COLORED_SILICONE_ITEMS.entrySet()) {
             String colorName = entry.getKey().substring(0, entry.getKey().length() - "_silicone_block".length());
             DyeColor color = DyeColor.byName(colorName, DyeColor.WHITE);

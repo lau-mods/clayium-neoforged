@@ -29,7 +29,7 @@ public final class ManufacturingMachineCatalog {
     private static List<Entry> createEntries() {
         List<Entry> entries = new ArrayList<>();
         add(entries, "bending_machine", "Bending Machine",
-                ClayiumMachineIds.CLAY_BENDING_MACHINE, "bendingmachine", 2, 3, 4, 5, 6, 7);
+                ClayiumMachineIds.CLAY_BENDING_MACHINE, "bendingmachine", 2, 3, 4, 5, 6, 7, 9);
         add(entries, "milling_machine", "Milling Machine",
                 ClayiumMachineIds.ELEMENTAL_MILLING_MACHINE, "millingmachine", 3, 4);
         add(entries, "wire_drawing_machine", "Wire Drawing Machine",
@@ -53,7 +53,7 @@ public final class ManufacturingMachineCatalog {
         add(entries, "centrifuge", "Centrifuge",
                 ClayiumMachineIds.CENTRIFUGE, "centrifuge", 3, 4, 5, 6);
         add(entries, "smelter", "Smelter",
-                ClayiumMachineIds.SMELTER, "smelter", 4, 5, 6, 7);
+                ClayiumMachineIds.SMELTER, "smelter", 4, 5, 6, 7, 8, 9);
         add(entries, "energetic_clay_condenser", "Energetic Clay Condenser",
                 ClayiumMachineIds.ENERGETIC_CLAY_CONDENSER, "eccondenser", 3, 4);
         return List.copyOf(entries);

@@ -663,7 +663,9 @@ public final class ClayiumRegistries {
             "basic_machine_hull",
             "advanced_machine_hull",
             "precision_machine_hull",
-            "clay_steel_machine_hull"
+            "clay_steel_machine_hull",
+            "clayium_machine_hull",
+            "ultimate_machine_hull"
         };
         Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
         for (String id : ids) {

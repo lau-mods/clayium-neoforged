@@ -27,6 +27,7 @@ public final class MaterialProcessingRecipes {
         electrolysis(output);
         alloySmelter(output);
         solarFabricator(output);
+        matterTransformer(output);
         materialProcessing(output);
         machineConstruction(output);
     }
@@ -111,6 +112,53 @@ public final class MaterialProcessingRecipes {
         double multiplier = Math.pow(10.0D, acceptableTier + 1) * (base - 1.0D)
                 / (base * (Math.pow(base, acceptableTier) - 1.0D)) / (efficiency / 20.0D);
         return Math.max(1, (int) (Math.pow(base, inputLevel) * multiplier));
+    }
+
+    private static void matterTransformer(RecipeOutput output) {
+        transform(output, "lithium_to_sodium", item("lithium_ingot"), item("sodium_ingot"), 7, 10);
+        transform(output, "sodium_to_potassium", item("sodium_ingot"), item("potassium_ingot"), 7, 30);
+        transform(output, "potassium_to_rubidium", item("potassium_ingot"), item("rubidium_ingot"), 8, 10);
+        transform(output, "rubidium_to_caesium", item("rubidium_ingot"), item("caesium_ingot"), 8, 20);
+        transform(output, "caesium_to_francium", item("caesium_ingot"), item("francium_ingot"), 8, 30);
+        transform(output, "francium_to_radium", item("francium_ingot"), item("radium_ingot"), 8, 50);
+        transform(output, "radium_to_actinium", item("radium_ingot"), item("actinium_ingot"), 9, 10);
+        transform(output, "actinium_to_thorium", item("actinium_ingot"), item("thorium_ingot"), 9, 20);
+        transform(output, "thorium_to_protactinium", item("thorium_ingot"), item("protactinium_ingot"), 9, 30);
+        transform(output, "protactinium_to_uranium", item("protactinium_ingot"), item("uranium_ingot"), 9, 50);
+        transform(output, "uranium_to_neptunium", item("uranium_ingot"), item("neptunium_ingot"), 9, 80);
+
+        transform(output, "beryllium_to_magnesium", item("beryllium_ingot"), item("magnesium_ingot"), 7, 10);
+        transform(output, "magnesium_to_calcium", item("magnesium_ingot"), item("calcium_ingot"), 7, 20);
+        transform(output, "calcium_to_strontium", item("calcium_ingot"), item("strontium_ingot"), 7, 30);
+        transform(output, "strontium_to_barium", item("strontium_ingot"), item("barium_ingot"), 7, 50);
+        transform(output, "barium_to_lanthanum", item("barium_ingot"), item("lanthanum_ingot"), 8, 10);
+        transform(output, "lanthanum_to_cerium", item("lanthanum_ingot"), item("cerium_ingot"), 8, 30);
+        transform(output, "cerium_to_praseodymium", item("cerium_ingot"), item("praseodymium_ingot"), 8, 90);
+        transform(output, "praseodymium_to_neodymium", item("praseodymium_ingot"), item("neodymium_ingot"), 9, 20);
+
+        transform(output, "zirconium_to_titanium", item("zirconium_ingot"), item("titanium_ingot"), 8, 60);
+        transform(output, "titanium_to_vanadium", item("titanium_ingot"), item("vanadium_ingot"), 9, 60);
+        transform(output, "manganese_to_iron", item("manganese_ingot"), Items.IRON_INGOT, 7, 90);
+        transform(output, "iron_to_cobalt", Items.IRON_INGOT, item("cobalt_ingot"), 8, 30);
+        transform(output, "cobalt_to_nickel", item("cobalt_ingot"), item("nickel_ingot"), 8, 90);
+        transform(output, "nickel_to_palladium", item("nickel_ingot"), item("palladium_ingot"), 9, 40);
+        transform(output, "zinc_to_copper", item("zinc_ingot"), item("copper_ingot"), 8, 20);
+        transform(output, "copper_to_silver", item("copper_ingot"), item("silver_ingot"), 9, 10);
+        transform(output, "silver_to_gold", item("silver_ingot"), item("gold_ingot"), 9, 50);
+        transform(output, "hafnium_to_tantalum", item("hafnium_ingot"), item("tantalum_ingot"), 8, 70);
+        transform(output, "tantalum_to_tungsten", item("tantalum_ingot"), item("tungsten_ingot"), 9, 40);
+        transform(output, "lead_to_tin", item("lead_ingot"), item("tin_ingot"), 7, 50);
+        transform(output, "tin_to_antimony", item("tin_ingot"), item("antimony_ingot"), 8, 20);
+        transform(output, "antimony_to_bismuth", item("antimony_ingot"), item("bismuth_ingot"), 9, 10);
+        transform(output, "silicon_to_phosphorus", item("silicon_dust"), item("phosphorus_dust"), 7, 10);
+        transform(output, "phosphorus_to_sulfur", item("phosphorus_dust"), item("sulfur_dust"), 7, 30);
+    }
+
+    private static void transform(RecipeOutput output, String id, ItemLike input, ItemLike result,
+                                  int tier, long multiplier) {
+        machine(output, "matter_transformer/" + id, ClayiumMachineIds.MATTER_TRANSFORMER,
+                List.of(ingredient(input, 1)), List.of(stack(result, 1)),
+                200, Math.multiplyExact(multiplier, energy(tier)), ClayTier.byLegacyIndex(tier));
     }
 
     private static ItemLike compressedClay(int level) {
