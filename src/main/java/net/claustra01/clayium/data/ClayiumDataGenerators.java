@@ -87,8 +87,6 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.alloy_smelter", "Alloy Smelter");
                 add("jei." + Clayium.MODID + ".category.solar_clay_fabricator", "Solar Clay Fabricator");
                 add("jei." + Clayium.MODID + ".category.clay_blast_furnace", "Clay Blast Furnace");
-                add("jei." + Clayium.MODID + ".clay_blast_furnace.structure",
-                        "3x2x3: controller at front-bottom center; 17 Tier 5+ hulls/interfaces");
                 add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
                 add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");
                 add("jei." + Clayium.MODID + ".chance", "Chance: %s%%");
@@ -251,7 +249,8 @@ public final class ClayiumDataGenerators {
                 "Can harvest Clay Ores so fast and increase drops.");
         language.add("item." + Clayium.MODID + ".clay_steel_pickaxe", "Clay Steel Pickaxe");
         language.add("item." + Clayium.MODID + ".clay_steel_shovel", "Clay Steel Shovel");
-        language.add("item." + Clayium.MODID + ".clay_steel_tool.mode", "Set mode %s");
+        language.add("item." + Clayium.MODID + ".clay_steel_tool.mode.area", "Mining area: %s x %s");
+        language.add("item." + Clayium.MODID + ".clay_steel_tool.mode.custom", "Custom mining shape: %s blocks");
         language.add("item." + Clayium.MODID + ".clay_steel_tool.area", "Mining area: %s x %s");
         language.add("item." + Clayium.MODID + ".clay_steel_tool.customized", "Customized shape: %s blocks");
         for (ClayComponentCatalog.Entry entry : ClayComponentCatalog.ENTRIES) {

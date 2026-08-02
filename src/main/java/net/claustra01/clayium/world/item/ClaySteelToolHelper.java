@@ -50,8 +50,12 @@ final class ClaySteelToolHelper {
             int mode = Math.floorMod(settings.mode() + 1, 3);
             stack.set(ClayiumDataComponents.CLAY_STEEL_TOOL_SETTINGS.get(), settings.withMode(mode));
             if (context.getPlayer() != null) {
-                context.getPlayer().displayClientMessage(
-                        Component.translatable("item.clayium_neoforged.clay_steel_tool.mode", mode), true);
+                Component modeName = mode == 2 && !settings.customShape().isEmpty()
+                        ? Component.translatable("item.clayium_neoforged.clay_steel_tool.mode.custom",
+                                settings.customShape().size())
+                        : Component.translatable("item.clayium_neoforged.clay_steel_tool.mode.area",
+                                mode * 2 + 1, mode * 2 + 1);
+                context.getPlayer().displayClientMessage(modeName, true);
             }
         }
         return InteractionResult.sidedSuccess(context.getLevel().isClientSide);

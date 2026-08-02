@@ -76,7 +76,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
         for (int index = 0; index < recipe.ingredients().size(); index++) {
             var ingredient = recipe.ingredients().get(index);
             int x = layout == MachineLayout.ASSEMBLER || layout == MachineLayout.CHEMICAL
-                    ? 32 + index * 18
+                    ? recipe.ingredients().size() == 1 ? 44 : 32 + index * 18
                     : 44;
             var slot = builder.addInputSlot(x, 35);
             if (layout == MachineLayout.SIMPLE || layout == MachineLayout.CENTRIFUGE) {
@@ -90,7 +90,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
         }
         for (int index = 0; index < recipe.results().size(); index++) {
             int y = layout == MachineLayout.CHEMICAL
-                    ? 26 + 18 * index
+                    ? recipe.results().size() == 1 ? 35 : 26 + 18 * index
                     : layout == MachineLayout.CENTRIFUGE
                             ? 35 + 18 * index - 9 * (recipe.results().size() - 1)
                             : 35;
@@ -113,11 +113,6 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
             double mouseY) {
         arrow.draw(graphics, 76, 35);
         Font font = Minecraft.getInstance().font;
-        if (recipeType.equals(ClayiumJeiRecipeTypes.CLAY_BLAST_FURNACE)) {
-            graphics.drawString(font,
-                    Component.translatable("jei.clayium_neoforged.clay_blast_furnace.structure"),
-                    8, 68, TEXT_COLOR, false);
-        }
         graphics.drawString(
                 font,
                 Component.translatable(

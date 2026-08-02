@@ -24,6 +24,7 @@ public final class MaterialCraftingRecipes {
         smelt(output, "impure_silicon_to_silicone", item("impure_silicon_ingot"), item("silicone_ingot"));
         smelt(output, "silicone_dust", item("silicone_dust"), item("silicone_ingot"));
         smelt(output, "silicon_dust", item("silicon_dust"), item("silicon_ingot"));
+        smelt(output, "iron_dust", item("iron_dust"), Items.IRON_INGOT);
         for (String material : new String[]{"impure_silicon", "silicone", "silicon", "aluminium"}) {
             ItemLike block = ClayiumRegistries.MATERIAL_BLOCKS.get(material + "_block").get();
             ItemLike ingot = item(material + "_ingot");

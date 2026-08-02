@@ -654,6 +654,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        return createInterfaceMenu(containerId, inventory);
+    }
+
+    public AbstractContainerMenu createInterfaceMenu(int containerId, Inventory inventory) {
         return new MachineMenu(containerId, inventory, this, menuData, machineLayout(), machineTier());
     }
 
@@ -737,7 +741,10 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     public String insertionIcon(Direction side) {
-        int route = insertionRoute(side);
+        return interfaceInsertionIcon(insertionRoute(side));
+    }
+
+    public String interfaceInsertionIcon(int route) {
         if (machineLayout() == MachineLayout.ASSEMBLER) {
             return switch (route) {
                 case 0 -> "import_1";
@@ -751,7 +758,11 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     public String extractionIcon(Direction side) {
-        return extractionRoute(side) == 0 ? "export" : "";
+        return interfaceExtractionIcon(extractionRoute(side));
+    }
+
+    public String interfaceExtractionIcon(int route) {
+        return route == 0 ? "export" : "";
     }
 
     @Override
@@ -771,6 +782,14 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     private int insertionRouteCount() {
         return machineLayout() == MachineLayout.ASSEMBLER ? 4 : 2;
+    }
+
+    public int interfaceInsertionRouteCount() {
+        return insertionRouteCount();
+    }
+
+    public int interfaceExtractionRouteCount() {
+        return 1;
     }
 
     private int[] insertionSlots(int route) {

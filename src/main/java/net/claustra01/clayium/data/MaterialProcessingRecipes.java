@@ -211,6 +211,7 @@ public final class MaterialProcessingRecipes {
         grinder(output, "clay_steel_ingot", item("clay_steel_ingot"), 1, item("clay_steel_dust"), 1, 240);
         grinder(output, "clay_steel_plate", item("clay_steel_plate"), 1, item("clay_steel_dust"), 1, 240);
         grinder(output, "clay_steel_large_plate", item("clay_steel_large_plate"), 1, item("clay_steel_dust"), 4, 240);
+        grinder(output, "iron_ingot", Items.IRON_INGOT, 1, item("iron_dust"), 1, 240);
         grinder(output, "steel_ingot", item("steel_ingot"), 1, item("steel_dust"), 1, 240);
 
         machine(output, "blast_furnace/industrial_clay_and_manganese", ClayiumMachineIds.CLAY_BLAST_FURNACE,

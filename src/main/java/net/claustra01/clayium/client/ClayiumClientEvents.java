@@ -120,6 +120,7 @@ public final class ClayiumClientEvents {
         material(event, colors(150,80,120, 120,20,80, 255,255,255), "barium_ingot");
         pureDust(event, "beryllium_dust", 210,240,210, 120,120,120);
         material(event, colors(210,240,210, 120,120,120, 255,255,255), "beryllium_ingot");
+        pureDust(event, "iron_dust", 216,216,216, 53,53,53);
         material(event, colors(136,144,173, 255,255,255, 255,255,255),
                 "clay_steel_dust", "clay_steel_ingot", "clay_steel_plate", "clay_steel_large_plate");
         material(event, colors(216,216,216, 53,53,53, 255,255,255), "steel_dust", "steel_ingot");

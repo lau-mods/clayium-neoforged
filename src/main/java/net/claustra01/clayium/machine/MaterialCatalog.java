@@ -70,6 +70,7 @@ public final class MaterialCatalog {
             item("barium_ingot", "Barium Ingot", "ingot_base"),
             item("beryllium_dust", "Beryllium Dust", "dust_base"),
             item("beryllium_ingot", "Beryllium Ingot", "ingot_base"),
+            item("iron_dust", "Iron Dust", "dust_base"),
             item("steel_dust", "Steel Dust", "dust_base"),
             item("steel_ingot", "Steel Ingot", "ingot_base"),
             item("clay_steel_dust", "Clay Steel Dust", "dust_base"),

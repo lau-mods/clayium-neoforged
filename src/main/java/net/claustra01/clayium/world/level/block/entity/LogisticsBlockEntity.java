@@ -75,7 +75,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             System.arraycopy(new int[]{-1, 0, -1, -1, -1, -1}, 0, insertionRoutes, 0, 6);
         }
         sideConfiguration = new net.claustra01.clayium.logistics.SideConfiguration(
-                insertionRoutes, extractionRoutes, filters, this::routeCount, this::routeCount);
+                insertionRoutes, extractionRoutes, filters,
+                this::insertionRouteCount, this::extractionRouteCount);
         for (Direction direction : Direction.values()) {
             handlers.put(direction, new SidedHandler(direction));
             linkedHandlers.put(direction, new LinkedMachineHandler(direction));
@@ -216,7 +217,12 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public void linkMachine(BlockPos controller) {
         if (!controller.equals(linkedMachine)) {
             linkedMachine = controller.immutable();
+            sideConfiguration.replaceRoutes(insertionRoutes, extractionRoutes);
             setChanged();
+            if (level != null) {
+                level.invalidateCapabilities(worldPosition);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            }
         }
     }
 
@@ -224,6 +230,10 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (controller.equals(linkedMachine)) {
             linkedMachine = null;
             setChanged();
+            if (level != null) {
+                level.invalidateCapabilities(worldPosition);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            }
         }
     }
 
@@ -288,6 +298,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public Component cycleRedstoneMode(boolean inspectOnly) {
         if (!inspectOnly) {
             redstoneMode = (redstoneMode + 1) % 9;
+            // The original interface forces a fresh edge evaluation whenever its mode changes.
+            lastRedstoneSignal = false;
             setChanged();
             if (level != null) level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
         }
@@ -386,11 +398,23 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
 
     @Override
     protected Component getDefaultName() {
+        if (kind() == LogisticsKind.INTERFACE) {
+            MachineBlockEntity machine = linkedMachine();
+            if (machine != null) {
+                return machine.getDisplayName();
+            }
+        }
         return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
 
     @Override
     protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
+        if (kind() == LogisticsKind.INTERFACE) {
+            MachineBlockEntity machine = linkedMachine();
+            if (machine != null) {
+                return machine.createInterfaceMenu(id, inventory);
+            }
+        }
         return new LogisticsMenu(id, inventory, this);
     }
 
@@ -537,8 +561,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             storedCount = 0;
         }
         sideConfiguration.replaceRoutes(
-                loadRoutes(tag, "InsertionRoutes", insertionRoutes, routeCount()),
-                loadRoutes(tag, "ExtractionRoutes", extractionRoutes, routeCount()));
+                loadRoutes(tag, "InsertionRoutes", insertionRoutes, insertionRouteCount()),
+                loadRoutes(tag, "ExtractionRoutes", extractionRoutes, extractionRouteCount()));
         distributorSide = Math.floorMod(tag.getInt("DistributorSide"), 6);
         redstoneMode = Math.floorMod(tag.getInt("RedstoneMode"), 9);
         lastRedstoneSignal = tag.getBoolean("LastRedstoneSignal");
@@ -609,6 +633,10 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (route < 0) {
             return "";
         }
+        MachineBlockEntity machine = linkedMachine();
+        if (kind() == LogisticsKind.INTERFACE && machine != null) {
+            return machine.interfaceInsertionIcon(route);
+        }
         return kind() == LogisticsKind.MULTITRACK_BUFFER ? "import_m" + route : "import";
     }
 
@@ -616,6 +644,10 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         int route = extractionRoute(side);
         if (route < 0) {
             return "";
+        }
+        MachineBlockEntity machine = linkedMachine();
+        if (kind() == LogisticsKind.INTERFACE && machine != null) {
+            return machine.interfaceExtractionIcon(route);
         }
         return kind() == LogisticsKind.MULTITRACK_BUFFER ? "export_m" + route : "export";
     }
@@ -643,16 +675,28 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         }
     }
 
-    private int nextRoute(int route) {
-        return route + 1 >= routeCount() ? -1 : route + 1;
+    private int insertionRouteCount() {
+        MachineBlockEntity machine = linkedMachine();
+        if (kind() == LogisticsKind.INTERFACE) {
+            return machine == null ? 4 : machine.interfaceInsertionRouteCount();
+        }
+        return storageRouteCount();
     }
 
-    private int routeCount() {
+    private int extractionRouteCount() {
+        MachineBlockEntity machine = linkedMachine();
+        if (kind() == LogisticsKind.INTERFACE && machine != null) {
+            return machine.interfaceExtractionRouteCount();
+        }
+        return storageRouteCount();
+    }
+
+    private int storageRouteCount() {
         return kind() == LogisticsKind.MULTITRACK_BUFFER ? filterSlots() + 1 : 1;
     }
 
     private int[] slotsForRoute(int route) {
-        if (route < 0 || route >= routeCount()) {
+        if (route < 0 || route >= storageRouteCount()) {
             return new int[0];
         }
         if (kind() != LogisticsKind.MULTITRACK_BUFFER || route == 0) {
