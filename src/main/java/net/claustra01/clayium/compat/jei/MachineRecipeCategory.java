@@ -24,7 +24,7 @@ import net.minecraft.network.chat.Component;
 /** JEI presentation shared by data-driven Clayium machine recipes. */
 public final class MachineRecipeCategory implements IRecipeCategory<MachineRecipe> {
     private static final int WIDTH = 176;
-    private static final int HEIGHT = 112;
+    private static final int HEIGHT = 104;
     private static final int TEXT_COLOR = 0xFF555555;
 
     private final RecipeType<MachineRecipe> recipeType;
@@ -122,13 +122,6 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                 80,
                 TEXT_COLOR,
                 false);
-        if (recipe.machine().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)) {
-            graphics.drawString(font, Component.translatable("jei.clayium_neoforged.laser_acceleration"),
-                    8, 104, TEXT_COLOR, false);
-        } else if (recipe.machine().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_FABRICATOR)) {
-            graphics.drawString(font, Component.translatable("jei.clayium_neoforged.fabricator_batch"),
-                    8, 104, TEXT_COLOR, false);
-        }
         graphics.drawString(
                 font,
                 Component.translatable(

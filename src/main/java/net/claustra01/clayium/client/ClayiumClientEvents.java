@@ -177,8 +177,12 @@ public final class ClayiumClientEvents {
         material(event, colors(160,90,10, 70,35,5, 255,255,255), "copper_ingot");
         material(event, colors(220,220,240, 120,120,120, 255,255,255), "silver_ingot");
         material(event, colors(255,220,40, 120,90,0, 255,255,255), "gold_ingot");
-        material(event, colors(120,120,150, 80,80,100, 255,255,255),
-                "tantalum_ingot", "tungsten_ingot", "lead_ingot", "tin_ingot", "antimony_ingot", "bismuth_ingot");
+        material(event, colors(240,210,170, 40,35,28, 240,210,150), "tantalum_ingot");
+        material(event, colors(30,30,30, 5,5,5, 60,60,60), "tungsten_ingot");
+        material(event, colors(190,240,210, 31,40,35, 255,255,255), "lead_ingot");
+        material(event, colors(230,230,240, 0,0,0, 255,255,255), "tin_ingot");
+        material(event, colors(70,70,70, 11,11,11, 140,140,140), "antimony_ingot");
+        material(event, colors(70,120,70, 11,20,11, 140,240,140), "bismuth_ingot");
         material(event, colors(230,160,40, 120,80,20, 255,255,255), "phosphorus_dust", "sulfur_dust");
         material(event, colors(10,10,10, 20,20,20, 30,30,30), "carbon_dust");
         material(event, colors(20,20,20, 50,50,50, 80,50,50), "charcoal_dust");

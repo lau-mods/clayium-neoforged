@@ -105,8 +105,6 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".clay_energy_per_tick", "CE/t: %s");
                 add("jei." + Clayium.MODID + ".total_clay_energy", "Total CE: %s");
                 add("jei." + Clayium.MODID + ".minimum_tier", "Tier: %s");
-                add("jei." + Clayium.MODID + ".laser_acceleration", "Laser: accepts matching laser power for acceleration");
-                add("jei." + Clayium.MODID + ".fabricator_batch", "Duplicates the full input stack; time scales with stack size");
                 for (net.claustra01.clayium.recipe.ClayWorkTableOperation operation
                         : net.claustra01.clayium.recipe.ClayWorkTableOperation.values()) {
                     add(operation.translationKey(), operation.id());
