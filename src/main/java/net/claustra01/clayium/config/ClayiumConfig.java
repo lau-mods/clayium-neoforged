@@ -18,6 +18,10 @@ public final class ClayiumConfig {
             .comment("Minimum interval between Clay Energy display synchronization updates.")
             .defineInRange("ceSyncIntervalTicks", 5, 1, 20);
 
+    public static final ModConfigSpec.DoubleValue CE_FE_CONVERSION_MULTIPLIER = BUILDER
+            .comment("Multiplier applied to both CE consumption and FE production of CE-FE converters.")
+            .defineInRange("ceFeConversionMultiplier", 1.0D, 0.01D, 1000.0D);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private ClayiumConfig() {

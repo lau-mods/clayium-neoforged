@@ -21,7 +21,7 @@ public final class ChemicalMetalSeparatorMenu extends AbstractDedicatedMachineMe
             addSlot(new OutputSlot(container, ChemicalMetalSeparatorBlockEntity.OUTPUT_START + row * 4 + column,
                     85 + column * 18, 17 + row * 18));
         }
-        addSlot(new RestrictedSlot(container, ChemicalMetalSeparatorBlockEntity.ENERGY_SLOT, -12, 80));
+        addSlot(new EnergySlot(container, ChemicalMetalSeparatorBlockEntity.ENERGY_SLOT, -12, 80));
         finishLayout(inventory);
     }
     public long energyPerTick() { return 5_000; }

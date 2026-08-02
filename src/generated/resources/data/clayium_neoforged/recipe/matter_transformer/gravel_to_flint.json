@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:gravel"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:matter_transformer",
+  "minimum_tier": "clay_steel",
+  "processing_time_ticks": 1000,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:flint"
+    }
+  ]
+}

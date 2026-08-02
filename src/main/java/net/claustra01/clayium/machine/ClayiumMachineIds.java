@@ -29,6 +29,8 @@ public final class ClayiumMachineIds {
     public static final ResourceLocation ALLOY_SMELTER = Clayium.id("alloy_smelter");
     public static final ResourceLocation SOLAR_CLAY_FABRICATOR = Clayium.id("solar_clay_fabricator");
     public static final ResourceLocation MATTER_TRANSFORMER = Clayium.id("matter_transformer");
+    public static final ResourceLocation CLAY_REACTOR = Clayium.id("clay_reactor");
+    public static final ResourceLocation CLAY_FABRICATOR = Clayium.id("clay_fabricator");
     public static final ResourceLocation CLAY_BLAST_FURNACE = Clayium.id("clay_blast_furnace");
     public static final ResourceLocation ENERGETIC_CLAY_CONDENSER = Clayium.id("energetic_clay_condenser");
 

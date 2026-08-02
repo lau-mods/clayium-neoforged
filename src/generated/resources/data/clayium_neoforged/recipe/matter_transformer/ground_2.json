@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:podzol"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:matter_transformer",
+  "minimum_tier": "clayium",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:grass_block"
+    }
+  ]
+}

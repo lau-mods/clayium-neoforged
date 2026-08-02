@@ -161,6 +161,9 @@ public final class MachineBlock extends BaseEntityBlock {
             if (machineId.equals(ClayiumMachineIds.CLAY_BLAST_FURNACE)) {
                 ClayBlastFurnaceStructure.unlinkExpectedInterfaces(
                         (ServerLevel) level, pos, state.getValue(FACING));
+            } else if (machineId.equals(ClayiumMachineIds.CLAY_REACTOR)) {
+                net.claustra01.clayium.machine.ClayReactorStructure.unlinkExpectedInterfaces(
+                        (ServerLevel) level, pos, state.getValue(FACING));
             }
             Containers.dropContents(level, pos, machine);
         }

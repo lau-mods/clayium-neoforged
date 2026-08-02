@@ -25,7 +25,9 @@ public final class MaterialCraftingRecipes {
         smelt(output, "silicone_dust", item("silicone_dust"), item("silicone_ingot"));
         smelt(output, "silicon_dust", item("silicon_dust"), item("silicon_ingot"));
         smelt(output, "iron_dust", item("iron_dust"), Items.IRON_INGOT);
-        for (String material : new String[]{"impure_silicon", "silicone", "silicon", "aluminium"}) {
+        smelt(output, "clayium_dust", item("clayium_dust"), item("clayium_ingot"));
+        smelt(output, "ultimate_alloy_dust", item("ultimate_alloy_dust"), item("ultimate_alloy_ingot"));
+        for (String material : new String[]{"impure_silicon", "silicone", "silicon", "aluminium", "clayium", "ultimate_alloy"}) {
             ItemLike block = ClayiumRegistries.MATERIAL_BLOCKS.get(material + "_block").get();
             ItemLike ingot = item(material + "_ingot");
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, block)
@@ -56,6 +58,29 @@ public final class MaterialCraftingRecipes {
                 .pattern("PPP").pattern("PCP").pattern("PPP")
                 .unlockedBy("has_plate", InventoryChangeTrigger.TriggerInstance.hasItems(item("zk60a_large_plate")))
                 .save(output, Clayium.id("machine_hulls/zk60a"));
+
+        highTierHull(output, "clayium", item("clayium_large_plate"), component("clay_core"));
+        highTierHull(output, "ultimate", item("ultimate_alloy_large_plate"), component("clay_brain"));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, item("impure_ultimate_alloy_ingot"), 9)
+                .requires(item("barium_ingot"))
+                .requires(item("strontium_ingot"))
+                .requires(item("calcium_ingot"))
+                .requires(item("clayium_ingot"))
+                .requires(item("aluminium_ingot"), 5)
+                .unlockedBy("has_clayium", InventoryChangeTrigger.TriggerInstance.hasItems(item("clayium_ingot")))
+                .save(output, Clayium.id("materials/impure_ultimate_alloy"));
+    }
+
+    private static void highTierHull(RecipeOutput output, String tier, ItemLike plate, ItemLike circuit) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,
+                        ClayiumRegistries.MACHINE_HULL_BLOCKS.get(tier + "_machine_hull").get())
+                .define('#', plate)
+                .define('C', circuit)
+                .define('E', component("clay_energy_excitor"))
+                .pattern("#E#").pattern("#C#").pattern("###")
+                .unlockedBy("has_plate", InventoryChangeTrigger.TriggerInstance.hasItems(plate))
+                .save(output, Clayium.id("machine_hulls/" + tier));
     }
 
     private static void smelt(RecipeOutput output, String id, ItemLike input, ItemLike result) {

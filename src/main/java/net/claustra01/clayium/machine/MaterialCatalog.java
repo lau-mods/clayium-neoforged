@@ -3,7 +3,7 @@ package net.claustra01.clayium.machine;
 
 import java.util.List;
 
-/** Chemical materials introduced by the original progression through Precision tier. */
+/** Materials used by chemical and late-game processing. */
 public final class MaterialCatalog {
     public record Entry(String id, String displayName, String originalTexture) {}
 
@@ -120,7 +120,20 @@ public final class MaterialCatalog {
             item("antimony_ingot", "Antimony Ingot", "ingot_base"),
             item("bismuth_ingot", "Bismuth Ingot", "ingot_base"),
             item("phosphorus_dust", "Phosphorus Dust", "dust_base"),
-            item("sulfur_dust", "Sulfur Dust", "dust_base"));
+            item("sulfur_dust", "Sulfur Dust", "dust_base"),
+            item("carbon_dust", "Carbon Dust", "dust_base"),
+            item("charcoal_dust", "Charcoal Dust", "dust_base"),
+            item("coal_dust", "Coal Dust", "dust_base"),
+            item("excited_clay_dust", "Excited Clay Dust", "excclaydust"),
+            item("clayium_dust", "Clayium Dust", "dust_base"),
+            item("clayium_ingot", "Clayium Ingot", "ingot_base"),
+            item("clayium_plate", "Clayium Plate", "plate_base"),
+            item("clayium_large_plate", "Large Clayium Plate", "largeplate_base"),
+            item("impure_ultimate_alloy_ingot", "Impure Ultimate Alloy Ingot", "ingot_base"),
+            item("ultimate_alloy_dust", "Ultimate Alloy Dust", "dust_base"),
+            item("ultimate_alloy_ingot", "Ultimate Alloy Ingot", "ingot_base"),
+            item("ultimate_alloy_plate", "Ultimate Alloy Plate", "plate_base"),
+            item("ultimate_alloy_large_plate", "Large Ultimate Alloy Plate", "largeplate_base"));
 
     private MaterialCatalog() {}
 

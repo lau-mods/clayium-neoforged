@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000,
+  "ingredients": [
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_dust"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:hafnium_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "clay_steel",
+  "processing_time_ticks": 500000,
+  "results": [
+    {
+      "count": 8,
+      "id": "clayium_neoforged:clayium_dust"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000,
+  "ingredients": [
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium_neoforged:energetic_clay_dust"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:lithium_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "clay_steel",
+  "processing_time_ticks": 2000000,
+  "results": [
+    {
+      "count": 4,
+      "id": "clayium_neoforged:excited_clay_dust"
+    }
+  ]
+}

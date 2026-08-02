@@ -9,6 +9,7 @@ import net.claustra01.clayium.logistics.ConfigurableItemDevice;
 import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.machine.ConfigurableClayEnergyMachine;
+import net.claustra01.clayium.machine.MachineModifiers;
 import net.claustra01.clayium.world.item.ClayFilterItem;
 import net.claustra01.clayium.world.level.block.AbstractTieredIoMachineBlock;
 import net.minecraft.core.BlockPos;
@@ -48,6 +49,8 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
     private final EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches =
             new EnumMap<>(Direction.class);
     private int automationCooldown;
+    private int modifierCheckDelay;
+    private MachineModifiers.Snapshot modifiers = MachineModifiers.Snapshot.DEFAULT;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -58,7 +61,7 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
                 case 1 -> totalProgress();
                 case 2 -> (int) displayed;
                 case 3 -> (int) (displayed >>> 32);
-                default -> 0;
+                default -> additionalMenuData(index);
             };
         }
 
@@ -67,11 +70,12 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
             if (index == 0) progress = Math.max(0, value);
             else if (index == 2) energy.setEnergy((energy.energyStored() & 0xffffffff00000000L) | Integer.toUnsignedLong(value));
             else if (index == 3) energy.setEnergy((Integer.toUnsignedLong(value) << 32) | (energy.energyStored() & 0xffffffffL));
+            else setAdditionalMenuData(index, value);
         }
 
         @Override
         public int getCount() {
-            return 4;
+            return menuDataSize();
         }
     };
 
@@ -88,6 +92,10 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
     }
 
     public final void serverTick() {
+        if (level != null && modifierCheckDelay-- <= 0) {
+            modifiers = MachineModifiers.scan(level, worldPosition);
+            modifierCheckDelay = 20;
+        }
         tickAutomation();
         tickMachine();
     }
@@ -104,6 +112,16 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
 
     protected long displayedEnergy() {
         return energy.energyStored();
+    }
+
+    protected int menuDataSize() { return 4; }
+    protected int additionalMenuData(int index) { return 0; }
+    protected void setAdditionalMenuData(int index, int value) {}
+    protected final double overclockFactor() { return modifiers.overclockFactor(); }
+    protected final int energySlotLimit() { return modifiers.energySlotLimit(); }
+    public final int inventorySlotLimit(int slot) {
+        checkSlot(slot);
+        return isEnergySlot(slot) ? energySlotLimit() : getMaxStackSize();
     }
 
     protected final NonNullList<ItemStack> inventory() {
@@ -233,7 +251,8 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
         if (stack.isEmpty() || !isExternalInput(slot, stack)) return stack;
         ItemStack current = getItem(slot);
         if (!current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)) return stack;
-        int accepted = Math.min(stack.getCount(), stack.getMaxStackSize() - current.getCount());
+        int limit = Math.min(stack.getMaxStackSize(), inventorySlotLimit(slot));
+        int accepted = Math.min(stack.getCount(), limit - current.getCount());
         if (accepted <= 0) return stack;
         if (!simulate) {
             if (current.isEmpty()) setItem(slot, stack.copyWithCount(accepted));
@@ -297,6 +316,13 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
     @Override
     public final int getContainerSize() {
         return slotCount;
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        checkSlot(slot);
+        stack.limitSize(Math.min(stack.getMaxStackSize(), inventorySlotLimit(slot)));
+        super.setItem(slot, stack);
     }
 
     @Override
@@ -383,7 +409,10 @@ public abstract class AbstractConfigurableMachineBlockEntity extends BaseContain
             if (!simulate && count > 0) removeItem(slot, count);
             return result;
         }
-        @Override public int getSlotLimit(int slot) { checkSlot(slot); return getMaxStackSize(); }
+        @Override public int getSlotLimit(int slot) {
+            checkSlot(slot);
+            return isEnergySlot(slot) ? energySlotLimit() : getMaxStackSize();
+        }
         @Override public boolean isItemValid(int slot, ItemStack stack) {
             checkSlot(slot);
             int route = insertionRoute(side);

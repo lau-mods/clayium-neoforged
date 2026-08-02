@@ -87,6 +87,8 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.alloy_smelter", "Alloy Smelter");
                 add("jei." + Clayium.MODID + ".category.solar_clay_fabricator", "Solar Clay Fabricator");
                 add("jei." + Clayium.MODID + ".category.matter_transformer", "Matter Transformer");
+                add("jei." + Clayium.MODID + ".category.clay_reactor", "Clay Reactor");
+                add("jei." + Clayium.MODID + ".category.clay_fabricator", "Clay Fabricator");
                 add("jei." + Clayium.MODID + ".category.clay_blast_furnace", "Clay Blast Furnace");
                 add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
                 add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");
@@ -103,6 +105,8 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".clay_energy_per_tick", "CE/t: %s");
                 add("jei." + Clayium.MODID + ".total_clay_energy", "Total CE: %s");
                 add("jei." + Clayium.MODID + ".minimum_tier", "Tier: %s");
+                add("jei." + Clayium.MODID + ".laser_acceleration", "Laser: accepts matching laser power for acceleration");
+                add("jei." + Clayium.MODID + ".fabricator_batch", "Duplicates the full input stack; time scales with stack size");
                 for (net.claustra01.clayium.recipe.ClayWorkTableOperation operation
                         : net.claustra01.clayium.recipe.ClayWorkTableOperation.values()) {
                     add(operation.translationKey(), operation.id());
@@ -148,6 +152,17 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".clay_water_wheel", "Clay Water Wheel");
         language.add("block." + Clayium.MODID + ".dense_clay_water_wheel", "Dense Clay Water Wheel");
         language.add("block." + Clayium.MODID + ".quartz_crucible", "Quartz Crucible");
+        ClayiumRegistries.CLAY_ENERGY_LASER_BLOCKS.forEach((id, block) ->
+                language.add("block." + Clayium.MODID + "." + id, titleCase(id)));
+        ClayiumRegistries.CLAY_LASER_INTERFACE_BLOCKS.forEach((id, block) ->
+                language.add("block." + Clayium.MODID + "." + id, titleCase(id)));
+        ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCKS.forEach((id, block) ->
+                language.add("block." + Clayium.MODID + "." + id, titleCase(id)));
+        ClayiumRegistries.MACHINE_MODIFIER_BLOCKS.forEach((id, block) ->
+                language.add("block." + Clayium.MODID + "." + id, titleCase(id)));
+        language.add("block." + Clayium.MODID + ".laser_reflector", "Laser Reflector");
+        language.add("block." + Clayium.MODID + ".clay_reactor", "Clay Reactor");
+        language.add("block." + Clayium.MODID + ".clay_steel_auto_clay_condenser", "Clay Steel Auto Clay Condenser");
         for (ClayTier tier : new ClayTier[]{ClayTier.CLAY, ClayTier.DENSE_CLAY, ClayTier.SIMPLE,
                 ClayTier.BASIC, ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
             language.add("block." + Clayium.MODID + "." + tier.id() + "_cobblestone_generator",
@@ -168,12 +183,18 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".precision_redstone_interface", "Precision Redstone Interface");
         language.add("block." + Clayium.MODID + ".clay_steel_clay_interface", "Clay Steel Clay Interface");
         language.add("block." + Clayium.MODID + ".clay_steel_redstone_interface", "Clay Steel Redstone Interface");
+        language.add("block." + Clayium.MODID + ".clayium_clay_interface", "Clayium Clay Interface");
+        language.add("block." + Clayium.MODID + ".ultimate_clay_interface", "Ultimate Clay Interface");
+        language.add("block." + Clayium.MODID + ".clayium_redstone_interface", "Clayium Redstone Interface");
+        language.add("block." + Clayium.MODID + ".ultimate_redstone_interface", "Ultimate Redstone Interface");
         language.add("block." + Clayium.MODID + ".clay_blast_furnace", "Clay Blast Furnace");
         language.add("block." + Clayium.MODID + ".impure_silicon_block", "Block of Impure Silicon");
         language.add("block." + Clayium.MODID + ".silicone_block", "Block of Silicone");
         language.add("block." + Clayium.MODID + ".silicon_block", "Block of Silicon");
         language.add("block." + Clayium.MODID + ".aluminium_block", "Block of Aluminium");
         language.add("block." + Clayium.MODID + ".clay_steel_block", "Block of Clay Steel");
+        language.add("block." + Clayium.MODID + ".clayium_block", "Block of Clayium");
+        language.add("block." + Clayium.MODID + ".ultimate_alloy_block", "Block of Ultimate Alloy");
         language.add("block." + Clayium.MODID + ".az91d_machine_hull", "AZ91D Machine Hull");
         language.add("block." + Clayium.MODID + ".zk60a_machine_hull", "ZK60A Machine Hull");
         for (DyeColor color : DyeColor.values()) {
@@ -192,6 +213,8 @@ public final class ClayiumDataGenerators {
         language.add("block." + Clayium.MODID + ".advanced_auto_crafter", "Advanced Auto Crafter");
         language.add("block." + Clayium.MODID + ".precision_auto_crafter", "Precision Auto Crafter");
         language.add("block." + Clayium.MODID + ".clay_steel_auto_crafter", "Clay Steel Auto Crafter");
+        language.add("block." + Clayium.MODID + ".clayium_auto_crafter", "Clayium Auto Crafter");
+        language.add("block." + Clayium.MODID + ".ultimate_auto_crafter", "Ultimate Auto Crafter");
         language.add("block." + Clayium.MODID + ".precision_chemical_metal_separator", "Precision Chemical Metal Separator");
         for (LogisticsCatalog.Entry entry : LogisticsCatalog.ENTRIES) {
             language.add(

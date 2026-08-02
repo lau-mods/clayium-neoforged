@@ -10,7 +10,7 @@ import java.util.List;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.resources.ResourceLocation;
 
-/** Manufacturing machine variants available through Precision tier. */
+/** Manufacturing machine variants used across the progression. */
 public final class ManufacturingMachineCatalog {
     public record Entry(
             String blockId,

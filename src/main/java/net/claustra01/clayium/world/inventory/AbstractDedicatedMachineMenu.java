@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.claustra01.clayium.world.level.block.entity.AbstractConfigurableMachineBlockEntity;
 
 /** Shared player-inventory plumbing for dedicated machine menus. */
 public abstract class AbstractDedicatedMachineMenu extends AbstractContainerMenu {
@@ -67,6 +68,16 @@ public abstract class AbstractDedicatedMachineMenu extends AbstractContainerMenu
     protected static class RestrictedSlot extends Slot {
         protected RestrictedSlot(Container container, int index, int x, int y) { super(container, index, x, y); }
         @Override public boolean mayPlace(ItemStack stack) { return container.canPlaceItem(getContainerSlot(), stack); }
+    }
+    protected static final class EnergySlot extends RestrictedSlot {
+        protected EnergySlot(Container container, int index, int x, int y) { super(container, index, x, y); }
+        @Override public int getMaxStackSize() {
+            return container instanceof AbstractConfigurableMachineBlockEntity machine
+                    ? machine.inventorySlotLimit(getContainerSlot()) : 1;
+        }
+        @Override public int getMaxStackSize(ItemStack stack) {
+            return Math.min(stack.getMaxStackSize(), getMaxStackSize());
+        }
     }
     protected static class OutputSlot extends Slot {
         protected OutputSlot(Container container, int index, int x, int y) { super(container, index, x, y); }

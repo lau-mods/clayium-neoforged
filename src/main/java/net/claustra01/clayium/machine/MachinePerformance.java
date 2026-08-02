@@ -14,9 +14,9 @@ public final class MachinePerformance {
     private MachinePerformance() {
     }
 
-    public static int processingTime(MachineRecipe recipe, ResourceLocation machineId, ClayTier tier) {
+    public static long processingTime(MachineRecipe recipe, ResourceLocation machineId, ClayTier tier) {
         double multiplier = timeMultiplier(machineId, tier.progressionIndex());
-        return Math.max(1, (int) (recipe.processingTimeTicks() * multiplier));
+        return Math.max(1L, Math.round(recipe.processingTimeTicks() * multiplier));
     }
 
     public static long clayEnergyPerTick(MachineRecipe recipe, ResourceLocation machineId, ClayTier tier) {

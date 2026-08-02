@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000,
+  "ingredients": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_bending_machine",
+  "minimum_tier": "clayium",
+  "processing_time_ticks": 240,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clayium_large_plate"
+    }
+  ]
+}

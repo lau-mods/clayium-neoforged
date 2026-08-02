@@ -65,5 +65,19 @@ public final class ClayiumCapabilities {
                 ClayiumRegistries.CHEMICAL_METAL_SEPARATOR_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> blockEntity.itemHandler(
                         direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.CLAY_ENERGY_LASER_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.feStorage(direction));
     }
 }

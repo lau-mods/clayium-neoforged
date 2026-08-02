@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:orange_tulip"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:matter_transformer",
+  "minimum_tier": "clay_steel",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:white_tulip"
+    }
+  ]
+}

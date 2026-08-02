@@ -39,6 +39,8 @@ public final class ClayiumJeiRecipeTypes {
     public static final RecipeType<MachineRecipe> ALLOY_SMELTER = machine("alloy_smelter");
     public static final RecipeType<MachineRecipe> SOLAR_CLAY_FABRICATOR = machine("solar_clay_fabricator");
     public static final RecipeType<MachineRecipe> MATTER_TRANSFORMER = machine("matter_transformer");
+    public static final RecipeType<MachineRecipe> CLAY_REACTOR = machine("clay_reactor");
+    public static final RecipeType<MachineRecipe> CLAY_FABRICATOR = machine("clay_fabricator");
     public static final RecipeType<MachineRecipe> ENERGETIC_CLAY_CONDENSER = machine("energetic_clay_condenser");
     public static final RecipeType<MachineRecipe> CLAY_BLAST_FURNACE = machine("clay_blast_furnace");
 
@@ -71,6 +73,8 @@ public final class ClayiumJeiRecipeTypes {
         result.put(ClayiumMachineIds.ALLOY_SMELTER, ALLOY_SMELTER);
         result.put(ClayiumMachineIds.SOLAR_CLAY_FABRICATOR, SOLAR_CLAY_FABRICATOR);
         result.put(ClayiumMachineIds.MATTER_TRANSFORMER, MATTER_TRANSFORMER);
+        result.put(ClayiumMachineIds.CLAY_REACTOR, CLAY_REACTOR);
+        result.put(ClayiumMachineIds.CLAY_FABRICATOR, CLAY_FABRICATOR);
         result.put(ClayiumMachineIds.ENERGETIC_CLAY_CONDENSER, ENERGETIC_CLAY_CONDENSER);
         result.put(ClayiumMachineIds.CLAY_BLAST_FURNACE, CLAY_BLAST_FURNACE);
         return Map.copyOf(result);

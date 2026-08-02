@@ -17,6 +17,10 @@ import net.claustra01.clayium.client.gui.screens.inventory.SaltExtractorScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.AutoClayCondenserScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.AutoCrafterScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ChemicalMetalSeparatorScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.ClayEnergyLaserScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.ClayEnergyConverterScreen;
+import net.claustra01.clayium.client.renderer.blockentity.ClayEnergyLaserRenderer;
+import net.claustra01.clayium.client.renderer.blockentity.LaserReflectorRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.ColoredSiliconeBlock;
@@ -52,6 +56,8 @@ public final class ClayiumClientEvents {
         event.register(ClayiumRegistries.AUTO_CLAY_CONDENSER_MENU.get(), AutoClayCondenserScreen::new);
         event.register(ClayiumRegistries.AUTO_CRAFTER_MENU.get(), AutoCrafterScreen::new);
         event.register(ClayiumRegistries.CHEMICAL_METAL_SEPARATOR_MENU.get(), ChemicalMetalSeparatorScreen::new);
+        event.register(ClayiumRegistries.CLAY_ENERGY_LASER_MENU.get(), ClayEnergyLaserScreen::new);
+        event.register(ClayiumRegistries.CLAY_ENERGY_CONVERTER_MENU.get(), ClayEnergyConverterScreen::new);
     }
 
     @SubscribeEvent
@@ -74,6 +80,12 @@ public final class ClayiumClientEvents {
                 ClayiumRegistries.AUTO_CRAFTER_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.CHEMICAL_METAL_SEPARATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.CLAY_ENERGY_LASER_BLOCK_ENTITY.get(), context -> new ClayEnergyLaserRenderer());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.LASER_REFLECTOR_BLOCK_ENTITY.get(), context -> new LaserReflectorRenderer());
     }
 
     @SubscribeEvent
@@ -168,6 +180,14 @@ public final class ClayiumClientEvents {
         material(event, colors(120,120,150, 80,80,100, 255,255,255),
                 "tantalum_ingot", "tungsten_ingot", "lead_ingot", "tin_ingot", "antimony_ingot", "bismuth_ingot");
         material(event, colors(230,160,40, 120,80,20, 255,255,255), "phosphorus_dust", "sulfur_dust");
+        material(event, colors(10,10,10, 20,20,20, 30,30,30), "carbon_dust");
+        material(event, colors(20,20,20, 50,50,50, 80,50,50), "charcoal_dust");
+        material(event, colors(20,20,20, 50,50,50, 50,50,80), "coal_dust");
+        material(event, colors(90,240,210, 63,72,85, 255,205,200),
+                "clayium_dust", "clayium_ingot", "clayium_plate", "clayium_large_plate");
+        material(event, colors(85,205,85, 245,255,255, 245,160,255), "impure_ultimate_alloy_ingot");
+        material(event, colors(85,205,85, 120,120,120, 245,160,255),
+                "ultimate_alloy_dust", "ultimate_alloy_ingot", "ultimate_alloy_plate", "ultimate_alloy_large_plate");
         for (var entry : ClayiumRegistries.COLORED_SILICONE_ITEMS.entrySet()) {
             String colorName = entry.getKey().substring(0, entry.getKey().length() - "_silicone_block".length());
             DyeColor color = DyeColor.byName(colorName, DyeColor.WHITE);

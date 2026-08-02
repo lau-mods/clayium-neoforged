@@ -7,6 +7,7 @@ import net.claustra01.clayium.energy.ClayEnergyReceiver;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.energy.EnergeticClayFuel;
 import net.claustra01.clayium.logistics.ConfigurableItemDevice;
+import net.claustra01.clayium.machine.MachineModifiers;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.inventory.SaltExtractorMenu;
 import net.claustra01.clayium.world.level.block.SaltExtractorBlock;
@@ -41,6 +42,8 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
     private int waterCount;
     private long activeEnergy;
     private int stopReason;
+    private int modifierCheckDelay;
+    private MachineModifiers.Snapshot modifiers = MachineModifiers.Snapshot.DEFAULT;
 
     private final ContainerData menuData = new ContainerData() {
         @Override public int get(int index) { return switch(index) {
@@ -68,6 +71,10 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SaltExtractorBlockEntity be) { be.tickServer(); }
     private void tickServer() {
+        if (modifierCheckDelay-- <= 0) {
+            modifiers = MachineModifiers.scan(level, worldPosition);
+            modifierCheckDelay = 20;
+        }
         waterCount=0;
         for(Direction side:Direction.values()) if(level.getFluidState(worldPosition.relative(side)).is(net.minecraft.tags.FluidTags.WATER)) waterCount++;
         activeEnergy=(long) efficiency()*ENERGY_PER_WORK;
@@ -97,6 +104,7 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
     public int columns(){return switch(tier()){case 4->2;case 5->3;default->4;};}
     public int rows(){return outputSlots()/columns();}
     public int energySlot(){return outputSlots();}
+    public int energySlotLimit(){return modifiers.energySlotLimit();}
     private int efficiency(){return switch(tier()){case 4->50;case 5->200;default->1000;};}
     public int waterCount(){return waterCount;}
     public IItemHandler itemHandler(Direction side){return handlers.get(side);}
@@ -111,7 +119,7 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
     @Override public ItemStack getItem(int slot){return items.get(slot);}
     @Override public ItemStack removeItem(int slot,int count){ItemStack result=net.minecraft.world.ContainerHelper.removeItem(items,slot,count);if(!result.isEmpty())setChanged();return result;}
     @Override public ItemStack removeItemNoUpdate(int slot){return net.minecraft.world.ContainerHelper.takeItem(items,slot);}
-    @Override public void setItem(int slot,ItemStack stack){items.set(slot,stack);stack.limitSize(getMaxStackSize(stack));setChanged();}
+    @Override public void setItem(int slot,ItemStack stack){items.set(slot,stack);stack.limitSize(slot==energySlot()?Math.min(stack.getMaxStackSize(),energySlotLimit()):getMaxStackSize(stack));setChanged();}
     @Override public void clearContent(){items.clear();}
     @Override public boolean canPlaceItem(int slot,ItemStack stack){return slot==energySlot()&&EnergeticClayFuel.isFuel(stack);}
     @Override protected void saveAdditional(CompoundTag tag,HolderLookup.Provider p){super.saveAdditional(tag,p);net.minecraft.world.ContainerHelper.saveAllItems(tag,items,p);energy.save(tag);tag.putInt("Progress",progress);tag.putIntArray("InsertionRoutes",insertionRoutes);tag.putIntArray("ExtractionRoutes",extractionRoutes);}
@@ -123,9 +131,9 @@ public final class SaltExtractorBlockEntity extends BaseContainerBlockEntity
         private final Direction side; private SidedHandler(Direction side){this.side=side;}
         @Override public int getSlots(){return MAX_SLOTS;}
         @Override public ItemStack getStackInSlot(int slot){return getItem(slot);}
-        @Override public ItemStack insertItem(int slot,ItemStack stack,boolean simulate){if(insertionRoute(side)<0||slot!=energySlot()||!EnergeticClayFuel.isFuel(stack))return stack;ItemStack current=getItem(slot);if(!current.isEmpty()&&!ItemStack.isSameItemSameComponents(current,stack))return stack;int accepted=Math.min(stack.getCount(),stack.getMaxStackSize()-current.getCount());if(!simulate&&accepted>0){if(current.isEmpty())setItem(slot,stack.copyWithCount(accepted));else current.grow(accepted);}return accepted==stack.getCount()?ItemStack.EMPTY:stack.copyWithCount(stack.getCount()-accepted);}
+        @Override public ItemStack insertItem(int slot,ItemStack stack,boolean simulate){if(insertionRoute(side)<0||slot!=energySlot()||!EnergeticClayFuel.isFuel(stack))return stack;ItemStack current=getItem(slot);if(!current.isEmpty()&&!ItemStack.isSameItemSameComponents(current,stack))return stack;int accepted=Math.min(stack.getCount(),Math.min(stack.getMaxStackSize(),energySlotLimit())-current.getCount());if(!simulate&&accepted>0){if(current.isEmpty())setItem(slot,stack.copyWithCount(accepted));else current.grow(accepted);}return accepted==stack.getCount()?ItemStack.EMPTY:stack.copyWithCount(stack.getCount()-accepted);}
         @Override public ItemStack extractItem(int slot,int amount,boolean simulate){if(extractionRoute(side)<0||slot<0||slot>=outputSlots()||amount<=0)return ItemStack.EMPTY;ItemStack current=getItem(slot);int count=Math.min(amount,current.getCount());if(count<=0)return ItemStack.EMPTY;ItemStack result=current.copyWithCount(count);if(!simulate)removeItem(slot,count);return result;}
-        @Override public int getSlotLimit(int slot){return 64;}
+        @Override public int getSlotLimit(int slot){return slot==energySlot()?energySlotLimit():64;}
         @Override public boolean isItemValid(int slot,ItemStack stack){return slot==energySlot()&&EnergeticClayFuel.isFuel(stack);}
     }
 }

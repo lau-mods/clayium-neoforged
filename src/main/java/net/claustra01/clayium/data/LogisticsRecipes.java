@@ -29,6 +29,10 @@ public final class LogisticsRecipes {
                 item("precision_circuit"), 10_000);
         logisticsTier(output, "clay_steel", material("clay_steel_plate"), material("clay_steel_large_plate"),
                 item("integrated_circuit"), 100_000);
+        logisticsTier(output, "clayium", material("clayium_plate"), material("clayium_large_plate"),
+                item("clay_core"), 1_000_000);
+        logisticsTier(output, "ultimate", material("ultimate_alloy_plate"), material("ultimate_alloy_large_plate"),
+                item("clay_brain"), 10_000_000);
         recipe(output, "logistics/clay_steel_distributor",
                 List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_buffer").get(), 1),
                         ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1)),
@@ -39,6 +43,18 @@ public final class LogisticsRecipes {
                         ingredient(item("integrated_circuit"), 1)),
                 ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_distributor").get(), 1,
                 100_000, 120, 6);
+        for (String tier : List.of("clayium", "ultimate")) {
+            long energy = tier.equals("clayium") ? 1_000_000L : 10_000_000L;
+            ItemLike distributor = ClayiumRegistries.LOGISTICS_BLOCKS.get(tier + "_distributor").get();
+            ItemLike buffer = ClayiumRegistries.LOGISTICS_BLOCKS.get(tier + "_buffer").get();
+            recipe(output, "logistics/" + tier + "_distributor",
+                    List.of(ingredient(buffer, 1),
+                            ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get(tier + "_machine_hull").get(), 1)),
+                    distributor, 1, energy, 120, 6);
+            recipe(output, "logistics/" + tier + "_distributor_integrated_circuit",
+                    List.of(ingredient(buffer, 1), ingredient(item("integrated_circuit"), 1)),
+                    distributor, 1, energy, 120, 6);
+        }
         recipe(output, "logistics/tools/clay_io_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_ROLLING_PIN.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_SLICER.get(), 1)),

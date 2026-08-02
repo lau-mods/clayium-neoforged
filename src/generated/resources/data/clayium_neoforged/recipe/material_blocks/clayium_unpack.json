@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:clayium_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:clayium_ingot"
+  }
+}

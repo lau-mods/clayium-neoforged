@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_reactor"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_electrolysis_reactor"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "precision",
+  "processing_time_ticks": 120,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clayium_matter_transformer"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 3000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_machine_hull"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_lithium_solar_clay_fabricator"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "clayium",
+  "processing_time_ticks": 100000000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clayium_clay_fabricator_mk1"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:ultimate_alloy_large_plate"
+    },
+    "C": {
+      "item": "clayium_neoforged:clay_brain"
+    },
+    "E": {
+      "item": "clayium_neoforged:clay_energy_excitor"
+    }
+  },
+  "pattern": [
+    "#E#",
+    "#C#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:ultimate_machine_hull"
+  }
+}

@@ -16,8 +16,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 
-/** Material, chemical, and specialized-machine recipes through Precision tier. */
+/** Material, chemical, and advanced machine-processing recipes. */
 public final class MaterialProcessingRecipes {
     private MaterialProcessingRecipes() {}
 
@@ -29,6 +30,7 @@ public final class MaterialProcessingRecipes {
         solarFabricator(output);
         matterTransformer(output);
         materialProcessing(output);
+        clayiumUltimateProgression(output);
         machineConstruction(output);
     }
 
@@ -92,10 +94,11 @@ public final class MaterialProcessingRecipes {
     }
 
     private static void solarFabricator(RecipeOutput output) {
-        for (int level = 0; level <= 6; level++) {
-            ClayTier minimumTier = level <= 4 ? ClayTier.ADVANCED : ClayTier.PRECISION;
-            int time = solarTime(level, level <= 4 ? 4.0D : 3.0D, level <= 4 ? 4 : 6,
-                    level <= 4 ? 5_000.0D : 50_000.0D);
+        for (int level = 0; level <= 8; level++) {
+            ClayTier minimumTier = level <= 4 ? ClayTier.ADVANCED : level <= 6 ? ClayTier.PRECISION : ClayTier.CLAY_STEEL;
+            int time = solarTime(level, level <= 4 ? 4.0D : level <= 6 ? 3.0D : 2.0D,
+                    level <= 4 ? 4 : level <= 6 ? 6 : 9,
+                    level <= 4 ? 5_000.0D : level <= 6 ? 50_000.0D : 4_500_000.0D);
             machine(output, "solar_fabricator/level_" + level + "_to_" + (level + 1),
                     ClayiumMachineIds.SOLAR_CLAY_FABRICATOR,
                     List.of(ingredient(compressedClay(level), 1)),
@@ -152,6 +155,67 @@ public final class MaterialProcessingRecipes {
         transform(output, "antimony_to_bismuth", item("antimony_ingot"), item("bismuth_ingot"), 9, 10);
         transform(output, "silicon_to_phosphorus", item("silicon_dust"), item("phosphorus_dust"), 7, 10);
         transform(output, "phosphorus_to_sulfur", item("phosphorus_dust"), item("sulfur_dust"), 7, 30);
+        matterTransformerNaturalChains(output);
+    }
+
+    private static void matterTransformerNaturalChains(RecipeOutput output) {
+        transformCounts(output, "industrial_clay_to_carbon", component("industrial_clay_dust"), 1,
+                item("carbon_dust"), 1, 7, energy(7), 200);
+        // Graphite Dust was optional OreDictionary content in 1.7.10. Without an external
+        // graphite provider the original chain skipped it and accumulated both energy steps.
+        transformCounts(output, "carbon_to_charcoal", item("carbon_dust"), 1,
+                item("charcoal_dust"), 1, 9, energy(8) + energy(9), 200);
+        transformCounts(output, "cobblestone_to_netherrack", Blocks.COBBLESTONE, 1,
+                Blocks.NETHERRACK, 1, 9, energy(9), 20);
+        chain(output, "stone_brick", new ItemLike[]{Blocks.STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS,
+                Blocks.CHISELED_STONE_BRICKS}, new int[]{0, 8, 8}, 20);
+        chain(output, "ground", new ItemLike[]{Blocks.DIRT, Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.MYCELIUM},
+                new int[]{0, 7, 8, 9}, 20);
+        chain(output, "log", new ItemLike[]{Blocks.OAK_LOG, Blocks.SPRUCE_LOG, Blocks.BIRCH_LOG,
+                Blocks.JUNGLE_LOG, Blocks.ACACIA_LOG, Blocks.DARK_OAK_LOG}, new int[]{0, 7, 7, 8, 8, 8}, 80);
+        chain(output, "leaves", new ItemLike[]{Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES,
+                Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES}, new int[]{0, 7, 7, 8, 8, 8}, 20);
+        chain(output, "sapling", new ItemLike[]{Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING,
+                Blocks.JUNGLE_SAPLING, Blocks.ACACIA_SAPLING, Blocks.DARK_OAK_SAPLING}, new int[]{0, 7, 7, 8, 8, 8}, 20);
+        chain(output, "seed", new ItemLike[]{Items.WHEAT_SEEDS, Items.PUMPKIN_SEEDS, Items.MELON_SEEDS,
+                Items.COCOA_BEANS, Items.NETHER_WART}, new int[]{0, 8, 8, 8, 8}, 20);
+        chain(output, "crop", new ItemLike[]{Items.WHEAT, Items.CARROT, Items.POTATO}, new int[]{0, 8, 8}, 20);
+        chain(output, "small_plant", new ItemLike[]{Blocks.SHORT_GRASS, Blocks.FERN, Blocks.DEAD_BUSH,
+                Blocks.VINE, Blocks.LILY_PAD}, new int[]{0, 7, 7, 8, 9}, 20);
+        chain(output, "flower", new ItemLike[]{Blocks.DANDELION, Blocks.POPPY, Blocks.BLUE_ORCHID, Blocks.ALLIUM,
+                Blocks.AZURE_BLUET, Blocks.RED_TULIP, Blocks.ORANGE_TULIP, Blocks.WHITE_TULIP, Blocks.PINK_TULIP,
+                Blocks.OXEYE_DAISY, Blocks.SUNFLOWER, Blocks.LILAC, Blocks.TALL_GRASS, Blocks.LARGE_FERN,
+                Blocks.ROSE_BUSH, Blocks.PEONY}, new int[]{0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8}, 20);
+        transformCounts(output, "sugar_cane_to_cactus", Items.SUGAR_CANE, 1, Blocks.CACTUS, 1,
+                8, energy(8), 20);
+        transformCounts(output, "rotten_flesh_to_porkchop", Items.ROTTEN_FLESH, 32, Items.PORKCHOP, 1,
+                9, energy(9), 200);
+        transformCounts(output, "porkchop_to_beef", Items.PORKCHOP, 1, Items.BEEF, 1, 9, energy(9), 200);
+        transformCounts(output, "beef_to_chicken", Items.BEEF, 2, Items.CHICKEN, 1, 9, energy(9), 200);
+        transformCounts(output, "leather_to_wool", Items.LEATHER, 1, Blocks.WHITE_WOOL, 4, 9, energy(9), 80);
+        transformCounts(output, "wool_to_feather", Blocks.WHITE_WOOL, 1, Items.FEATHER, 4, 9, energy(9), 80);
+        transformCounts(output, "bone_to_blaze_rod", Items.BONE, 64, Items.BLAZE_ROD, 1, 9, energy(9), 200);
+        transformCounts(output, "blaze_rod_to_ender_pearl", Items.BLAZE_ROD, 4, Items.ENDER_PEARL, 1,
+                9, energy(9), 200);
+        transformCounts(output, "slime_ball_to_egg", Items.SLIME_BALL, 1, Items.EGG, 1, 8, energy(8), 100);
+        transformCounts(output, "egg_to_ink_sac", Items.EGG, 1, Items.INK_SAC, 1, 8, energy(8), 100);
+        transformCounts(output, "ink_sac_to_spider_eye", Items.INK_SAC, 1, Items.SPIDER_EYE, 1,
+                9, energy(9), 100);
+        transformCounts(output, "gravel_to_flint", Blocks.GRAVEL, 1, Items.FLINT, 1, 7, energy(7), 1_000);
+    }
+
+    private static void chain(RecipeOutput output, String id, ItemLike[] values, int[] tiers, int time) {
+        for (int index = 1; index < values.length; index++) {
+            transformCounts(output, id + "_" + index, values[index - 1], 1, values[index], 1,
+                    tiers[index], energy(tiers[index]), time);
+        }
+    }
+
+    private static void transformCounts(RecipeOutput output, String id, ItemLike input, int inputCount,
+                                        ItemLike result, int resultCount, int tier, long ce, long time) {
+        machine(output, "matter_transformer/" + id, ClayiumMachineIds.MATTER_TRANSFORMER,
+                List.of(ingredient(input, inputCount)), List.of(stack(result, resultCount)),
+                time, ce, ClayTier.byLegacyIndex(tier));
     }
 
     private static void transform(RecipeOutput output, String id, ItemLike input, ItemLike result,
@@ -171,6 +235,12 @@ public final class MaterialProcessingRecipes {
             case 5 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("energetic_clay").get();
             case 6 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("compressed_energetic_clay").get();
             case 7 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("double_compressed_energetic_clay").get();
+            case 8 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("triple_compressed_energetic_clay").get();
+            case 9 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("quadruple_compressed_energetic_clay").get();
+            case 10 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("quintuple_compressed_energetic_clay").get();
+            case 11 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("sextuple_compressed_energetic_clay").get();
+            case 12 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("septuple_compressed_energetic_clay").get();
+            case 13 -> ClayiumRegistries.COMPRESSED_CLAY_BLOCKS.get("octuple_compressed_energetic_clay").get();
             default -> throw new IllegalArgumentException("Unsupported compressed clay level: " + level);
         };
     }
@@ -261,6 +331,12 @@ public final class MaterialProcessingRecipes {
         grinder(output, "clay_steel_large_plate", item("clay_steel_large_plate"), 1, item("clay_steel_dust"), 4, 240);
         grinder(output, "iron_ingot", Items.IRON_INGOT, 1, item("iron_dust"), 1, 240);
         grinder(output, "steel_ingot", item("steel_ingot"), 1, item("steel_dust"), 1, 240);
+        machine(output, "grinder/coal", ClayiumMachineIds.GRINDER,
+                List.of(ingredient(Items.COAL, 1)), List.of(stack(item("coal_dust"), 1)),
+                80, 250, ClayTier.ADVANCED);
+        machine(output, "grinder/charcoal", ClayiumMachineIds.GRINDER,
+                List.of(ingredient(Items.CHARCOAL, 1)), List.of(stack(item("charcoal_dust"), 1)),
+                80, 250, ClayTier.ADVANCED);
 
         machine(output, "blast_furnace/industrial_clay_and_manganese", ClayiumMachineIds.CLAY_BLAST_FURNACE,
                 List.of(ingredient(component("industrial_clay_dust"), 2), ingredient(item("impure_manganese_dust"), 1)),
@@ -292,6 +368,84 @@ public final class MaterialProcessingRecipes {
                     List.of(ingredient(item(material + "_dust"), 1)),
                     List.of(stack(item(material + "_ingot"), 1)), time, ce, required);
         }
+        machine(output, "blast_furnace/laser_reflector", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(item("quartz_dust"), 16)),
+                List.of(stack(ClayiumRegistries.LASER_REFLECTOR.get(), 1)),
+                100, 20_000, ClayTier.CLAY_STEEL);
+    }
+
+    private static void clayiumUltimateProgression(RecipeOutput output) {
+        reactor(output, "clayium_from_lithium", component("advanced_industrial_clay_dust"), 8,
+                item("lithium_dust"), 4, item("clayium_dust"), 8, 50_000L, 10 * energy(7), ClayTier.CLAY_STEEL);
+        reactor(output, "clayium_from_hafnium", component("advanced_industrial_clay_dust"), 8,
+                item("hafnium_dust"), 1, item("clayium_dust"), 8, 500_000L, 10 * energy(7), ClayTier.CLAY_STEEL);
+        reactor(output, "clayium_from_barium", component("advanced_industrial_clay_dust"), 8,
+                item("barium_dust"), 1, item("clayium_dust"), 8, 5_000_000L, 3 * energy(7), ClayTier.CLAY_STEEL);
+        reactor(output, "clayium_from_strontium", component("advanced_industrial_clay_dust"), 8,
+                item("strontium_dust"), 1, item("clayium_dust"), 8, 50_000_000L, energy(7), ClayTier.CLAY_STEEL);
+        reactor(output, "excited_clay", component("energetic_clay_dust"), 8,
+                item("lithium_dust"), 1, item("excited_clay_dust"), 4, 2_000_000L, energy(7), ClayTier.CLAY_STEEL);
+        reactor(output, "clay_core", component("integrated_circuit"), 6,
+                item("excited_clay_dust"), 1, component("clay_core"), 1, 8_000_000L, 10 * energy(7), ClayTier.CLAY_STEEL);
+        reactor(output, "clay_brain", component("clay_core"), 6,
+                item("excited_clay_dust"), 12, component("clay_brain"), 1, 4_000_000_000L, 10 * energy(8), ClayTier.CLAYIUM);
+        reactor(output, "ultimate_alloy", component("advanced_industrial_clay_dust"), 1,
+                item("impure_ultimate_alloy_ingot"), 1, item("ultimate_alloy_ingot"), 1,
+                1_000_000_000L, 10 * energy(8), ClayTier.CLAYIUM);
+        reactor(output, "coal", item("coal_dust"), 1,
+                component("industrial_clay_dust"), 1, Items.COAL, 1,
+                10_000L, energy(7), ClayTier.CLAY_STEEL);
+        reactor(output, "charcoal", item("charcoal_dust"), 1,
+                component("industrial_clay_dust"), 1, Items.CHARCOAL, 1,
+                10_000L, energy(7), ClayTier.CLAY_STEEL);
+
+        machine(output, "smelter/clayium_dust", ClayiumMachineIds.SMELTER,
+                List.of(ingredient(item("clayium_dust"), 1)), List.of(stack(item("clayium_ingot"), 1)),
+                2_000L, energy(8), ClayTier.CLAYIUM);
+        machine(output, "smelter/ultimate_alloy_dust", ClayiumMachineIds.SMELTER,
+                List.of(ingredient(item("ultimate_alloy_dust"), 1)), List.of(stack(item("ultimate_alloy_ingot"), 1)),
+                2_000L, energy(9), ClayTier.ULTIMATE);
+        advancedMaterialShapes(output, "clayium", ClayTier.CLAYIUM, energy(8));
+        advancedMaterialShapes(output, "ultimate_alloy", ClayTier.ULTIMATE, energy(9));
+
+        for (int level = 0; level <= 13; level++) {
+            ClayTier minimum = level <= 11 ? ClayTier.CLAYIUM : ClayTier.ULTIMATE;
+            long time = clayFabricationTime(level, minimum == ClayTier.CLAYIUM);
+            machine(output, "clay_fabricator/level_" + level, ClayiumMachineIds.CLAY_FABRICATOR,
+                    List.of(ingredient(compressedClay(level), 1)), List.of(stack(compressedClay(level), 1)),
+                    time, 0, minimum);
+        }
+    }
+
+    private static void reactor(RecipeOutput output, String id, ItemLike first, int firstCount,
+                                ItemLike second, int secondCount, ItemLike result, int resultCount,
+                                long time, long ce, ClayTier tier) {
+        machine(output, "reactor/" + id, ClayiumMachineIds.CLAY_REACTOR,
+                List.of(ingredient(first, firstCount), ingredient(second, secondCount)),
+                List.of(stack(result, resultCount)), time, ce, tier);
+    }
+
+    private static void advancedMaterialShapes(RecipeOutput output, String material, ClayTier tier, long ce) {
+        machine(output, "bending/" + material + "_ingot_to_plate", ClayiumMachineIds.CLAY_BENDING_MACHINE,
+                List.of(ingredient(item(material + "_ingot"), 1)), List.of(stack(item(material + "_plate"), 1)),
+                120L, ce, tier);
+        machine(output, "bending/" + material + "_plates_to_large_plate", ClayiumMachineIds.CLAY_BENDING_MACHINE,
+                List.of(ingredient(item(material + "_plate"), 4)), List.of(stack(item(material + "_large_plate"), 1)),
+                240L, ce, tier);
+        machine(output, "grinder/" + material + "_ingot", ClayiumMachineIds.GRINDER,
+                List.of(ingredient(item(material + "_ingot"), 1)), List.of(stack(item(material + "_dust"), 1)),
+                240L, ce, tier);
+    }
+
+    private static long clayFabricationTime(int materialTier, boolean mk1) {
+        double base = mk1 ? 5.0D : 2.0D;
+        int acceptableTier = mk1 ? 11 : 13;
+        double efficiency = mk1 ? 45_000_000.0D : 1_000_000_000.0D;
+        double countExponent = mk1 ? 0.85D : 0.3D;
+        double initial = Math.pow(10.0D, acceptableTier) * 64.0D
+                / (Math.pow(base, acceptableTier) * Math.pow(64.0D, countExponent))
+                / (efficiency / 20.0D);
+        return Math.max(1L, Math.round(Math.pow(base, materialTier) * initial));
     }
 
     private static void bending(RecipeOutput output, String id, ItemLike input, int inputCount,
@@ -342,7 +496,7 @@ public final class MaterialProcessingRecipes {
                 List.of(ingredient(item("az91d_large_plate"), 4), ingredient(component("precision_circuit"), 1)),
                 List.of(stack(ClayiumRegistries.OTHER_HULL_BLOCKS.get("az91d_machine_hull").get(), 1)),
                 120, energy(6), ClayTier.BASIC);
-        for (String prefix : List.of("advanced", "precision", "clay_steel")) {
+        for (String prefix : List.of("advanced", "precision", "clay_steel", "clayium", "ultimate")) {
             ClayTier tier = ClayTier.byIdOrRaw(prefix);
             machine(output, "machine/" + prefix + "_clay_interface", ClayiumMachineIds.ASSEMBLER,
                     List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get(prefix + "_machine_hull").get(), 1),
@@ -422,11 +576,98 @@ public final class MaterialProcessingRecipes {
         machine(output, "machine/manipulator", ClayiumMachineIds.ASSEMBLER,
                 List.of(ingredient(item("az91d_ingot"), 16), ingredient(component("precision_circuit"), 1)),
                 List.of(stack(item("manipulator"), 1)), 20, energy(4), ClayTier.BASIC);
+        clayiumUltimateMachines(output);
+    }
+
+    private static void clayiumUltimateMachines(RecipeOutput output) {
+        for (int tier = 7; tier <= 9; tier++) {
+            ClayTier clayTier = ClayTier.byLegacyIndex(tier);
+            String prefix = clayTier.id();
+            machine(output, "machine/" + prefix + "_clay_laser_interface", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get(prefix + "_buffer").get(), 1),
+                            ingredient(component("laser_parts"), 1)),
+                    List.of(stack(ClayiumRegistries.CLAY_LASER_INTERFACE_BLOCKS.get(prefix + "_clay_laser_interface").get(), 1)),
+                    120L, energy(tier), ClayTier.PRECISION);
+            machine(output, "machine/" + prefix + "_clay_energy_laser", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get(prefix + "_machine_hull").get(), 1),
+                            ingredient(component("laser_parts"), 4)),
+                    List.of(stack(ClayiumRegistries.CLAY_ENERGY_LASER_BLOCKS.get(prefix + "_clay_energy_laser").get(), 1)),
+                    480L, energy(tier), ClayTier.PRECISION);
+            machine(output, "machine/" + prefix + "_matter_transformer", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.CLAY_REACTOR.get(), 1),
+                            ingredient(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get(prefix + "_electrolysis_reactor").get(), 1)),
+                    List.of(stack(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get(prefix + "_matter_transformer").get(), 1)),
+                    120L, energy(tier), ClayTier.PRECISION);
+        }
+        machine(output, "machine/clayium_chemical_reactor", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clayium_machine_hull").get(), 1),
+                        ingredient(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("advanced_chemical_reactor").get(), 1)),
+                List.of(stack(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("clayium_chemical_reactor").get(), 1)),
+                480L, energy(8), ClayTier.BASIC);
+        for (int tier = 8; tier <= 9; tier++) {
+            String prefix = ClayTier.byLegacyIndex(tier).id();
+            ItemLike circuit = component(tier == 8 ? "clay_core" : "clay_brain");
+            machine(output, "machine/" + prefix + "_electrolysis_reactor", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("advanced_chemical_reactor").get(), 1),
+                            ingredient(circuit, 1)),
+                    List.of(stack(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get(prefix + "_electrolysis_reactor").get(), 1)),
+                    40L, energy(tier), ClayTier.BASIC);
+            machine(output, "machine/" + prefix + "_smelter", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get(prefix + "_machine_hull").get(), 1),
+                            ingredient(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get(
+                                    ClayTier.byLegacyIndex(tier - 1).id() + "_smelter").get(), 16)),
+                    List.of(stack(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get(prefix + "_smelter").get(), 1)),
+                    2_000L, energy(tier), ClayTier.PRECISION);
+        }
+        machine(output, "machine/ultimate_bending_machine", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("ultimate_machine_hull").get(), 1),
+                        ingredient(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get("clay_steel_bending_machine").get(), 4)),
+                List.of(stack(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get("ultimate_bending_machine").get(), 1)),
+                480L, energy(9), ClayTier.PRECISION);
+        machine(output, "machine/clay_reactor", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1),
+                        ingredient(ClayiumRegistries.CLAY_LASER_INTERFACE_BLOCKS.get("clay_steel_clay_laser_interface").get(), 1)),
+                List.of(stack(ClayiumRegistries.CLAY_REACTOR.get(), 1)), 1_200L, energy(7), ClayTier.PRECISION);
+        machine(output, "machine/clay_steel_auto_clay_condenser", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_buffer").get(), 1),
+                        ingredient(component("advanced_circuit"), 1)),
+                List.of(stack(ClayiumRegistries.CLAY_STEEL_AUTO_CLAY_CONDENSER.get(), 1)), 40L, energy(7), ClayTier.PRECISION);
+
+        for (int tier = 8; tier <= 9; tier++) {
+            ClayTier clayTier = ClayTier.byLegacyIndex(tier);
+            String prefix = clayTier.id();
+            String previous = ClayTier.byLegacyIndex(tier - 1).id();
+            machine(output, "machine/" + prefix + "_auto_crafter", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(ClayiumRegistries.AUTO_CRAFTER_BLOCKS.get(previous + "_auto_crafter").get(), 1),
+                            ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get(prefix + "_machine_hull").get(), 1)),
+                    List.of(stack(ClayiumRegistries.AUTO_CRAFTER_BLOCKS.get(prefix + "_auto_crafter").get(), 1)),
+                    40L, energy(tier), ClayTier.PRECISION);
+        }
+        for (int tier = 4; tier <= 9; tier++) {
+            ClayTier clayTier = ClayTier.byLegacyIndex(tier);
+            String prefix = clayTier.id();
+            ItemLike previous = tier == 4 ? ClayiumRegistries.MACHINE_HULL_BLOCKS.get(prefix + "_machine_hull").get()
+                    : ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCKS.get(ClayTier.byLegacyIndex(tier - 1).id() + "_clay_energy_converter").get();
+            ItemLike redstone = ClayiumRegistries.REDSTONE_INTERFACE_BLOCKS.get(
+                    (tier < 5 ? "advanced" : prefix) + "_redstone_interface").get();
+            machine(output, "machine/" + prefix + "_clay_energy_converter", ClayiumMachineIds.ASSEMBLER,
+                    List.of(ingredient(previous, 1), ingredient(redstone, 1)),
+                    List.of(stack(ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCKS.get(prefix + "_clay_energy_converter").get(), 1)),
+                    120L, energy(tier), ClayTier.BASIC);
+        }
+        reactor(output, "clay_fabricator_mk1", ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clayium_machine_hull").get(), 1,
+                ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("clay_steel_lithium_solar_clay_fabricator").get(), 1,
+                ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("clayium_clay_fabricator_mk1").get(), 1,
+                100_000_000L, 3 * energy(8), ClayTier.CLAYIUM);
+        reactor(output, "clay_fabricator_mk2", ClayiumRegistries.MACHINE_HULL_BLOCKS.get("ultimate_machine_hull").get(), 1,
+                ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("clay_steel_lithium_solar_clay_fabricator").get(), 1,
+                ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("ultimate_clay_fabricator_mk2").get(), 1,
+                100_000_000_000L, 3 * energy(9), ClayTier.ULTIMATE);
     }
 
     private static void machine(RecipeOutput output, String id, net.minecraft.resources.ResourceLocation machine,
                                 List<MachineIngredient> inputs, List<ItemStack> outputs,
-                                int time, long energy, ClayTier minimumTier) {
+                                long time, long energy, ClayTier minimumTier) {
         output.accept(Clayium.id(id), new MachineRecipe(
                 machine, new ArrayList<>(inputs), new ArrayList<>(outputs), time, energy, minimumTier), null);
     }

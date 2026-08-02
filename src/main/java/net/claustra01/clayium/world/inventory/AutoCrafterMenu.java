@@ -34,7 +34,7 @@ public final class AutoCrafterMenu extends AbstractDedicatedMachineMenu {
             addSlot(new OutputSlot(container, AutoCrafterBlockEntity.OUTPUT_START + column + row * 2,
                     135 + column * 18, 18 + row * 18));
         }
-        if (tier >= 6) addSlot(new RestrictedSlot(container, AutoCrafterBlockEntity.ENERGY_SLOT, -12, 68));
+        if (tier >= 6) addSlot(new EnergySlot(container, AutoCrafterBlockEntity.ENERGY_SLOT, -12, 68));
         finishLayout(inventory);
     }
     @Override public void clicked(int slotId, int button, ClickType clickType, Player player) {

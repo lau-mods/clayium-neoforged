@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 20000,
+  "ingredients": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:quartz_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_blast_furnace",
+  "minimum_tier": "clay_steel",
+  "processing_time_ticks": 100,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:laser_reflector"
+    }
+  ]
+}

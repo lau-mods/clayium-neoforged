@@ -69,6 +69,9 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
         if (blockId.equals("clay_blast_furnace")) {
             return ClayiumMachineIds.CLAY_BLAST_FURNACE;
         }
+        if (blockId.equals("clay_reactor")) {
+            return ClayiumMachineIds.CLAY_REACTOR;
+        }
         ResourceLocation manufacturing = ManufacturingMachineCatalog.ENTRIES.stream()
                 .filter(entry -> entry.blockId().equals(blockId))
                 .map(ManufacturingMachineCatalog.Entry::machineId)

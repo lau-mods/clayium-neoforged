@@ -17,6 +17,7 @@ import net.claustra01.clayium.logistics.ConfigurableItemDevice;
 import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.MachinePerformance;
+import net.claustra01.clayium.machine.MachineModifiers;
 import net.claustra01.clayium.machine.ClayBlastFurnaceStructure;
 import net.claustra01.clayium.machine.ConfigurableClayEnergyMachine;
 import net.claustra01.clayium.recipe.MachineIngredient;
@@ -56,7 +57,7 @@ import net.minecraft.server.level.ServerLevel;
 
 /** Server-owned runtime for the common Clayium machine recipe layouts. */
 public final class MachineBlockEntity extends BaseContainerBlockEntity
-        implements ConfigurableClayEnergyMachine {
+        implements ConfigurableClayEnergyMachine, net.claustra01.clayium.laser.ClayLaserReceiver {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
     public static final int SLOT_COUNT = MachineLayout.STORAGE_SLOT_COUNT;
@@ -71,8 +72,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             new ClayEnergyStorage(ENERGY_CAPACITY, ENERGY_TRANSFER_LIMIT, ENERGY_TRANSFER_LIMIT);
     @Nullable
     private ResourceLocation activeRecipeId;
-    private int progress;
-    private int totalProgress;
+    private long progress;
+    private long totalProgress;
     private int recipeRecheckDelay;
     private long activeEnergyPerTick;
     private StopReason stopReason = StopReason.NO_RECIPE;
@@ -89,13 +90,17 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     private net.claustra01.clayium.tier.ClayTier structureTier = net.claustra01.clayium.tier.ClayTier.RAW;
     private boolean externalWorkEnabled = true;
     private boolean externalSingleRun;
+    private long pendingLaserProgress;
+    private int fabricationBatchSize;
+    private int modifierCheckDelay;
+    private MachineModifiers.Snapshot modifiers = MachineModifiers.Snapshot.DEFAULT;
 
     private final ContainerData menuData = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> progress;
-                case 1 -> totalProgress;
+                case 0 -> displayedProgress();
+                case 1 -> displayedTotalProgress();
                 case 2 -> (int) energy.energyStored();
                 case 3 -> (int) (energy.energyStored() >>> 32);
                 case 4 -> stopReason.ordinal();
@@ -134,6 +139,16 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
     };
 
+    private int displayedProgress() {
+        if (totalProgress <= Integer.MAX_VALUE) return (int)Math.min(progress, Integer.MAX_VALUE);
+        return (int)Math.min(1_000_000L, progress >= totalProgress ? 1_000_000L
+                : progress * 1_000_000L / totalProgress);
+    }
+
+    private int displayedTotalProgress() {
+        return totalProgress <= Integer.MAX_VALUE ? (int)totalProgress : 1_000_000;
+    }
+
     private final IItemHandler itemHandler = new IItemHandler() {
         @Override
         public int getSlots() {
@@ -160,7 +175,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             if (!current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)) {
                 return stack;
             }
-            int accepted = Math.min(stack.getCount(), stack.getMaxStackSize() - current.getCount());
+            int limit = Math.min(stack.getMaxStackSize(), getSlotLimit(slot));
+            int accepted = Math.min(stack.getCount(), limit - current.getCount());
             if (accepted <= 0) {
                 return stack;
             }
@@ -197,7 +213,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         @Override
         public int getSlotLimit(int slot) {
             validateSlot(slot);
-            return getMaxStackSize();
+            return slot == MachineLayout.ENERGY_SLOT && acceptsEnergeticClay()
+                    ? modifiers.energySlotLimit() : getMaxStackSize();
         }
 
         @Override
@@ -243,8 +260,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     private boolean refreshStructureState() {
         MachineBlock block = machineBlock();
-        if (block == null || !block.machineId().equals(
-                net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)) {
+        if (block == null || (!block.machineId().equals(
+                net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
+                && !block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR))) {
             return true;
         }
         if (structureCheckDelay-- > 0) {
@@ -256,10 +274,18 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             structureTier = net.claustra01.clayium.tier.ClayTier.RAW;
             return false;
         }
-        ClayBlastFurnaceStructure.Result result = ClayBlastFurnaceStructure.validate(
-                serverLevel, worldPosition, getBlockState().getValue(MachineBlock.FACING));
-        structureFormed = result.formed();
-        structureTier = result.recipeTier();
+        if (block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)) {
+            net.claustra01.clayium.machine.ClayReactorStructure.Result result =
+                    net.claustra01.clayium.machine.ClayReactorStructure.validate(serverLevel, worldPosition,
+                            getBlockState().getValue(MachineBlock.FACING));
+            structureFormed = result.formed();
+            structureTier = result.tier();
+        } else {
+            ClayBlastFurnaceStructure.Result result = ClayBlastFurnaceStructure.validate(
+                    serverLevel, worldPosition, getBlockState().getValue(MachineBlock.FACING));
+            structureFormed = result.formed();
+            structureTier = result.recipeTier();
+        }
         if (getBlockState().getValue(MachineBlock.FORMED) != structureFormed) {
             level.setBlock(worldPosition, getBlockState().setValue(MachineBlock.FORMED, structureFormed), 3);
         }
@@ -363,13 +389,18 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     private void serverTick() {
+        if (modifierCheckDelay-- <= 0) {
+            modifiers = MachineModifiers.scan(level, worldPosition);
+            modifierCheckDelay = 20;
+        }
         MachineBlock machineBlock = machineBlock();
         if (machineBlock == null) {
             stopReason = StopReason.INVALID_BLOCK;
             return;
         }
-        if (machineBlock.machineId().equals(
+        if ((machineBlock.machineId().equals(
                 net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
+                || machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR))
                 && !structureFormed) {
             stopReason = StopReason.INVALID_STRUCTURE;
             resetProcessing();
@@ -392,9 +423,16 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
 
         MachineRecipe value = recipe.get().value();
-        totalProgress = MachinePerformance.processingTime(value, machineBlock.machineId(), recipeTier());
-        long energyPerTick =
-                MachinePerformance.clayEnergyPerTick(value, machineBlock.machineId(), recipeTier());
+        if (fabricationBatchSize <= 0) {
+            fabricationBatchSize = net.claustra01.clayium.machine.MachineProcessPolicy.batchSize(
+                    machineBlock.machineId(), getItem(machineLayout().inputSlots()[0]).getCount());
+        }
+        long baseProcessingTime = net.claustra01.clayium.machine.MachineProcessPolicy.processingTime(
+                MachinePerformance.processingTime(value, machineBlock.machineId(), recipeTier()),
+                machineBlock.machineId(), machineTier(), fabricationBatchSize);
+        totalProgress = Math.max(1L, (long)Math.ceil(baseProcessingTime / modifiers.overclockFactor()));
+        long energyPerTick = Math.max(0L, Math.round(MachinePerformance.clayEnergyPerTick(
+                value, machineBlock.machineId(), recipeTier()) * modifiers.energyFactor()));
         activeEnergyPerTick = energyPerTick;
         if (!canOutput(value)) {
             stopReason = StopReason.OUTPUT_BLOCKED;
@@ -410,6 +448,13 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
         energy.extract(energyPerTick, false);
         progress++;
+        if (machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)
+                && pendingLaserProgress > 0) {
+            progress = pendingLaserProgress > Long.MAX_VALUE - progress
+                    ? Long.MAX_VALUE
+                    : progress + pendingLaserProgress;
+            pendingLaserProgress = 0;
+        }
         stopReason = StopReason.RUNNING;
         if (progress >= totalProgress) {
             complete(value);
@@ -488,7 +533,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         List<ItemStack> results = recipe.results();
         for (int index = 0; index < Math.min(outputSlots.length, results.size()); index++) {
             int outputSlot = outputSlots[index];
-            ItemStack result = results.get(index);
+            ItemStack result = processingResult(recipe, results.get(index));
             ItemStack output = getItem(outputSlot);
             if (output.isEmpty()) {
                 items.set(outputSlot, result.copy());
@@ -496,11 +541,13 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
                 output.grow(result.getCount());
             }
         }
-        int[] inputSlots = machineLayout().inputSlots();
-        for (int ingredientIndex = 0; ingredientIndex < recipe.ingredients().size(); ingredientIndex++) {
-            int inventorySlot = inputSlots[matchedSlots.get()[ingredientIndex]];
-            MachineIngredient ingredient = recipe.ingredients().get(ingredientIndex);
-            getItem(inventorySlot).shrink(ingredient.count());
+        if (net.claustra01.clayium.machine.MachineProcessPolicy.consumesInputs(recipe.machine())) {
+            int[] inputSlots = machineLayout().inputSlots();
+            for (int ingredientIndex = 0; ingredientIndex < recipe.ingredients().size(); ingredientIndex++) {
+                int inventorySlot = inputSlots[matchedSlots.get()[ingredientIndex]];
+                MachineIngredient ingredient = recipe.ingredients().get(ingredientIndex);
+                getItem(inventorySlot).shrink(ingredient.count());
+            }
         }
         resetProcessing();
         recipeRecheckDelay = 0;
@@ -510,7 +557,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         int[] outputSlots = machineLayout().outputSlots(machineTier());
         List<ItemStack> results = recipe.results();
         for (int index = 0; index < Math.min(outputSlots.length, results.size()); index++) {
-            ItemStack result = results.get(index);
+            ItemStack result = processingResult(recipe, results.get(index));
             ItemStack output = getItem(outputSlots[index]);
             if (!output.isEmpty()
                     && (!ItemStack.isSameItemSameComponents(output, result)
@@ -521,11 +568,18 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         return true;
     }
 
+    private ItemStack processingResult(MachineRecipe recipe, ItemStack recipeResult) {
+        int count = net.claustra01.clayium.machine.MachineProcessPolicy.outputCount(
+                recipe.machine(), recipeResult.getCount(), fabricationBatchSize);
+        return recipeResult.copyWithCount(count);
+    }
+
     private void resetProcessing() {
         activeRecipeId = null;
         progress = 0;
         totalProgress = 0;
         activeEnergyPerTick = 0;
+        fabricationBatchSize = 0;
     }
 
     @Nullable
@@ -545,16 +599,23 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     private net.claustra01.clayium.tier.ClayTier recipeTier() {
         MachineBlock block = machineBlock();
-        return block != null && block.machineId().equals(
+        return block != null && (block.machineId().equals(
                 net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
+                || block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR))
                 ? structureTier : machineTier();
+    }
+
+    @Override public boolean receiveClayLaser(net.claustra01.clayium.laser.ClayLaser laser, Direction incomingSide) {
+        MachineBlock block = machineBlock();
+        if (block == null || !block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)) return false;
+        pendingLaserProgress = Math.max(pendingLaserProgress, Math.max(1L, (long)laser.energy()));
+        return true;
     }
 
     private boolean acceptsEnergeticClay() {
         MachineBlock block = machineBlock();
-        return machineTier().progressionIndex() >= 4
-                && (block == null || !block.machineId().equals(
-                        net.claustra01.clayium.machine.ClayiumMachineIds.SOLAR_CLAY_FABRICATOR));
+        return machineTier().progressionIndex() >= 4 && block != null
+                && net.claustra01.clayium.machine.MachineProcessPolicy.acceptsEnergeticClay(block.machineId());
     }
 
     private List<ItemStack> inputStacks() {
@@ -684,6 +745,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
 
     @Override
     public void setItem(int slot, ItemStack stack) {
+        if (slot == MachineLayout.ENERGY_SLOT && acceptsEnergeticClay()) {
+            stack.limitSize(Math.min(stack.getMaxStackSize(), modifiers.energySlotLimit()));
+        }
         super.setItem(slot, stack);
         if (machineLayout().isInputSlot(slot)) {
             resetProcessing();
@@ -700,8 +764,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         activeRecipeId = tag.contains("ActiveRecipe")
                 ? ResourceLocation.tryParse(tag.getString("ActiveRecipe"))
                 : null;
-        progress = Math.max(0, tag.getInt("Progress"));
-        totalProgress = Math.max(0, tag.getInt("TotalProgress"));
+        progress = Math.max(0L, tag.getLong("Progress"));
+        totalProgress = Math.max(0L, tag.getLong("TotalProgress"));
+        fabricationBatchSize = Math.max(0, Math.min(64, tag.getInt("FabricationBatchSize")));
         externalWorkEnabled = !tag.contains("ExternalWorkEnabled") || tag.getBoolean("ExternalWorkEnabled");
         externalSingleRun = tag.getBoolean("ExternalSingleRun");
         sideConfiguration.replaceRoutes(
@@ -721,8 +786,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         if (activeRecipeId != null) {
             tag.putString("ActiveRecipe", activeRecipeId.toString());
         }
-        tag.putInt("Progress", progress);
-        tag.putInt("TotalProgress", totalProgress);
+        tag.putLong("Progress", progress);
+        tag.putLong("TotalProgress", totalProgress);
+        tag.putInt("FabricationBatchSize", fabricationBatchSize);
         tag.putBoolean("ExternalWorkEnabled", externalWorkEnabled);
         tag.putBoolean("ExternalSingleRun", externalSingleRun);
         tag.putIntArray("InsertionRoutes", insertionRoutes);

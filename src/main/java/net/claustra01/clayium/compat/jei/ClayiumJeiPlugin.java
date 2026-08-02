@@ -91,6 +91,9 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(
                 ClayiumRegistries.CLAY_BLAST_FURNACE_ITEM.get(),
                 ClayiumJeiRecipeTypes.CLAY_BLAST_FURNACE);
+        registration.addRecipeCatalyst(
+                ClayiumRegistries.CLAY_REACTOR_ITEM.get(),
+                ClayiumJeiRecipeTypes.CLAY_REACTOR);
         registration.addRecipeCatalyst(ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get(), ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE);
         registration.addRecipeCatalyst(ClayiumRegistries.PRECISION_CHEMICAL_METAL_SEPARATOR_ITEM.get(),
                 ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR);
@@ -225,6 +228,9 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         }
         if (ClayiumMachineIds.CLAY_BLAST_FURNACE.equals(machineId)) {
             return ClayiumRegistries.CLAY_BLAST_FURNACE_ITEM.get().getDefaultInstance();
+        }
+        if (ClayiumMachineIds.CLAY_REACTOR.equals(machineId)) {
+            return ClayiumRegistries.CLAY_REACTOR_ITEM.get().getDefaultInstance();
         }
         return ManufacturingMachineCatalog.ENTRIES.stream()
                 .filter(entry -> entry.machineId().equals(machineId))

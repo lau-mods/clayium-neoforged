@@ -37,7 +37,7 @@ public record MachineRecipe(
         ResourceLocation machine,
         List<MachineIngredient> ingredients,
         List<ItemStack> results,
-        int processingTimeTicks,
+        long processingTimeTicks,
         long clayEnergyPerTick,
         ClayTier minimumTier
 ) implements Recipe<MachineRecipeInput> {
@@ -59,7 +59,9 @@ public record MachineRecipe(
                     ItemStack.CODEC.listOf(1, MAX_OUTPUTS)
                             .fieldOf("results")
                             .forGetter(MachineRecipe::results),
-                    Codec.intRange(1, Integer.MAX_VALUE)
+                    NON_NEGATIVE_LONG.validate(value -> value > 0
+                            ? com.mojang.serialization.DataResult.success(value)
+                            : com.mojang.serialization.DataResult.error(() -> "Value must be positive"))
                             .fieldOf("processing_time_ticks")
                             .forGetter(MachineRecipe::processingTimeTicks),
                     NON_NEGATIVE_LONG
@@ -93,7 +95,7 @@ public record MachineRecipe(
                             machine,
                             ingredients,
                             results,
-                            ByteBufCodecs.VAR_INT.decode(buffer),
+                            ByteBufCodecs.VAR_LONG.decode(buffer),
                             ByteBufCodecs.VAR_LONG.decode(buffer),
                             ClayTier.STREAM_CODEC.decode(buffer));
                 }
@@ -106,7 +108,7 @@ public record MachineRecipe(
                             MachineIngredient.STREAM_CODEC.encode(buffer, ingredient));
                     ByteBufCodecs.VAR_INT.encode(buffer, recipe.results.size());
                     recipe.results.forEach(result -> ItemStack.STREAM_CODEC.encode(buffer, result));
-                    ByteBufCodecs.VAR_INT.encode(buffer, recipe.processingTimeTicks);
+                    ByteBufCodecs.VAR_LONG.encode(buffer, recipe.processingTimeTicks);
                     ByteBufCodecs.VAR_LONG.encode(buffer, recipe.clayEnergyPerTick);
                     ClayTier.STREAM_CODEC.encode(buffer, recipe.minimumTier);
                 }
@@ -151,7 +153,7 @@ public record MachineRecipe(
             ResourceLocation machine,
             Ingredient ingredient,
             ItemStack result,
-            int processingTimeTicks,
+            long processingTimeTicks,
             long clayEnergyPerTick,
             ClayTier minimumTier) {
         this(

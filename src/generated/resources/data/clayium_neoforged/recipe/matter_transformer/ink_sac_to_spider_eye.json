@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:ink_sac"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:matter_transformer",
+  "minimum_tier": "ultimate",
+  "processing_time_ticks": 100,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:spider_eye"
+    }
+  ]
+}

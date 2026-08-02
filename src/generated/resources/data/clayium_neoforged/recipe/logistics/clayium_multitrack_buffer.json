@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000,
+  "ingredients": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_buffer"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_large_plate"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 40,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clayium_multitrack_buffer"
+    }
+  ]
+}

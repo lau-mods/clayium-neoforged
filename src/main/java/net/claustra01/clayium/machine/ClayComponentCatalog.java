@@ -59,7 +59,9 @@ public final class ClayComponentCatalog {
             item("clay_energy_excitor", "Clay Energy Excitor", "cee"),
             item("laser_parts", "Laser Parts", "laserparts"),
             item("impure_silicon_plate", "Impure Silicon Plate", "impuresiliconplate"),
-            item("silicon_plate", "Silicon Plate", "siliconplate"));
+            item("silicon_plate", "Silicon Plate", "siliconplate"),
+            item("clay_core", "Clay Core", "claycore"),
+            item("clay_brain", "Clay Brain", "claybrain"));
 
     private ClayComponentCatalog() {
     }

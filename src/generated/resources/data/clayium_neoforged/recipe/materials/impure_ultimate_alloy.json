@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:barium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:strontium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:calcium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:clayium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:aluminium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:aluminium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:aluminium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:aluminium_ingot"
+    },
+    {
+      "item": "clayium_neoforged:aluminium_ingot"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:impure_ultimate_alloy_ingot"
+  }
+}
