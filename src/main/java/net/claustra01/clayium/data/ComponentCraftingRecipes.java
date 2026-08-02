@@ -123,8 +123,13 @@ public final class ComponentCraftingRecipes {
                 'E', item("clay_energy_excitor"));
         shaped(output, "clay_steel_machine_hull", hull(7), "#E#", "#C#", "###",
                 '#', material("clay_steel_large_plate"),
-                'C', item("precision_circuit"),
+                'C', item("integrated_circuit"),
                 'E', item("clay_energy_excitor"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, material("clay_steel_ingot"))
+                .requires(ClayiumRegistries.COMPRESSED_CLAY.get(), 2)
+                .requires(Items.IRON_INGOT)
+                .unlockedBy("has_compressed_clay", has(ClayiumRegistries.COMPRESSED_CLAY.get()))
+                .save(output, Clayium.id("clay_steel_ingot"));
         shaped(output, "clay_steel_block", ClayiumRegistries.MATERIAL_BLOCKS.get("clay_steel_block").get(),
                 "###", "###", "###", '#', material("clay_steel_ingot"));
         shaped(output, "clay_steel_pickaxe", ClayiumRegistries.CLAY_STEEL_PICKAXE.get(),

@@ -1,11 +1,11 @@
 {
   "type": "clayium_neoforged:machine",
-  "clay_energy_per_tick": 8,
+  "clay_energy_per_tick": 100000,
   "ingredients": [
     {
-      "count": 3,
+      "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:industrial_clay_plate"
+        "item": "clayium_neoforged:clay_steel_buffer"
       }
     },
     {
@@ -16,12 +16,12 @@
     }
   ],
   "machine": "clayium_neoforged:assembler",
-  "minimum_tier": "basic",
-  "processing_time_ticks": 20,
+  "minimum_tier": "precision",
+  "processing_time_ticks": 120,
   "results": [
     {
       "count": 1,
-      "id": "clayium_neoforged:filter_fuzzy"
+      "id": "clayium_neoforged:clay_steel_distributor"
     }
   ]
 }

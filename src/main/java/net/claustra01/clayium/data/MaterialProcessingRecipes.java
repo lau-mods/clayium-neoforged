@@ -319,7 +319,7 @@ public final class MaterialProcessingRecipes {
                 120, energy(6), ClayTier.BASIC);
         machine(output, "machine/clay_steel_electrolysis_reactor", ClayiumMachineIds.ASSEMBLER,
                 List.of(ingredient(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("advanced_chemical_reactor").get(), 1),
-                        ingredient(component("precision_circuit"), 1)),
+                        ingredient(component("integrated_circuit"), 1)),
                 List.of(stack(ClayiumRegistries.SPECIALIZED_MACHINE_BLOCKS.get("clay_steel_electrolysis_reactor").get(), 1)),
                 40, energy(7), ClayTier.PRECISION);
         machine(output, "machine/clay_steel_lithium_solar_clay_fabricator", ClayiumMachineIds.ASSEMBLER,
@@ -342,6 +342,10 @@ public final class MaterialProcessingRecipes {
                         ingredient(component("simple_circuit"), 4)),
                 List.of(stack(ClayiumRegistries.MANUFACTURING_MACHINE_BLOCKS.get("clay_steel_smelter").get(), 1)),
                 120, energy(7), ClayTier.PRECISION);
+        machine(output, "machine/laser_parts", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(component("clay_energy_excitor"), 1),
+                        ingredient(component("integrated_circuit"), 1)),
+                List.of(stack(component("laser_parts"), 1)), 20, energy(6), ClayTier.PRECISION);
         machine(output, "machine/advanced_auto_clay_condenser", ClayiumMachineIds.ASSEMBLER,
                 List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get("advanced_buffer").get(), 1),
                         ingredient(component("advanced_circuit"), 1)),

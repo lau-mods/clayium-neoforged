@@ -34,6 +34,11 @@ public final class LogisticsRecipes {
                         ingredient(ClayiumRegistries.MACHINE_HULL_BLOCKS.get("clay_steel_machine_hull").get(), 1)),
                 ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_distributor").get(), 1,
                 100_000, 120, 6);
+        recipe(output, "logistics/clay_steel_distributor_integrated_circuit",
+                List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_buffer").get(), 1),
+                        ingredient(item("integrated_circuit"), 1)),
+                ClayiumRegistries.LOGISTICS_BLOCKS.get("clay_steel_distributor").get(), 1,
+                100_000, 120, 6);
         recipe(output, "logistics/tools/clay_io_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_ROLLING_PIN.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_SLICER.get(), 1)),
@@ -48,15 +53,15 @@ public final class LogisticsRecipes {
                 ClayiumRegistries.IO_MEMORY_CARD.get(), 1, 10_000, 20, 6);
         recipe(output, "logistics/tools/filter_whitelist",
                 List.of(ingredient(item("industrial_clay_plate"), 3),
-                        ingredient(item("basic_circuit"), 1)),
+                        ingredient(item("advanced_circuit"), 1)),
                 ClayiumRegistries.FILTER_WHITELIST.get(), 1, 8, 20, 4);
         recipe(output, "logistics/tools/filter_item_name",
                 List.of(ingredient(item("industrial_clay_plate"), 3),
-                        ingredient(item("advanced_circuit"), 1)),
+                        ingredient(item("precision_circuit"), 1)),
                 ClayiumRegistries.FILTER_ITEM_NAME.get(), 1, 8, 20, 4);
         recipe(output, "logistics/tools/filter_fuzzy",
                 List.of(ingredient(item("industrial_clay_plate"), 3),
-                        ingredient(item("precision_circuit"), 1)),
+                        ingredient(item("integrated_circuit"), 1)),
                 ClayiumRegistries.FILTER_FUZZY.get(), 1, 8, 20, 4);
     }
 

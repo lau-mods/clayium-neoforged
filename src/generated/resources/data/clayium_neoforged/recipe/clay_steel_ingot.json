@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:compressed_clay"
+    },
+    {
+      "item": "clayium_neoforged:compressed_clay"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_steel_ingot"
+  }
+}

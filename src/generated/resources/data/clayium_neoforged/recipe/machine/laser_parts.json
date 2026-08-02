@@ -1,27 +1,27 @@
 {
   "type": "clayium_neoforged:machine",
-  "clay_energy_per_tick": 8,
+  "clay_energy_per_tick": 10000,
   "ingredients": [
     {
-      "count": 3,
+      "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:industrial_clay_plate"
+        "item": "clayium_neoforged:clay_energy_excitor"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:precision_circuit"
+        "item": "clayium_neoforged:integrated_circuit"
       }
     }
   ],
   "machine": "clayium_neoforged:assembler",
-  "minimum_tier": "basic",
+  "minimum_tier": "precision",
   "processing_time_ticks": 20,
   "results": [
     {
       "count": 1,
-      "id": "clayium_neoforged:filter_item_name"
+      "id": "clayium_neoforged:laser_parts"
     }
   ]
 }
