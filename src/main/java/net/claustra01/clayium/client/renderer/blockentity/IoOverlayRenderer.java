@@ -17,8 +17,8 @@ import net.claustra01.clayium.world.level.block.SaltExtractorBlock;
 import net.claustra01.clayium.world.level.block.entity.SaltExtractorBlockEntity;
 import net.claustra01.clayium.world.level.block.CobblestoneGeneratorBlock;
 import net.claustra01.clayium.world.level.block.entity.CobblestoneGeneratorBlockEntity;
-import net.claustra01.clayium.world.level.block.SpecialMachineBlock;
-import net.claustra01.clayium.world.level.block.entity.SpecialMachineBlockEntity;
+import net.claustra01.clayium.world.level.block.AbstractTieredIoMachineBlock;
+import net.claustra01.clayium.world.level.block.MachineInterfaceBlock;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -94,8 +94,11 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
                     ? Clayium.id("block/clay_machine_hull")
                     : Clayium.id("block/machine_hull_" + generator.tier().id());
         }
-        if (blockEntity.getBlockState().getBlock() instanceof SpecialMachineBlock special) {
+        if (blockEntity.getBlockState().getBlock() instanceof AbstractTieredIoMachineBlock special) {
             return Clayium.id("block/machine_hull_" + special.tier().id());
+        }
+        if (blockEntity.getBlockState().getBlock() instanceof MachineInterfaceBlock machineInterface) {
+            return Clayium.id("block/machine_hull_" + machineInterface.tier().id());
         }
         return Clayium.id("block/clay_machine_hull");
     }

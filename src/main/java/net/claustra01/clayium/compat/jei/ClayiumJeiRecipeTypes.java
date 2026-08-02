@@ -15,10 +15,10 @@ import net.claustra01.clayium.recipe.MachineRecipe;
 import net.minecraft.resources.ResourceLocation;
 
 public final class ClayiumJeiRecipeTypes {
-    public static final RecipeType<SpecialProcessRecipe> QUARTZ_CRUCIBLE = RecipeType.create(
-            Clayium.MODID, "quartz_crucible", SpecialProcessRecipe.class);
-    public static final RecipeType<SpecialProcessRecipe> CHEMICAL_METAL_SEPARATOR = RecipeType.create(
-            Clayium.MODID, "chemical_metal_separator", SpecialProcessRecipe.class);
+    public static final RecipeType<QuartzCrucibleJeiRecipe> QUARTZ_CRUCIBLE = RecipeType.create(
+            Clayium.MODID, "quartz_crucible", QuartzCrucibleJeiRecipe.class);
+    public static final RecipeType<ChemicalMetalSeparatorJeiRecipe> CHEMICAL_METAL_SEPARATOR = RecipeType.create(
+            Clayium.MODID, "chemical_metal_separator", ChemicalMetalSeparatorJeiRecipe.class);
     public static final RecipeType<ClayWorkTableRecipe> CLAY_WORK_TABLE =
             RecipeType.create(Clayium.MODID, "clay_work_table", ClayWorkTableRecipe.class);
     public static final RecipeType<MachineRecipe> CLAY_BENDING_MACHINE = machine("clay_bending_machine");

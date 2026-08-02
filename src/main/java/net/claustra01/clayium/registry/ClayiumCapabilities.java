@@ -30,6 +30,11 @@ public final class ClayiumCapabilities {
                         ? blockEntity.itemHandler(net.minecraft.core.Direction.UP)
                         : blockEntity.itemHandler(direction));
         event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.MACHINE_INTERFACE_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
                 Capabilities.FluidHandler.BLOCK,
                 ClayiumRegistries.FLUID_BUFFER_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> direction == null
@@ -47,7 +52,17 @@ public final class ClayiumCapabilities {
                         direction == null ? net.minecraft.core.Direction.NORTH : direction));
         event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,
-                ClayiumRegistries.SPECIAL_MACHINE_BLOCK_ENTITY.get(),
+                ClayiumRegistries.AUTO_CLAY_CONDENSER_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.AUTO_CRAFTER_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.CHEMICAL_METAL_SEPARATOR_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> blockEntity.itemHandler(
                         direction == null ? net.minecraft.core.Direction.UP : direction));
     }

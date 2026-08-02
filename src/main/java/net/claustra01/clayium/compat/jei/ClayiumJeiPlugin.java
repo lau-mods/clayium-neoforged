@@ -18,8 +18,7 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayWorkTableScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.MachineScreen;
-import net.claustra01.clayium.client.gui.screens.inventory.SpecialMachineScreen;
-import net.claustra01.clayium.machine.SpecialMachineKind;
+import net.claustra01.clayium.client.gui.screens.inventory.ChemicalMetalSeparatorScreen;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.machine.ManufacturingMachineCatalog;
@@ -62,12 +61,10 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                                 "jei." + Clayium.MODID + ".category." + machineId.getPath()),
                         guiHelper.createDrawableItemStack(iconFor(machineId)),
                         MachineLayout.forMachine(machineId))));
-        registration.addRecipeCategories(new SpecialProcessRecipeCategory(guiHelper,
-                ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE, SpecialProcessRecipe.Kind.QUARTZ_CRUCIBLE,
-                ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get().getDefaultInstance()));
-        registration.addRecipeCategories(new SpecialProcessRecipeCategory(guiHelper,
-                ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR, SpecialProcessRecipe.Kind.CHEMICAL_METAL_SEPARATOR,
-                ClayiumRegistries.SPECIAL_MACHINE_ITEMS.get("precision_chemical_metal_separator").get().getDefaultInstance()));
+        registration.addRecipeCategories(new QuartzCrucibleRecipeCategory(
+                guiHelper, ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get().getDefaultInstance()));
+        registration.addRecipeCategories(new ChemicalMetalSeparatorRecipeCategory(
+                guiHelper, ClayiumRegistries.PRECISION_CHEMICAL_METAL_SEPARATOR_ITEM.get().getDefaultInstance()));
     }
 
     @Override
@@ -95,7 +92,7 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 ClayiumRegistries.CLAY_BLAST_FURNACE_ITEM.get(),
                 ClayiumJeiRecipeTypes.CLAY_BLAST_FURNACE);
         registration.addRecipeCatalyst(ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get(), ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE);
-        registration.addRecipeCatalyst(ClayiumRegistries.SPECIAL_MACHINE_ITEMS.get("precision_chemical_metal_separator").get(),
+        registration.addRecipeCatalyst(ClayiumRegistries.PRECISION_CHEMICAL_METAL_SEPARATOR_ITEM.get(),
                 ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR);
     }
 
@@ -122,12 +119,11 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                         : java.util.List.of(IGuiClickableArea.createBasic(76, 35, 24, 17, recipeType));
             }
         });
-        registration.addGuiContainerHandler(SpecialMachineScreen.class, new mezz.jei.api.gui.handlers.IGuiContainerHandler<>() {
+        registration.addGuiContainerHandler(ChemicalMetalSeparatorScreen.class, new mezz.jei.api.gui.handlers.IGuiContainerHandler<>() {
             @Override public java.util.Collection<IGuiClickableArea> getGuiClickableAreas(
-                    SpecialMachineScreen screen,double x,double y) {
-                return screen.getMenu().kind()==SpecialMachineKind.CHEMICAL_METAL_SEPARATOR
-                        ? java.util.List.of(IGuiClickableArea.createBasic(55,44,24,17,ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR))
-                        : java.util.List.of();
+                    ChemicalMetalSeparatorScreen screen,double x,double y) {
+                return java.util.List.of(IGuiClickableArea.createBasic(
+                        55,44,24,17,ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR));
             }
         });
     }
@@ -215,9 +211,9 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         });
         registration.addRecipes(ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE,
                 java.util.stream.IntStream.rangeClosed(1,9)
-                        .mapToObj(amount->new SpecialProcessRecipe(SpecialProcessRecipe.Kind.QUARTZ_CRUCIBLE,amount)).toList());
+                        .mapToObj(QuartzCrucibleJeiRecipe::new).toList());
         registration.addRecipes(ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR,
-                java.util.List.of(new SpecialProcessRecipe(SpecialProcessRecipe.Kind.CHEMICAL_METAL_SEPARATOR,1)));
+                java.util.List.of(new ChemicalMetalSeparatorJeiRecipe()));
     }
 
     private static ItemStack iconFor(ResourceLocation machineId) {

@@ -6,8 +6,6 @@ package net.claustra01.clayium.logistics;
 public enum LogisticsKind {
     BUFFER,
     MULTITRACK_BUFFER,
-    INTERFACE,
-    REDSTONE_INTERFACE,
     DISTRIBUTOR,
     STORAGE_CONTAINER,
     VOID_CONTAINER;
@@ -30,7 +28,6 @@ public enum LogisticsKind {
                 case 8 -> 36;
                 default -> 54;
             };
-            case INTERFACE, REDSTONE_INTERFACE -> 54;
             case DISTRIBUTOR -> switch (tier) {
                 case 7 -> 16;
                 case 8 -> 24;
@@ -81,7 +78,6 @@ public enum LogisticsKind {
                 default -> 9;
             };
             case MULTITRACK_BUFFER -> Math.max(1, slots(tier) / tracks(tier));
-            case INTERFACE, REDSTONE_INTERFACE -> 9;
             case DISTRIBUTOR -> Math.min(8, slots(tier));
             case STORAGE_CONTAINER -> 2;
             case VOID_CONTAINER -> 1;
@@ -91,7 +87,6 @@ public enum LogisticsKind {
     public int rows(int tier) {
         return switch (this) {
             case MULTITRACK_BUFFER -> tracks(tier);
-            case INTERFACE, REDSTONE_INTERFACE -> 6;
             case STORAGE_CONTAINER, VOID_CONTAINER -> 1;
             default -> (slots(tier) + columns(tier) - 1) / columns(tier);
         };

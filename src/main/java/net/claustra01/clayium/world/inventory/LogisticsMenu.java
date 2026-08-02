@@ -59,7 +59,6 @@ public final class LogisticsMenu extends AbstractContainerMenu {
                 filtersStart = kind.slots(tier);
                 filters = kind.tracks(tier);
             }
-            case INTERFACE, REDSTONE_INTERFACE -> addBufferSlots();
             case DISTRIBUTOR -> addDistributorSlots();
             case STORAGE_CONTAINER -> {
                 firstInsertion = addStorageSlots();
@@ -189,7 +188,6 @@ public final class LogisticsMenu extends AbstractContainerMenu {
         return switch (kind) {
             case BUFFER -> kind.rows(tier) * 18 + 18;
             case MULTITRACK_BUFFER -> kind.tracks(tier) * 18 + 18;
-            case INTERFACE, REDSTONE_INTERFACE -> kind.rows(tier) * 18 + 18;
             case DISTRIBUTOR -> {
                 int colonyY = tier == 7 || tier == 8 ? 2 : 3;
                 yield colonyY * 38 + 16;

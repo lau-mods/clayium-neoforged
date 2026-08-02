@@ -11,7 +11,6 @@ import net.claustra01.clayium.machine.ManufacturingMachineCatalog;
 import net.claustra01.clayium.machine.ClayComponentCatalog;
 import net.claustra01.clayium.machine.SpecializedMachineCatalog;
 import net.claustra01.clayium.machine.MaterialCatalog;
-import net.claustra01.clayium.machine.SpecialMachineKind;
 import net.claustra01.clayium.logistics.LogisticsCatalog;
 import net.claustra01.clayium.logistics.LogisticsKind;
 import java.util.LinkedHashMap;
@@ -28,6 +27,7 @@ import net.claustra01.clayium.world.level.block.ColoredSiliconeBlock;
 import net.claustra01.clayium.world.level.block.CobblestoneGeneratorBlock;
 import net.claustra01.clayium.world.level.block.MachineBlock;
 import net.claustra01.clayium.world.level.block.LogisticsBlock;
+import net.claustra01.clayium.world.level.block.MachineInterfaceBlock;
 import net.claustra01.clayium.world.level.block.RedstoneInterfaceBlock;
 import net.claustra01.clayium.world.level.block.WaterWheelBlock;
 import net.claustra01.clayium.world.level.block.entity.ClayWorkTableBlockEntity;
@@ -35,6 +35,8 @@ import net.claustra01.clayium.world.level.block.entity.ClayCraftingTableBlockEnt
 import net.claustra01.clayium.world.level.block.entity.CobblestoneGeneratorBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.MachineBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.MachineInterfaceBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.RedstoneInterfaceBlockEntity;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.claustra01.clayium.world.item.ClayCraftingToolItem;
 import net.claustra01.clayium.world.item.ClayFilterItem;
@@ -48,15 +50,21 @@ import net.claustra01.clayium.world.item.ClaySteelToolTier;
 import net.claustra01.clayium.world.inventory.ItemFilterMenu;
 import net.claustra01.clayium.world.inventory.FluidBufferMenu;
 import net.claustra01.clayium.world.inventory.SaltExtractorMenu;
-import net.claustra01.clayium.world.inventory.SpecialMachineMenu;
+import net.claustra01.clayium.world.inventory.AutoClayCondenserMenu;
+import net.claustra01.clayium.world.inventory.AutoCrafterMenu;
+import net.claustra01.clayium.world.inventory.ChemicalMetalSeparatorMenu;
 import net.claustra01.clayium.world.level.block.FluidBufferBlock;
 import net.claustra01.clayium.world.level.block.SaltExtractorBlock;
 import net.claustra01.clayium.world.level.block.QuartzCrucibleBlock;
-import net.claustra01.clayium.world.level.block.SpecialMachineBlock;
+import net.claustra01.clayium.world.level.block.AutoClayCondenserBlock;
+import net.claustra01.clayium.world.level.block.AutoCrafterBlock;
+import net.claustra01.clayium.world.level.block.ChemicalMetalSeparatorBlock;
 import net.claustra01.clayium.world.level.block.entity.FluidBufferBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.SaltExtractorBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.QuartzCrucibleBlockEntity;
-import net.claustra01.clayium.world.level.block.entity.SpecialMachineBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.AutoClayCondenserBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.AutoCrafterBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.ChemicalMetalSeparatorBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -187,8 +195,10 @@ public final class ClayiumRegistries {
             () -> new MachineBlock(machineProperties(), ClayiumMachineIds.CLAY_BLAST_FURNACE, ClayTier.PRECISION));
     public static final Map<String, DeferredBlock<LogisticsBlock>> LOGISTICS_BLOCKS =
             registerLogisticsBlocks();
-    public static final Map<String, DeferredBlock<LogisticsBlock>> INTERFACE_BLOCKS =
-            registerInterfaceBlocks();
+    public static final Map<String, DeferredBlock<MachineInterfaceBlock>> MACHINE_INTERFACE_BLOCKS =
+            registerMachineInterfaces();
+    public static final Map<String, DeferredBlock<RedstoneInterfaceBlock>> REDSTONE_INTERFACE_BLOCKS =
+            registerRedstoneInterfaces();
     public static final Map<String, DeferredBlock<Block>> MATERIAL_BLOCKS = registerMaterialBlocks();
     public static final Map<String, DeferredBlock<ColoredSiliconeBlock>> COLORED_SILICONE_BLOCKS =
             registerColoredSiliconeBlocks();
@@ -198,8 +208,13 @@ public final class ClayiumRegistries {
     public static final DeferredBlock<QuartzCrucibleBlock> QUARTZ_CRUCIBLE = BLOCKS.registerBlock(
             "quartz_crucible", QuartzCrucibleBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(0.2F).sound(SoundType.GLASS));
-    public static final Map<String, DeferredBlock<SpecialMachineBlock>> SPECIAL_MACHINE_BLOCKS =
-            registerSpecialMachines();
+    public static final DeferredBlock<AutoClayCondenserBlock> ADVANCED_AUTO_CLAY_CONDENSER = BLOCKS.register(
+            "advanced_auto_clay_condenser",
+            () -> new AutoClayCondenserBlock(machineProperties(), ClayTier.ADVANCED));
+    public static final Map<String, DeferredBlock<AutoCrafterBlock>> AUTO_CRAFTER_BLOCKS = registerAutoCrafters();
+    public static final DeferredBlock<ChemicalMetalSeparatorBlock> PRECISION_CHEMICAL_METAL_SEPARATOR = BLOCKS.register(
+            "precision_chemical_metal_separator",
+            () -> new ChemicalMetalSeparatorBlock(machineProperties(), ClayTier.PRECISION));
 
     public static final DeferredItem<BlockItem> CLAY_WORK_TABLE_ITEM = ITEMS.register(
             "clay_work_table",
@@ -245,8 +260,10 @@ public final class ClayiumRegistries {
             registerBlockItem("clay_blast_furnace", CLAY_BLAST_FURNACE);
     public static final Map<String, DeferredItem<BlockItem>> LOGISTICS_ITEMS =
             registerBlockItems(LOGISTICS_BLOCKS);
-    public static final Map<String, DeferredItem<BlockItem>> INTERFACE_ITEMS =
-            registerBlockItems(INTERFACE_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> MACHINE_INTERFACE_ITEMS =
+            registerBlockItems(MACHINE_INTERFACE_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> REDSTONE_INTERFACE_ITEMS =
+            registerBlockItems(REDSTONE_INTERFACE_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> MATERIAL_BLOCK_ITEMS = registerBlockItems(MATERIAL_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> COLORED_SILICONE_ITEMS =
             registerBlockItems(COLORED_SILICONE_BLOCKS);
@@ -254,7 +271,11 @@ public final class ClayiumRegistries {
     public static final Map<String, DeferredItem<BlockItem>> FLUID_BUFFER_ITEMS = registerBlockItems(FLUID_BUFFER_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> SALT_EXTRACTOR_ITEMS = registerBlockItems(SALT_EXTRACTOR_BLOCKS);
     public static final DeferredItem<BlockItem> QUARTZ_CRUCIBLE_ITEM = registerBlockItem("quartz_crucible", QUARTZ_CRUCIBLE);
-    public static final Map<String, DeferredItem<BlockItem>> SPECIAL_MACHINE_ITEMS = registerBlockItems(SPECIAL_MACHINE_BLOCKS);
+    public static final DeferredItem<BlockItem> ADVANCED_AUTO_CLAY_CONDENSER_ITEM =
+            registerBlockItem("advanced_auto_clay_condenser", ADVANCED_AUTO_CLAY_CONDENSER);
+    public static final Map<String, DeferredItem<BlockItem>> AUTO_CRAFTER_ITEMS = registerBlockItems(AUTO_CRAFTER_BLOCKS);
+    public static final DeferredItem<BlockItem> PRECISION_CHEMICAL_METAL_SEPARATOR_ITEM =
+            registerBlockItem("precision_chemical_metal_separator", PRECISION_CHEMICAL_METAL_SEPARATOR);
 
     public static final DeferredItem<Item> CLAY_STICK = ITEMS.register(
             "clay_stick",
@@ -381,7 +402,15 @@ public final class ClayiumRegistries {
                     "logistics",
                     () -> BlockEntityType.Builder.of(
                             LogisticsBlockEntity::new,
-                            allLogisticsBlocks()).build(null));
+                            LOGISTICS_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineInterfaceBlockEntity>>
+            MACHINE_INTERFACE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("machine_interface",
+                    () -> BlockEntityType.Builder.of(MachineInterfaceBlockEntity::new,
+                            MACHINE_INTERFACE_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RedstoneInterfaceBlockEntity>>
+            REDSTONE_INTERFACE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("redstone_interface",
+                    () -> BlockEntityType.Builder.of(RedstoneInterfaceBlockEntity::new,
+                            REDSTONE_INTERFACE_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluidBufferBlockEntity>> FLUID_BUFFER_BLOCK_ENTITY =
             BLOCK_ENTITY_TYPES.register("fluid_buffer", () -> BlockEntityType.Builder.of(
                     FluidBufferBlockEntity::new, FLUID_BUFFER_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
@@ -391,10 +420,18 @@ public final class ClayiumRegistries {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QuartzCrucibleBlockEntity>> QUARTZ_CRUCIBLE_BLOCK_ENTITY =
             BLOCK_ENTITY_TYPES.register("quartz_crucible", () -> BlockEntityType.Builder.of(
                     QuartzCrucibleBlockEntity::new, QUARTZ_CRUCIBLE.get()).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SpecialMachineBlockEntity>> SPECIAL_MACHINE_BLOCK_ENTITY =
-            BLOCK_ENTITY_TYPES.register("special_machine", () -> BlockEntityType.Builder.of(
-                    SpecialMachineBlockEntity::new,
-                    SPECIAL_MACHINE_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AutoClayCondenserBlockEntity>>
+            AUTO_CLAY_CONDENSER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("auto_clay_condenser",
+                    () -> BlockEntityType.Builder.of(AutoClayCondenserBlockEntity::new,
+                            ADVANCED_AUTO_CLAY_CONDENSER.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AutoCrafterBlockEntity>>
+            AUTO_CRAFTER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("auto_crafter",
+                    () -> BlockEntityType.Builder.of(AutoCrafterBlockEntity::new,
+                            AUTO_CRAFTER_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChemicalMetalSeparatorBlockEntity>>
+            CHEMICAL_METAL_SEPARATOR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("chemical_metal_separator",
+                    () -> BlockEntityType.Builder.of(ChemicalMetalSeparatorBlockEntity::new,
+                            PRECISION_CHEMICAL_METAL_SEPARATOR.get()).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<ClayWorkTableMenu>> CLAY_WORK_TABLE_MENU =
             MENU_TYPES.register(
                     "clay_work_table",
@@ -446,8 +483,12 @@ public final class ClayiumRegistries {
             MENU_TYPES.register("fluid_buffer", () -> IMenuTypeExtension.create(FluidBufferMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SaltExtractorMenu>> SALT_EXTRACTOR_MENU =
             MENU_TYPES.register("salt_extractor", () -> IMenuTypeExtension.create(SaltExtractorMenu::new));
-    public static final DeferredHolder<MenuType<?>, MenuType<SpecialMachineMenu>> SPECIAL_MACHINE_MENU =
-            MENU_TYPES.register("special_machine", () -> IMenuTypeExtension.create(SpecialMachineMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<AutoClayCondenserMenu>> AUTO_CLAY_CONDENSER_MENU =
+            MENU_TYPES.register("auto_clay_condenser", () -> IMenuTypeExtension.create(AutoClayCondenserMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<AutoCrafterMenu>> AUTO_CRAFTER_MENU =
+            MENU_TYPES.register("auto_crafter", () -> IMenuTypeExtension.create(AutoCrafterMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<ChemicalMetalSeparatorMenu>> CHEMICAL_METAL_SEPARATOR_MENU =
+            MENU_TYPES.register("chemical_metal_separator", () -> IMenuTypeExtension.create(ChemicalMetalSeparatorMenu::new));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLAYIUM_CREATIVE_TAB =
             CREATIVE_MODE_TABS.register(
                     "clayium",
@@ -503,16 +544,20 @@ public final class ClayiumRegistries {
         return Map.copyOf(blocks);
     }
 
-    private static Map<String, DeferredBlock<LogisticsBlock>> registerInterfaceBlocks() {
-        Map<String, DeferredBlock<LogisticsBlock>> blocks = new LinkedHashMap<>();
+    private static Map<String, DeferredBlock<MachineInterfaceBlock>> registerMachineInterfaces() {
+        Map<String, DeferredBlock<MachineInterfaceBlock>> blocks = new LinkedHashMap<>();
         for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
-            String prefix = tier.id();
-            blocks.put(prefix + "_clay_interface", BLOCKS.register(
-                    prefix + "_clay_interface",
-                    () -> new LogisticsBlock(machineProperties(), LogisticsKind.INTERFACE, tier.progressionIndex())));
-            blocks.put(prefix + "_redstone_interface", BLOCKS.register(
-                    prefix + "_redstone_interface",
-                    () -> new RedstoneInterfaceBlock(machineProperties(), tier.progressionIndex())));
+            String id = tier.id() + "_clay_interface";
+            blocks.put(id, BLOCKS.register(id, () -> new MachineInterfaceBlock(machineProperties(), tier)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<RedstoneInterfaceBlock>> registerRedstoneInterfaces() {
+        Map<String, DeferredBlock<RedstoneInterfaceBlock>> blocks = new LinkedHashMap<>();
+        for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
+            String id = tier.id() + "_redstone_interface";
+            blocks.put(id, BLOCKS.register(id, () -> new RedstoneInterfaceBlock(machineProperties(), tier)));
         }
         return Map.copyOf(blocks);
     }
@@ -548,13 +593,6 @@ public final class ClayiumRegistries {
         return Map.copyOf(blocks);
     }
 
-    private static Block[] allLogisticsBlocks() {
-        java.util.List<Block> blocks = new java.util.ArrayList<>();
-        LOGISTICS_BLOCKS.values().forEach(block -> blocks.add(block.get()));
-        INTERFACE_BLOCKS.values().forEach(block -> blocks.add(block.get()));
-        return blocks.toArray(Block[]::new);
-    }
-
     private static Map<String, DeferredBlock<FluidBufferBlock>> registerFluidBuffers() {
         Map<String, DeferredBlock<FluidBufferBlock>> blocks=new LinkedHashMap<>();
         for(ClayTier tier : new ClayTier[]{ClayTier.BASIC,ClayTier.ADVANCED,ClayTier.PRECISION,ClayTier.CLAY_STEEL}) {
@@ -583,19 +621,13 @@ public final class ClayiumRegistries {
         return Map.copyOf(blocks);
     }
 
-    private static Map<String, DeferredBlock<SpecialMachineBlock>> registerSpecialMachines() {
-        Map<String, DeferredBlock<SpecialMachineBlock>> blocks = new LinkedHashMap<>();
-        registerSpecial(blocks, "advanced_auto_clay_condenser", SpecialMachineKind.AUTO_CLAY_CONDENSER, ClayTier.ADVANCED);
-        registerSpecial(blocks, "advanced_auto_crafter", SpecialMachineKind.AUTO_CRAFTER, ClayTier.ADVANCED);
-        registerSpecial(blocks, "precision_auto_crafter", SpecialMachineKind.AUTO_CRAFTER, ClayTier.PRECISION);
-        registerSpecial(blocks, "clay_steel_auto_crafter", SpecialMachineKind.AUTO_CRAFTER, ClayTier.CLAY_STEEL);
-        registerSpecial(blocks, "precision_chemical_metal_separator", SpecialMachineKind.CHEMICAL_METAL_SEPARATOR, ClayTier.PRECISION);
+    private static Map<String, DeferredBlock<AutoCrafterBlock>> registerAutoCrafters() {
+        Map<String, DeferredBlock<AutoCrafterBlock>> blocks = new LinkedHashMap<>();
+        for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL}) {
+            String id = tier.id() + "_auto_crafter";
+            blocks.put(id, BLOCKS.register(id, () -> new AutoCrafterBlock(machineProperties(), tier)));
+        }
         return Map.copyOf(blocks);
-    }
-
-    private static void registerSpecial(Map<String, DeferredBlock<SpecialMachineBlock>> blocks, String id,
-                                        SpecialMachineKind kind, ClayTier tier) {
-        blocks.put(id, BLOCKS.register(id, () -> new SpecialMachineBlock(machineProperties(), kind, tier)));
     }
 
     private static Map<String, DeferredBlock<Block>> registerCompressedClayBlocks() {

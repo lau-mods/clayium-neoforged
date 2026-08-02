@@ -5,11 +5,10 @@ package net.claustra01.clayium.machine;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.claustra01.clayium.logistics.LogisticsKind;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
-import net.claustra01.clayium.world.level.block.LogisticsBlock;
-import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
+import net.claustra01.clayium.world.level.block.MachineInterfaceBlock;
+import net.claustra01.clayium.world.level.block.RedstoneInterfaceBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -28,7 +27,7 @@ public final class ClayBlastFurnaceStructure {
     }
 
     public static Result validate(ServerLevel level, BlockPos controller, Direction front) {
-        List<LogisticsBlockEntity> interfaces = new ArrayList<>();
+        List<ControllerLinkedDevice> interfaces = new ArrayList<>();
         long tierWeight = 0;
         Direction back = front.getOpposite();
         Direction right = front.getClockWise();
@@ -50,9 +49,9 @@ public final class ClayBlastFurnaceStructure {
                         return Result.INVALID;
                     }
                     tierWeight += 1L << (16 - componentTier.progressionIndex());
-                    if (level.getBlockEntity(position) instanceof LogisticsBlockEntity logistics
+                    if (level.getBlockEntity(position) instanceof ControllerLinkedDevice device
                             && isInterface(state)) {
-                        interfaces.add(logistics);
+                        interfaces.add(device);
                     }
                 }
             }
@@ -73,8 +72,8 @@ public final class ClayBlastFurnaceStructure {
                 for (int horizontal = -1; horizontal <= 1; horizontal++) {
                     BlockPos position = controller.above(y).relative(back, depth).relative(right, horizontal);
                     if (level.hasChunkAt(position)
-                            && level.getBlockEntity(position) instanceof LogisticsBlockEntity logistics) {
-                        logistics.unlinkMachine(controller);
+                            && level.getBlockEntity(position) instanceof ControllerLinkedDevice device) {
+                        device.unlinkMachine(controller);
                     }
                 }
             }
@@ -89,16 +88,18 @@ public final class ClayBlastFurnaceStructure {
                 return ClayTier.byIdOrRaw(tierId);
             }
         }
-        if (block instanceof LogisticsBlock logistics && isInterface(state)) {
-            return ClayTier.byLegacyIndex(logistics.tier());
+        if (block instanceof MachineInterfaceBlock machineInterface) {
+            return machineInterface.tier();
+        }
+        if (block instanceof RedstoneInterfaceBlock redstoneInterface) {
+            return redstoneInterface.tier();
         }
         return ClayTier.RAW;
     }
 
     private static boolean isInterface(BlockState state) {
-        return state.getBlock() instanceof LogisticsBlock logistics
-                && (logistics.kind() == LogisticsKind.INTERFACE
-                        || logistics.kind() == LogisticsKind.REDSTONE_INTERFACE);
+        return state.getBlock() instanceof MachineInterfaceBlock
+                || state.getBlock() instanceof RedstoneInterfaceBlock;
     }
 
 }

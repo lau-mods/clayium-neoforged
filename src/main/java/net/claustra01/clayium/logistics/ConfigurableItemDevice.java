@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.item.ItemStack;
+import javax.annotation.Nullable;
 
 public interface ConfigurableItemDevice {
     SideConfiguration sideConfiguration();
@@ -18,7 +19,7 @@ public interface ConfigurableItemDevice {
 
     BooleanProperty ioPipeProperty();
 
-    DirectionProperty ioFacingProperty();
+    @Nullable DirectionProperty ioFacingProperty();
 
     void ioConfigurationChanged();
 
@@ -37,7 +38,8 @@ public interface ConfigurableItemDevice {
     }
 
     default Direction ioFacing() {
-        return ioOwner().getBlockState().getValue(ioFacingProperty());
+        DirectionProperty property = ioFacingProperty();
+        return property == null ? Direction.NORTH : ioOwner().getBlockState().getValue(property);
     }
 
     default int cycleInsertRoute(Direction direction) {
@@ -63,10 +65,11 @@ public interface ConfigurableItemDevice {
 
     default boolean rotate(Direction clickedFace) {
         BlockEntity owner = ioOwner();
-        if (owner.getLevel() == null || !clickedFace.getAxis().isHorizontal()) return false;
+        DirectionProperty property = ioFacingProperty();
+        if (owner.getLevel() == null || property == null || !clickedFace.getAxis().isHorizontal()) return false;
         Direction current = ioFacing();
         Direction next = clickedFace == current ? clickedFace.getOpposite() : clickedFace;
-        owner.getLevel().setBlock(owner.getBlockPos(), owner.getBlockState().setValue(ioFacingProperty(), next), 3);
+        owner.getLevel().setBlock(owner.getBlockPos(), owner.getBlockState().setValue(property, next), 3);
         ioConfigurationChanged();
         return true;
     }
@@ -126,7 +129,8 @@ public interface ConfigurableItemDevice {
         if (owner.getLevel() != null) {
             Direction facing = Direction.byName(memory.facing());
             BlockState state = owner.getBlockState().setValue(ioPipeProperty(), memory.pipe());
-            if (facing != null && facing.getAxis().isHorizontal()) state = state.setValue(ioFacingProperty(), facing);
+            DirectionProperty property = ioFacingProperty();
+            if (property != null && facing != null && facing.getAxis().isHorizontal()) state = state.setValue(property, facing);
             owner.getLevel().setBlock(owner.getBlockPos(), state, 3);
         }
         ioConfigurationChanged();

@@ -14,7 +14,9 @@ import net.claustra01.clayium.client.gui.screens.inventory.LogisticsScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ItemFilterScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.FluidBufferScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.SaltExtractorScreen;
-import net.claustra01.clayium.client.gui.screens.inventory.SpecialMachineScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.AutoClayCondenserScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.AutoCrafterScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.ChemicalMetalSeparatorScreen;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.ColoredSiliconeBlock;
@@ -47,7 +49,9 @@ public final class ClayiumClientEvents {
         event.register(ClayiumRegistries.ITEM_FILTER_MENU.get(), ItemFilterScreen::new);
         event.register(ClayiumRegistries.FLUID_BUFFER_MENU.get(), FluidBufferScreen::new);
         event.register(ClayiumRegistries.SALT_EXTRACTOR_MENU.get(), SaltExtractorScreen::new);
-        event.register(ClayiumRegistries.SPECIAL_MACHINE_MENU.get(), SpecialMachineScreen::new);
+        event.register(ClayiumRegistries.AUTO_CLAY_CONDENSER_MENU.get(), AutoClayCondenserScreen::new);
+        event.register(ClayiumRegistries.AUTO_CRAFTER_MENU.get(), AutoCrafterScreen::new);
+        event.register(ClayiumRegistries.CHEMICAL_METAL_SEPARATOR_MENU.get(), ChemicalMetalSeparatorScreen::new);
     }
 
     @SubscribeEvent
@@ -57,13 +61,19 @@ public final class ClayiumClientEvents {
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
+                ClayiumRegistries.MACHINE_INTERFACE_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
                 ClayiumRegistries.FLUID_BUFFER_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.SALT_EXTRACTOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
-                ClayiumRegistries.SPECIAL_MACHINE_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+                ClayiumRegistries.AUTO_CLAY_CONDENSER_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.AUTO_CRAFTER_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.CHEMICAL_METAL_SEPARATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
     }
 
     @SubscribeEvent
