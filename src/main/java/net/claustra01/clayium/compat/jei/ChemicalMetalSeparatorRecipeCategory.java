@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: CC-BY-4.0 */
 package net.claustra01.clayium.compat.jei;
 
+import net.claustra01.clayium.util.MetricFormatter;
 import java.util.Locale;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -46,7 +47,8 @@ public final class ChemicalMetalSeparatorRecipeCategory implements IRecipeCatego
     @Override public void draw(ChemicalMetalSeparatorJeiRecipe recipe, IRecipeSlotsView slots,
                                GuiGraphics graphics, double mouseX, double mouseY) {
         var font = Minecraft.getInstance().font;
-        graphics.drawString(font, Component.translatable("jei.clayium_neoforged.processing_time", 40),
+        graphics.drawString(font, Component.translatable("jei.clayium_neoforged.processing_time",
+                        MetricFormatter.format(40)),
                 8, 86, 0xff555555, false);
         graphics.drawString(font, Component.translatable("jei.clayium_neoforged.clay_energy_per_tick", "5 mCE"),
                 8, 98, 0xff555555, false);

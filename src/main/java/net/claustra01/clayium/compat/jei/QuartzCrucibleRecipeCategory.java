@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: CC-BY-4.0 */
 package net.claustra01.clayium.compat.jei;
 
+import net.claustra01.clayium.util.MetricFormatter;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -39,7 +40,8 @@ public final class QuartzCrucibleRecipeCategory implements IRecipeCategory<Quart
                                double mouseX, double mouseY) {
         arrow.draw(graphics, 76, 22);
         graphics.drawString(Minecraft.getInstance().font,
-                Component.translatable("jei.clayium_neoforged.processing_time", 600 * recipe.amount()),
+                Component.translatable("jei.clayium_neoforged.processing_time",
+                        MetricFormatter.format(600L * recipe.amount())),
                 8, 56, 0xff555555, false);
     }
 }

@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.energy.ClayEnergyFormatter;
+import net.claustra01.clayium.util.MetricFormatter;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -117,7 +118,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
                 font,
                 Component.translatable(
                         "jei.clayium_neoforged.processing_time",
-                        recipe.processingTimeTicks()),
+                        MetricFormatter.format(recipe.processingTimeTicks())),
                 8,
                 80,
                 TEXT_COLOR,
