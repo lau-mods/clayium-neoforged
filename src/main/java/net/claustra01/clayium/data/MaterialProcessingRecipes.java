@@ -145,8 +145,8 @@ public final class MaterialProcessingRecipes {
         transform(output, "iron_to_cobalt", Items.IRON_INGOT, item("cobalt_ingot"), 8, 30);
         transform(output, "cobalt_to_nickel", item("cobalt_ingot"), item("nickel_ingot"), 8, 90);
         transform(output, "nickel_to_palladium", item("nickel_ingot"), item("palladium_ingot"), 9, 40);
-        transform(output, "zinc_to_copper", item("zinc_ingot"), item("copper_ingot"), 8, 20);
-        transform(output, "copper_to_silver", item("copper_ingot"), item("silver_ingot"), 9, 10);
+        transform(output, "zinc_to_copper", item("zinc_ingot"), Items.COPPER_INGOT, 8, 20);
+        transform(output, "copper_to_silver", Items.COPPER_INGOT, item("silver_ingot"), 9, 10);
         transform(output, "silver_to_gold", item("silver_ingot"), item("gold_ingot"), 9, 50);
         transform(output, "hafnium_to_tantalum", item("hafnium_ingot"), item("tantalum_ingot"), 8, 70);
         transform(output, "tantalum_to_tungsten", item("tantalum_ingot"), item("tungsten_ingot"), 9, 40);
