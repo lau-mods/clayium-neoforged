@@ -5,6 +5,10 @@
   },
   "minimum_tier": "raw",
   "operation": "punch",
+  "remainder": {
+    "count": 1,
+    "id": "clayium_neoforged:small_clay_disc"
+  },
   "required_actions": 2,
   "result": {
     "count": 1,

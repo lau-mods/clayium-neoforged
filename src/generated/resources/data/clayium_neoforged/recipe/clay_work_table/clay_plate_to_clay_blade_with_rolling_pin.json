@@ -1,17 +1,17 @@
 {
   "type": "clayium_neoforged:clay_work_table",
   "ingredient": {
-    "item": "clayium_neoforged:clay_disc"
+    "item": "clayium_neoforged:clay_plate"
   },
   "minimum_tier": "raw",
-  "operation": "slice",
+  "operation": "roll",
   "remainder": {
     "count": 2,
     "id": "minecraft:clay_ball"
   },
-  "required_actions": 4,
+  "required_actions": 1,
   "result": {
     "count": 1,
-    "id": "clayium_neoforged:clay_plate"
+    "id": "clayium_neoforged:clay_blade"
   }
 }

@@ -4,14 +4,10 @@
     "item": "clayium_neoforged:clay_disc"
   },
   "minimum_tier": "raw",
-  "operation": "slice",
-  "remainder": {
-    "count": 2,
-    "id": "minecraft:clay_ball"
-  },
-  "required_actions": 4,
+  "operation": "roll",
+  "required_actions": 2,
   "result": {
     "count": 1,
-    "id": "clayium_neoforged:clay_plate"
+    "id": "clayium_neoforged:raw_clay_slicer"
   }
 }

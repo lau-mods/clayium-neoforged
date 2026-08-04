@@ -5,6 +5,10 @@
   },
   "minimum_tier": "raw",
   "operation": "punch",
+  "remainder": {
+    "count": 1,
+    "id": "clayium_neoforged:short_clay_stick"
+  },
   "required_actions": 1,
   "result": {
     "count": 1,
