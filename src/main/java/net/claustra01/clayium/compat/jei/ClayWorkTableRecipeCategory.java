@@ -69,6 +69,11 @@ public final class ClayWorkTableRecipeCategory implements IRecipeCategory<ClayWo
         builder.addOutputSlot(124, 26)
                 .setOutputSlotBackground()
                 .addItemStack(recipe.result());
+        if (!recipe.remainder().isEmpty()) {
+            builder.addOutputSlot(124, 52)
+                    .setStandardSlotBackground()
+                    .addItemStack(recipe.remainder());
+        }
         switch (recipe.operation()) {
             case ROLL -> builder.addSlot(RecipeIngredientRole.CATALYST, 79, 26)
                     .setStandardSlotBackground()

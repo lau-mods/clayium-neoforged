@@ -316,20 +316,38 @@ public final class ClayiumDataGenerators {
                 ClayiumRegistries.CLAY_CYLINDER.get(), 1, ClayWorkTableOperation.FORM, 4);
         work(output, "large_clay_ball_to_clay_disc", ClayiumRegistries.LARGE_CLAY_BALL.get(), 1,
                 ClayiumRegistries.CLAY_DISC.get(), 1, ClayWorkTableOperation.CUT, 30);
+        work(output, "large_clay_ball_to_clay_disc_with_rolling_pin",
+                ClayiumRegistries.LARGE_CLAY_BALL.get(), 1,
+                ClayiumRegistries.CLAY_DISC.get(), 1, Items.CLAY_BALL, 2,
+                ClayWorkTableOperation.ROLL, 4);
         work(output, "clay_disc_to_raw_clay_slicer", ClayiumRegistries.CLAY_DISC.get(), 1,
                 ClayiumRegistries.RAW_CLAY_SLICER.get(), 1, ClayWorkTableOperation.CUT, 15);
+        work(output, "clay_disc_to_raw_clay_slicer_with_rolling_pin",
+                ClayiumRegistries.CLAY_DISC.get(), 1,
+                ClayiumRegistries.RAW_CLAY_SLICER.get(), 1, null, 0,
+                ClayWorkTableOperation.ROLL, 2);
         work(output, "clay_disc_to_clay_plate", ClayiumRegistries.CLAY_DISC.get(), 1,
-                ClayiumRegistries.CLAY_PLATE.get(), 1, ClayWorkTableOperation.SLICE, 4);
+                ClayiumRegistries.CLAY_PLATE.get(), 1, Items.CLAY_BALL, 2,
+                ClayWorkTableOperation.SLICE, 4);
         work(output, "clay_plate_to_clay_blade", ClayiumRegistries.CLAY_PLATE.get(), 1,
                 ClayiumRegistries.CLAY_BLADE.get(), 1, ClayWorkTableOperation.CUT, 10);
+        work(output, "clay_plate_to_clay_blade_with_rolling_pin",
+                ClayiumRegistries.CLAY_PLATE.get(), 1,
+                ClayiumRegistries.CLAY_BLADE.get(), 1, Items.CLAY_BALL, 2,
+                ClayWorkTableOperation.ROLL, 1);
         work(output, "clay_plate_to_clay_sticks", ClayiumRegistries.CLAY_PLATE.get(), 1,
                 ClayiumRegistries.CLAY_STICK.get(), 4, ClayWorkTableOperation.DIVIDE, 3);
         work(output, "clay_disc_to_clay_ring", ClayiumRegistries.CLAY_DISC.get(), 1,
-                ClayiumRegistries.CLAY_RING.get(), 1, ClayWorkTableOperation.PUNCH, 2);
+                ClayiumRegistries.CLAY_RING.get(), 1, ClayiumRegistries.SMALL_CLAY_DISC.get(), 1,
+                ClayWorkTableOperation.PUNCH, 2);
+        work(output, "clay_cylinder_to_clay_needle", ClayiumRegistries.CLAY_CYLINDER.get(), 1,
+                ClayiumRegistries.COMPONENT_ITEMS.get("clay_needle").get(), 1,
+                ClayWorkTableOperation.FORM, 3);
         work(output, "clay_cylinder_to_small_clay_discs", ClayiumRegistries.CLAY_CYLINDER.get(), 1,
                 ClayiumRegistries.SMALL_CLAY_DISC.get(), 8, ClayWorkTableOperation.DIVIDE, 7);
         work(output, "small_clay_disc_to_small_clay_ring", ClayiumRegistries.SMALL_CLAY_DISC.get(), 1,
-                ClayiumRegistries.SMALL_CLAY_RING.get(), 1, ClayWorkTableOperation.PUNCH, 1);
+                ClayiumRegistries.SMALL_CLAY_RING.get(), 1, ClayiumRegistries.SHORT_CLAY_STICK.get(), 1,
+                ClayWorkTableOperation.PUNCH, 1);
         work(output, "clay_plates_to_large_clay_plate", ClayiumRegistries.CLAY_PLATE.get(), 6,
                 ClayiumRegistries.LARGE_CLAY_PLATE.get(), 1, ClayWorkTableOperation.ROLL, 10);
         work(output, "clay_plates_to_large_clay_ball", ClayiumRegistries.CLAY_PLATE.get(), 3,
@@ -351,6 +369,32 @@ public final class ClayiumDataGenerators {
                         Ingredient.of(input),
                         inputCount,
                         new ItemStack(result, resultCount),
+                        operation,
+                        actions,
+                        ClayTier.RAW),
+                null);
+    }
+
+    private static void work(
+            RecipeOutput output,
+            String id,
+            ItemLike input,
+            int inputCount,
+            ItemLike result,
+            int resultCount,
+            ItemLike remainder,
+            int remainderCount,
+            ClayWorkTableOperation operation,
+            int actions) {
+        output.accept(
+                Clayium.id("clay_work_table/" + id),
+                new ClayWorkTableRecipe(
+                        Ingredient.of(input),
+                        inputCount,
+                        new ItemStack(result, resultCount),
+                        remainder == null || remainderCount <= 0
+                                ? ItemStack.EMPTY
+                                : new ItemStack(remainder, remainderCount),
                         operation,
                         actions,
                         ClayTier.RAW),
@@ -394,9 +438,9 @@ public final class ClayiumDataGenerators {
                 .pattern("SB")
                 .unlockedBy("has_clay_blade", has(ClayiumRegistries.CLAY_BLADE.get()))
                 .save(output);
-        smelt(output, ClayiumRegistries.RAW_CLAY_ROLLING_PIN.get(), ClayiumRegistries.CLAY_ROLLING_PIN.get(), 200);
-        smelt(output, ClayiumRegistries.RAW_CLAY_SLICER.get(), ClayiumRegistries.CLAY_SLICER.get(), 200);
-        smelt(output, ClayiumRegistries.RAW_CLAY_SPATULA.get(), ClayiumRegistries.CLAY_SPATULA.get(), 200);
+        smelt(output, ClayiumRegistries.RAW_CLAY_ROLLING_PIN.get(), ClayiumRegistries.CLAY_ROLLING_PIN.get());
+        smelt(output, ClayiumRegistries.RAW_CLAY_SLICER.get(), ClayiumRegistries.CLAY_SLICER.get());
+        smelt(output, ClayiumRegistries.RAW_CLAY_SPATULA.get(), ClayiumRegistries.CLAY_SPATULA.get());
 
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ClayiumRegistries.RAW_CLAY_MACHINE_HULL.get())
                 .define('P', ClayiumRegistries.LARGE_CLAY_PLATE.get())
@@ -404,7 +448,7 @@ public final class ClayiumDataGenerators {
                 .pattern("PPP").pattern("PGP").pattern("PPP")
                 .unlockedBy("has_large_clay_plate", has(ClayiumRegistries.LARGE_CLAY_PLATE.get()))
                 .save(output);
-        smelt(output, ClayiumRegistries.RAW_CLAY_MACHINE_HULL.get(), ClayiumRegistries.CLAY_MACHINE_HULL.get(), 400);
+        smelt(output, ClayiumRegistries.RAW_CLAY_MACHINE_HULL.get(), ClayiumRegistries.CLAY_MACHINE_HULL.get());
 
         filterConversion(output, ClayiumRegistries.FILTER_BLACKLIST.get(), ClayiumRegistries.FILTER_WHITELIST.get());
         filterConversion(output, ClayiumRegistries.FILTER_WHITELIST.get(), ClayiumRegistries.FILTER_BLACKLIST.get());
@@ -466,9 +510,9 @@ public final class ClayiumDataGenerators {
                 .save(output, Clayium.id("filters/" + inputId + "_to_" + resultId));
     }
 
-    private static void smelt(RecipeOutput output, ItemLike input, ItemLike result, int time) {
+    private static void smelt(RecipeOutput output, ItemLike input, ItemLike result) {
         SimpleCookingRecipeBuilder.smelting(
-                        Ingredient.of(input), RecipeCategory.MISC, result, 0.1F, time)
+                        Ingredient.of(input), RecipeCategory.MISC, result, 0.1F, 200)
                 .unlockedBy("has_input", has(input))
                 .save(
                         output,

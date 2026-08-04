@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 
 /** Dedicated menu for the Clay Work Table's persistent input and output slots. */
 public final class ClayWorkTableMenu extends AbstractContainerMenu {
-    private static final int DEVICE_SLOT_COUNT = 3;
+    private static final int DEVICE_SLOT_COUNT = 4;
     private static final int PLAYER_INVENTORY_START = DEVICE_SLOT_COUNT;
     private static final int PLAYER_INVENTORY_END = PLAYER_INVENTORY_START + 36;
 
@@ -50,6 +50,12 @@ public final class ClayWorkTableMenu extends AbstractContainerMenu {
             }
         });
         addSlot(new Slot(container, ClayWorkTableBlockEntity.OUTPUT_SLOT, 143, 30) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        addSlot(new Slot(container, ClayWorkTableBlockEntity.REMAINDER_OUTPUT_SLOT, 143, 55) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;

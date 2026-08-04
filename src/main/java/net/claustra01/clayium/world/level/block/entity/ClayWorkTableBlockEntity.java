@@ -40,7 +40,8 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
     public static final int INPUT_SLOT = 0;
     public static final int TOOL_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
-    public static final int SLOT_COUNT = 3;
+    public static final int REMAINDER_OUTPUT_SLOT = 3;
+    public static final int SLOT_COUNT = 4;
 
     private static final String ACTIVE_RECIPE_KEY = "ActiveRecipe";
     private static final String ACTIVE_OPERATION_KEY = "ActiveOperation";
@@ -129,17 +130,17 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             validateSlot(slot);
-            if (slot != OUTPUT_SLOT || amount <= 0) {
+            if ((slot != OUTPUT_SLOT && slot != REMAINDER_OUTPUT_SLOT) || amount <= 0) {
                 return ItemStack.EMPTY;
             }
-            ItemStack output = getItem(OUTPUT_SLOT);
+            ItemStack output = getItem(slot);
             int extracted = Math.min(amount, output.getCount());
             if (extracted <= 0) {
                 return ItemStack.EMPTY;
             }
             ItemStack result = output.copyWithCount(extracted);
             if (!simulate) {
-                removeItem(OUTPUT_SLOT, extracted);
+                removeItem(slot, extracted);
             }
             return result;
         }
@@ -179,7 +180,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         RecipeHolder<ClayWorkTableRecipe> holder;
         if (activeRecipeId == null) {
             Optional<RecipeHolder<ClayWorkTableRecipe>> found = findRecipe(operation.get());
-            if (found.isEmpty() || !canOutput(found.get().value().result())) {
+            if (found.isEmpty() || !canOutput(found.get().value())) {
                 return false;
             }
             holder = found.get();
@@ -191,7 +192,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
             Optional<RecipeHolder<ClayWorkTableRecipe>> resolved = resolveActiveRecipe();
             if (resolved.isEmpty()
                     || activeOperation != operation.get()
-                    || !canOutput(resolved.get().value().result())) {
+                    || !canOutput(resolved.get().value())) {
                 return false;
             }
             holder = resolved.get();
@@ -227,12 +228,12 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         }
         if (activeRecipeId == null) {
             return findRecipe(operation)
-                    .map(holder -> canOutput(holder.value().result()))
+                    .map(holder -> canOutput(holder.value()))
                     .orElse(false);
         }
         return activeOperation == operation
                 && resolveActiveRecipe()
-                        .map(holder -> canOutput(holder.value().result()))
+                        .map(holder -> canOutput(holder.value()))
                         .orElse(false);
     }
 
@@ -262,7 +263,7 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         ItemStack input = getItem(INPUT_SLOT);
         if (input.getCount() < recipe.inputCount()
                 || !recipe.ingredient().test(input)
-                || !canOutput(recipe.result())) {
+                || !canOutput(recipe)) {
             resetProgress();
             return;
         }
@@ -274,15 +275,29 @@ public final class ClayWorkTableBlockEntity extends BaseContainerBlockEntity {
         } else {
             output.grow(result.getCount());
         }
+        putOutput(REMAINDER_OUTPUT_SLOT, recipe.remainder());
         input.shrink(recipe.inputCount());
         resetProgress();
     }
 
-    private boolean canOutput(ItemStack result) {
-        ItemStack output = getItem(OUTPUT_SLOT);
+    private boolean canOutput(ClayWorkTableRecipe recipe) {
+        return canOutput(OUTPUT_SLOT, recipe.result())
+                && canOutput(REMAINDER_OUTPUT_SLOT, recipe.remainder());
+    }
+
+    private boolean canOutput(int slot, ItemStack result) {
+        if (result.isEmpty()) return true;
+        ItemStack output = getItem(slot);
         return output.isEmpty()
                 || ItemStack.isSameItemSameComponents(output, result)
                 && result.getCount() <= output.getMaxStackSize() - output.getCount();
+    }
+
+    private void putOutput(int slot, ItemStack result) {
+        if (result.isEmpty()) return;
+        ItemStack output = getItem(slot);
+        if (output.isEmpty()) items.set(slot, result.copy());
+        else output.grow(result.getCount());
     }
 
     private void resetProgress() {

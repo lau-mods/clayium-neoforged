@@ -26,6 +26,7 @@ public record ClayWorkTableRecipe(
         Ingredient ingredient,
         int inputCount,
         ItemStack result,
+        ItemStack remainder,
         ClayWorkTableOperation operation,
         int requiredActions,
         ClayTier minimumTier
@@ -35,20 +36,47 @@ public record ClayWorkTableRecipe(
                     Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(ClayWorkTableRecipe::ingredient),
                     Codec.intRange(1, 64).optionalFieldOf("input_count", 1).forGetter(ClayWorkTableRecipe::inputCount),
                     ItemStack.CODEC.fieldOf("result").forGetter(ClayWorkTableRecipe::result),
+                    ItemStack.OPTIONAL_CODEC.optionalFieldOf("remainder", ItemStack.EMPTY)
+                            .forGetter(ClayWorkTableRecipe::remainder),
                     ClayWorkTableOperation.CODEC.fieldOf("operation").forGetter(ClayWorkTableRecipe::operation),
                     Codec.intRange(1, Integer.MAX_VALUE).fieldOf("required_actions").forGetter(ClayWorkTableRecipe::requiredActions),
                     ClayTier.CODEC.fieldOf("minimum_tier").forGetter(ClayWorkTableRecipe::minimumTier)
             ).apply(instance, ClayWorkTableRecipe::new));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClayWorkTableRecipe> STREAM_CODEC =
-            StreamCodec.composite(
-                    Ingredient.CONTENTS_STREAM_CODEC, ClayWorkTableRecipe::ingredient,
-                    ByteBufCodecs.VAR_INT, ClayWorkTableRecipe::inputCount,
-                    ItemStack.STREAM_CODEC, ClayWorkTableRecipe::result,
-                    ClayWorkTableOperation.STREAM_CODEC, ClayWorkTableRecipe::operation,
-                    ByteBufCodecs.VAR_INT, ClayWorkTableRecipe::requiredActions,
-                    ClayTier.STREAM_CODEC, ClayWorkTableRecipe::minimumTier,
-                    ClayWorkTableRecipe::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClayWorkTableRecipe> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public ClayWorkTableRecipe decode(RegistryFriendlyByteBuf buffer) {
+            return new ClayWorkTableRecipe(
+                    Ingredient.CONTENTS_STREAM_CODEC.decode(buffer),
+                    ByteBufCodecs.VAR_INT.decode(buffer),
+                    ItemStack.STREAM_CODEC.decode(buffer),
+                    ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer),
+                    ClayWorkTableOperation.STREAM_CODEC.decode(buffer),
+                    ByteBufCodecs.VAR_INT.decode(buffer),
+                    ClayTier.STREAM_CODEC.decode(buffer));
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buffer, ClayWorkTableRecipe recipe) {
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient());
+            ByteBufCodecs.VAR_INT.encode(buffer, recipe.inputCount());
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.remainder());
+            ClayWorkTableOperation.STREAM_CODEC.encode(buffer, recipe.operation());
+            ByteBufCodecs.VAR_INT.encode(buffer, recipe.requiredActions());
+            ClayTier.STREAM_CODEC.encode(buffer, recipe.minimumTier());
+        }
+    };
+
+    public ClayWorkTableRecipe(
+            Ingredient ingredient,
+            int inputCount,
+            ItemStack result,
+            ClayWorkTableOperation operation,
+            int requiredActions,
+            ClayTier minimumTier) {
+        this(ingredient, inputCount, result, ItemStack.EMPTY, operation, requiredActions, minimumTier);
+    }
 
     public ClayWorkTableRecipe {
         if (ingredient == null || ingredient.isEmpty()) {
@@ -57,15 +85,24 @@ public record ClayWorkTableRecipe(
         if (result == null || result.isEmpty() || result.getCount() > result.getMaxStackSize()) {
             throw new IllegalArgumentException("Clay Work Table result must be a valid stack");
         }
+        if (remainder == null || !remainder.isEmpty() && remainder.getCount() > remainder.getMaxStackSize()) {
+            throw new IllegalArgumentException("Clay Work Table remainder must be empty or a valid stack");
+        }
         if (operation == null || minimumTier == null || inputCount < 1 || inputCount > 64 || requiredActions < 1) {
             throw new IllegalArgumentException("Clay Work Table recipe parameters are invalid");
         }
         result = result.copy();
+        remainder = remainder.copy();
     }
 
     @Override
     public ItemStack result() {
         return result.copy();
+    }
+
+    @Override
+    public ItemStack remainder() {
+        return remainder.copy();
     }
 
     @Override

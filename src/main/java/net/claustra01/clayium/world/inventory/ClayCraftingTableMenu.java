@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: CC-BY-4.0 */
 package net.claustra01.clayium.world.inventory;
 
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.ClayiumRegistries;
@@ -9,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.ResultContainer;
@@ -48,12 +50,12 @@ public final class ClayCraftingTableMenu extends AbstractContainerMenu {
                                  @Nullable Container adjacentChest) {
         super(ClayiumRegistries.CLAY_CRAFTING_TABLE_MENU.get(), containerId);
         this.player = inventory.player;
-        this.craftSlots = craftSlots;
+        this.craftSlots = new PersistentCraftingContainer(this, craftSlots);
         this.adjacentChest = adjacentChest;
         addSlots(inventory);
         this.playerStart = adjacentChest == null ? 10 : 37;
         this.playerEnd = playerStart + 36;
-        slotsChanged(craftSlots);
+        slotsChanged(this.craftSlots);
     }
 
     private void addSlots(Inventory inventory) {
@@ -164,5 +166,106 @@ public final class ClayCraftingTableMenu extends AbstractContainerMenu {
     public void removed(Player player) {
         super.removed(player);
         if (adjacentChest != null) adjacentChest.stopOpen(player);
+    }
+
+    /**
+     * Keeps the block entity's persistent grid while restoring the change callback supplied by
+     * vanilla's transient crafting grid. Without this adapter, slot edits never recalculate the
+     * result slot.
+     */
+    private static final class PersistentCraftingContainer implements CraftingContainer {
+        private final AbstractContainerMenu menu;
+        private final CraftingContainer delegate;
+
+        private PersistentCraftingContainer(AbstractContainerMenu menu, CraftingContainer delegate) {
+            this.menu = menu;
+            this.delegate = delegate;
+        }
+
+        @Override
+        public int getContainerSize() {
+            return delegate.getContainerSize();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return delegate.isEmpty();
+        }
+
+        @Override
+        public ItemStack getItem(int slot) {
+            return delegate.getItem(slot);
+        }
+
+        @Override
+        public ItemStack removeItem(int slot, int amount) {
+            ItemStack removed = delegate.removeItem(slot, amount);
+            if (!removed.isEmpty()) {
+                menu.slotsChanged(this);
+            }
+            return removed;
+        }
+
+        @Override
+        public ItemStack removeItemNoUpdate(int slot) {
+            return delegate.removeItemNoUpdate(slot);
+        }
+
+        @Override
+        public void setItem(int slot, ItemStack stack) {
+            delegate.setItem(slot, stack);
+            menu.slotsChanged(this);
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return delegate.getMaxStackSize();
+        }
+
+        @Override
+        public int getMaxStackSize(ItemStack stack) {
+            return delegate.getMaxStackSize(stack);
+        }
+
+        @Override
+        public void setChanged() {
+            delegate.setChanged();
+        }
+
+        @Override
+        public boolean stillValid(Player player) {
+            return delegate.stillValid(player);
+        }
+
+        @Override
+        public boolean canPlaceItem(int slot, ItemStack stack) {
+            return delegate.canPlaceItem(slot, stack);
+        }
+
+        @Override
+        public int getWidth() {
+            return delegate.getWidth();
+        }
+
+        @Override
+        public int getHeight() {
+            return delegate.getHeight();
+        }
+
+        @Override
+        public List<ItemStack> getItems() {
+            return delegate.getItems();
+        }
+
+        @Override
+        public void fillStackedContents(StackedContents contents) {
+            delegate.fillStackedContents(contents);
+        }
+
+        @Override
+        public void clearContent() {
+            delegate.clearContent();
+            menu.slotsChanged(this);
+        }
     }
 }

@@ -10,15 +10,15 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.Container;
-import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.core.Direction;
 
 /** Persistent 3x3 crafting grid used by the original Clay Crafting Table. */
@@ -43,11 +43,8 @@ public final class ClayCraftingTableBlockEntity extends BaseContainerBlockEntity
     public Container adjacentChest() {
         if (level == null) return null;
         for (Direction direction : Direction.values()) {
-            var pos = worldPosition.relative(direction);
-            BlockState state = level.getBlockState(pos);
-            if (state.getBlock() instanceof ChestBlock chest) {
-                Container container = ChestBlock.getContainer(chest, state, level, pos, true);
-                if (container != null && container.getContainerSize() >= 27) return container;
+            if (level.getBlockEntity(worldPosition.relative(direction)) instanceof ChestBlockEntity chest) {
+                return chest;
             }
         }
         return null;
