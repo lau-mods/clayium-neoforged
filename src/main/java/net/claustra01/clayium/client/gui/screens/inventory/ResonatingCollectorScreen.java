@@ -18,6 +18,13 @@ public final class ResonatingCollectorScreen extends AbstractContainerScreen<Res
         graphics.blit(TEXTURE,x,y,0,0,imageWidth,71);
         graphics.blit(TEXTURE,x,y+71,0,126,imageWidth,96);
     }
+    @Override protected void renderLabels(GuiGraphics graphics,int mouseX,int mouseY){
+        super.renderLabels(graphics,mouseX,mouseY);
+        graphics.drawString(font,Component.translatable("gui.clayium_neoforged.resonance",
+                String.format(java.util.Locale.ROOT,"%.3f",menu.resonance())),8,60,0x404040,false);
+        String progress=String.format(java.util.Locale.ROOT,"%.1f%%",menu.progressRatio()*100.0D);
+        graphics.drawString(font,progress,168-font.width(progress),60,0x404040,false);
+    }
     @Override public void render(GuiGraphics graphics,int mouseX,int mouseY,float partialTick) {
         super.render(graphics,mouseX,mouseY,partialTick); renderTooltip(graphics,mouseX,mouseY);
     }

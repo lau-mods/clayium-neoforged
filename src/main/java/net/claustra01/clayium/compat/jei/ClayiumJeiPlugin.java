@@ -65,7 +65,6 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                 guiHelper, ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get().getDefaultInstance()));
         registration.addRecipeCategories(new ChemicalMetalSeparatorRecipeCategory(
                 guiHelper, ClayiumRegistries.PRECISION_CHEMICAL_METAL_SEPARATOR_ITEM.get().getDefaultInstance()));
-        registration.addRecipeCategories(new PanDuplicatorRecipeCategory(guiHelper));
     }
 
     @Override
@@ -100,8 +99,6 @@ public final class ClayiumJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(ClayiumRegistries.QUARTZ_CRUCIBLE_ITEM.get(), ClayiumJeiRecipeTypes.QUARTZ_CRUCIBLE);
         registration.addRecipeCatalyst(ClayiumRegistries.PRECISION_CHEMICAL_METAL_SEPARATOR_ITEM.get(),
                 ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR);
-        ClayiumRegistries.PAN_DUPLICATOR_ITEMS.values().forEach(item ->
-                registration.addRecipeCatalyst(item.get(), ClayiumJeiRecipeTypes.PAN_DUPLICATOR));
     }
 
     @Override
@@ -222,8 +219,6 @@ public final class ClayiumJeiPlugin implements IModPlugin {
                         .mapToObj(QuartzCrucibleJeiRecipe::new).toList());
         registration.addRecipes(ClayiumJeiRecipeTypes.CHEMICAL_METAL_SEPARATOR,
                 java.util.List.of(new ChemicalMetalSeparatorJeiRecipe()));
-        registration.addRecipes(ClayiumJeiRecipeTypes.PAN_DUPLICATOR,
-                java.util.List.of(new PanDuplicatorJeiRecipe()));
     }
 
     private static ItemStack iconFor(ResourceLocation machineId) {

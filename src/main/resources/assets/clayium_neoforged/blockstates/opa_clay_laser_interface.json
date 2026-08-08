@@ -1,1 +1,1 @@
-{"variants":{"pipe=false":{"model":"clayium_neoforged:block/opa_clay_laser_interface"},"pipe=true":{"model":"clayium_neoforged:block/opa_clay_laser_interface_pipe"}}}
+{"variants":{"":{"model":"clayium_neoforged:block/opa_clay_laser_interface"}}}

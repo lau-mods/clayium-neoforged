@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -24,6 +25,14 @@ public final class ResonatingCollectorBlockEntity extends BaseContainerBlockEnti
     public static final double BASE_WORK = 10_000.0D;
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private double progress;
+    private final ContainerData menuData=new ContainerData(){
+        @Override public int get(int index){return switch(index){
+            case 0->(int)Math.min(10_000,Math.round(progress/BASE_WORK*10_000.0D));
+            case 1->(int)Math.min(Integer.MAX_VALUE,Math.round((ResonanceField.at(level,worldPosition))*1_000.0D));
+            default->0;};}
+        @Override public void set(int index,int value){}
+        @Override public int getCount(){return 2;}
+    };
     private final IItemHandler extraction = new IItemHandler() {
         @Override public int getSlots() { return SLOT_COUNT; }
         @Override public ItemStack getStackInSlot(int slot) { return getItem(slot); }
@@ -71,7 +80,7 @@ public final class ResonatingCollectorBlockEntity extends BaseContainerBlockEnti
         return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
     @Override protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
-        return new ResonatingCollectorMenu(id, inventory, this);
+        return new ResonatingCollectorMenu(id, inventory, this,menuData);
     }
     @Override protected NonNullList<ItemStack> getItems() { return items; }
     @Override protected void setItems(NonNullList<ItemStack> values) { items = values; }

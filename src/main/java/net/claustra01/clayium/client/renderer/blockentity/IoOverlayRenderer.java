@@ -91,7 +91,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         poses.translate(0.0D, 0.0D, -0.505D);
         poses.scale(0.48F, 0.48F, 0.48F);
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getItemRenderer().renderStatic(displayed, ItemDisplayContext.FIXED, light,
+        minecraft.getItemRenderer().renderStatic(displayed, ItemDisplayContext.FIXED, LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY, poses, buffers, storage.getLevel(), 0);
         poses.popPose();
 
@@ -104,7 +104,7 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
         float scale = 0.0125F;
         poses.scale(-scale, -scale, scale);
         font.drawInBatch(count, -font.width(count) / 2.0F, 0.0F, 0xffffffff, false,
-                poses.last().pose(), buffers, Font.DisplayMode.POLYGON_OFFSET, 0, light);
+                poses.last().pose(), buffers, Font.DisplayMode.POLYGON_OFFSET, 0, LightTexture.FULL_BRIGHT);
         poses.popPose();
     }
 

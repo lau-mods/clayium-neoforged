@@ -10,19 +10,24 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 
 public final class ResonatingCollectorMenu extends AbstractContainerMenu {
     private final Container container;
+    private final ContainerData data;
     public ResonatingCollectorMenu(int id, Inventory inventory, RegistryFriendlyByteBuf data) {
         this(id, inventory, inventory.player.level().getBlockEntity(data.readBlockPos())
                 instanceof ResonatingCollectorBlockEntity value ? value
-                : new SimpleContainer(ResonatingCollectorBlockEntity.SLOT_COUNT));
+                : new SimpleContainer(ResonatingCollectorBlockEntity.SLOT_COUNT),new SimpleContainerData(2));
     }
-    public ResonatingCollectorMenu(int id, Inventory inventory, Container container) {
+    public ResonatingCollectorMenu(int id, Inventory inventory, Container container,ContainerData data) {
         super(ClayiumRegistries.RESONATING_COLLECTOR_MENU.get(), id);
         this.container = container;
+        this.data=data;
         checkContainerSize(container, 9);
+        checkContainerDataCount(data,2);
         container.startOpen(inventory.player);
         for (int row=0; row<3; row++) for (int column=0; column<3; column++) {
             addSlot(new Slot(container, column + row*3, 62 + column*18, 17 + row*18) {
@@ -32,7 +37,10 @@ public final class ResonatingCollectorMenu extends AbstractContainerMenu {
         for (int row=0; row<3; row++) for (int column=0; column<9; column++)
             addSlot(new Slot(inventory, column+row*9+9, 8+column*18, 84+row*18));
         for (int column=0; column<9; column++) addSlot(new Slot(inventory,column,8+column*18,142));
+        addDataSlots(data);
     }
+    public double resonance(){return data.get(1)/1_000.0D;}
+    public double progressRatio(){return data.get(0)/10_000.0D;}
     @Override public boolean stillValid(Player player) { return container.stillValid(player); }
     @Override public ItemStack quickMoveStack(Player player, int index) {
         if (index < 0 || index >= slots.size() || !slots.get(index).hasItem()) return ItemStack.EMPTY;

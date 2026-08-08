@@ -19,6 +19,7 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
     private final Container container;
     private final PanAdapterBlockEntity adapter;
     private final int pages;
+    private final SimpleContainer previews = new SimpleContainer(9);
     private int page;
 
     public PanAdapterMenu(int id, Inventory inventory, RegistryFriendlyByteBuf buffer) {
@@ -44,17 +45,20 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
         container.startOpen(inventory.player);
         for (int row = 0; row < 3; row++) for (int column = 0; column < 3; column++) {
             int visibleSlot = column + row * 3;
-            addSlot(new PageSlot(container, visibleSlot, 30 + column * 18, 18 + row * 18));
+            addSlot(new PageSlot(container, visibleSlot, 32 + column * 18, 18 + row * 18));
         }
         for (int slot = 0; slot < 9; slot++) {
-            int x = 116 + (slot % 3) * 18;
+            int x = 92 + (slot % 3) * 18;
             int y = 18 + (slot / 3) * 18;
             addSlot(new PreviewSlot(slot, x, y));
         }
+        for (int slot = 0; slot < 9; slot++) {
+            addSlot(new Slot(container, PanAdapterBlockEntity.AUXILIARY_START + slot, 8 + slot * 18, 74));
+        }
         for (int row = 0; row < 3; row++) for (int column = 0; column < 9; column++)
-            addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 98 + row * 18));
+            addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 108 + row * 18));
         for (int column = 0; column < 9; column++)
-            addSlot(new Slot(inventory, column, 8 + column * 18, 156));
+            addSlot(new Slot(inventory, column, 8 + column * 18, 166));
         addDataSlot(new DataSlot() {
             @Override public int get() { return page; }
             @Override public void set(int value) { page = Math.max(0, Math.min(PanAdapterMenu.this.pages - 1, value)); }
@@ -102,8 +106,11 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
 
     private final class PreviewSlot extends Slot {
         private final int previewSlot;
-        private PreviewSlot(int slot, int x, int y) { super(new SimpleContainer(9), slot, x, y); previewSlot = slot; }
-        @Override public ItemStack getItem() { return adapter == null ? ItemStack.EMPTY : adapter.preview(page, previewSlot); }
+        private PreviewSlot(int slot, int x, int y) { super(previews, slot, x, y); previewSlot = slot; }
+        @Override public ItemStack getItem() {
+            return adapter != null && adapter.getLevel() != null && !adapter.getLevel().isClientSide
+                    ? adapter.preview(page, previewSlot) : super.getItem();
+        }
         @Override public boolean mayPlace(ItemStack stack) { return false; }
         @Override public boolean mayPickup(Player player) { return false; }
     }
@@ -111,6 +118,6 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
     private static Container clientContainer(Inventory inventory, RegistryFriendlyByteBuf buffer) {
         var pos = buffer.readBlockPos();
         return inventory.player.level().getBlockEntity(pos) instanceof PanAdapterBlockEntity adapter
-                ? adapter : new SimpleContainer(PanAdapterBlockEntity.PAGE_SIZE * PanAdapterBlockEntity.MAX_PAGES);
+                ? adapter : new SimpleContainer(PanAdapterBlockEntity.SLOTS);
     }
 }

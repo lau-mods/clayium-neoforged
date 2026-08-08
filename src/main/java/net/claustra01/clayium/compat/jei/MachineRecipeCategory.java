@@ -115,11 +115,7 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
             double mouseY) {
         arrow.draw(graphics, 76, 35);
         Font font = Minecraft.getInstance().font;
-        if (recipe.machine().equals(ClayiumMachineIds.CA_INJECTOR)
-                || recipe.machine().equals(ClayiumMachineIds.CA_CONDENSER)) {
-            graphics.drawString(font, Component.translatable("jei.clayium_neoforged.resonance_condition"),
-                    8, 68, TEXT_COLOR, false);
-        } else if (recipe.machine().equals(ClayiumMachineIds.CA_REACTOR)) {
+        if (recipe.machine().equals(ClayiumMachineIds.CA_REACTOR)) {
             graphics.drawString(font, Component.translatable("jei.clayium_neoforged.ca_reactor_condition"),
                     8, 68, TEXT_COLOR, false);
         }

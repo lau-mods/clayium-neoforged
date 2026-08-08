@@ -36,12 +36,15 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class PanAdapterBlockEntity extends BaseContainerBlockEntity {
     public static final int PAGE_SIZE=9;
     public static final int MAX_PAGES=8;
-    private NonNullList<ItemStack> patterns=NonNullList.withSize(PAGE_SIZE*MAX_PAGES,ItemStack.EMPTY);
+    public static final int AUXILIARY_START=PAGE_SIZE*MAX_PAGES;
+    public static final int SLOTS=AUXILIARY_START+PAGE_SIZE;
+    private NonNullList<ItemStack> patterns=NonNullList.withSize(SLOTS,ItemStack.EMPTY);
 
     public PanAdapterBlockEntity(BlockPos pos,BlockState state){super(ClayiumRegistries.PAN_ADAPTER_BLOCK_ENTITY.get(),pos,state);}
     public int pages(){return getBlockState().getBlock() instanceof PanAdapterBlock block?block.pages():1;}
     public ItemStack pattern(int page,int slot){return getItem(page*PAGE_SIZE+slot);}
     public void setPattern(int page,int slot,ItemStack stack){setItem(page*PAGE_SIZE+slot,stack);}
+    public ItemStack auxiliary(int slot){return getItem(AUXILIARY_START+slot);}
 
     public Optional<PanConversion> conversion(int page){
         if(level==null||page<0||page>=pages())return Optional.empty();
@@ -100,7 +103,7 @@ public final class PanAdapterBlockEntity extends BaseContainerBlockEntity {
     @Override protected AbstractContainerMenu createMenu(int id,Inventory inventory){return new PanAdapterMenu(id,inventory,this);}
     @Override protected NonNullList<ItemStack> getItems(){return patterns;}
     @Override protected void setItems(NonNullList<ItemStack> values){patterns=values;}
-    @Override public int getContainerSize(){return PAGE_SIZE*MAX_PAGES;}
+    @Override public int getContainerSize(){return SLOTS;}
     @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider registries){
         super.loadAdditional(tag,registries);patterns=NonNullList.withSize(getContainerSize(),ItemStack.EMPTY);ContainerHelper.loadAllItems(tag,patterns,registries);
     }

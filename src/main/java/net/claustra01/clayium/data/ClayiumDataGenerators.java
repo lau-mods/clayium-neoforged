@@ -93,9 +93,6 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.ca_injector", "CA Injector");
                 add("jei." + Clayium.MODID + ".category.ca_condenser", "CA Condenser");
                 add("jei." + Clayium.MODID + ".category.ca_reactor", "CA Reactor");
-                add("jei." + Clayium.MODID + ".category.pan_duplicator", "PAN Duplicator");
-                add("jei." + Clayium.MODID + ".pan.template_retained", "Template is retained; one Antimatter is consumed");
-                add("jei." + Clayium.MODID + ".pan.network_condition", "Requires a PAN network that knows a recipe for the template");
                 add("jei." + Clayium.MODID + ".category.energetic_clay_decomposer", "Energetic Clay Decomposer");
                 add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
                 add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");
@@ -127,7 +124,7 @@ public final class ClayiumDataGenerators {
                 }
                 add(Clayium.MODID + ".config.log_registry_summary", "Log registry summary");
                 add(Clayium.MODID + ".config.ce_sync_interval_ticks", "Clay Energy sync interval");
-                add("jei." + Clayium.MODID + ".resonance_condition", "Affected by adjacent resonators");
+                add("gui." + Clayium.MODID + ".resonance", "Resonance: %s");
                 add("jei." + Clayium.MODID + ".ca_reactor_condition", "Requires a valid CA Reactor ring and hull");
                 add("message." + Clayium.MODID + ".pan_core_status", "PAN network: %s nodes, %s conversions");
             }

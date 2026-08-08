@@ -19,8 +19,6 @@ public final class ClayiumJeiRecipeTypes {
             Clayium.MODID, "quartz_crucible", QuartzCrucibleJeiRecipe.class);
     public static final RecipeType<ChemicalMetalSeparatorJeiRecipe> CHEMICAL_METAL_SEPARATOR = RecipeType.create(
             Clayium.MODID, "chemical_metal_separator", ChemicalMetalSeparatorJeiRecipe.class);
-    public static final RecipeType<PanDuplicatorJeiRecipe> PAN_DUPLICATOR = RecipeType.create(
-            Clayium.MODID, "pan_duplicator", PanDuplicatorJeiRecipe.class);
     public static final RecipeType<ClayWorkTableRecipe> CLAY_WORK_TABLE =
             RecipeType.create(Clayium.MODID, "clay_work_table", ClayWorkTableRecipe.class);
     public static final RecipeType<MachineRecipe> CLAY_BENDING_MACHINE = machine("clay_bending_machine");
