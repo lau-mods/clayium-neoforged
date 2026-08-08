@@ -140,8 +140,8 @@ public final class ClayiumDataGenerators {
                 }
                 add("gui." + Clayium.MODID + ".pan_core.search", "Search");
                 add("gui." + Clayium.MODID + ".pan_core.summary", "PAN: %s nodes / %s available");
-                add("gui." + Clayium.MODID + ".pan_core.cost", "Material cost: %s CE");
-                add("gui." + Clayium.MODID + ".pan_core.consumption", "Consumption: %s CE");
+                add("gui." + Clayium.MODID + ".pan_core.cost", "Material cost: %s");
+                add("gui." + Clayium.MODID + ".pan_core.consumption", "Consumption: %s");
                 add("gui." + Clayium.MODID + ".pan_core.prohibited", "Prohibited from duplication");
             }
         });

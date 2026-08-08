@@ -41,6 +41,7 @@ public final class PanCoreMenu extends AbstractContainerMenu {
     }
 
     public static void writeOpeningData(RegistryFriendlyByteBuf buffer,PanCoreBlockEntity core){
+        core.refreshForMenu();
         buffer.writeBlockPos(core.getBlockPos());
         List<PanCoreEntry> entries=core.entries();buffer.writeVarInt(Math.min(entries.size(),MAX_ENTRIES));
         for(int index=0;index<Math.min(entries.size(),MAX_ENTRIES);index++)PanCoreEntry.encode(buffer,entries.get(index));

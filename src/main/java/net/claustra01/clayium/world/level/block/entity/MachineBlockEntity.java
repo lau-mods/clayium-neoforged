@@ -645,6 +645,86 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         return true;
     }
 
+    /** Resolves the conversion exposed through an adjacent PAN Adapter without mutating this machine. */
+    public Optional<net.claustra01.clayium.pan.PanConversion> panConversion(
+            List<ItemStack> patternInputs, List<ItemStack> auxiliaryItems) {
+        MachineBlock block = machineBlock();
+        if (level == null || block == null) return Optional.empty();
+        boolean structured = block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
+                || block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)
+                || block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR);
+        if (structured && !structureFormed) return Optional.empty();
+        Optional<RecipeHolder<MachineRecipe>> found = MachineRecipeLookup.find(
+                level, block.machineId(), recipeTier(), patternInputs);
+        if (found.isEmpty()) return Optional.empty();
+        MachineRecipe recipe = found.get().value();
+        Optional<int[]> matched = recipe.matchInputSlots(new MachineRecipeInput(patternInputs));
+        if (matched.isEmpty()) return Optional.empty();
+        List<ItemStack> ingredients = new java.util.ArrayList<>();
+        for (int index = 0; index < recipe.ingredients().size(); index++) {
+            ingredients.add(patternInputs.get(matched.get()[index]).copyWithCount(recipe.ingredients().get(index).count()));
+        }
+
+        double resonance = net.claustra01.clayium.machine.ResonanceField.at(level, worldPosition);
+        int batch = net.claustra01.clayium.machine.MachineProcessPolicy.batchSize(
+                block.machineId(), patternInputs.isEmpty() ? 1 : patternInputs.getFirst().getCount());
+        long time = net.claustra01.clayium.machine.MachineProcessPolicy.processingTime(
+                MachinePerformance.processingTime(recipe, block.machineId(), recipeTier()),
+                block.machineId(), machineTier(), batch);
+        time = net.claustra01.clayium.machine.MachineProcessPolicy.resonanceProcessingTime(
+                time, block.machineId(), machineTier(), resonance);
+        long energyPerTick = Math.max(0L, Math.round(MachinePerformance.clayEnergyPerTick(
+                recipe, block.machineId(), recipeTier()) * modifiers.energyFactor()));
+        time = Math.max(1L, (long)Math.ceil((double)time / modifiers.overclockFactor()));
+
+        List<ItemStack> results = new java.util.ArrayList<>();
+        if (block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR)) {
+            time = net.claustra01.clayium.machine.CAReactorStructure.processingTime(time, caReactorStructure);
+            double adjusted = energyPerTick * caReactorStructure.energyMultiplier();
+            energyPerTick = adjusted >= Long.MAX_VALUE ? Long.MAX_VALUE : Math.max(0L, Math.round(adjusted));
+            results.add(net.claustra01.clayium.machine.LateGameMaterials.pureAntimatter(caReactorStructure.productRank()));
+        } else {
+            for (ItemStack result : recipe.results()) {
+                int count = net.claustra01.clayium.machine.MachineProcessPolicy.outputCount(
+                        block.machineId(), result.getCount(), batch);
+                count = net.claustra01.clayium.machine.MachineProcessPolicy.resonanceOutputCount(
+                        block.machineId(), count, resonance);
+                results.add(result.copyWithCount(Math.min(result.getMaxStackSize(), count)));
+            }
+        }
+
+        if (block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)) {
+            int blue = 0, green = 0, red = 0;
+            for (ItemStack stack : auxiliaryItems) {
+                if (!(stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem)
+                        || !(blockItem.getBlock() instanceof net.claustra01.clayium.world.level.block.ClayEnergyLaserBlock laser)) continue;
+                switch (laser.tier().progressionIndex()) {
+                    case 7 -> blue += stack.getCount();
+                    case 8 -> green += stack.getCount();
+                    case 9 -> red += stack.getCount();
+                    default -> { }
+                }
+            }
+            long acceleration = Math.max(1L, (long)(net.claustra01.clayium.laser.ClayLaser.energy(blue, green, red) + 1.0D));
+            time = Math.max(1L, Math.max(0L, time - 1L) / acceleration + 1L);
+            energyPerTick = saturatingAdd(energyPerTick,
+                    saturatingAdd(40_000L * (long)blue,
+                            saturatingAdd(400_000L * (long)green, 4_000_000L * (long)red)));
+        }
+        return Optional.of(new net.claustra01.clayium.pan.PanConversion(
+                ingredients, results, saturatingProduct(time, energyPerTick)));
+    }
+
+    private static long saturatingAdd(long first, long second) {
+        if (first > Long.MAX_VALUE - second) return Long.MAX_VALUE;
+        return first + second;
+    }
+
+    private static double saturatingProduct(long first, long second) {
+        double product = (double)first * second;
+        return Double.isFinite(product) ? product : Double.MAX_VALUE;
+    }
+
     private boolean acceptsEnergeticClay() {
         MachineBlock block = machineBlock();
         return machineTier().progressionIndex() >= 4 && block != null

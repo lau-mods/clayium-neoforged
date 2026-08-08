@@ -19,6 +19,14 @@ public final class ClayEnergyFormatter {
         return formatInternal(BigDecimal.valueOf(internalEnergy));
     }
 
+    /** Formats fractional internal CE values used by the original PAN cost graph. */
+    public static String format(double internalEnergy) {
+        if (!Double.isFinite(internalEnergy)) {
+            return internalEnergy > 0.0D ? "∞CE" : "0uCE";
+        }
+        return formatInternal(BigDecimal.valueOf(internalEnergy));
+    }
+
     public static String formatRatio(long internalEnergyNumerator, long denominator) {
         if (denominator <= 0) {
             throw new IllegalArgumentException("Clay Energy ratio denominator must be positive");

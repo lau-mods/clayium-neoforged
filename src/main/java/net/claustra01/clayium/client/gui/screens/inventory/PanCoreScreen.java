@@ -90,8 +90,8 @@ public final class PanCoreScreen extends AbstractContainerScreen<PanCoreMenu> {
             graphics.renderItem(entry.stack(),x,y);
             if(entry.prohibited())graphics.fill(x,y,x+16,y+16,0x78c0001e);
             if(detail){
-                graphics.drawString(font,format(entry.cost())+" CE",x+24,y+1,0xffdcdcdc,false);
-                graphics.drawString(font,format(entry.consumption())+" CE",x+82,y+1,0xfffff0b0,false);
+                graphics.drawString(font,format(entry.cost()),x+24,y+1,0xffdcdcdc,false);
+                graphics.drawString(font,format(entry.consumption()),x+82,y+1,0xfffff0b0,false);
             }
             if(mouseX>=x&&mouseX<x+16&&mouseY>=y&&mouseY<y+16)hovered=entry;
         }
@@ -128,7 +128,7 @@ public final class PanCoreScreen extends AbstractContainerScreen<PanCoreMenu> {
     }
 
     private static String format(double value){
-        return value<=Long.MAX_VALUE?ClayEnergyFormatter.format(Math.max(0L,Math.round(value))):String.format(Locale.ROOT,"%.3e",value);
+        return value<=Double.MAX_VALUE?ClayEnergyFormatter.format(Math.max(0.0D,value)):String.format(Locale.ROOT,"%.3e",value);
     }
     private static void tile(GuiGraphics graphics,ResourceLocation texture,int x,int y,int width,int height,int tw,int th){for(int yy=0;yy<height;yy+=th)for(int xx=0;xx<width;xx+=tw)graphics.blit(texture,x+xx,y+yy,0,0,Math.min(tw,width-xx),Math.min(th,height-yy),tw,th);}
     private static void whole(GuiGraphics graphics,ResourceLocation texture,int x,int y){graphics.blit(texture,x,y,0,0,4,4,4,4);}

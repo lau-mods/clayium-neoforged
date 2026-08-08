@@ -45,6 +45,8 @@ public final class PanCoreBlockEntity extends BlockEntity implements MenuProvide
     public static void serverTick(Level level,BlockPos pos,BlockState state,PanCoreBlockEntity core){
         if(core.refreshDelay--<=0){core.refreshDelay=REFRESH_INTERVAL;core.refreshNetwork();}
     }
+    public void requestRefresh(){refreshDelay=0;}
+    public void refreshForMenu(){refreshDelay=REFRESH_INTERVAL;refreshNetwork();}
     private void refreshNetwork(){
         if(level==null||level.isClientSide)return;
         record Node(BlockPos pos,int depth){}
@@ -52,8 +54,10 @@ public final class PanCoreBlockEntity extends BlockEntity implements MenuProvide
         queue.add(new Node(worldPosition,0));
         while(!queue.isEmpty()&&visited.size()<MAX_NODES){
             Node node=queue.removeFirst();if(!visited.add(node.pos())||node.depth()>MAX_DEPTH)continue;
-            if(level.getBlockEntity(node.pos()) instanceof PanAdapterBlockEntity adapter)
+            if(level.getBlockEntity(node.pos()) instanceof PanAdapterBlockEntity adapter){
+                adapter.linkPanCore(worldPosition);
                 for(int page=0;page<adapter.pages();page++)adapter.conversion(page).ifPresent(conversions::add);
+            }
             if(level.getBlockEntity(node.pos()) instanceof PanNetworkMember member)member.linkPanCore(worldPosition,REFRESH_INTERVAL*2);
             for(var direction:net.minecraft.core.Direction.values()){
                 BlockPos next=node.pos().relative(direction);
@@ -66,8 +70,8 @@ public final class PanCoreBlockEntity extends BlockEntity implements MenuProvide
     }
     private static BuildResult buildCosts(List<PanConversion> conversions){
         Map<Item,Value> values=new HashMap<>();
-        seed(values,Blocks.STONE.asItem(),1.0D);seed(values,Blocks.COBBLESTONE.asItem(),1.0D);
-        seed(values,Blocks.OAK_LOG.asItem(),1.0D);seed(values,Items.CLAY_BALL,1.0D);
+        seed(values,Blocks.COBBLESTONE.asItem(),1.0D);seed(values,Blocks.OAK_LOG.asItem(),1.0D);
+        seed(values,Blocks.CLAY.asItem(),1.0D);
         double compressedCost=10.0D;seed(values,ClayiumRegistries.COMPRESSED_CLAY_ITEM.get(),compressedCost);
         String[] compressedIds={"industrial_clay","advanced_industrial_clay","energetic_clay",
                 "compressed_energetic_clay","double_compressed_energetic_clay","triple_compressed_energetic_clay",
@@ -118,13 +122,39 @@ public final class PanCoreBlockEntity extends BlockEntity implements MenuProvide
     }
     private static boolean isProhibited(ItemStack stack){
         Item item=stack.getItem();
-        if(item==Items.CLAY_BALL||item==ClayiumRegistries.DENSE_CLAY_ITEM.get()||item==ClayiumRegistries.COMPRESSED_CLAY_ITEM.get())return true;
+        if(item==Blocks.CLAY.asItem()||item==Items.CLAY_BALL
+                ||item==ClayiumRegistries.CLAY_STICK.get()||item==ClayiumRegistries.SHORT_CLAY_STICK.get()
+                ||item==ClayiumRegistries.LARGE_CLAY_BALL.get()||item==ClayiumRegistries.CLAY_DISC.get()
+                ||item==ClayiumRegistries.SMALL_CLAY_DISC.get()||item==ClayiumRegistries.CLAY_PLATE.get()
+                ||item==ClayiumRegistries.LARGE_CLAY_PLATE.get()||item==ClayiumRegistries.CLAY_BLADE.get()
+                ||item==ClayiumRegistries.CLAY_CYLINDER.get()||item==ClayiumRegistries.CLAY_RING.get()
+                ||item==ClayiumRegistries.SMALL_CLAY_RING.get()||item==ClayiumRegistries.CLAY_GEAR.get()
+                ||item==ClayiumRegistries.DENSE_CLAY_ITEM.get()||item==ClayiumRegistries.DENSE_CLAY_PLATE.get()
+                ||item==ClayiumRegistries.DENSE_CLAY_STICK.get()||item==ClayiumRegistries.DENSE_CLAY_GEAR.get())return true;
+        for(var entry:ClayiumRegistries.COMPONENT_ITEMS.entrySet()){
+            String id=entry.getKey();
+            if((isClayComponent(id)||id.startsWith("dense_clay_")
+                    ||id.startsWith("industrial_clay_")&&!id.endsWith("_shard")
+                    ||id.startsWith("advanced_industrial_clay_")&&!id.endsWith("_shard"))
+                    &&entry.getValue().get()==item)return true;
+        }
         if(ClayiumRegistries.COMPRESSED_CLAY_BLOCK_ITEMS.values().stream().anyMatch(value->value.get()==item))return true;
-        String[] ids={"antimatter","pure_antimatter","compressed_pure_antimatter","double_compressed_pure_antimatter",
-                "triple_compressed_pure_antimatter","quadruple_compressed_pure_antimatter","quintuple_compressed_pure_antimatter",
-                "sextuple_compressed_pure_antimatter","septuple_compressed_pure_antimatter","opa"};
-        for(String id:ids)if(ClayiumRegistries.MATERIAL_ITEMS.get(id).get()==item)return true;
+        for(var entry:ClayiumRegistries.MATERIAL_ITEMS.entrySet()){
+            String id=entry.getKey();
+            if((id.equals("antimatter")||id.startsWith("antimatter_")
+                    ||id.equals("pure_antimatter")||id.startsWith("pure_antimatter_")
+                    ||id.contains("compressed_pure_antimatter")
+                    ||id.equals("oec_dust")||id.equals("oec_plate")||id.equals("oec_large_plate")
+                    ||id.equals("opa")||id.startsWith("opa_"))&&entry.getValue().get()==item)return true;
+        }
         return false;
+    }
+    private static boolean isClayComponent(String id){
+        return switch(id){
+            case "clay_needle","clay_pipe","clay_grinding_head","clay_bearing","clay_spindle",
+                    "clay_cutting_head","clay_water_wheel_component","clay_dust"->true;
+            default->false;
+        };
     }
     public int networkSize(){return networkSize;}
     public int conversionCount(){return conversionCosts.size();}

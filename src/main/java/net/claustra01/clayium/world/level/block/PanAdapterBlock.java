@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.Containers;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 
 public final class PanAdapterBlock extends BaseEntityBlock implements PanConductor {
@@ -41,5 +42,9 @@ public final class PanAdapterBlock extends BaseEntityBlock implements PanConduct
         if(!level.isClientSide&&player instanceof ServerPlayer server&&level.getBlockEntity(pos) instanceof PanAdapterBlockEntity adapter)
             server.openMenu(adapter,data->data.writeBlockPos(pos));
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+    @Override protected void neighborChanged(BlockState state,Level level,BlockPos pos,Block neighbor,BlockPos fromPos,boolean movedByPiston){
+        super.neighborChanged(state,level,pos,neighbor,fromPos,movedByPiston);
+        if(level.getBlockEntity(pos) instanceof PanAdapterBlockEntity adapter)adapter.networkChanged();
     }
 }

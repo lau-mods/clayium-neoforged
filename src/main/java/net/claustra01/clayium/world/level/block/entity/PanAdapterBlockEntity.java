@@ -4,6 +4,7 @@ package net.claustra01.clayium.world.level.block.entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.claustra01.clayium.machine.MachineLayout;
 import net.claustra01.clayium.pan.PanConversion;
 import net.claustra01.clayium.registry.ClayiumRecipes;
@@ -39,12 +40,24 @@ public final class PanAdapterBlockEntity extends BaseContainerBlockEntity {
     public static final int AUXILIARY_START=PAGE_SIZE*MAX_PAGES;
     public static final int SLOTS=AUXILIARY_START+PAGE_SIZE;
     private NonNullList<ItemStack> patterns=NonNullList.withSize(SLOTS,ItemStack.EMPTY);
+    @Nullable private BlockPos linkedCore;
 
     public PanAdapterBlockEntity(BlockPos pos,BlockState state){super(ClayiumRegistries.PAN_ADAPTER_BLOCK_ENTITY.get(),pos,state);}
     public int pages(){return getBlockState().getBlock() instanceof PanAdapterBlock block?block.pages():1;}
     public ItemStack pattern(int page,int slot){return getItem(page*PAGE_SIZE+slot);}
     public void setPattern(int page,int slot,ItemStack stack){setItem(page*PAGE_SIZE+slot,stack);}
     public ItemStack auxiliary(int slot){return getItem(AUXILIARY_START+slot);}
+    public void linkPanCore(BlockPos core){linkedCore=core.immutable();}
+    public void networkChanged(){
+        if(level!=null&&!level.isClientSide&&linkedCore!=null
+                &&level.getBlockEntity(linkedCore) instanceof PanCoreBlockEntity core)core.requestRefresh();
+    }
+
+    @Override public void setItem(int slot,ItemStack stack){
+        ItemStack previous=slot>=0&&slot<getContainerSize()?getItem(slot).copy():ItemStack.EMPTY;
+        super.setItem(slot,stack);
+        if(!ItemStack.matches(previous,getItem(slot)))networkChanged();
+    }
 
     public Optional<PanConversion> conversion(int page){
         if(level==null||page<0||page>=pages())return Optional.empty();
@@ -55,6 +68,9 @@ public final class PanAdapterBlockEntity extends BaseContainerBlockEntity {
             if(adjacent.getBlock() instanceof MachineBlock machine){
                 int count=MachineLayout.forMachine(machine.machineId()).inputSlots().length;
                 List<ItemStack> inputs=pageItems.subList(0,Math.min(count,pageItems.size()));
+                if(level.getBlockEntity(worldPosition.relative(direction)) instanceof MachineBlockEntity machineEntity){
+                    return machineEntity.panConversion(inputs,auxiliaryItems());
+                }
                 var found=net.claustra01.clayium.recipe.MachineRecipeLookup.find(level,machine.machineId(),machine.tier(),inputs);
                 if(found.isPresent()){
                     var recipe=found.get().value();
@@ -73,7 +89,7 @@ public final class PanAdapterBlockEntity extends BaseContainerBlockEntity {
                         level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING,input,level);
                 if(found.isPresent()){
                     ItemStack result=found.get().value().assemble(input,level.registryAccess());
-                    return Optional.of(new PanConversion(nonEmptyUnitStacks(pageItems),List.of(result),0.0D));
+                    return Optional.of(new PanConversion(nonEmptyUnitStacks(pageItems),List.of(result),10.0D));
                 }
             }
             if(adjacent.getBlock() instanceof AbstractFurnaceBlock&&!pageItems.getFirst().isEmpty()){
@@ -82,7 +98,7 @@ public final class PanAdapterBlockEntity extends BaseContainerBlockEntity {
                 if(found.isPresent()){
                     AbstractCookingRecipe recipe=found.get().value();
                     return Optional.of(new PanConversion(List.of(pageItems.getFirst().copyWithCount(1)),
-                            List.of(recipe.assemble(input,level.registryAccess())),recipe.getCookingTime()));
+                            List.of(recipe.assemble(input,level.registryAccess())),recipe.getCookingTime()*4.0D));
                 }
             }
         }
@@ -95,6 +111,11 @@ public final class PanAdapterBlockEntity extends BaseContainerBlockEntity {
     }
     private static List<ItemStack> nonEmptyUnitStacks(List<ItemStack> values){
         return values.stream().filter(stack->!stack.isEmpty()).map(stack->stack.copyWithCount(1)).toList();
+    }
+    private List<ItemStack> auxiliaryItems(){
+        List<ItemStack> values=new ArrayList<>(PAGE_SIZE);
+        for(int slot=0;slot<PAGE_SIZE;slot++)values.add(auxiliary(slot));
+        return values;
     }
     private static double saturatingProduct(long a,long b){
         double product=(double)a*b;return Double.isFinite(product)?product:Double.MAX_VALUE;
