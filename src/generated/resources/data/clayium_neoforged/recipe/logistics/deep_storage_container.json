@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:storage_container"
+    },
+    {
+      "item": "clayium_neoforged:clay_core"
+    }
+  ],
+  "result": {
+    "components": {
+      "clayium_neoforged:storage_capacity": 2147483647
+    },
+    "count": 1,
+    "id": "clayium_neoforged:storage_container"
+  }
+}

@@ -3,6 +3,8 @@ package net.claustra01.clayium.data;
 
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.registry.ClayiumRegistries;
+import net.claustra01.clayium.registry.ClayiumDataComponents;
+import net.claustra01.clayium.storage.MetalStorageCatalog;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -13,6 +15,12 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.core.NonNullList;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
 
 /** Furnace conversions retained from the original silicon progression. */
@@ -53,6 +61,42 @@ public final class MaterialCraftingRecipes {
                             ClayiumRegistries.MATERIAL_BLOCKS.get("silicone_block").get()))
                     .save(output, Clayium.id("silicone_blocks/" + color.getSerializedName()));
         }
+        for (MetalStorageCatalog.Metal metal : MetalStorageCatalog.METALS) {
+            ItemLike block = ClayiumRegistries.DECORATIVE_METAL_BLOCKS.get(metal.blockId()).get();
+            ItemLike ingot = materialItem(metal.ingotId());
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, block)
+                    .define('I', CommonMaterialTags.tagFor(ingot).orElseThrow())
+                    .pattern("III").pattern("III").pattern("III")
+                    .unlockedBy("has_ingot", InventoryChangeTrigger.TriggerInstance.hasItems(ingot))
+                    .save(output, Clayium.id("metal_blocks/" + metal.material()));
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ingot, 9)
+                    .requires(CommonMaterialTags.tagFor(block).orElseThrow())
+                    .unlockedBy("has_block", InventoryChangeTrigger.TriggerInstance.hasItems(block))
+                    .save(output, Clayium.id("metal_blocks/" + metal.material() + "_unpack"));
+        }
+        var metalChestTag = ItemTags.create(ResourceLocation.fromNamespaceAndPath(Clayium.MODID, "metal_chests"));
+        for (MetalStorageCatalog.Chest chest : MetalStorageCatalog.CHESTS) {
+            ItemLike result = ClayiumRegistries.METAL_CHEST_BLOCKS.get(chest.blockId()).get();
+            ItemLike ingot = materialItem(chest.ingotId());
+            ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
+                    .define('#', CommonMaterialTags.tagFor(ingot).orElseThrow()).define('C', Items.CHEST)
+                    .pattern("###").pattern("#C#").pattern("###")
+                    .unlockedBy("has_ingot", InventoryChangeTrigger.TriggerInstance.hasItems(ingot))
+                    .save(output, Clayium.id("metal_chests/" + chest.material()));
+            ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
+                    .define('#', CommonMaterialTags.tagFor(ingot).orElseThrow()).define('C', metalChestTag)
+                    .pattern("###").pattern("#C#").pattern("###")
+                    .unlockedBy("has_metal_chest", InventoryChangeTrigger.TriggerInstance.hasItems(result))
+                    .save(output, Clayium.id("metal_chests/upgrade_" + chest.material()));
+        }
+        ItemStack deepStorage = new ItemStack(ClayiumRegistries.LOGISTICS_BLOCKS.get("storage_container").get());
+        deepStorage.set(ClayiumDataComponents.STORAGE_CAPACITY.get(),
+                net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity.DEEP_STORAGE_CAPACITY);
+        NonNullList<Ingredient> deepStorageIngredients = NonNullList.create();
+        deepStorageIngredients.add(Ingredient.of(ClayiumRegistries.LOGISTICS_BLOCKS.get("storage_container").get()));
+        deepStorageIngredients.add(Ingredient.of(component("clay_core")));
+        output.accept(Clayium.id("logistics/deep_storage_container"),
+                new ShapelessRecipe("", CraftingBookCategory.MISC, deepStorage, deepStorageIngredients), null);
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,
                         ClayiumRegistries.OTHER_HULL_BLOCKS.get("zk60a_machine_hull").get())
                 .define('P', CommonMaterialTags.tagFor(item("zk60a_large_plate")).orElseThrow())
@@ -95,6 +139,10 @@ public final class MaterialCraftingRecipes {
         if (ClayiumRegistries.COMPONENT_ITEMS.containsKey(id)) {
             return ClayiumRegistries.COMPONENT_ITEMS.get(id).get();
         }
+        return ClayiumRegistries.MATERIAL_ITEMS.get(id).get();
+    }
+
+    private static ItemLike materialItem(String id) {
         return ClayiumRegistries.MATERIAL_ITEMS.get(id).get();
     }
 

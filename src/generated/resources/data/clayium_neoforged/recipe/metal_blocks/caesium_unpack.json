@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:storage_blocks/caesium"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:caesium_ingot"
+  }
+}

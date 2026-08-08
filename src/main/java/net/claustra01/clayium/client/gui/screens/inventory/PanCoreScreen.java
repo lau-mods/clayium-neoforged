@@ -123,7 +123,7 @@ public final class PanCoreScreen extends AbstractContainerScreen<PanCoreMenu> {
 
     @Override protected void renderLabels(GuiGraphics graphics,int mouseX,int mouseY){
         graphics.drawString(font,title,6,6,0x404040,false);
-        graphics.drawString(font,Component.translatable("gui.clayium_neoforged.pan_core.summary",menu.networkSize(),menu.conversionCount()),6,134,0x404040,false);
+        graphics.drawString(font,Component.translatable("gui.clayium_neoforged.pan_core.summary",menu.networkSize(),menu.conversionCount()),6,150,0x404040,false);
         graphics.drawString(font,playerInventoryTitle,8,PanCoreMenu.MACHINE_HEIGHT,0x404040,false);
     }
 

@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 
 /** Read-only PAN conversion browser. The potentially large table is sent only when opened. */
 public final class PanCoreMenu extends AbstractContainerMenu {
-    public static final int MACHINE_HEIGHT=144;
+    public static final int MACHINE_HEIGHT=160;
     private static final int MAX_ENTRIES=4_096;
     private final BlockPos corePos;
     private final List<PanCoreEntry> entries;

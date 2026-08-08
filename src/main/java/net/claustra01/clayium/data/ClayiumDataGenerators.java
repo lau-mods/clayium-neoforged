@@ -15,6 +15,7 @@ import net.claustra01.clayium.machine.SpecializedMachineCatalog;
 import net.claustra01.clayium.machine.MaterialCatalog;
 import net.claustra01.clayium.machine.ClayComponentCatalog;
 import net.claustra01.clayium.logistics.LogisticsCatalog;
+import net.claustra01.clayium.storage.MetalStorageCatalog;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.data.PackOutput;
@@ -145,8 +146,17 @@ public final class ClayiumDataGenerators {
                 add("gui." + Clayium.MODID + ".pan_core.cost", "Material cost: %s");
                 add("gui." + Clayium.MODID + ".pan_core.consumption", "Consumption: %s");
                 add("gui." + Clayium.MODID + ".pan_core.prohibited", "Prohibited from duplication");
+                add("gui." + Clayium.MODID + ".metal_chest.page", "%s / %s");
+                add("tooltip." + Clayium.MODID + ".storage_capacity", "Capacity: %s items");
+                add("tooltip." + Clayium.MODID + ".storage_contents", "Stored: %s x %s");
+                add("tooltip." + Clayium.MODID + ".metal_chest.capacity", "Capacity: %s x %s = %s slots");
+                add("tooltip." + Clayium.MODID + ".metal_chest.capacity_pages", "Capacity: %s x %s x %s = %s slots");
             }
         });
+        event.getGenerator().addProvider(event.includeClient(),
+                new MetalStorageModelProvider(packOutput, event.getExistingFileHelper()));
+        event.getGenerator().addProvider(event.includeServer(),
+                MetalStorageLootProvider.create(packOutput, event.getLookupProvider()));
         event.getGenerator().addProvider(
                 event.includeServer(),
                 new RecipeProvider(packOutput, event.getLookupProvider()) {
@@ -282,6 +292,10 @@ public final class ClayiumDataGenerators {
         addBlockName(language, "antimatter_block", "Block of Antimatter");
         addBlockName(language, "pure_antimatter_block", "Block of Pure Antimatter");
         addBlockName(language, "opa_block", "Block of Octuple Compressed Pure Antimatter");
+        MetalStorageCatalog.METALS.forEach(metal ->
+                addBlockName(language, metal.blockId(), metal.displayName() + " Block"));
+        MetalStorageCatalog.CHESTS.forEach(chest ->
+                addBlockName(language, chest.blockId(), chest.displayName() + " Chest"));
     }
 
     private static void addItemNames(LanguageProvider language) {

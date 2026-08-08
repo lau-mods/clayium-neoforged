@@ -88,5 +88,9 @@ public final class ClayiumCapabilities {
                 ClayiumRegistries.PAN_DUPLICATOR_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> blockEntity.itemHandler(
                         direction == null ? net.minecraft.core.Direction.UP : direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.METAL_CHEST_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler());
     }
 }

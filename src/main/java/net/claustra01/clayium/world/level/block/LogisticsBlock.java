@@ -7,6 +7,8 @@ import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.logistics.LogisticsKind;
 import net.claustra01.clayium.registry.ClayiumRegistries;
+import net.claustra01.clayium.registry.ClayiumDataComponents;
+import net.claustra01.clayium.data.StorageContents;
 import net.claustra01.clayium.world.level.block.entity.LogisticsBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +18,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
 import net.claustra01.clayium.world.item.ClayFilterItem;
@@ -38,6 +41,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class LogisticsBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -145,12 +150,48 @@ public class LogisticsBlock extends BaseEntityBlock {
                 && level instanceof ServerLevel
                 && level.getBlockEntity(pos) instanceof LogisticsBlockEntity logistics) {
             if (kind == LogisticsKind.STORAGE_CONTAINER) {
-                logistics.dropAllStoredContents();
+                for (int slot : new int[]{LogisticsBlockEntity.STORAGE_INPUT_SLOT,
+                        LogisticsBlockEntity.CONTAINER_FILTER_SLOT}) {
+                    ItemStack stack = logistics.getItem(slot);
+                    if (!stack.isEmpty()) {
+                        Containers.dropItemStack(level, pos.getX() + .5, pos.getY() + .5,
+                                pos.getZ() + .5, stack.copy());
+                    }
+                }
+            } else {
+                Containers.dropContents(level, pos, logistics);
             }
-            // The storage contents are virtual; this drops real inventory slots such as filters.
-            Containers.dropContents(level, pos, logistics);
         }
         super.onRemove(state, level, pos, next, moving);
+    }
+
+    @Override public void setPlacedBy(Level level, BlockPos pos, BlockState state,
+                                      @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (kind == LogisticsKind.STORAGE_CONTAINER
+                && level.getBlockEntity(pos) instanceof LogisticsBlockEntity storage) {
+            storage.setStorageCapacity(stack.getOrDefault(
+                    ClayiumDataComponents.STORAGE_CAPACITY.get(), LogisticsBlockEntity.DEFAULT_STORAGE_CAPACITY));
+            StorageContents contents = stack.get(ClayiumDataComponents.STORAGE_CONTENTS.get());
+            if (contents != null) storage.restoreStoredContents(contents.item(), contents.count());
+        }
+    }
+
+    @Override protected java.util.List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        java.util.List<ItemStack> drops = super.getDrops(state, params);
+        if (kind != LogisticsKind.STORAGE_CONTAINER) return drops;
+        BlockEntity entity = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (!(entity instanceof LogisticsBlockEntity storage)) return drops;
+        for (ItemStack drop : drops) {
+            if (drop.is(this.asItem())) {
+                drop.set(ClayiumDataComponents.STORAGE_CAPACITY.get(), storage.storageCapacity());
+                if (storage.storedCount() > 0 && !storage.storedItem().isEmpty()) {
+                    drop.set(ClayiumDataComponents.STORAGE_CONTENTS.get(),
+                            new StorageContents(storage.storedItem(), storage.storedCount()));
+                }
+            }
+        }
+        return drops;
     }
 
     @Nullable

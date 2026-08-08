@@ -5,12 +5,16 @@
  */
 package net.claustra01.clayium.registry;
 
+import com.mojang.serialization.Codec;
+
 import net.claustra01.clayium.Clayium;
 import net.claustra01.clayium.data.MachineTierData;
 import net.claustra01.clayium.data.FilterSettings;
 import net.claustra01.clayium.data.IoMemory;
 import net.claustra01.clayium.data.ClaySteelToolSettings;
+import net.claustra01.clayium.data.StorageContents;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -47,6 +51,18 @@ public final class ClayiumDataComponents {
             DATA_COMPONENTS.register("clay_steel_tool_settings", () -> DataComponentType.<ClaySteelToolSettings>builder()
                     .persistent(ClaySteelToolSettings.CODEC)
                     .networkSynchronized(ClaySteelToolSettings.STREAM_CODEC)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> STORAGE_CAPACITY =
+            DATA_COMPONENTS.register("storage_capacity", () -> DataComponentType.<Long>builder()
+                    .persistent(Codec.LONG)
+                    .networkSynchronized(ByteBufCodecs.VAR_LONG)
+                    .cacheEncoding()
+                    .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<StorageContents>> STORAGE_CONTENTS =
+            DATA_COMPONENTS.register("storage_contents", () -> DataComponentType.<StorageContents>builder()
+                    .persistent(StorageContents.CODEC)
+                    .networkSynchronized(StorageContents.STREAM_CODEC)
                     .cacheEncoding()
                     .build());
 

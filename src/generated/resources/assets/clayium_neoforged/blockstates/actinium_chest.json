@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium_neoforged:block/metal_chest",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/metal_chest"
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/metal_chest",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/metal_chest",
+      "y": 270
+    }
+  }
+}

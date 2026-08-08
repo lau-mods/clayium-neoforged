@@ -9,6 +9,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -48,5 +50,8 @@ public final class ClayiumItemTagProvider extends ItemTagsProvider {
         tag(CommonMaterialTags.common("storage_blocks")).addTag(CommonMaterialTags.common("storage_blocks/coal"));
         tag(CommonMaterialTags.common("glass_blocks")).addTag(ItemTags.create(
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c","glass_blocks/colorless")));
+        TagKey<net.minecraft.world.item.Item> metalChests = ItemTags.create(
+                ResourceLocation.fromNamespaceAndPath(Clayium.MODID, "metal_chests"));
+        ClayiumRegistries.METAL_CHEST_ITEMS.values().forEach(item -> tag(metalChests).add(item.get()));
     }
 }

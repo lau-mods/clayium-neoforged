@@ -28,6 +28,8 @@ public final class LogisticsMenu extends AbstractContainerMenu {
     private final int filterMenuSlots;
     private int storedCountLow;
     private int storedCountHigh;
+    private int storageCapacityLow;
+    private int storageCapacityHigh;
 
     public LogisticsMenu(int id, Inventory inventory, RegistryFriendlyByteBuf data) {
         this(
@@ -111,6 +113,14 @@ public final class LogisticsMenu extends AbstractContainerMenu {
                 public void set(int value) {
                     storedCountHigh = value & 0xffff;
                 }
+            });
+            addDataSlot(new DataSlot() {
+                @Override public int get() { return (int) (logistics.storageCapacity() & 0xffffL); }
+                @Override public void set(int value) { storageCapacityLow = value & 0xffff; }
+            });
+            addDataSlot(new DataSlot() {
+                @Override public int get() { return (int) ((logistics.storageCapacity() >>> 16) & 0xffffL); }
+                @Override public void set(int value) { storageCapacityHigh = value & 0xffff; }
             });
         }
     }
@@ -280,7 +290,7 @@ public final class LogisticsMenu extends AbstractContainerMenu {
     }
 
     public long storageCapacity() {
-        return LogisticsBlockEntity.STORAGE_CAPACITY;
+        return Integer.toUnsignedLong(storageCapacityLow | storageCapacityHigh << 16);
     }
 
     @Override

@@ -28,7 +28,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.Containers;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -42,7 +41,8 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     public static final int STORAGE_CONTENT_SLOT = 0;
     public static final int STORAGE_INPUT_SLOT = 1;
     public static final int CONTAINER_FILTER_SLOT = INVENTORY_SLOTS;
-    public static final long STORAGE_CAPACITY = 65_536L;
+    public static final long DEFAULT_STORAGE_CAPACITY = 65_536L;
+    public static final long DEEP_STORAGE_CAPACITY = Integer.MAX_VALUE;
     private NonNullList<ItemStack> items = NonNullList.withSize(MAX_SLOTS, ItemStack.EMPTY);
     private final int[] insertionRoutes = new int[]{-1, -1, -1, 0, -1, -1};
     private final int[] extractionRoutes = new int[]{-1, -1, -1, -1, -1, -1};
@@ -54,6 +54,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
     private int transferCooldown;
     private int distributorSide;
     private long storedCount;
+    private long storageCapacity = DEFAULT_STORAGE_CAPACITY;
 
     public LogisticsBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(), pos, state);
@@ -243,6 +244,21 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         return storedCount;
     }
 
+    public long storageCapacity() { return storageCapacity; }
+
+    public void setStorageCapacity(long capacity) {
+        storageCapacity = Math.clamp(capacity, DEFAULT_STORAGE_CAPACITY, DEEP_STORAGE_CAPACITY);
+        setChanged();
+    }
+
+    public void restoreStoredContents(ItemStack stack, long count) {
+        if (kind() != LogisticsKind.STORAGE_CONTAINER || stack.isEmpty() || count <= 0) return;
+        items.set(STORAGE_CONTENT_SLOT, stack.copyWithCount(1));
+        storedCount = Math.min(count, storageCapacity);
+        syncStorageDisplay();
+        setChanged();
+    }
+
     public ItemStack storedItem() {
         return items.get(STORAGE_CONTENT_SLOT).copyWithCount(storedCount > 0 ? 1 : 0);
     }
@@ -346,7 +362,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
             return slot == STORAGE_INPUT_SLOT
                     && matchesContainerFilter(stack)
                     && (current.isEmpty() || ItemStack.isSameItemSameComponents(current, stack))
-                    && storedCount < STORAGE_CAPACITY;
+                    && storedCount < storageCapacity;
         }
         if (kind() == LogisticsKind.VOID_CONTAINER) {
             return slot == STORAGE_CONTENT_SLOT && matchesContainerFilter(stack);
@@ -374,7 +390,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (slot != STORAGE_INPUT_SLOT || stack.isEmpty() || !canPlaceItem(slot, stack)) {
             return;
         }
-        int accepted = (int) Math.min(stack.getCount(), STORAGE_CAPACITY - storedCount);
+        int accepted = (int) Math.min(stack.getCount(), storageCapacity - storedCount);
         if (items.get(STORAGE_CONTENT_SLOT).isEmpty()) {
             items.set(STORAGE_CONTENT_SLOT, stack.copyWithCount(1));
         }
@@ -435,25 +451,6 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         }
     }
 
-    public void dropAllStoredContents() {
-        if (level == null || kind() != LogisticsKind.STORAGE_CONTAINER) {
-            return;
-        }
-        while (storedCount > 0 && !items.get(STORAGE_CONTENT_SLOT).isEmpty()) {
-            ItemStack dropped = removeItem(
-                    STORAGE_CONTENT_SLOT, items.get(STORAGE_CONTENT_SLOT).getMaxStackSize());
-            if (dropped.isEmpty()) {
-                break;
-            }
-            Containers.dropItemStack(
-                    level,
-                    worldPosition.getX() + 0.5,
-                    worldPosition.getY() + 0.5,
-                    worldPosition.getZ() + 0.5,
-                    dropped);
-        }
-    }
-
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
@@ -462,6 +459,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         if (kind() == LogisticsKind.STORAGE_CONTAINER) {
             storedCount = Math.max(
                     items.get(STORAGE_CONTENT_SLOT).getCount(), tag.getLong("StoredCount"));
+            storageCapacity = Math.clamp(tag.contains("StorageCapacity")
+                            ? tag.getLong("StorageCapacity") : DEFAULT_STORAGE_CAPACITY,
+                    DEFAULT_STORAGE_CAPACITY, DEEP_STORAGE_CAPACITY);
             syncStorageDisplay();
         } else {
             storedCount = 0;
@@ -482,6 +482,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         ContainerHelper.saveAllItems(tag, items, registries);
         if (kind() == LogisticsKind.STORAGE_CONTAINER) {
             tag.putLong("StoredCount", storedCount);
+            tag.putLong("StorageCapacity", storageCapacity);
         }
         tag.putIntArray("InsertionRoutes", insertionRoutes);
         tag.putIntArray("ExtractionRoutes", extractionRoutes);
@@ -636,7 +637,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
                         || !current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)) {
                     return stack;
                 }
-                int accepted = (int) Math.min(stack.getCount(), STORAGE_CAPACITY - storedCount);
+                int accepted = (int) Math.min(stack.getCount(), storageCapacity - storedCount);
                 if (accepted <= 0) {
                     return stack;
                 }
@@ -696,7 +697,7 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         @Override
         public int getSlotLimit(int slot) {
             validate(slot);
-            return kind() == LogisticsKind.STORAGE_CONTAINER ? (int) STORAGE_CAPACITY : getMaxStackSize();
+            return kind() == LogisticsKind.STORAGE_CONTAINER ? (int) storageCapacity : getMaxStackSize();
         }
 
         @Override

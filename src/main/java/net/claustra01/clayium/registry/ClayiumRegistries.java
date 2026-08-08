@@ -13,6 +13,7 @@ import net.claustra01.clayium.machine.SpecializedMachineCatalog;
 import net.claustra01.clayium.machine.MaterialCatalog;
 import net.claustra01.clayium.logistics.LogisticsCatalog;
 import net.claustra01.clayium.logistics.LogisticsKind;
+import net.claustra01.clayium.storage.MetalStorageCatalog;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.claustra01.clayium.world.inventory.ClayWorkTableMenu;
@@ -44,6 +45,7 @@ import net.claustra01.clayium.world.item.ClayPickaxeItem;
 import net.claustra01.clayium.world.item.ClayShovelItem;
 import net.claustra01.clayium.world.item.ClayToolTier;
 import net.claustra01.clayium.world.item.RawClayCraftingToolItem;
+import net.claustra01.clayium.world.item.StorageContainerBlockItem;
 import net.claustra01.clayium.world.item.ClaySteelPickaxeItem;
 import net.claustra01.clayium.world.item.ClaySteelShovelItem;
 import net.claustra01.clayium.world.item.ClaySteelToolTier;
@@ -92,6 +94,10 @@ import net.claustra01.clayium.world.inventory.ResonatingCollectorMenu;
 import net.claustra01.clayium.world.inventory.PanAdapterMenu;
 import net.claustra01.clayium.world.inventory.PanCoreMenu;
 import net.claustra01.clayium.world.inventory.PanDuplicatorMenu;
+import net.claustra01.clayium.world.inventory.MetalChestMenu;
+import net.claustra01.clayium.world.level.block.MetalChestBlock;
+import net.claustra01.clayium.world.level.block.DecorativeMetalBlock;
+import net.claustra01.clayium.world.level.block.entity.MetalChestBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -227,6 +233,8 @@ public final class ClayiumRegistries {
     public static final Map<String, DeferredBlock<RedstoneInterfaceBlock>> REDSTONE_INTERFACE_BLOCKS =
             registerRedstoneInterfaces();
     public static final Map<String, DeferredBlock<Block>> MATERIAL_BLOCKS = registerMaterialBlocks();
+    public static final Map<String, DeferredBlock<DecorativeMetalBlock>> DECORATIVE_METAL_BLOCKS =
+            registerDecorativeMetalBlocks();
     public static final Map<String, DeferredBlock<ColoredSiliconeBlock>> COLORED_SILICONE_BLOCKS =
             registerColoredSiliconeBlocks();
     public static final Map<String, DeferredBlock<Block>> OTHER_HULL_BLOCKS = registerOtherHullBlocks();
@@ -269,6 +277,7 @@ public final class ClayiumRegistries {
             "pan_core", () -> new PanCoreBlock(machineProperties()));
     public static final Map<String, DeferredBlock<PanAdapterBlock>> PAN_ADAPTER_BLOCKS = registerPanAdapters();
     public static final Map<String, DeferredBlock<PanDuplicatorBlock>> PAN_DUPLICATOR_BLOCKS = registerPanDuplicators();
+    public static final Map<String, DeferredBlock<MetalChestBlock>> METAL_CHEST_BLOCKS = registerMetalChests();
 
     public static final DeferredItem<BlockItem> CLAY_WORK_TABLE_ITEM = ITEMS.register(
             "clay_work_table",
@@ -313,12 +322,14 @@ public final class ClayiumRegistries {
     public static final DeferredItem<BlockItem> CLAY_BLAST_FURNACE_ITEM =
             registerBlockItem("clay_blast_furnace", CLAY_BLAST_FURNACE);
     public static final Map<String, DeferredItem<BlockItem>> LOGISTICS_ITEMS =
-            registerBlockItems(LOGISTICS_BLOCKS);
+            registerLogisticsBlockItems();
     public static final Map<String, DeferredItem<BlockItem>> MACHINE_INTERFACE_ITEMS =
             registerBlockItems(MACHINE_INTERFACE_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> REDSTONE_INTERFACE_ITEMS =
             registerBlockItems(REDSTONE_INTERFACE_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> MATERIAL_BLOCK_ITEMS = registerBlockItems(MATERIAL_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> DECORATIVE_METAL_BLOCK_ITEMS =
+            registerBlockItems(DECORATIVE_METAL_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> COLORED_SILICONE_ITEMS =
             registerBlockItems(COLORED_SILICONE_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> OTHER_HULL_ITEMS = registerBlockItems(OTHER_HULL_BLOCKS);
@@ -353,6 +364,7 @@ public final class ClayiumRegistries {
     public static final DeferredItem<BlockItem> PAN_CORE_ITEM = registerBlockItem("pan_core", PAN_CORE);
     public static final Map<String, DeferredItem<BlockItem>> PAN_ADAPTER_ITEMS = registerBlockItems(PAN_ADAPTER_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> PAN_DUPLICATOR_ITEMS = registerBlockItems(PAN_DUPLICATOR_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> METAL_CHEST_ITEMS = registerBlockItems(METAL_CHEST_BLOCKS);
 
     public static final DeferredItem<Item> CLAY_STICK = ITEMS.register(
             "clay_stick",
@@ -534,6 +546,9 @@ public final class ClayiumRegistries {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PanDuplicatorBlockEntity>> PAN_DUPLICATOR_BLOCK_ENTITY =
             BLOCK_ENTITY_TYPES.register("pan_duplicator", () -> BlockEntityType.Builder.of(PanDuplicatorBlockEntity::new,
                     PAN_DUPLICATOR_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MetalChestBlockEntity>> METAL_CHEST_BLOCK_ENTITY =
+            BLOCK_ENTITY_TYPES.register("metal_chest", () -> BlockEntityType.Builder.of(MetalChestBlockEntity::new,
+                    METAL_CHEST_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<ClayWorkTableMenu>> CLAY_WORK_TABLE_MENU =
             MENU_TYPES.register(
                     "clay_work_table",
@@ -603,6 +618,8 @@ public final class ClayiumRegistries {
             MENU_TYPES.register("pan_core", () -> IMenuTypeExtension.create(PanCoreMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<PanDuplicatorMenu>> PAN_DUPLICATOR_MENU =
             MENU_TYPES.register("pan_duplicator", () -> IMenuTypeExtension.create(PanDuplicatorMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<MetalChestMenu>> METAL_CHEST_MENU =
+            MENU_TYPES.register("metal_chest", () -> IMenuTypeExtension.create(MetalChestMenu::new));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLAYIUM_CREATIVE_TAB =
             CREATIVE_MODE_TABS.register(
                     "clayium",
@@ -803,6 +820,26 @@ public final class ClayiumRegistries {
         return Map.copyOf(blocks);
     }
 
+    private static Map<String, DeferredBlock<DecorativeMetalBlock>> registerDecorativeMetalBlocks() {
+        Map<String, DeferredBlock<DecorativeMetalBlock>> blocks = new LinkedHashMap<>();
+        for (MetalStorageCatalog.Metal definition : MetalStorageCatalog.METALS) {
+            blocks.put(definition.blockId(), BLOCKS.register(definition.blockId(), () -> new DecorativeMetalBlock(
+                    BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2.0F, 2.0F)
+                            .sound(SoundType.METAL), definition)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<MetalChestBlock>> registerMetalChests() {
+        Map<String, DeferredBlock<MetalChestBlock>> blocks = new LinkedHashMap<>();
+        for (MetalStorageCatalog.Chest definition : MetalStorageCatalog.CHESTS) {
+            blocks.put(definition.blockId(), BLOCKS.register(definition.blockId(), () -> new MetalChestBlock(
+                    BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2.0F, 2.0F)
+                            .sound(SoundType.METAL).noOcclusion(), definition)));
+        }
+        return Map.copyOf(blocks);
+    }
+
     private static Map<String, DeferredBlock<ColoredSiliconeBlock>> registerColoredSiliconeBlocks() {
         Map<String, DeferredBlock<ColoredSiliconeBlock>> blocks = new LinkedHashMap<>();
         for (DyeColor color : DyeColor.values()) {
@@ -914,6 +951,17 @@ public final class ClayiumRegistries {
             Map<String, DeferredBlock<T>> blocks) {
         Map<String, DeferredItem<BlockItem>> items = new LinkedHashMap<>();
         blocks.forEach((id, block) -> items.put(id, registerBlockItem(id, block)));
+        return Map.copyOf(items);
+    }
+
+    private static Map<String, DeferredItem<BlockItem>> registerLogisticsBlockItems() {
+        Map<String, DeferredItem<BlockItem>> items = new LinkedHashMap<>();
+        LOGISTICS_BLOCKS.forEach((id, block) -> {
+            DeferredItem<BlockItem> item = ITEMS.register(id, () -> id.equals("storage_container")
+                    ? new StorageContainerBlockItem(block.get(), new Item.Properties().stacksTo(1))
+                    : new BlockItem(block.get(), new Item.Properties()));
+            items.put(id, item);
+        });
         return Map.copyOf(items);
     }
 

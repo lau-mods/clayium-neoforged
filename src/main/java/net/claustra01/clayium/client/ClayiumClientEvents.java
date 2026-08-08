@@ -23,11 +23,14 @@ import net.claustra01.clayium.client.gui.screens.inventory.ResonatingCollectorSc
 import net.claustra01.clayium.client.gui.screens.inventory.PanAdapterScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.PanCoreScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.PanDuplicatorScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.MetalChestScreen;
 import net.claustra01.clayium.client.renderer.blockentity.ClayEnergyLaserRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.LaserReflectorRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.ColoredSiliconeBlock;
+import net.claustra01.clayium.world.level.block.DecorativeMetalBlock;
+import net.claustra01.clayium.world.level.block.MetalChestBlock;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -66,6 +69,7 @@ public final class ClayiumClientEvents {
         event.register(ClayiumRegistries.PAN_ADAPTER_MENU.get(), PanAdapterScreen::new);
         event.register(ClayiumRegistries.PAN_CORE_MENU.get(), PanCoreScreen::new);
         event.register(ClayiumRegistries.PAN_DUPLICATOR_MENU.get(), PanDuplicatorScreen::new);
+        event.register(ClayiumRegistries.METAL_CHEST_MENU.get(), MetalChestScreen::new);
     }
 
     @SubscribeEvent
@@ -243,6 +247,16 @@ public final class ClayiumClientEvents {
             event.register((stack, tintIndex) -> tintIndex == 0 ? color.getTextureDiffuseColor() : 0xffffffff,
                     entry.getValue().get());
         }
+        ClayiumRegistries.DECORATIVE_METAL_BLOCK_ITEMS.values().forEach(item ->
+                event.register((stack, tintIndex) -> tintIndex == 0
+                                && item.get().getBlock() instanceof DecorativeMetalBlock block
+                                ? block.definition().color() : 0xffffffff,
+                        item.get()));
+        ClayiumRegistries.METAL_CHEST_ITEMS.values().forEach(item ->
+                event.register((stack, tintIndex) -> tintIndex == 0
+                                && item.get().getBlock() instanceof MetalChestBlock block
+                                ? block.definition().color() : 0xffffffff,
+                        item.get()));
     }
 
     @SubscribeEvent
@@ -251,6 +265,16 @@ public final class ClayiumClientEvents {
             ColoredSiliconeBlock block = entry.getValue().get();
             event.register((state, level, pos, tintIndex) -> block.color().getTextureDiffuseColor(), block);
         }
+        ClayiumRegistries.DECORATIVE_METAL_BLOCKS.values().forEach(holder -> {
+            DecorativeMetalBlock block = holder.get();
+            event.register((state, level, pos, tintIndex) -> tintIndex == 0
+                    ? block.definition().color() : 0xffffffff, block);
+        });
+        ClayiumRegistries.METAL_CHEST_BLOCKS.values().forEach(holder -> {
+            MetalChestBlock block = holder.get();
+            event.register((state, level, pos, tintIndex) -> tintIndex == 0
+                    ? block.definition().color() : 0xffffffff, block);
+        });
     }
 
     private static void impureDust(RegisterColorHandlersEvent.Item event, String id, int r, int g, int b) {
