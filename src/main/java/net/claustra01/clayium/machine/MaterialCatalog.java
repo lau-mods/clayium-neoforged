@@ -124,7 +124,6 @@ public final class MaterialCatalog {
             item("nickel_ingot", "Nickel Ingot", "ingot_base"),
             item("palladium_ingot", "Palladium Ingot", "ingot_base"),
             item("silver_ingot", "Silver Ingot", "ingot_base"),
-            item("gold_ingot", "Gold Ingot", "ingot_base"),
             item("tantalum_ingot", "Tantalum Ingot", "ingot_base"),
             item("tungsten_ingot", "Tungsten Ingot", "ingot_base"),
             item("lead_ingot", "Lead Ingot", "ingot_base"),

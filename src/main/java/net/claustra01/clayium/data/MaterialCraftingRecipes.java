@@ -25,7 +25,7 @@ public final class MaterialCraftingRecipes {
         smelt(output, "silicone_dust", item("silicone_dust"), item("silicone_ingot"));
         smelt(output, "silicon_dust", item("silicon_dust"), item("silicon_ingot"));
         smelt(output, "iron_dust", item("iron_dust"), Items.IRON_INGOT);
-        smelt(output, "gold_dust", item("gold_dust"), item("gold_ingot"));
+        smelt(output, "gold_dust", item("gold_dust"), Items.GOLD_INGOT);
         smelt(output, "lead_dust", item("lead_dust"), item("lead_ingot"));
         smelt(output, "copper_dust", item("copper_dust"), Items.COPPER_INGOT);
         for (String material : new String[]{"impure_silicon", "silicone", "silicon", "aluminium", "clayium", "ultimate_alloy"}) {

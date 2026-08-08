@@ -1,6 +1,5 @@
 {
   "values": [
-    "#c:storage_blocks/impure_silicon",
     "#c:storage_blocks/opa",
     "#c:storage_blocks/silicon",
     "#c:storage_blocks/antimatter",
@@ -10,9 +9,7 @@
     "#c:storage_blocks/clay_steel",
     "#c:storage_blocks/silicone",
     "#c:storage_blocks/aluminum",
-    "#c:storage_blocks/black_silicone",
-    "#c:storage_blocks/green_silicone",
-    "#c:storage_blocks/cyan_silicone",
+    "#c:storage_blocks/impure_silicon",
     "#c:storage_blocks/gray_silicone",
     "#c:storage_blocks/light_blue_silicone",
     "#c:storage_blocks/magenta_silicone",
@@ -26,6 +23,9 @@
     "#c:storage_blocks/pink_silicone",
     "#c:storage_blocks/blue_silicone",
     "#c:storage_blocks/purple_silicone",
+    "#c:storage_blocks/black_silicone",
+    "#c:storage_blocks/green_silicone",
+    "#c:storage_blocks/cyan_silicone",
     "#c:storage_blocks/coal"
   ]
 }

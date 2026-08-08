@@ -185,7 +185,6 @@ public final class ClayiumClientEvents {
         material(event, colors(210,210,240, 120,120,120, 255,255,255), "nickel_ingot");
         material(event, colors(151,70,70, 120,120,120, 255,255,255), "palladium_ingot");
         material(event, colors(220,220,240, 120,120,120, 255,255,255), "silver_ingot");
-        material(event, colors(255,220,40, 120,90,0, 255,255,255), "gold_ingot");
         material(event, colors(240,210,170, 40,35,28, 240,210,150), "tantalum_ingot");
         material(event, colors(30,30,30, 5,5,5, 60,60,60), "tungsten_ingot");
         material(event, colors(190,240,210, 31,40,35, 255,255,255), "lead_ingot");
