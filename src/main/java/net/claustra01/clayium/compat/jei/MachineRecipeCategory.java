@@ -17,7 +17,6 @@ import net.claustra01.clayium.recipe.MachineRecipe;
 import net.claustra01.clayium.energy.ClayEnergyFormatter;
 import net.claustra01.clayium.util.MetricFormatter;
 import net.claustra01.clayium.machine.MachineLayout;
-import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -115,10 +114,6 @@ public final class MachineRecipeCategory implements IRecipeCategory<MachineRecip
             double mouseY) {
         arrow.draw(graphics, 76, 35);
         Font font = Minecraft.getInstance().font;
-        if (recipe.machine().equals(ClayiumMachineIds.CA_REACTOR)) {
-            graphics.drawString(font, Component.translatable("jei.clayium_neoforged.ca_reactor_condition"),
-                    8, 68, TEXT_COLOR, false);
-        }
         graphics.drawString(
                 font,
                 Component.translatable(

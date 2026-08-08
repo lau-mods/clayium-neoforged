@@ -54,7 +54,7 @@ public final class PanAdapterScreen extends AbstractContainerScreen<PanAdapterMe
         graphics.drawString(font,title,6,6,0x404040,false);
         if(menu.pages()>1){
             Component page=Component.literal((menu.page()+1)+"/"+menu.pages());
-            graphics.drawString(font,page,(imageWidth-font.width(page))/2,79,0x404040,false);
+            graphics.drawString(font,page,imageWidth-6-font.width(page),64,0x404040,false);
         }
         graphics.drawString(font,playerInventoryTitle,8,96,0x404040,false);
     }

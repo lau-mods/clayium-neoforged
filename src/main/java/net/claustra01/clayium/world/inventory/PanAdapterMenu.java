@@ -19,6 +19,7 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
     private final Container container;
     private final PanAdapterBlockEntity adapter;
     private final int pages;
+    private final SimpleContainer patternView = new SimpleContainer(9);
     private final SimpleContainer previews = new SimpleContainer(9);
     private int page;
 
@@ -45,12 +46,12 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
         container.startOpen(inventory.player);
         for (int row = 0; row < 3; row++) for (int column = 0; column < 3; column++) {
             int visibleSlot = column + row * 3;
-            addSlot(new PageSlot(container, visibleSlot, 32 + column * 18, 18 + row * 18));
+            addSlot(new DisplaySlot(patternView, visibleSlot, 32 + column * 18, 18 + row * 18));
         }
         for (int slot = 0; slot < 9; slot++) {
             int x = 92 + (slot % 3) * 18;
             int y = 18 + (slot / 3) * 18;
-            addSlot(new PreviewSlot(slot, x, y));
+            addSlot(new DisplaySlot(previews, slot, x, y));
         }
         for (int slot = 0; slot < 9; slot++) {
             addSlot(new Slot(container, PanAdapterBlockEntity.AUXILIARY_START + slot, 8 + slot * 18, 74));
@@ -63,6 +64,7 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
             @Override public int get() { return page; }
             @Override public void set(int value) { page = Math.max(0, Math.min(PanAdapterMenu.this.pages - 1, value)); }
         });
+        refreshViews();
     }
 
     @Override public boolean clickMenuButton(Player player, int id) {
@@ -70,6 +72,7 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
         if (id == 0) page = Math.floorMod(page - 1, pages);
         else if (id == 1) page = (page + 1) % pages;
         else return false;
+        refreshViews();
         broadcastChanges();
         return true;
     }
@@ -77,8 +80,12 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
     @Override public void clicked(int slotId, int button, ClickType clickType, Player player) {
         if (slotId >= 0 && slotId < 9) {
             ItemStack carried = getCarried();
-            container.setItem(page * 9 + slotId, carried.isEmpty() ? ItemStack.EMPTY : carried.copyWithCount(1));
-            container.setChanged();
+            ItemStack pattern = carried.isEmpty() ? ItemStack.EMPTY : carried.copyWithCount(1);
+            patternView.setItem(slotId, pattern);
+            if (adapter != null && adapter.getLevel() != null && !adapter.getLevel().isClientSide) {
+                adapter.setPattern(page, slotId, pattern);
+                refreshViews();
+            }
             broadcastChanges();
             return;
         }
@@ -92,25 +99,16 @@ public final class PanAdapterMenu extends AbstractContainerMenu {
     @Override public ItemStack quickMoveStack(Player player, int index) { return ItemStack.EMPTY; }
     @Override public void removed(Player player) { super.removed(player); container.stopOpen(player); }
 
-    private final class PageSlot extends Slot {
-        private final int visibleSlot;
-        private PageSlot(Container container, int slot, int x, int y) {
-            super(container, slot, x, y); visibleSlot = slot;
+    private void refreshViews() {
+        if (adapter == null || adapter.getLevel() == null || adapter.getLevel().isClientSide) return;
+        for (int slot = 0; slot < 9; slot++) {
+            patternView.setItem(slot, adapter.pattern(page, slot).copy());
+            previews.setItem(slot, adapter.preview(page, slot));
         }
-        private int actual() { return page * 9 + visibleSlot; }
-        @Override public ItemStack getItem() { return container.getItem(actual()); }
-        @Override public void set(ItemStack stack) { container.setItem(actual(), stack); setChanged(); }
-        @Override public ItemStack remove(int amount) { return container.removeItem(actual(), amount); }
-        @Override public boolean mayPlace(ItemStack stack) { return false; }
     }
 
-    private final class PreviewSlot extends Slot {
-        private final int previewSlot;
-        private PreviewSlot(int slot, int x, int y) { super(previews, slot, x, y); previewSlot = slot; }
-        @Override public ItemStack getItem() {
-            return adapter != null && adapter.getLevel() != null && !adapter.getLevel().isClientSide
-                    ? adapter.preview(page, previewSlot) : super.getItem();
-        }
+    private static final class DisplaySlot extends Slot {
+        private DisplaySlot(Container container, int slot, int x, int y) { super(container, slot, x, y); }
         @Override public boolean mayPlace(ItemStack stack) { return false; }
         @Override public boolean mayPickup(Player player) { return false; }
     }

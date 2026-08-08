@@ -17,19 +17,22 @@ public final class PanDuplicatorMenu extends AbstractDedicatedMachineMenu {
         this(id, inventory, clientData(inventory, buffer));
     }
     private PanDuplicatorMenu(int id, Inventory inventory, ClientData value) {
-        this(id, inventory, value.container(), new SimpleContainerData(4), value.tier());
+        this(id, inventory, value.container(), new SimpleContainerData(6), value.tier());
     }
     public PanDuplicatorMenu(int id, Inventory inventory, Container container, ContainerData data, int tier) {
         super(ClayiumRegistries.PAN_DUPLICATOR_MENU.get(), id, inventory, container, data, 72);
         this.tier = tier;
-        addSlot(new RestrictedSlot(container, PanDuplicatorBlockEntity.TEMPLATE, 26, 30));
-        addSlot(new RestrictedSlot(container, PanDuplicatorBlockEntity.ANTIMATTER, 62, 30));
-        addSlot(new OutputSlot(container, PanDuplicatorBlockEntity.OUTPUT, 134, 30));
+        checkContainerDataCount(data,6);
+        addSlot(new RestrictedSlot(container, PanDuplicatorBlockEntity.INPUT_A, 32, 35));
+        addSlot(new RestrictedSlot(container, PanDuplicatorBlockEntity.INPUT_B, 50, 35));
+        addSlot(new OutputSlot(container, PanDuplicatorBlockEntity.OUTPUT, 116, 35));
         // CE fuel is intentionally automation-only for high-tier devices; it is supplied
         // through the configured energy route or a linked Clay Interface.
         finishLayout(inventory);
     }
     public int tier() { return tier; }
+    public PanDuplicatorBlockEntity.WorkStatus workStatus(){return PanDuplicatorBlockEntity.WorkStatus.byOrdinal(data.get(4));}
+    public boolean linked(){return data.get(5)!=0;}
     public long energyPerTick() { return 100_000L * powerOfTen(Math.max(0, tier - 5)); }
     private static long powerOfTen(int exponent) {
         long value = 1;

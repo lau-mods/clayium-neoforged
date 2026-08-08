@@ -54,7 +54,9 @@ public final class ResonatingCollectorBlockEntity extends BaseContainerBlockEnti
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ResonatingCollectorBlockEntity collector) {
-        collector.progress += Math.max(0.0D, ResonanceField.at(level, pos) - 1.0D);
+        double capacity = BASE_WORK * SLOT_COUNT * collector.getMaxStackSize();
+        collector.progress = Math.min(capacity,
+                collector.progress + Math.max(0.0D, ResonanceField.at(level, pos) - 1.0D));
         boolean changed = false;
         while (collector.progress >= BASE_WORK && collector.insertAntimatter()) {
             collector.progress -= BASE_WORK;

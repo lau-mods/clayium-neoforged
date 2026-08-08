@@ -30,13 +30,13 @@ public final class ResonatingCollectorMenu extends AbstractContainerMenu {
         checkContainerDataCount(data,2);
         container.startOpen(inventory.player);
         for (int row=0; row<3; row++) for (int column=0; column<3; column++) {
-            addSlot(new Slot(container, column + row*3, 62 + column*18, 17 + row*18) {
+            addSlot(new Slot(container, column + row*3, 62 + column*18, 18 + row*18) {
                 @Override public boolean mayPlace(ItemStack stack) { return false; }
             });
         }
         for (int row=0; row<3; row++) for (int column=0; column<9; column++)
-            addSlot(new Slot(inventory, column+row*9+9, 8+column*18, 84+row*18));
-        for (int column=0; column<9; column++) addSlot(new Slot(inventory,column,8+column*18,142));
+            addSlot(new Slot(inventory, column+row*9+9, 8+column*18, 98+row*18));
+        for (int column=0; column<9; column++) addSlot(new Slot(inventory,column,8+column*18,156));
         addDataSlots(data);
     }
     public double resonance(){return data.get(1)/1_000.0D;}

@@ -1,1 +1,1 @@
-{"variants":{"":{"model":"clayium_neoforged:block/resonating_collector"}}}
+{"variants":{"facing=north":{"model":"clayium_neoforged:block/resonating_collector"},"facing=east":{"model":"clayium_neoforged:block/resonating_collector","y":90},"facing=south":{"model":"clayium_neoforged:block/resonating_collector","y":180},"facing=west":{"model":"clayium_neoforged:block/resonating_collector","y":270}}}

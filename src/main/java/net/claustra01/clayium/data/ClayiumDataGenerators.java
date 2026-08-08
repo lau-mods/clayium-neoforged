@@ -125,7 +125,19 @@ public final class ClayiumDataGenerators {
                 add(Clayium.MODID + ".config.log_registry_summary", "Log registry summary");
                 add(Clayium.MODID + ".config.ce_sync_interval_ticks", "Clay Energy sync interval");
                 add("gui." + Clayium.MODID + ".resonance", "Resonance: %s");
-                add("jei." + Clayium.MODID + ".ca_reactor_condition", "Requires a valid CA Reactor ring and hull");
+                for (net.claustra01.clayium.world.level.block.entity.PanDuplicatorBlockEntity.WorkStatus status
+                        : net.claustra01.clayium.world.level.block.entity.PanDuplicatorBlockEntity.WorkStatus.values()) {
+                    String label = switch (status) {
+                        case WAITING_FOR_CORE -> "PAN Core not linked";
+                        case MISSING_INPUT -> "Requires Antimatter and a template";
+                        case UNKNOWN_TEMPLATE -> "Template is not registered in PAN";
+                        case OUTPUT_BLOCKED -> "Output blocked";
+                        case MISSING_ENERGY -> "Energetic Clay required through I/O";
+                        case RUNNING -> "Duplicating";
+                        case COMPLETE -> "Complete";
+                    };
+                    add("gui." + Clayium.MODID + ".pan_status." + status.name().toLowerCase(), label);
+                }
                 add("message." + Clayium.MODID + ".pan_core_status", "PAN network: %s nodes, %s conversions");
             }
         });
