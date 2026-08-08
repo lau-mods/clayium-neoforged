@@ -30,6 +30,16 @@ public final class MachinePerformance {
                 case 4 -> 2.0;
                 case 5 -> 0.5;
                 case 6 -> 0.125;
+                case 7 -> 0.03;
+                case 8 -> 0.01;
+                case 9 -> 0.0025;
+                default -> 1.0;
+            };
+        }
+        if (machineId.equals(ClayiumMachineIds.CA_CONDENSER)) {
+            return switch (tier) {
+                case 10 -> 0.1;
+                case 11 -> 0.01;
                 default -> 1.0;
             };
         }
@@ -37,6 +47,7 @@ public final class MachinePerformance {
             return switch (tier) {
                 case 5 -> 0.25;
                 case 6 -> 0.0625;
+                case 10 -> 0.01;
                 default -> 1.0;
             };
         }
@@ -48,6 +59,16 @@ public final class MachinePerformance {
             return switch (tier) {
                 case 5 -> 14.0;
                 case 6 -> 200.0;
+                case 7 -> 2_800.0;
+                case 8 -> 40_000.0;
+                case 9 -> 560_000.0;
+                default -> 1.0;
+            };
+        }
+        if (machineId.equals(ClayiumMachineIds.CA_CONDENSER)) {
+            return switch (tier) {
+                case 10 -> 10.0;
+                case 11 -> 100.0;
                 default -> 1.0;
             };
         }
@@ -55,6 +76,7 @@ public final class MachinePerformance {
             return switch (tier) {
                 case 5 -> 5.0;
                 case 6 -> 25.0;
+                case 10 -> 250.0;
                 default -> 1.0;
             };
         }

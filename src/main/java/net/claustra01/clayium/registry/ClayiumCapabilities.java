@@ -79,5 +79,14 @@ public final class ClayiumCapabilities {
                 Capabilities.EnergyStorage.BLOCK,
                 ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCK_ENTITY.get(),
                 (blockEntity, direction) -> blockEntity.feStorage(direction));
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.RESONATING_COLLECTOR_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.extractionHandler());
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ClayiumRegistries.PAN_DUPLICATOR_BLOCK_ENTITY.get(),
+                (blockEntity, direction) -> blockEntity.itemHandler(
+                        direction == null ? net.minecraft.core.Direction.UP : direction));
     }
 }

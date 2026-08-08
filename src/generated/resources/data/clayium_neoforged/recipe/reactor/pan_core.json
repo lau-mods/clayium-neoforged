@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000000,
+  "ingredients": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_pan_adapter"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_soul"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "pure_antimatter",
+  "processing_time_ticks": 100000000000000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pan_core"
+    }
+  ]
+}

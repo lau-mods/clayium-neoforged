@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:sextuple_compressed_pure_antimatter"
+    },
+    "D": {
+      "item": "clayium_neoforged:antimatter_pan_duplicator"
+    },
+    "I": {
+      "item": "clayium_neoforged:bismuth_ingot"
+    },
+    "M": {
+      "item": "clayium_neoforged:pure_antimatter_machine_hull"
+    }
+  },
+  "pattern": [
+    "#I#",
+    "DMD",
+    "#I#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:pure_antimatter_pan_duplicator"
+  }
+}

@@ -19,6 +19,9 @@ import net.claustra01.clayium.client.gui.screens.inventory.AutoCrafterScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ChemicalMetalSeparatorScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayEnergyLaserScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ClayEnergyConverterScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.ResonatingCollectorScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.PanAdapterScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.PanDuplicatorScreen;
 import net.claustra01.clayium.client.renderer.blockentity.ClayEnergyLaserRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.LaserReflectorRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
@@ -58,6 +61,9 @@ public final class ClayiumClientEvents {
         event.register(ClayiumRegistries.CHEMICAL_METAL_SEPARATOR_MENU.get(), ChemicalMetalSeparatorScreen::new);
         event.register(ClayiumRegistries.CLAY_ENERGY_LASER_MENU.get(), ClayEnergyLaserScreen::new);
         event.register(ClayiumRegistries.CLAY_ENERGY_CONVERTER_MENU.get(), ClayEnergyConverterScreen::new);
+        event.register(ClayiumRegistries.RESONATING_COLLECTOR_MENU.get(), ResonatingCollectorScreen::new);
+        event.register(ClayiumRegistries.PAN_ADAPTER_MENU.get(), PanAdapterScreen::new);
+        event.register(ClayiumRegistries.PAN_DUPLICATOR_MENU.get(), PanDuplicatorScreen::new);
     }
 
     @SubscribeEvent
@@ -84,6 +90,8 @@ public final class ClayiumClientEvents {
                 ClayiumRegistries.CLAY_ENERGY_LASER_BLOCK_ENTITY.get(), context -> new ClayEnergyLaserRenderer());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.CLAY_ENERGY_CONVERTER_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
+        event.registerBlockEntityRenderer(
+                ClayiumRegistries.PAN_DUPLICATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.LASER_REFLECTOR_BLOCK_ENTITY.get(), context -> new LaserReflectorRenderer());
     }
@@ -191,6 +199,41 @@ public final class ClayiumClientEvents {
         material(event, colors(85,205,85, 245,255,255, 245,160,255), "impure_ultimate_alloy_ingot");
         material(event, colors(85,205,85, 120,120,120, 245,160,255),
                 "ultimate_alloy_dust", "ultimate_alloy_ingot", "ultimate_alloy_plate", "ultimate_alloy_large_plate");
+        material(event, colors(0,0,235, 0,0,0, 255,255,255),
+                "antimatter_dust", "antimatter", "antimatter_plate", "antimatter_large_plate");
+        material(event, colors(255,50,255, 0,0,0, 255,255,255),
+                "pure_antimatter_dust", "pure_antimatter", "pure_antimatter_plate", "pure_antimatter_large_plate");
+        String[] compressed = {"compressed_pure_antimatter", "double_compressed_pure_antimatter",
+                "triple_compressed_pure_antimatter", "quadruple_compressed_pure_antimatter",
+                "quintuple_compressed_pure_antimatter", "sextuple_compressed_pure_antimatter",
+                "septuple_compressed_pure_antimatter", "opa"};
+        for (int index = 1; index <= compressed.length; index++) {
+            double ratio = index / 8.0D;
+            double luminosity = 1.0D - (ratio < 0.5D ? ratio : 1.0D - ratio) * 1.5D;
+            int red = (int) (luminosity * (255.0D * (1.0D - ratio) + 150.0D * ratio));
+            int green = (int) (luminosity * 50.0D * (1.0D - ratio));
+            int blue = (int) (luminosity * 255.0D * (1.0D - ratio));
+            material(event, colors(red, green, blue, (int)(200*ratio), (int)(200*ratio), 0, 255,255,255), compressed[index-1]);
+        }
+        material(event, colors(255,255,0, 140,140,140, 255,255,255), "oec_dust", "oec_plate", "oec_large_plate");
+        material(event, colors(150,0,0, 200,200,0, 255,255,255), "opa_dust", "opa_plate", "opa_large_plate");
+        pureDust(event, "lead_dust", 190,240,210, 31,40,35);
+        pureDust(event, "copper_dust", 160,90,10, 40,22,2);
+        pureDust(event, "nickel_dust", 210,210,240, 120,120,120);
+        pureDust(event, "chrome_dust", 240,210,210, 120,120,120);
+        pureDust(event, "titanium_dust", 210,240,240, 120,120,120);
+        pureDust(event, "gold_dust", 255,220,40, 120,90,0);
+        material(event, colors(240,210,210,120,120,120,255,255,255), "chrome_ingot");
+        material(event, colors(225,180,80,80,55,20,255,255,255), "platinum_ingot");
+        material(event, colors(220,220,235,70,70,90,255,255,255), "iridium_ingot");
+        material(event, colors(110,150,220,30,40,80,255,255,255), "osmium_ingot");
+        material(event, colors(180,190,210,50,55,70,255,255,255), "rhenium_ingot", "molybdenum_ingot");
+        material(event, colors(145,145,145,235,0,0,255,255,255), "promethium_ingot");
+        material(event, colors(145,145,145,0,150,150,255,255,255), "samarium_ingot");
+        material(event, colors(145,145,145,0,0,235,255,255,255), "europium_ingot");
+        material(event, colors(50,50,255,50,50,155,50,50,255), "curium_ingot");
+        material(event, colors(70,70,70,50,120,50,100,255,100), "plutonium_ingot");
+        material(event, colors(70,70,70,120,50,120,255,100,255), "americium_ingot");
         for (var entry : ClayiumRegistries.COLORED_SILICONE_ITEMS.entrySet()) {
             String colorName = entry.getKey().substring(0, entry.getKey().length() - "_silicone_block".length());
             DyeColor color = DyeColor.byName(colorName, DyeColor.WHITE);

@@ -64,6 +64,14 @@ import net.claustra01.clayium.world.level.block.ClayLaserInterfaceBlock;
 import net.claustra01.clayium.world.level.block.LaserReflectorBlock;
 import net.claustra01.clayium.world.level.block.ClayEnergyConverterBlock;
 import net.claustra01.clayium.world.level.block.MachineModifierBlock;
+import net.claustra01.clayium.world.level.block.ResonatorBlock;
+import net.claustra01.clayium.world.level.block.CAReactorCoilBlock;
+import net.claustra01.clayium.world.level.block.CAReactorHullBlock;
+import net.claustra01.clayium.world.level.block.ResonatingCollectorBlock;
+import net.claustra01.clayium.world.level.block.PanAdapterBlock;
+import net.claustra01.clayium.world.level.block.PanCableBlock;
+import net.claustra01.clayium.world.level.block.PanCoreBlock;
+import net.claustra01.clayium.world.level.block.PanDuplicatorBlock;
 import net.claustra01.clayium.world.level.block.entity.FluidBufferBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.SaltExtractorBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.QuartzCrucibleBlockEntity;
@@ -74,8 +82,15 @@ import net.claustra01.clayium.world.level.block.entity.ClayEnergyLaserBlockEntit
 import net.claustra01.clayium.world.level.block.entity.ClayLaserInterfaceBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.LaserReflectorBlockEntity;
 import net.claustra01.clayium.world.level.block.entity.ClayEnergyConverterBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.ResonatingCollectorBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.PanAdapterBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.PanCoreBlockEntity;
+import net.claustra01.clayium.world.level.block.entity.PanDuplicatorBlockEntity;
 import net.claustra01.clayium.world.inventory.ClayEnergyLaserMenu;
 import net.claustra01.clayium.world.inventory.ClayEnergyConverterMenu;
+import net.claustra01.clayium.world.inventory.ResonatingCollectorMenu;
+import net.claustra01.clayium.world.inventory.PanAdapterMenu;
+import net.claustra01.clayium.world.inventory.PanDuplicatorMenu;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -238,6 +253,21 @@ public final class ClayiumRegistries {
             registerClayEnergyConverters();
     public static final Map<String, DeferredBlock<MachineModifierBlock>> MACHINE_MODIFIER_BLOCKS =
             registerMachineModifiers();
+    public static final Map<String, DeferredBlock<ResonatorBlock>> RESONATOR_BLOCKS = registerResonators();
+    public static final Map<String, DeferredBlock<CAReactorCoilBlock>> CA_REACTOR_COIL_BLOCKS =
+            registerCAReactorCoils();
+    public static final Map<String, DeferredBlock<CAReactorHullBlock>> CA_REACTOR_HULL_BLOCKS =
+            registerCAReactorHulls();
+    public static final Map<String, DeferredBlock<MachineBlock>> CA_REACTOR_CORE_BLOCKS =
+            registerCAReactorCores();
+    public static final DeferredBlock<ResonatingCollectorBlock> RESONATING_COLLECTOR = BLOCKS.register(
+            "resonating_collector", () -> new ResonatingCollectorBlock(machineProperties()));
+    public static final DeferredBlock<PanCableBlock> PAN_CABLE = BLOCKS.register(
+            "pan_cable", () -> new PanCableBlock(machineProperties()));
+    public static final DeferredBlock<PanCoreBlock> PAN_CORE = BLOCKS.register(
+            "pan_core", () -> new PanCoreBlock(machineProperties()));
+    public static final Map<String, DeferredBlock<PanAdapterBlock>> PAN_ADAPTER_BLOCKS = registerPanAdapters();
+    public static final Map<String, DeferredBlock<PanDuplicatorBlock>> PAN_DUPLICATOR_BLOCKS = registerPanDuplicators();
 
     public static final DeferredItem<BlockItem> CLAY_WORK_TABLE_ITEM = ITEMS.register(
             "clay_work_table",
@@ -309,6 +339,19 @@ public final class ClayiumRegistries {
             registerBlockItems(CLAY_ENERGY_CONVERTER_BLOCKS);
     public static final Map<String, DeferredItem<BlockItem>> MACHINE_MODIFIER_ITEMS =
             registerBlockItems(MACHINE_MODIFIER_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> RESONATOR_ITEMS = registerBlockItems(RESONATOR_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> CA_REACTOR_COIL_ITEMS =
+            registerBlockItems(CA_REACTOR_COIL_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> CA_REACTOR_HULL_ITEMS =
+            registerBlockItems(CA_REACTOR_HULL_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> CA_REACTOR_CORE_ITEMS =
+            registerBlockItems(CA_REACTOR_CORE_BLOCKS);
+    public static final DeferredItem<BlockItem> RESONATING_COLLECTOR_ITEM =
+            registerBlockItem("resonating_collector", RESONATING_COLLECTOR);
+    public static final DeferredItem<BlockItem> PAN_CABLE_ITEM = registerBlockItem("pan_cable", PAN_CABLE);
+    public static final DeferredItem<BlockItem> PAN_CORE_ITEM = registerBlockItem("pan_core", PAN_CORE);
+    public static final Map<String, DeferredItem<BlockItem>> PAN_ADAPTER_ITEMS = registerBlockItems(PAN_ADAPTER_BLOCKS);
+    public static final Map<String, DeferredItem<BlockItem>> PAN_DUPLICATOR_ITEMS = registerBlockItems(PAN_DUPLICATOR_BLOCKS);
 
     public static final DeferredItem<Item> CLAY_STICK = ITEMS.register(
             "clay_stick",
@@ -478,6 +521,18 @@ public final class ClayiumRegistries {
             BLOCK_ENTITY_TYPES.register("clay_energy_converter", () -> BlockEntityType.Builder.of(
                     ClayEnergyConverterBlockEntity::new,
                     CLAY_ENERGY_CONVERTER_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ResonatingCollectorBlockEntity>>
+            RESONATING_COLLECTOR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("resonating_collector",
+                    () -> BlockEntityType.Builder.of(ResonatingCollectorBlockEntity::new,
+                            RESONATING_COLLECTOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PanAdapterBlockEntity>> PAN_ADAPTER_BLOCK_ENTITY =
+            BLOCK_ENTITY_TYPES.register("pan_adapter", () -> BlockEntityType.Builder.of(PanAdapterBlockEntity::new,
+                    PAN_ADAPTER_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PanCoreBlockEntity>> PAN_CORE_BLOCK_ENTITY =
+            BLOCK_ENTITY_TYPES.register("pan_core", () -> BlockEntityType.Builder.of(PanCoreBlockEntity::new, PAN_CORE.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PanDuplicatorBlockEntity>> PAN_DUPLICATOR_BLOCK_ENTITY =
+            BLOCK_ENTITY_TYPES.register("pan_duplicator", () -> BlockEntityType.Builder.of(PanDuplicatorBlockEntity::new,
+                    PAN_DUPLICATOR_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<ClayWorkTableMenu>> CLAY_WORK_TABLE_MENU =
             MENU_TYPES.register(
                     "clay_work_table",
@@ -539,6 +594,12 @@ public final class ClayiumRegistries {
             MENU_TYPES.register("clay_energy_laser", () -> IMenuTypeExtension.create(ClayEnergyLaserMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<ClayEnergyConverterMenu>> CLAY_ENERGY_CONVERTER_MENU =
             MENU_TYPES.register("clay_energy_converter", () -> IMenuTypeExtension.create(ClayEnergyConverterMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<ResonatingCollectorMenu>> RESONATING_COLLECTOR_MENU =
+            MENU_TYPES.register("resonating_collector", () -> IMenuTypeExtension.create(ResonatingCollectorMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<PanAdapterMenu>> PAN_ADAPTER_MENU =
+            MENU_TYPES.register("pan_adapter", () -> IMenuTypeExtension.create(PanAdapterMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<PanDuplicatorMenu>> PAN_DUPLICATOR_MENU =
+            MENU_TYPES.register("pan_duplicator", () -> IMenuTypeExtension.create(PanDuplicatorMenu::new));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLAYIUM_CREATIVE_TAB =
             CREATIVE_MODE_TABS.register(
                     "clayium",
@@ -594,7 +655,8 @@ public final class ClayiumRegistries {
 
     private static Map<String, DeferredBlock<ClayLaserInterfaceBlock>> registerClayLaserInterfaces() {
         Map<String, DeferredBlock<ClayLaserInterfaceBlock>> blocks = new LinkedHashMap<>();
-        for (ClayTier tier : new ClayTier[]{ClayTier.CLAY_STEEL, ClayTier.CLAYIUM, ClayTier.ULTIMATE}) {
+        for (ClayTier tier : new ClayTier[]{ClayTier.CLAY_STEEL, ClayTier.CLAYIUM, ClayTier.ULTIMATE,
+                ClayTier.ANTIMATTER, ClayTier.PURE_ANTIMATTER, ClayTier.OEC, ClayTier.OPA}) {
             String id = tier.id() + "_clay_laser_interface";
             blocks.put(id, BLOCKS.register(id, () -> new ClayLaserInterfaceBlock(machineProperties(), tier)));
         }
@@ -630,6 +692,69 @@ public final class ClayiumRegistries {
         return Map.copyOf(blocks);
     }
 
+    private static Map<String, DeferredBlock<ResonatorBlock>> registerResonators() {
+        Map<String, DeferredBlock<ResonatorBlock>> blocks = new LinkedHashMap<>();
+        String[] names = {"antimatter", "pure_antimatter", "oec", "opa"};
+        double[] resonance = {1.08D, 1.10D, 2.0D, 20.0D};
+        for (int index = 0; index < names.length; index++) {
+            String id = names[index] + "_resonator";
+            ClayTier tier = ClayTier.byLegacyIndex(index + 10);
+            double factor = resonance[index];
+            blocks.put(id, BLOCKS.register(id, () -> new ResonatorBlock(machineProperties(), tier, factor)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<CAReactorCoilBlock>> registerCAReactorCoils() {
+        Map<String, DeferredBlock<CAReactorCoilBlock>> blocks = new LinkedHashMap<>();
+        for (ClayTier tier : new ClayTier[]{ClayTier.ANTIMATTER, ClayTier.PURE_ANTIMATTER, ClayTier.OEC, ClayTier.OPA}) {
+            String id = tier.id() + "_ca_reactor_coil";
+            blocks.put(id, BLOCKS.register(id,
+                    () -> new CAReactorCoilBlock(machineProperties().strength(8.0F, 5.0F), tier)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<CAReactorHullBlock>> registerCAReactorHulls() {
+        Map<String, DeferredBlock<CAReactorHullBlock>> blocks = new LinkedHashMap<>();
+        for (int rank = 1; rank <= 10; rank++) {
+            String id = "ca_reactor_hull_rank_" + rank;
+            int registeredRank = rank;
+            blocks.put(id, BLOCKS.register(id,
+                    () -> new CAReactorHullBlock(machineProperties().strength(4.0F, 25.0F), registeredRank)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<MachineBlock>> registerCAReactorCores() {
+        Map<String, DeferredBlock<MachineBlock>> blocks = new LinkedHashMap<>();
+        for (ClayTier tier : new ClayTier[]{ClayTier.ANTIMATTER, ClayTier.PURE_ANTIMATTER, ClayTier.OEC, ClayTier.OPA}) {
+            String id = tier.id() + "_ca_reactor_core";
+            blocks.put(id, BLOCKS.register(id,
+                    () -> new MachineBlock(machineProperties(), ClayiumMachineIds.CA_REACTOR, tier)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<PanAdapterBlock>> registerPanAdapters() {
+        Map<String, DeferredBlock<PanAdapterBlock>> blocks = new LinkedHashMap<>();
+        for (ClayTier tier : new ClayTier[]{ClayTier.ANTIMATTER, ClayTier.PURE_ANTIMATTER, ClayTier.OEC, ClayTier.OPA}) {
+            String id = tier.id() + "_pan_adapter";
+            blocks.put(id, BLOCKS.register(id, () -> new PanAdapterBlock(machineProperties(), tier)));
+        }
+        return Map.copyOf(blocks);
+    }
+
+    private static Map<String, DeferredBlock<PanDuplicatorBlock>> registerPanDuplicators() {
+        Map<String, DeferredBlock<PanDuplicatorBlock>> blocks = new LinkedHashMap<>();
+        for (int tier = 4; tier <= 13; tier++) {
+            ClayTier clayTier = ClayTier.byLegacyIndex(tier);
+            String id = clayTier.id() + "_pan_duplicator";
+            blocks.put(id, BLOCKS.register(id, () -> new PanDuplicatorBlock(machineProperties(), clayTier)));
+        }
+        return Map.copyOf(blocks);
+    }
+
     private static Map<String, DeferredBlock<LogisticsBlock>> registerLogisticsBlocks() {
         Map<String, DeferredBlock<LogisticsBlock>> blocks = new LinkedHashMap<>();
         for (LogisticsCatalog.Entry entry : LogisticsCatalog.ENTRIES) {
@@ -644,7 +769,8 @@ public final class ClayiumRegistries {
     private static Map<String, DeferredBlock<MachineInterfaceBlock>> registerMachineInterfaces() {
         Map<String, DeferredBlock<MachineInterfaceBlock>> blocks = new LinkedHashMap<>();
         for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL,
-                ClayTier.CLAYIUM, ClayTier.ULTIMATE}) {
+                ClayTier.CLAYIUM, ClayTier.ULTIMATE, ClayTier.ANTIMATTER, ClayTier.PURE_ANTIMATTER,
+                ClayTier.OEC, ClayTier.OPA}) {
             String id = tier.id() + "_clay_interface";
             blocks.put(id, BLOCKS.register(id, () -> new MachineInterfaceBlock(machineProperties(), tier)));
         }
@@ -654,7 +780,8 @@ public final class ClayiumRegistries {
     private static Map<String, DeferredBlock<RedstoneInterfaceBlock>> registerRedstoneInterfaces() {
         Map<String, DeferredBlock<RedstoneInterfaceBlock>> blocks = new LinkedHashMap<>();
         for (ClayTier tier : new ClayTier[]{ClayTier.ADVANCED, ClayTier.PRECISION, ClayTier.CLAY_STEEL,
-                ClayTier.CLAYIUM, ClayTier.ULTIMATE}) {
+                ClayTier.CLAYIUM, ClayTier.ULTIMATE, ClayTier.ANTIMATTER, ClayTier.PURE_ANTIMATTER,
+                ClayTier.OEC, ClayTier.OPA}) {
             String id = tier.id() + "_redstone_interface";
             blocks.put(id, BLOCKS.register(id, () -> new RedstoneInterfaceBlock(machineProperties(), tier)));
         }
@@ -664,7 +791,7 @@ public final class ClayiumRegistries {
     private static Map<String, DeferredBlock<Block>> registerMaterialBlocks() {
         Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
         for (String id : new String[]{"impure_silicon", "silicone", "silicon", "aluminium", "clay_steel",
-                "clayium", "ultimate_alloy"}) {
+                "clayium", "ultimate_alloy", "antimatter", "pure_antimatter", "opa"}) {
             blocks.put(id + "_block", registerBlock(
                     id + "_block",
                     BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
@@ -695,7 +822,8 @@ public final class ClayiumRegistries {
 
     private static Map<String, DeferredBlock<FluidBufferBlock>> registerFluidBuffers() {
         Map<String, DeferredBlock<FluidBufferBlock>> blocks=new LinkedHashMap<>();
-        for(ClayTier tier : new ClayTier[]{ClayTier.BASIC,ClayTier.ADVANCED,ClayTier.PRECISION,ClayTier.CLAY_STEEL}) {
+        for(ClayTier tier : new ClayTier[]{ClayTier.BASIC,ClayTier.ADVANCED,ClayTier.PRECISION,ClayTier.CLAY_STEEL,
+                ClayTier.CLAYIUM,ClayTier.ULTIMATE,ClayTier.ANTIMATTER,ClayTier.PURE_ANTIMATTER,ClayTier.OEC,ClayTier.OPA}) {
             String id=tier.id()+"_fluid_buffer";
             blocks.put(id,BLOCKS.register(id,()->new FluidBufferBlock(machineProperties(),tier)));
         }
@@ -766,7 +894,11 @@ public final class ClayiumRegistries {
             "precision_machine_hull",
             "clay_steel_machine_hull",
             "clayium_machine_hull",
-            "ultimate_machine_hull"
+            "ultimate_machine_hull",
+            "antimatter_machine_hull",
+            "pure_antimatter_machine_hull",
+            "oec_machine_hull",
+            "opa_machine_hull"
         };
         Map<String, DeferredBlock<Block>> blocks = new LinkedHashMap<>();
         for (String id : ids) {
@@ -799,7 +931,8 @@ public final class ClayiumRegistries {
     }
 
     private static Block[] allMachineBlocks() {
-        Block[] blocks = new Block[MANUFACTURING_MACHINE_BLOCKS.size() + SPECIALIZED_MACHINE_BLOCKS.size() + 4];
+        Block[] blocks = new Block[MANUFACTURING_MACHINE_BLOCKS.size() + SPECIALIZED_MACHINE_BLOCKS.size()
+                + CA_REACTOR_CORE_BLOCKS.size() + 4];
         blocks[0] = CLAY_BENDING_MACHINE.get();
         blocks[1] = ELEMENTAL_MILLING_MACHINE.get();
         int index = 2;
@@ -807,6 +940,9 @@ public final class ClayiumRegistries {
             blocks[index++] = block.get();
         }
         for (DeferredBlock<MachineBlock> block : SPECIALIZED_MACHINE_BLOCKS.values()) {
+            blocks[index++] = block.get();
+        }
+        for (DeferredBlock<MachineBlock> block : CA_REACTOR_CORE_BLOCKS.values()) {
             blocks[index++] = block.get();
         }
         blocks[index++] = CLAY_BLAST_FURNACE.get();

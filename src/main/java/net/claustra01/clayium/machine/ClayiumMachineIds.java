@@ -33,6 +33,11 @@ public final class ClayiumMachineIds {
     public static final ResourceLocation CLAY_FABRICATOR = Clayium.id("clay_fabricator");
     public static final ResourceLocation CLAY_BLAST_FURNACE = Clayium.id("clay_blast_furnace");
     public static final ResourceLocation ENERGETIC_CLAY_CONDENSER = Clayium.id("energetic_clay_condenser");
+    public static final ResourceLocation CA_INJECTOR = Clayium.id("ca_injector");
+    public static final ResourceLocation CA_CONDENSER = Clayium.id("ca_condenser");
+    public static final ResourceLocation CA_REACTOR = Clayium.id("ca_reactor");
+    public static final ResourceLocation ENERGETIC_CLAY_DECOMPOSER = Clayium.id("energetic_clay_decomposer");
+    public static final ResourceLocation PAN_DUPLICATOR = Clayium.id("pan_duplicator");
 
     private ClayiumMachineIds() {
     }

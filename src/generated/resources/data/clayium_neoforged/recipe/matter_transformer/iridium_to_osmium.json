@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 30000000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:iridium_ingot"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:matter_transformer",
+  "minimum_tier": "pure_antimatter",
+  "processing_time_ticks": 200,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:osmium_ingot"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000000000,
+  "ingredients": [
+    {
+      "count": 64,
+      "ingredient": {
+        "item": "clayium_neoforged:ultimate_clay_fabricator_mk2"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:opa_overclocker"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "opa",
+  "processing_time_ticks": 1000000000000000000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:opa_clay_fabricator_mk3"
+    }
+  ]
+}

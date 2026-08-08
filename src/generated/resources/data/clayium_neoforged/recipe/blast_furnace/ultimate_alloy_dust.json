@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 4000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:ultimate_alloy_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_blast_furnace",
+  "minimum_tier": "clayium",
+  "processing_time_ticks": 2000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:ultimate_alloy_ingot"
+    }
+  ]
+}

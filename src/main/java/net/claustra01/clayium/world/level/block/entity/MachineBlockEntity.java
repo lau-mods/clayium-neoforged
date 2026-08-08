@@ -88,10 +88,14 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     private int structureCheckDelay;
     private boolean structureFormed;
     private net.claustra01.clayium.tier.ClayTier structureTier = net.claustra01.clayium.tier.ClayTier.RAW;
+    private net.claustra01.clayium.machine.CAReactorStructure.Result caReactorStructure =
+            net.claustra01.clayium.machine.CAReactorStructure.Result.invalid(
+                    net.claustra01.clayium.tier.ClayTier.RAW);
     private boolean externalWorkEnabled = true;
     private boolean externalSingleRun;
     private long pendingLaserProgress;
     private int fabricationBatchSize;
+    private double activeResonance = 1.0D;
     private int modifierCheckDelay;
     private MachineModifiers.Snapshot modifiers = MachineModifiers.Snapshot.DEFAULT;
 
@@ -262,7 +266,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         MachineBlock block = machineBlock();
         if (block == null || (!block.machineId().equals(
                 net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
-                && !block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR))) {
+                && !block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)
+                && !block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR))) {
             return true;
         }
         if (structureCheckDelay-- > 0) {
@@ -274,7 +279,12 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
             structureTier = net.claustra01.clayium.tier.ClayTier.RAW;
             return false;
         }
-        if (block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)) {
+        if (block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR)) {
+            caReactorStructure = net.claustra01.clayium.machine.CAReactorStructure.validate(
+                    serverLevel, worldPosition, getBlockState().getValue(MachineBlock.FACING), block.tier());
+            structureFormed = caReactorStructure.formed();
+            structureTier = block.tier();
+        } else if (block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)) {
             net.claustra01.clayium.machine.ClayReactorStructure.Result result =
                     net.claustra01.clayium.machine.ClayReactorStructure.validate(serverLevel, worldPosition,
                             getBlockState().getValue(MachineBlock.FACING));
@@ -400,7 +410,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
         if ((machineBlock.machineId().equals(
                 net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
-                || machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR))
+                || machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)
+                || machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR))
                 && !structureFormed) {
             stopReason = StopReason.INVALID_STRUCTURE;
             resetProcessing();
@@ -423,6 +434,9 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         }
 
         MachineRecipe value = recipe.get().value();
+        if (progress == 0) {
+            activeResonance = net.claustra01.clayium.machine.ResonanceField.at(level, worldPosition);
+        }
         if (fabricationBatchSize <= 0) {
             fabricationBatchSize = net.claustra01.clayium.machine.MachineProcessPolicy.batchSize(
                     machineBlock.machineId(), getItem(machineLayout().inputSlots()[0]).getCount());
@@ -430,9 +444,19 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         long baseProcessingTime = net.claustra01.clayium.machine.MachineProcessPolicy.processingTime(
                 MachinePerformance.processingTime(value, machineBlock.machineId(), recipeTier()),
                 machineBlock.machineId(), machineTier(), fabricationBatchSize);
+        baseProcessingTime = net.claustra01.clayium.machine.MachineProcessPolicy.resonanceProcessingTime(
+                baseProcessingTime, machineBlock.machineId(), machineTier(), activeResonance);
+        if (machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR)) {
+            baseProcessingTime = net.claustra01.clayium.machine.CAReactorStructure.processingTime(
+                    baseProcessingTime, caReactorStructure);
+        }
         totalProgress = Math.max(1L, (long)Math.ceil(baseProcessingTime / modifiers.overclockFactor()));
         long energyPerTick = Math.max(0L, Math.round(MachinePerformance.clayEnergyPerTick(
                 value, machineBlock.machineId(), recipeTier()) * modifiers.energyFactor()));
+        if (machineBlock.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR)) {
+            double adjusted = energyPerTick * caReactorStructure.energyMultiplier();
+            energyPerTick = adjusted >= Long.MAX_VALUE ? Long.MAX_VALUE : Math.max(0L, Math.round(adjusted));
+        }
         activeEnergyPerTick = energyPerTick;
         if (!canOutput(value)) {
             stopReason = StopReason.OUTPUT_BLOCKED;
@@ -569,8 +593,15 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
     }
 
     private ItemStack processingResult(MachineRecipe recipe, ItemStack recipeResult) {
+        if (recipe.machine().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR)) {
+            return net.claustra01.clayium.machine.LateGameMaterials.pureAntimatter(
+                    caReactorStructure.productRank());
+        }
         int count = net.claustra01.clayium.machine.MachineProcessPolicy.outputCount(
                 recipe.machine(), recipeResult.getCount(), fabricationBatchSize);
+        count = net.claustra01.clayium.machine.MachineProcessPolicy.resonanceOutputCount(
+                recipe.machine(), count, activeResonance);
+        count = Math.min(count, recipeResult.getMaxStackSize());
         return recipeResult.copyWithCount(count);
     }
 
@@ -580,6 +611,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         totalProgress = 0;
         activeEnergyPerTick = 0;
         fabricationBatchSize = 0;
+        activeResonance = 1.0D;
     }
 
     @Nullable
@@ -601,7 +633,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         MachineBlock block = machineBlock();
         return block != null && (block.machineId().equals(
                 net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_BLAST_FURNACE)
-                || block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR))
+                || block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CLAY_REACTOR)
+                || block.machineId().equals(net.claustra01.clayium.machine.ClayiumMachineIds.CA_REACTOR))
                 ? structureTier : machineTier();
     }
 
@@ -767,6 +800,8 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         progress = Math.max(0L, tag.getLong("Progress"));
         totalProgress = Math.max(0L, tag.getLong("TotalProgress"));
         fabricationBatchSize = Math.max(0, Math.min(64, tag.getInt("FabricationBatchSize")));
+        activeResonance = Math.max(1.0D, tag.contains("ActiveResonance")
+                ? tag.getDouble("ActiveResonance") : 1.0D);
         externalWorkEnabled = !tag.contains("ExternalWorkEnabled") || tag.getBoolean("ExternalWorkEnabled");
         externalSingleRun = tag.getBoolean("ExternalSingleRun");
         sideConfiguration.replaceRoutes(
@@ -789,6 +824,7 @@ public final class MachineBlockEntity extends BaseContainerBlockEntity
         tag.putLong("Progress", progress);
         tag.putLong("TotalProgress", totalProgress);
         tag.putInt("FabricationBatchSize", fabricationBatchSize);
+        tag.putDouble("ActiveResonance", activeResonance);
         tag.putBoolean("ExternalWorkEnabled", externalWorkEnabled);
         tag.putBoolean("ExternalSingleRun", externalSingleRun);
         tag.putIntArray("InsertionRoutes", insertionRoutes);

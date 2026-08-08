@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 5000000000,
+  "ingredients": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_machine_hull"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_resonator"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "pure_antimatter",
+  "processing_time_ticks": 100000000000000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_overclocker"
+    }
+  ]
+}

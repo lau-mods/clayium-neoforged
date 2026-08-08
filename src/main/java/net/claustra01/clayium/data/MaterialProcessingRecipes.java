@@ -35,7 +35,7 @@ public final class MaterialProcessingRecipes {
     }
 
     private static void fluidBuffers(RecipeOutput output) {
-        for (int tier = 4; tier <= 7; tier++) {
+        for (int tier = 4; tier <= 13; tier++) {
             ClayTier clayTier = ClayTier.byLegacyIndex(tier);
             machine(output, "fluid_buffer/" + clayTier.id(), ClayiumMachineIds.ASSEMBLER,
                     List.of(ingredient(ClayiumRegistries.LOGISTICS_BLOCKS.get(clayTier.id() + "_buffer").get(), 1),
@@ -75,6 +75,17 @@ public final class MaterialProcessingRecipes {
                     List.of(ingredient(item("impure_" + material + "_dust"), 1)),
                     List.of(stack(item(material + "_dust"), 1)),
                     300, 1_000_000, ClayTier.CLAY_STEEL);
+        }
+        for (String material : List.of("iron", "lead", "copper")) {
+            machine(output, "electrolysis/" + material, ClayiumMachineIds.ELECTROLYSIS_REACTOR,
+                    List.of(ingredient(item("impure_" + material + "_dust"), 1)),
+                    List.of(stack(item(material + "_dust"), 1)), 1_000, 10 * energy(8), ClayTier.CLAYIUM);
+        }
+        for (String material : List.of("nickel", "beryllium", "chrome", "titanium")) {
+            machine(output, "electrolysis/" + material, ClayiumMachineIds.ELECTROLYSIS_REACTOR,
+                    List.of(ingredient(item("impure_" + material + "_dust"), 1)),
+                    List.of(stack(item(material + "_dust"), 1)),
+                    3_000, 10 * energy(9), ClayTier.ULTIMATE);
         }
     }
 
@@ -129,6 +140,9 @@ public final class MaterialProcessingRecipes {
         transform(output, "thorium_to_protactinium", item("thorium_ingot"), item("protactinium_ingot"), 9, 30);
         transform(output, "protactinium_to_uranium", item("protactinium_ingot"), item("uranium_ingot"), 9, 50);
         transform(output, "uranium_to_neptunium", item("uranium_ingot"), item("neptunium_ingot"), 9, 80);
+        transform(output, "neptunium_to_plutonium", item("neptunium_ingot"), item("plutonium_ingot"), 10, 20);
+        transform(output, "plutonium_to_americium", item("plutonium_ingot"), item("americium_ingot"), 11, 30);
+        transform(output, "americium_to_curium", item("americium_ingot"), item("curium_ingot"), 12, 50);
 
         transform(output, "beryllium_to_magnesium", item("beryllium_ingot"), item("magnesium_ingot"), 7, 10);
         transform(output, "magnesium_to_calcium", item("magnesium_ingot"), item("calcium_ingot"), 7, 20);
@@ -138,6 +152,9 @@ public final class MaterialProcessingRecipes {
         transform(output, "lanthanum_to_cerium", item("lanthanum_ingot"), item("cerium_ingot"), 8, 30);
         transform(output, "cerium_to_praseodymium", item("cerium_ingot"), item("praseodymium_ingot"), 8, 90);
         transform(output, "praseodymium_to_neodymium", item("praseodymium_ingot"), item("neodymium_ingot"), 9, 20);
+        transform(output, "neodymium_to_promethium", item("neodymium_ingot"), item("promethium_ingot"), 10, 10);
+        transform(output, "promethium_to_samarium", item("promethium_ingot"), item("samarium_ingot"), 11, 20);
+        transform(output, "samarium_to_europium", item("samarium_ingot"), item("europium_ingot"), 12, 60);
 
         transform(output, "zirconium_to_titanium", item("zirconium_ingot"), item("titanium_ingot"), 8, 60);
         transform(output, "titanium_to_vanadium", item("titanium_ingot"), item("vanadium_ingot"), 9, 60);
@@ -148,8 +165,14 @@ public final class MaterialProcessingRecipes {
         transform(output, "zinc_to_copper", item("zinc_ingot"), Items.COPPER_INGOT, 8, 20);
         transform(output, "copper_to_silver", Items.COPPER_INGOT, item("silver_ingot"), 9, 10);
         transform(output, "silver_to_gold", item("silver_ingot"), item("gold_ingot"), 9, 50);
+        transform(output, "gold_to_platinum", item("gold_ingot"), item("platinum_ingot"), 10, 30);
+        transform(output, "platinum_to_iridium", item("platinum_ingot"), item("iridium_ingot"), 11, 10);
+        transform(output, "iridium_to_osmium", item("iridium_ingot"), item("osmium_ingot"), 11, 30);
+        transform(output, "osmium_to_rhenium", item("osmium_ingot"), item("rhenium_ingot"), 12, 10);
         transform(output, "hafnium_to_tantalum", item("hafnium_ingot"), item("tantalum_ingot"), 8, 70);
         transform(output, "tantalum_to_tungsten", item("tantalum_ingot"), item("tungsten_ingot"), 9, 40);
+        transform(output, "tungsten_to_molybdenum", item("tungsten_ingot"), item("molybdenum_ingot"), 10, 20);
+        transform(output, "molybdenum_to_chrome", item("molybdenum_ingot"), item("chrome_ingot"), 11, 10);
         transform(output, "lead_to_tin", item("lead_ingot"), item("tin_ingot"), 7, 50);
         transform(output, "tin_to_antimony", item("tin_ingot"), item("antimony_ingot"), 8, 20);
         transform(output, "antimony_to_bismuth", item("antimony_ingot"), item("bismuth_ingot"), 9, 10);
@@ -279,6 +302,9 @@ public final class MaterialProcessingRecipes {
         machine(output, "smelter/impure_aluminium_dust", ClayiumMachineIds.SMELTER,
                 List.of(ingredient(item("impure_aluminium_dust"), 1)),
                 List.of(stack(item("impure_aluminium_ingot"), 1)), 200, 500, ClayTier.ADVANCED);
+        machine(output, "smelter/nickel_dust", ClayiumMachineIds.SMELTER,
+                List.of(ingredient(item("nickel_dust"), 1)),
+                List.of(stack(item("nickel_ingot"), 1)), 200, 500, ClayTier.ADVANCED);
         for (String material : List.of("magnesium", "lithium", "zirconium", "zincalminium", "zinconium", "az91d", "zk60a")) {
             machine(output, "smelter/" + material + "_dust", ClayiumMachineIds.SMELTER,
                     List.of(ingredient(item(material + "_dust"), 1)),
@@ -372,6 +398,18 @@ public final class MaterialProcessingRecipes {
                 List.of(ingredient(item("quartz_dust"), 16)),
                 List.of(stack(ClayiumRegistries.LASER_REFLECTOR.get(), 1)),
                 100, 20_000, ClayTier.CLAY_STEEL);
+        machine(output, "blast_furnace/clayium_dust", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(item("clayium_dust"), 1)), List.of(stack(item("clayium_ingot"), 1)),
+                1_000, 2 * energy(7), ClayTier.CLAY_STEEL);
+        machine(output, "blast_furnace/titanium_dust", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(item("titanium_dust"), 1)), List.of(stack(item("titanium_ingot"), 1)),
+                2_000, 4 * energy(8), ClayTier.CLAYIUM);
+        machine(output, "blast_furnace/ultimate_alloy_dust", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(item("ultimate_alloy_dust"), 1)), List.of(stack(item("ultimate_alloy_ingot"), 1)),
+                2_000, 4 * energy(8), ClayTier.CLAYIUM);
+        machine(output, "blast_furnace/chrome_dust", ClayiumMachineIds.CLAY_BLAST_FURNACE,
+                List.of(ingredient(item("chrome_dust"), 1)), List.of(stack(item("chrome_ingot"), 1)),
+                2_000, 4 * energy(9), ClayTier.ULTIMATE);
     }
 
     private static void clayiumUltimateProgression(RecipeOutput output) {
@@ -399,12 +437,6 @@ public final class MaterialProcessingRecipes {
                 component("industrial_clay_dust"), 1, Items.CHARCOAL, 1,
                 10_000L, energy(7), ClayTier.CLAY_STEEL);
 
-        machine(output, "smelter/clayium_dust", ClayiumMachineIds.SMELTER,
-                List.of(ingredient(item("clayium_dust"), 1)), List.of(stack(item("clayium_ingot"), 1)),
-                2_000L, energy(8), ClayTier.CLAYIUM);
-        machine(output, "smelter/ultimate_alloy_dust", ClayiumMachineIds.SMELTER,
-                List.of(ingredient(item("ultimate_alloy_dust"), 1)), List.of(stack(item("ultimate_alloy_ingot"), 1)),
-                2_000L, energy(9), ClayTier.ULTIMATE);
         advancedMaterialShapes(output, "clayium", ClayTier.CLAYIUM, energy(8));
         advancedMaterialShapes(output, "ultimate_alloy", ClayTier.ULTIMATE, energy(9));
 

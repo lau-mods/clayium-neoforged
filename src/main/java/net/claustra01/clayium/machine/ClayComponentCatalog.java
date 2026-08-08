@@ -61,7 +61,12 @@ public final class ClayComponentCatalog {
             item("impure_silicon_plate", "Impure Silicon Plate", "impuresiliconplate"),
             item("silicon_plate", "Silicon Plate", "siliconplate"),
             item("clay_core", "Clay Core", "claycore"),
-            item("clay_brain", "Clay Brain", "claybrain"));
+            item("clay_brain", "Clay Brain", "claybrain"),
+            item("clay_spirit", "Clay Spirit", "clayspirit"),
+            item("clay_soul", "Clay Soul", "claysoul"),
+            item("clay_anima", "Clay Anima", "clayanima"),
+            item("clay_psyche", "Clay Psyche", "claypsyche"),
+            item("antimatter_seed", "Antimatter Seed", "antimatterseed"));
 
     private ClayComponentCatalog() {
     }

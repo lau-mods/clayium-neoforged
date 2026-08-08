@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 0,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:quadruple_compressed_energetic_clay"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:energetic_clay_decomposer",
+  "minimum_tier": "opa",
+  "processing_time_ticks": 1,
+  "results": [
+    {
+      "count": 9,
+      "id": "clayium_neoforged:triple_compressed_energetic_clay"
+    }
+  ]
+}

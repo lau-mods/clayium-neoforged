@@ -243,6 +243,10 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         return storedCount;
     }
 
+    public ItemStack storedItem() {
+        return items.get(STORAGE_CONTENT_SLOT).copyWithCount(storedCount > 0 ? 1 : 0);
+    }
+
     public int filterSlotIndex(int filter) {
         return INVENTORY_SLOTS + filter;
     }
@@ -425,6 +429,9 @@ public final class LogisticsBlockEntity extends BaseContainerBlockEntity impleme
         } else if (!items.get(STORAGE_CONTENT_SLOT).isEmpty()) {
             items.get(STORAGE_CONTENT_SLOT).setCount(
                     (int) Math.min(storedCount, items.get(STORAGE_CONTENT_SLOT).getMaxStackSize()));
+        }
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 

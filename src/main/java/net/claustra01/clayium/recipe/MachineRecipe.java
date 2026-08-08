@@ -142,11 +142,8 @@ public record MachineRecipe(
         if (minimumTier == null) {
             throw new IllegalArgumentException("minimumTier must not be null");
         }
-        try {
-            Math.multiplyExact(processingTimeTicks, clayEnergyPerTick);
-        } catch (ArithmeticException exception) {
-            throw new IllegalArgumentException("Machine recipe total Clay Energy overflows a long", exception);
-        }
+        // Several original end-game recipes intentionally exceed Long.MAX_VALUE in total CE.
+        // Time and CE/t remain exact longs; UI totals and policy calculations saturate separately.
     }
 
     public MachineRecipe(

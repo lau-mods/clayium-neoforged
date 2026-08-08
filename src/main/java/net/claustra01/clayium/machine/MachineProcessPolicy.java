@@ -27,8 +27,30 @@ public final class MachineProcessPolicy {
         return scaled >= Long.MAX_VALUE ? Long.MAX_VALUE : Math.max(1L, Math.round(scaled));
     }
 
+    public static long resonanceProcessingTime(
+            long baseTicks, ResourceLocation machineId, ClayTier machineTier, double resonance) {
+        if (!ClayiumMachineIds.CA_INJECTOR.equals(machineId)) {
+            return baseTicks;
+        }
+        double exponent = switch (machineTier.progressionIndex()) {
+            case 9 -> 0.2D;
+            case 10 -> 0.9D;
+            case 11 -> 3.0D;
+            default -> 1.0D;
+        };
+        double scaled = baseTicks * Math.pow(Math.max(1.0D, resonance), -exponent);
+        return Math.max(1L, scaled >= Long.MAX_VALUE ? Long.MAX_VALUE : Math.round(scaled));
+    }
+
     public static int outputCount(ResourceLocation machineId, int recipeCount, int batchSize) {
         if (!ClayiumMachineIds.CLAY_FABRICATOR.equals(machineId)) return recipeCount;
         return Math.min(64, Math.multiplyExact(recipeCount, Math.max(1, batchSize)));
+    }
+
+    public static int resonanceOutputCount(ResourceLocation machineId, int recipeCount, double resonance) {
+        if (!ClayiumMachineIds.CA_CONDENSER.equals(machineId)) {
+            return recipeCount;
+        }
+        return Math.max(1, (int)Math.floor(recipeCount * (Math.log(Math.max(1.0D, resonance)) + 1.0D)));
     }
 }

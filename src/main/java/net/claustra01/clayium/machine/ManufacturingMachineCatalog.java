@@ -41,13 +41,13 @@ public final class ManufacturingMachineCatalog {
         add(entries, "lathe", "Lathe",
                 ClayiumMachineIds.LATHE, "lathe", 1, 2, 3, 4);
         add(entries, "condenser", "Condenser",
-                ClayiumMachineIds.CONDENSER, "condenser", 2, 3, 4, 5);
+                ClayiumMachineIds.CONDENSER, "condenser", 2, 3, 4, 5, 10);
         add(entries, "grinder", "Grinder",
-                ClayiumMachineIds.GRINDER, "grinder", 2, 3, 4, 5, 6);
+                ClayiumMachineIds.GRINDER, "grinder", 2, 3, 4, 5, 6, 10);
         add(entries, "decomposer", "Decomposer",
                 ClayiumMachineIds.DECOMPOSER, "decomposer", 2, 3, 4);
         add(entries, "assembler", "Assembler",
-                ClayiumMachineIds.ASSEMBLER, "assembler", 3, 4, 6);
+                ClayiumMachineIds.ASSEMBLER, "assembler", 3, 4, 6, 10);
         add(entries, "inscriber", "Inscriber",
                 ClayiumMachineIds.INSCRIBER, "inscriber", 3, 4);
         add(entries, "centrifuge", "Centrifuge",

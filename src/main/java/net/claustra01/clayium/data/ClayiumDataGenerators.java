@@ -90,6 +90,13 @@ public final class ClayiumDataGenerators {
                 add("jei." + Clayium.MODID + ".category.clay_reactor", "Clay Reactor");
                 add("jei." + Clayium.MODID + ".category.clay_fabricator", "Clay Fabricator");
                 add("jei." + Clayium.MODID + ".category.clay_blast_furnace", "Clay Blast Furnace");
+                add("jei." + Clayium.MODID + ".category.ca_injector", "CA Injector");
+                add("jei." + Clayium.MODID + ".category.ca_condenser", "CA Condenser");
+                add("jei." + Clayium.MODID + ".category.ca_reactor", "CA Reactor");
+                add("jei." + Clayium.MODID + ".category.pan_duplicator", "PAN Duplicator");
+                add("jei." + Clayium.MODID + ".pan.template_retained", "Template is retained; one Antimatter is consumed");
+                add("jei." + Clayium.MODID + ".pan.network_condition", "Requires a PAN network that knows a recipe for the template");
+                add("jei." + Clayium.MODID + ".category.energetic_clay_decomposer", "Energetic Clay Decomposer");
                 add("jei." + Clayium.MODID + ".category.quartz_crucible", "Quartz Crucible");
                 add("jei." + Clayium.MODID + ".category.chemical_metal_separator", "Chemical Metal Separator");
                 add("jei." + Clayium.MODID + ".chance", "Chance: %s%%");
@@ -120,6 +127,9 @@ public final class ClayiumDataGenerators {
                 }
                 add(Clayium.MODID + ".config.log_registry_summary", "Log registry summary");
                 add(Clayium.MODID + ".config.ce_sync_interval_ticks", "Clay Energy sync interval");
+                add("jei." + Clayium.MODID + ".resonance_condition", "Affected by adjacent resonators");
+                add("jei." + Clayium.MODID + ".ca_reactor_condition", "Requires a valid CA Reactor ring and hull");
+                add("message." + Clayium.MODID + ".pan_core_status", "PAN network: %s nodes, %s conversions");
             }
         });
         event.getGenerator().addProvider(
@@ -237,6 +247,26 @@ public final class ClayiumDataGenerators {
                     "block." + Clayium.MODID + "." + id,
                     titleCase(id.replace("_machine_hull", "")) + " Machine Hull");
         }
+        ClayiumRegistries.RESONATOR_BLOCKS.keySet().forEach(id -> addBlockName(language, id, titleCase(id)));
+        ClayiumRegistries.CA_REACTOR_COIL_BLOCKS.keySet().forEach(id -> addBlockName(language, id, titleCase(id)));
+        ClayiumRegistries.CA_REACTOR_HULL_BLOCKS.keySet().forEach(id -> addBlockName(language, id, titleCase(id)));
+        ClayiumRegistries.CA_REACTOR_CORE_BLOCKS.keySet().forEach(id -> addBlockName(language, id, titleCase(id)));
+        ClayiumRegistries.PAN_ADAPTER_BLOCKS.keySet().forEach(id -> addBlockName(language, id, titleCase(id)));
+        ClayiumRegistries.PAN_DUPLICATOR_BLOCKS.keySet().forEach(id -> addBlockName(language, id, titleCase(id)));
+        for (ClayTier tier : new ClayTier[]{ClayTier.ANTIMATTER, ClayTier.PURE_ANTIMATTER, ClayTier.OEC, ClayTier.OPA}) {
+            addBlockName(language, tier.id() + "_clay_interface", tier.displayName() + " Clay Interface");
+            addBlockName(language, tier.id() + "_redstone_interface", tier.displayName() + " Redstone Interface");
+        }
+        for (ClayTier tier : new ClayTier[]{ClayTier.CLAYIUM, ClayTier.ULTIMATE, ClayTier.ANTIMATTER,
+                ClayTier.PURE_ANTIMATTER, ClayTier.OEC, ClayTier.OPA}) {
+            addBlockName(language, tier.id() + "_fluid_buffer", tier.displayName() + " Fluid Buffer");
+        }
+        addBlockName(language, "resonating_collector", "Resonating Collector");
+        addBlockName(language, "pan_cable", "PAN Cable");
+        addBlockName(language, "pan_core", "PAN Core");
+        addBlockName(language, "antimatter_block", "Block of Antimatter");
+        addBlockName(language, "pure_antimatter_block", "Block of Pure Antimatter");
+        addBlockName(language, "opa_block", "Block of Octuple Compressed Pure Antimatter");
     }
 
     private static void addItemNames(LanguageProvider language) {
@@ -531,5 +561,6 @@ public final class ClayiumDataGenerators {
         ClayProcessingRecipes.build(output);
         LogisticsRecipes.build(output);
         MaterialProcessingRecipes.build(output);
+        AntimatterProgressionRecipes.build(output);
     }
 }

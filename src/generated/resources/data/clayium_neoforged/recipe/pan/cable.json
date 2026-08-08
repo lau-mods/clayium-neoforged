@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000000,
+  "ingredients": [
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "tag": "c:glass_blocks"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "antimatter",
+  "processing_time_ticks": 2,
+  "results": [
+    {
+      "count": 12,
+      "id": "clayium_neoforged:pan_cable"
+    }
+  ]
+}

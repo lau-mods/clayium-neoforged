@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:opa"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:septuple_compressed_pure_antimatter"
+  }
+}

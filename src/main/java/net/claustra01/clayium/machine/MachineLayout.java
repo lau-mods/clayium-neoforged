@@ -59,7 +59,9 @@ public enum MachineLayout {
     public static MachineLayout forMachine(ResourceLocation machineId) {
         if (ClayiumMachineIds.ASSEMBLER.equals(machineId)
                 || ClayiumMachineIds.INSCRIBER.equals(machineId)
-                || ClayiumMachineIds.ALLOY_SMELTER.equals(machineId)) {
+                || ClayiumMachineIds.ALLOY_SMELTER.equals(machineId)
+                || ClayiumMachineIds.CA_INJECTOR.equals(machineId)
+                || ClayiumMachineIds.PAN_DUPLICATOR.equals(machineId)) {
             return ASSEMBLER;
         }
         if (ClayiumMachineIds.CENTRIFUGE.equals(machineId)) {

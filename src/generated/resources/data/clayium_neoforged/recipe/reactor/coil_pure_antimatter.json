@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000000,
+  "ingredients": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_plate"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:iridium_ingot"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "pure_antimatter",
+  "processing_time_ticks": 100000000000000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_ca_reactor_coil"
+    }
+  ]
+}

@@ -20,7 +20,10 @@ import net.claustra01.clayium.world.level.block.entity.CobblestoneGeneratorBlock
 import net.claustra01.clayium.world.level.block.AbstractTieredIoMachineBlock;
 import net.claustra01.clayium.world.level.block.MachineInterfaceBlock;
 import net.claustra01.clayium.world.item.ClayConfiguratorItem;
+import net.claustra01.clayium.logistics.LogisticsKind;
+import net.claustra01.clayium.util.MetricFormatter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -30,6 +33,9 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import com.mojang.math.Axis;
 
 /** Draws the original per-face import, export, and filter decals. */
 public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDevice>
@@ -42,6 +48,11 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
             MultiBufferSource buffers,
             int packedLight,
             int packedOverlay) {
+        if (blockEntity instanceof LogisticsBlockEntity logistics
+                && logistics.kindValue() == LogisticsKind.STORAGE_CONTAINER
+                && !logistics.getBlockState().getValue(LogisticsBlock.PIPE)) {
+            renderStorageContents(logistics, poseStack, buffers, packedLight);
+        }
         boolean pipe = blockEntity.pipeEnabled();
         if (pipe) {
             ResourceLocation hull = hullTexture(blockEntity);
@@ -67,6 +78,34 @@ public final class IoOverlayRenderer<T extends BlockEntity & ConfigurableItemDev
                 drawFace(poseStack, buffers, packedLight, side, "filter", false);
             }
         }
+    }
+
+    private static void renderStorageContents(LogisticsBlockEntity storage, PoseStack poses,
+                                               MultiBufferSource buffers, int light) {
+        ItemStack displayed = storage.storedItem();
+        if (displayed.isEmpty() || storage.storedCount() <= 0) return;
+        Direction front = storage.getBlockState().getValue(LogisticsBlock.FACING);
+        poses.pushPose();
+        poses.translate(0.5D, 0.58D, 0.5D);
+        poses.mulPose(Axis.YP.rotationDegrees(180.0F - front.toYRot()));
+        poses.translate(0.0D, 0.0D, -0.505D);
+        poses.scale(0.48F, 0.48F, 0.48F);
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getItemRenderer().renderStatic(displayed, ItemDisplayContext.FIXED, light,
+                OverlayTexture.NO_OVERLAY, poses, buffers, storage.getLevel(), 0);
+        poses.popPose();
+
+        String count = MetricFormatter.format(storage.storedCount());
+        Font font = minecraft.font;
+        poses.pushPose();
+        poses.translate(0.5D, 0.23D, 0.5D);
+        poses.mulPose(Axis.YP.rotationDegrees(180.0F - front.toYRot()));
+        poses.translate(0.0D, 0.0D, -0.507D);
+        float scale = 0.0125F;
+        poses.scale(-scale, -scale, scale);
+        font.drawInBatch(count, -font.width(count) / 2.0F, 0.0F, 0xffffffff, false,
+                poses.last().pose(), buffers, Font.DisplayMode.POLYGON_OFFSET, 0, light);
+        poses.popPose();
     }
 
     private static ResourceLocation hullTexture(BlockEntity blockEntity) {

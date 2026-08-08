@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:opa"
+    },
+    "D": {
+      "item": "clayium_neoforged:oec_pan_duplicator"
+    },
+    "I": {
+      "item": "clayium_neoforged:vanadium_ingot"
+    },
+    "M": {
+      "item": "clayium_neoforged:opa_machine_hull"
+    }
+  },
+  "pattern": [
+    "#I#",
+    "DMD",
+    "#I#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:opa_pan_duplicator"
+  }
+}

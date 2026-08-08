@@ -19,6 +19,8 @@ public final class ClayiumJeiRecipeTypes {
             Clayium.MODID, "quartz_crucible", QuartzCrucibleJeiRecipe.class);
     public static final RecipeType<ChemicalMetalSeparatorJeiRecipe> CHEMICAL_METAL_SEPARATOR = RecipeType.create(
             Clayium.MODID, "chemical_metal_separator", ChemicalMetalSeparatorJeiRecipe.class);
+    public static final RecipeType<PanDuplicatorJeiRecipe> PAN_DUPLICATOR = RecipeType.create(
+            Clayium.MODID, "pan_duplicator", PanDuplicatorJeiRecipe.class);
     public static final RecipeType<ClayWorkTableRecipe> CLAY_WORK_TABLE =
             RecipeType.create(Clayium.MODID, "clay_work_table", ClayWorkTableRecipe.class);
     public static final RecipeType<MachineRecipe> CLAY_BENDING_MACHINE = machine("clay_bending_machine");
@@ -43,6 +45,10 @@ public final class ClayiumJeiRecipeTypes {
     public static final RecipeType<MachineRecipe> CLAY_FABRICATOR = machine("clay_fabricator");
     public static final RecipeType<MachineRecipe> ENERGETIC_CLAY_CONDENSER = machine("energetic_clay_condenser");
     public static final RecipeType<MachineRecipe> CLAY_BLAST_FURNACE = machine("clay_blast_furnace");
+    public static final RecipeType<MachineRecipe> CA_INJECTOR = machine("ca_injector");
+    public static final RecipeType<MachineRecipe> CA_CONDENSER = machine("ca_condenser");
+    public static final RecipeType<MachineRecipe> CA_REACTOR = machine("ca_reactor");
+    public static final RecipeType<MachineRecipe> ENERGETIC_CLAY_DECOMPOSER = machine("energetic_clay_decomposer");
 
     public static final Map<ResourceLocation, RecipeType<MachineRecipe>> MACHINES = createMachineTypes();
 
@@ -77,6 +83,10 @@ public final class ClayiumJeiRecipeTypes {
         result.put(ClayiumMachineIds.CLAY_FABRICATOR, CLAY_FABRICATOR);
         result.put(ClayiumMachineIds.ENERGETIC_CLAY_CONDENSER, ENERGETIC_CLAY_CONDENSER);
         result.put(ClayiumMachineIds.CLAY_BLAST_FURNACE, CLAY_BLAST_FURNACE);
+        result.put(ClayiumMachineIds.CA_INJECTOR, CA_INJECTOR);
+        result.put(ClayiumMachineIds.CA_CONDENSER, CA_CONDENSER);
+        result.put(ClayiumMachineIds.CA_REACTOR, CA_REACTOR);
+        result.put(ClayiumMachineIds.ENERGETIC_CLAY_DECOMPOSER, ENERGETIC_CLAY_DECOMPOSER);
         return Map.copyOf(result);
     }
 }

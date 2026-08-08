@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000000,
+  "ingredients": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_brain"
+      }
+    },
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "clayium_neoforged:excited_clay_dust"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "ultimate",
+  "processing_time_ticks": 10000000000000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_spirit"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_machine_hull"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_ca_injector"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "ultimate",
+  "processing_time_ticks": 480,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_ca_injector"
+    }
+  ]
+}

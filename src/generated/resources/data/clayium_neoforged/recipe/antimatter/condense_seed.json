@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 25000000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_seed"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:ca_condenser",
+  "minimum_tier": "ultimate",
+  "processing_time_ticks": 2000,
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:antimatter"
+    }
+  ]
+}
