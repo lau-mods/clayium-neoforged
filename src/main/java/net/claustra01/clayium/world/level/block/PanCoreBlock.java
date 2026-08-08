@@ -7,7 +7,8 @@ import net.claustra01.clayium.pan.PanConductor;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.entity.PanCoreBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.claustra01.clayium.world.inventory.PanCoreMenu;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -29,8 +30,9 @@ public final class PanCoreBlock extends BaseEntityBlock implements PanConductor 
         return level.isClientSide?null:createTickerHelper(type,ClayiumRegistries.PAN_CORE_BLOCK_ENTITY.get(),PanCoreBlockEntity::serverTick);
     }
     @Override protected InteractionResult useWithoutItem(BlockState state,Level level,BlockPos pos,Player player,BlockHitResult hit){
-        if(!level.isClientSide&&level.getBlockEntity(pos) instanceof PanCoreBlockEntity core)
-            player.sendSystemMessage(Component.translatable("message.clayium_neoforged.pan_core_status",core.networkSize(),core.conversionCount()));
+        if(!level.isClientSide&&player instanceof ServerPlayer server
+                &&level.getBlockEntity(pos) instanceof PanCoreBlockEntity core)
+            server.openMenu(core,buffer->PanCoreMenu.writeOpeningData(buffer,core));
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 }

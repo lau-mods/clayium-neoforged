@@ -90,6 +90,7 @@ import net.claustra01.clayium.world.inventory.ClayEnergyLaserMenu;
 import net.claustra01.clayium.world.inventory.ClayEnergyConverterMenu;
 import net.claustra01.clayium.world.inventory.ResonatingCollectorMenu;
 import net.claustra01.clayium.world.inventory.PanAdapterMenu;
+import net.claustra01.clayium.world.inventory.PanCoreMenu;
 import net.claustra01.clayium.world.inventory.PanDuplicatorMenu;
 import net.claustra01.clayium.world.level.block.entity.WaterWheelBlockEntity;
 import net.claustra01.clayium.tier.ClayTier;
@@ -598,6 +599,8 @@ public final class ClayiumRegistries {
             MENU_TYPES.register("resonating_collector", () -> IMenuTypeExtension.create(ResonatingCollectorMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<PanAdapterMenu>> PAN_ADAPTER_MENU =
             MENU_TYPES.register("pan_adapter", () -> IMenuTypeExtension.create(PanAdapterMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<PanCoreMenu>> PAN_CORE_MENU =
+            MENU_TYPES.register("pan_core", () -> IMenuTypeExtension.create(PanCoreMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<PanDuplicatorMenu>> PAN_DUPLICATOR_MENU =
             MENU_TYPES.register("pan_duplicator", () -> IMenuTypeExtension.create(PanDuplicatorMenu::new));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CLAYIUM_CREATIVE_TAB =

@@ -138,7 +138,11 @@ public final class ClayiumDataGenerators {
                     };
                     add("gui." + Clayium.MODID + ".pan_status." + status.name().toLowerCase(), label);
                 }
-                add("message." + Clayium.MODID + ".pan_core_status", "PAN network: %s nodes, %s conversions");
+                add("gui." + Clayium.MODID + ".pan_core.search", "Search");
+                add("gui." + Clayium.MODID + ".pan_core.summary", "PAN: %s nodes / %s available");
+                add("gui." + Clayium.MODID + ".pan_core.cost", "Material cost: %s CE");
+                add("gui." + Clayium.MODID + ".pan_core.consumption", "Consumption: %s CE");
+                add("gui." + Clayium.MODID + ".pan_core.prohibited", "Prohibited from duplication");
             }
         });
         event.getGenerator().addProvider(

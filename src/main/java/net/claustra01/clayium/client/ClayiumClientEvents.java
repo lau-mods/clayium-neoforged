@@ -21,6 +21,7 @@ import net.claustra01.clayium.client.gui.screens.inventory.ClayEnergyLaserScreen
 import net.claustra01.clayium.client.gui.screens.inventory.ClayEnergyConverterScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.ResonatingCollectorScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.PanAdapterScreen;
+import net.claustra01.clayium.client.gui.screens.inventory.PanCoreScreen;
 import net.claustra01.clayium.client.gui.screens.inventory.PanDuplicatorScreen;
 import net.claustra01.clayium.client.renderer.blockentity.ClayEnergyLaserRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.LaserReflectorRenderer;
@@ -63,6 +64,7 @@ public final class ClayiumClientEvents {
         event.register(ClayiumRegistries.CLAY_ENERGY_CONVERTER_MENU.get(), ClayEnergyConverterScreen::new);
         event.register(ClayiumRegistries.RESONATING_COLLECTOR_MENU.get(), ResonatingCollectorScreen::new);
         event.register(ClayiumRegistries.PAN_ADAPTER_MENU.get(), PanAdapterScreen::new);
+        event.register(ClayiumRegistries.PAN_CORE_MENU.get(), PanCoreScreen::new);
         event.register(ClayiumRegistries.PAN_DUPLICATOR_MENU.get(), PanDuplicatorScreen::new);
     }
 
