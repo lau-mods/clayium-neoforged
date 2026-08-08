@@ -5,13 +5,13 @@
     {
       "count": 6,
       "ingredient": {
-        "item": "clayium_neoforged:opa_plate"
+        "tag": "c:plates/opa"
       }
     },
     {
       "count": 64,
       "ingredient": {
-        "item": "clayium_neoforged:rhenium_ingot"
+        "tag": "c:ingots/rhenium"
       }
     }
   ],

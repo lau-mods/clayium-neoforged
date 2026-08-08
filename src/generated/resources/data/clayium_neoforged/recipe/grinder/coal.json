@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "minecraft:coal"
+        "tag": "c:gems/coal"
       }
     }
   ],

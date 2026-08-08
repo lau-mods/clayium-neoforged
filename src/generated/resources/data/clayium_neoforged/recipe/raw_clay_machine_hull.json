@@ -6,7 +6,7 @@
       "item": "clayium_neoforged:clay_gear"
     },
     "P": {
-      "item": "clayium_neoforged:large_clay_plate"
+      "tag": "c:large_plates/clay"
     }
   },
   "pattern": [

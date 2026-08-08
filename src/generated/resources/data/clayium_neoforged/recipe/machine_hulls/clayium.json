@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "#": {
-      "item": "clayium_neoforged:clayium_large_plate"
+      "tag": "c:large_plates/clayium"
     },
     "C": {
       "item": "clayium_neoforged:clay_core"

@@ -5,7 +5,7 @@
     {
       "count": 4,
       "ingredient": {
-        "item": "clayium_neoforged:clay_steel_plate"
+        "tag": "c:plates/clay_steel"
       }
     }
   ],

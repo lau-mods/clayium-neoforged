@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "clayium_neoforged:ultimate_alloy_block"
+      "tag": "c:storage_blocks/ultimate_alloy"
     }
   ],
   "result": {

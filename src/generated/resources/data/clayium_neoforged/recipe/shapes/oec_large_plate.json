@@ -5,7 +5,7 @@
     {
       "count": 4,
       "ingredient": {
-        "item": "clayium_neoforged:oec_plate"
+        "tag": "c:plates/oec"
       }
     }
   ],

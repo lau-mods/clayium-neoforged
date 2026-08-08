@@ -11,7 +11,7 @@
     {
       "count": 6,
       "ingredient": {
-        "item": "clayium_neoforged:dense_clay_plate"
+        "tag": "c:plates/dense_clay"
       }
     }
   ],

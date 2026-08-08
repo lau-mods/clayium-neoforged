@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:az91d_ingot"
+        "tag": "c:ingots/az91d"
       }
     }
   ],

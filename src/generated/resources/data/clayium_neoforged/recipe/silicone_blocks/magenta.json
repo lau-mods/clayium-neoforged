@@ -3,10 +3,10 @@
   "category": "building",
   "key": {
     "D": {
-      "item": "minecraft:magenta_dye"
+      "tag": "c:dyes/magenta"
     },
     "S": {
-      "item": "clayium_neoforged:silicone_block"
+      "tag": "c:storage_blocks/silicone"
     }
   },
   "pattern": [

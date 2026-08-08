@@ -5,7 +5,7 @@
     {
       "count": 4,
       "ingredient": {
-        "item": "clayium_neoforged:az91d_plate"
+        "tag": "c:plates/az91d"
       }
     }
   ],

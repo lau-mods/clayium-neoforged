@@ -3,31 +3,31 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "clayium_neoforged:barium_ingot"
+      "tag": "c:ingots/barium"
     },
     {
-      "item": "clayium_neoforged:strontium_ingot"
+      "tag": "c:ingots/strontium"
     },
     {
-      "item": "clayium_neoforged:calcium_ingot"
+      "tag": "c:ingots/calcium"
     },
     {
-      "item": "clayium_neoforged:clayium_ingot"
+      "tag": "c:ingots/clayium"
     },
     {
-      "item": "clayium_neoforged:aluminium_ingot"
+      "tag": "c:ingots/aluminum"
     },
     {
-      "item": "clayium_neoforged:aluminium_ingot"
+      "tag": "c:ingots/aluminum"
     },
     {
-      "item": "clayium_neoforged:aluminium_ingot"
+      "tag": "c:ingots/aluminum"
     },
     {
-      "item": "clayium_neoforged:aluminium_ingot"
+      "tag": "c:ingots/aluminum"
     },
     {
-      "item": "clayium_neoforged:aluminium_ingot"
+      "tag": "c:ingots/aluminum"
     }
   ],
   "result": {

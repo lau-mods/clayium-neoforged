@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "clayium_neoforged:aluminium_block"
+      "tag": "c:storage_blocks/aluminum"
     }
   ],
   "result": {

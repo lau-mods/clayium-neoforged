@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:precision_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:caesium_ingot"
+      "tag": "c:ingots/caesium"
     },
     "M": {
       "item": "clayium_neoforged:clay_steel_machine_hull"

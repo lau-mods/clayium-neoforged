@@ -1,7 +1,7 @@
 {
   "type": "clayium_neoforged:clay_work_table",
   "ingredient": {
-    "item": "clayium_neoforged:clay_plate"
+    "tag": "c:plates/clay"
   },
   "minimum_tier": "raw",
   "operation": "cut",

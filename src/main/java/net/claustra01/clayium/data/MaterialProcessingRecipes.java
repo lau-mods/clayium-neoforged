@@ -11,9 +11,11 @@ import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.tier.ClayTier;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
@@ -27,6 +29,7 @@ public final class MaterialProcessingRecipes {
         chemicalReactor(output);
         electrolysis(output);
         alloySmelter(output);
+        originalVanillaProcessing(output);
         solarFabricator(output);
         matterTransformer(output);
         materialProcessing(output);
@@ -55,12 +58,16 @@ public final class MaterialProcessingRecipes {
                 List.of(stack(item("quartz_dust"), 1)), 120, energy(4), ClayTier.RAW);
         machine(output, "chemical/quartz_and_coal", ClayiumMachineIds.CHEMICAL_REACTOR,
                 List.of(ingredient(item("quartz_dust"), 1),
-                        new MachineIngredient(Ingredient.of(Items.COAL, Items.CHARCOAL), 1)),
+                        new MachineIngredient(CommonMaterialTags.any(Items.COAL, Items.CHARCOAL), 1)),
                 List.of(stack(item("impure_silicon_ingot"), 1)), 120, energy(4), ClayTier.RAW);
         machine(output, "chemical/dense_clay_separation", ClayiumMachineIds.CHEMICAL_REACTOR,
                 List.of(ingredient(component("dense_clay_dust"), 1)),
                 List.of(stack(item("impure_silicon_dust"), 1), stack(item("impure_aluminium_dust"), 1)),
                 30, energy(5), ClayTier.ADVANCED);
+        machine(output, "chemical/energetic_clay_separation", ClayiumMachineIds.CHEMICAL_REACTOR,
+                List.of(ingredient(component("energetic_clay_dust"), 1)),
+                List.of(stack(item("impure_redstone_dust"), 1), stack(item("impure_glowstone_dust"), 1)),
+                10, energy(5), ClayTier.ADVANCED);
     }
 
     private static void electrolysis(RecipeOutput output) {
@@ -102,6 +109,64 @@ public final class MaterialProcessingRecipes {
         machine(output, "alloy_smelter/zk60a", ClayiumMachineIds.ALLOY_SMELTER,
                 List.of(ingredient(item("magnesium_ingot"), 19), ingredient(item("zinconium_ingot"), 1)),
                 List.of(stack(item("zk60a_ingot"), 20)), 500, energy(7), ClayTier.PRECISION);
+    }
+
+    /** Vanilla and common-tag processing recipes present in the original non-integration recipe set. */
+    private static void originalVanillaProcessing(RecipeOutput output) {
+        oreGrinding(output, "iron", item("iron_dust"), 2);
+        oreGrinding(output, "gold", item("gold_dust"), 2);
+        oreGrinding(output, "copper", item("copper_dust"), 2);
+        oreGrinding(output, "coal", item("coal_dust"), 2);
+        oreGrinding(output, "quartz", Items.QUARTZ, 2);
+        oreGrinding(output, "diamond", Items.DIAMOND, 2);
+        oreGrinding(output, "emerald", Items.EMERALD, 2);
+        oreGrinding(output, "lapis", Items.LAPIS_LAZULI, 10);
+        oreGrinding(output, "redstone", Items.REDSTONE, 10);
+
+        machine(output, "grinder/sandstone_to_sand", ClayiumMachineIds.GRINDER,
+                List.of(ingredient(Blocks.SANDSTONE, 1)), List.of(stack(Blocks.SAND, 4)),
+                100, energy(3), ClayTier.byLegacyIndex(3));
+        machine(output, "grinder/wool_to_string", ClayiumMachineIds.GRINDER,
+                List.of(tagIngredient(ItemTags.WOOL, 1)), List.of(stack(Items.STRING, 4)),
+                100, energy(5), ClayTier.ADVANCED);
+        machine(output, "grinder/carpet_to_string", ClayiumMachineIds.GRINDER,
+                List.of(tagIngredient(ItemTags.WOOL_CARPETS, 1)), List.of(stack(Items.STRING, 2)),
+                100, energy(5), ClayTier.ADVANCED);
+        machine(output, "grinder/blaze_rod_to_powder", ClayiumMachineIds.GRINDER,
+                List.of(ingredient(Items.BLAZE_ROD, 1)), List.of(stack(Items.BLAZE_POWDER, 5)),
+                100, energy(5), ClayTier.ADVANCED);
+        machine(output, "grinder/bone_to_bone_meal", ClayiumMachineIds.GRINDER,
+                List.of(ingredient(Items.BONE, 1)), List.of(stack(Items.BONE_MEAL, 5)),
+                100, energy(5), ClayTier.ADVANCED);
+        machine(output, "assembler/mossy_stone_bricks", ClayiumMachineIds.ASSEMBLER,
+                List.of(ingredient(Blocks.CRACKED_STONE_BRICKS, 1), ingredient(Blocks.VINE, 1)),
+                List.of(stack(Blocks.MOSSY_STONE_BRICKS, 1)), 20, energy(6), ClayTier.PRECISION);
+
+        machine(output, "condenser/coal_blocks_to_diamond", ClayiumMachineIds.CONDENSER,
+                List.of(ingredient(Blocks.COAL_BLOCK, 8)), List.of(stack(Items.DIAMOND, 1)),
+                100, energy(5), ClayTier.ADVANCED);
+        machine(output, "reactor/coal_to_diamond", ClayiumMachineIds.CLAY_REACTOR,
+                List.of(ingredient(Items.COAL, 64), ingredient(component("industrial_clay_dust"), 1)),
+                List.of(stack(Items.DIAMOND, 1)), 10_000, energy(7), ClayTier.CLAY_STEEL);
+        machine(output, "reactor/ultimate_alloy_to_experience_bottle", ClayiumMachineIds.CLAY_REACTOR,
+                List.of(ingredient(item("ultimate_alloy_dust"), 4), ingredient(Items.GLASS_BOTTLE, 1)),
+                List.of(stack(Items.EXPERIENCE_BOTTLE, 1)), 100_000_000_000_000L,
+                energy(11), ClayTier.PURE_ANTIMATTER);
+        machine(output, "reactor/potato_to_poisonous_potato", ClayiumMachineIds.CLAY_REACTOR,
+                List.of(ingredient(Items.POTATO, 1)), List.of(stack(Items.POISONOUS_POTATO, 1)),
+                10_000_000_000L, energy(9), ClayTier.PURE_ANTIMATTER);
+        machine(output, "reactor/impure_redstone", ClayiumMachineIds.CLAY_REACTOR,
+                List.of(ingredient(item("impure_redstone_dust"), 1)), List.of(stack(Items.REDSTONE, 1)),
+                2_000, energy(7) / 10, ClayTier.CLAY_STEEL);
+        machine(output, "reactor/impure_glowstone", ClayiumMachineIds.CLAY_REACTOR,
+                List.of(ingredient(item("impure_glowstone_dust"), 1)), List.of(stack(Items.GLOWSTONE_DUST, 1)),
+                2_000, energy(7) / 10, ClayTier.CLAY_STEEL);
+    }
+
+    private static void oreGrinding(RecipeOutput output, String material, ItemLike result, int resultCount) {
+        machine(output, "grinder/ore_" + material, ClayiumMachineIds.GRINDER,
+                List.of(tagIngredient(CommonMaterialTags.common("ores/" + material), 1)),
+                List.of(stack(result, resultCount)), 80, 25, ClayTier.ADVANCED);
     }
 
     private static void solarFabricator(RecipeOutput output) {
@@ -188,8 +253,19 @@ public final class MaterialProcessingRecipes {
         // graphite provider the original chain skipped it and accumulated both energy steps.
         transformCounts(output, "carbon_to_charcoal", item("carbon_dust"), 1,
                 item("charcoal_dust"), 1, 9, energy(8) + energy(9), 200);
+        transformCounts(output,"charcoal_to_coal",item("charcoal_dust"),1,
+                item("coal_dust"),1,10,energy(10),200);
+        transformCounts(output,"coal_to_lapis",item("coal_dust"),1,
+                Items.LAPIS_LAZULI,1,10,energy(10),200);
+        machine(output,"matter_transformer/diamond_to_emerald",ClayiumMachineIds.MATTER_TRANSFORMER,
+                List.of(new MachineIngredient(CommonMaterialTags.ingredient(Items.DIAMOND),1)),
+                List.of(stack(Items.EMERALD,1)),200,5*energy(10)+energy(11),ClayTier.PURE_ANTIMATTER);
         transformCounts(output, "cobblestone_to_netherrack", Blocks.COBBLESTONE, 1,
                 Blocks.NETHERRACK, 1, 9, energy(9), 20);
+        transformCounts(output,"netherrack_to_end_stone",Blocks.NETHERRACK,1,
+                Blocks.END_STONE,1,11,energy(11),20);
+        chain(output,"anvil",new ItemLike[]{Blocks.ANVIL,Blocks.CHIPPED_ANVIL,Blocks.DAMAGED_ANVIL},
+                new int[]{0,8,8},20);
         chain(output, "stone_brick", new ItemLike[]{Blocks.STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS,
                 Blocks.CHISELED_STONE_BRICKS}, new int[]{0, 8, 8}, 20);
         chain(output, "ground", new ItemLike[]{Blocks.DIRT, Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.MYCELIUM},
@@ -374,13 +450,13 @@ public final class MaterialProcessingRecipes {
                 List.of(ingredient(component("advanced_industrial_clay_dust"), 1), ingredient(item("impure_silicon_ingot"), 1)),
                 List.of(stack(item("silicon_ingot"), 1)), 100, 100_000, ClayTier.CLAY_STEEL);
         machine(output, "blast_furnace/steel", ClayiumMachineIds.CLAY_BLAST_FURNACE,
-                List.of(new MachineIngredient(Ingredient.of(Items.IRON_INGOT), 1),
-                        new MachineIngredient(Ingredient.of(Items.COAL, Items.CHARCOAL), 2)),
+                List.of(new MachineIngredient(CommonMaterialTags.ingredient(Items.IRON_INGOT), 1),
+                        new MachineIngredient(CommonMaterialTags.any(Items.COAL, Items.CHARCOAL), 2)),
                 List.of(stack(item("steel_ingot"), 1)), 500, 10_000, ClayTier.PRECISION);
         machine(output, "blast_furnace/steel_from_iron_dust", ClayiumMachineIds.CLAY_BLAST_FURNACE,
                 List.of(new MachineIngredient(Ingredient.of(ItemTags.create(
                                 ResourceLocation.fromNamespaceAndPath("c", "dusts/iron"))), 1),
-                        new MachineIngredient(Ingredient.of(Items.COAL, Items.CHARCOAL), 2)),
+                        new MachineIngredient(CommonMaterialTags.any(Items.COAL, Items.CHARCOAL), 2)),
                 List.of(stack(item("steel_ingot"), 1)), 500, 10_000, ClayTier.PRECISION);
         for (String material : List.of("clay_steel", "steel", "beryllium", "manganese", "calcium", "potassium", "hafnium", "strontium", "barium")) {
             ClayTier required = List.of("calcium", "potassium").contains(material)
@@ -707,7 +783,10 @@ public final class MaterialProcessingRecipes {
     private static ItemLike item(String id) { return ClayiumRegistries.MATERIAL_ITEMS.get(id).get(); }
     private static ItemLike component(String id) { return ClayiumRegistries.COMPONENT_ITEMS.get(id).get(); }
     private static MachineIngredient ingredient(ItemLike item, int count) {
-        return new MachineIngredient(Ingredient.of(item), count);
+        return new MachineIngredient(CommonMaterialTags.ingredient(item), count);
+    }
+    private static MachineIngredient tagIngredient(TagKey<Item> tag, int count) {
+        return new MachineIngredient(Ingredient.of(tag), count);
     }
     private static ItemStack stack(ItemLike item, int count) { return new ItemStack(item, count); }
     private static long energy(int tier) { return (long) Math.pow(10, tier - 2); }

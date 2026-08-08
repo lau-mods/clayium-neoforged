@@ -6,7 +6,7 @@
       "item": "clayium_neoforged:precision_circuit"
     },
     "P": {
-      "item": "clayium_neoforged:zk60a_large_plate"
+      "tag": "c:large_plates/zk60a"
     }
   },
   "pattern": [

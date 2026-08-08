@@ -11,7 +11,7 @@
     {
       "count": 32,
       "ingredient": {
-        "item": "clayium_neoforged:excited_clay_dust"
+        "tag": "c:dusts/excited_clay"
       }
     }
   ],

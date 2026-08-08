@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:ca_reactor_hull_rank_5"
     },
     "I": {
-      "item": "clayium_neoforged:neptunium_ingot"
+      "tag": "c:ingots/neptunium"
     }
   },
   "pattern": [

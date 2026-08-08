@@ -4,7 +4,7 @@
   "cookingtime": 200,
   "experience": 0.0,
   "ingredient": {
-    "item": "clayium_neoforged:gold_dust"
+    "tag": "c:dusts/gold"
   },
   "result": {
     "count": 1,

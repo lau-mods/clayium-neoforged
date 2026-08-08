@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "clayium_neoforged:impure_silicon_large_plate"
+      "tag": "c:large_plates/impure_silicon"
     },
     "*": {
-      "item": "clayium_neoforged:silicone_large_plate"
+      "tag": "c:large_plates/silicone"
     },
     "C": {
       "item": "clayium_neoforged:advanced_circuit"

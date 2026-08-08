@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:phosphorus_dust"
+        "tag": "c:dusts/phosphorus"
       }
     }
   ],

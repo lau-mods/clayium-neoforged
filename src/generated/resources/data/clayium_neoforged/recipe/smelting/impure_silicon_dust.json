@@ -4,7 +4,7 @@
   "cookingtime": 200,
   "experience": 0.0,
   "ingredient": {
-    "item": "clayium_neoforged:impure_silicon_dust"
+    "tag": "c:dusts/impure_silicon"
   },
   "result": {
     "count": 1,

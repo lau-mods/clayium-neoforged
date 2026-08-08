@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 1000,
+  "ingredients": [
+    {
+      "count": 8,
+      "ingredient": {
+        "tag": "c:storage_blocks/coal"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:condenser",
+  "minimum_tier": "advanced",
+  "processing_time_ticks": 100,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:diamond"
+    }
+  ]
+}

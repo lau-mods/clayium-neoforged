@@ -12,7 +12,7 @@
       "item": "clayium_neoforged:clay_stick"
     },
     "P": {
-      "item": "clayium_neoforged:clay_plate"
+      "tag": "c:plates/clay"
     },
     "o": {
       "item": "clayium_neoforged:clay_spindle"

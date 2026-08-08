@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 2,
+  "ingredients": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "minecraft:gravel"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:centrifuge",
+  "minimum_tier": "basic",
+  "processing_time_ticks": 2,
+  "results": [
+    {
+      "count": 4,
+      "id": "clayium_neoforged:dense_clay"
+    }
+  ]
+}

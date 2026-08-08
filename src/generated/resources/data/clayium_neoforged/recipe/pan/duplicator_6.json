@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:advanced_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:lanthanum_ingot"
+      "tag": "c:ingots/lanthanum"
     },
     "M": {
       "item": "clayium_neoforged:precision_machine_hull"

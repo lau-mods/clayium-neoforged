@@ -11,7 +11,7 @@
     {
       "count": 3,
       "ingredient": {
-        "item": "clayium_neoforged:industrial_clay_plate"
+        "tag": "c:plates/industrial_clay"
       }
     }
   ],

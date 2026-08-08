@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "clayium_neoforged:silicon_block"
+      "tag": "c:storage_blocks/silicon"
     }
   ],
   "result": {

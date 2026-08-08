@@ -205,6 +205,14 @@ public final class ClayProcessingRecipes {
     }
 
     private static void grinder(RecipeOutput output) {
+        one(output,"grinder/stone_to_cobblestone",ClayiumMachineIds.GRINDER,
+                net.minecraft.world.level.block.Blocks.STONE,1,net.minecraft.world.level.block.Blocks.COBBLESTONE,1,1,3,0);
+        for(int count:new int[]{1,4,16,64})one(output,"grinder/cobblestone_to_gravel_"+count,ClayiumMachineIds.GRINDER,
+                net.minecraft.world.level.block.Blocks.COBBLESTONE,count,net.minecraft.world.level.block.Blocks.GRAVEL,count,1,10,0);
+        one(output,"grinder/gravel_to_sand",ClayiumMachineIds.GRINDER,
+                net.minecraft.world.level.block.Blocks.GRAVEL,1,net.minecraft.world.level.block.Blocks.SAND,1,10,10,0);
+        one(output,"grinder/terracotta_to_sand",ClayiumMachineIds.GRINDER,
+                net.minecraft.world.level.block.Blocks.TERRACOTTA,1,net.minecraft.world.level.block.Blocks.SAND,4,tierEnergy(3),100,3);
         one(output, "grinder/clay_ore_to_shards", ClayiumMachineIds.GRINDER,
                 ClayiumRegistries.CLAY_ORE.get(), 1, item("compressed_clay_shard"), 2, 1, 3, 0);
         one(output, "grinder/deepslate_clay_ore_to_shards", ClayiumMachineIds.GRINDER,
@@ -413,6 +421,10 @@ public final class ClayProcessingRecipes {
     }
 
     private static void centrifuge(RecipeOutput output) {
+        int[] counts={1,4,16,64};int[] tiers={4,4,5,6};long[] energies={1,2,4,8};int[] times={2,2,1,1};
+        for(int index=0;index<counts.length;index++)one(output,"centrifuge/gravel_to_dense_clay_"+counts[index],
+                ClayiumMachineIds.CENTRIFUGE,net.minecraft.world.level.block.Blocks.GRAVEL,counts[index],
+                ClayiumRegistries.DENSE_CLAY.get(),counts[index],energies[index],times[index],tiers[index]);
         many(output, "centrifuge/clay_dust", ClayiumMachineIds.CENTRIFUGE,
                 List.of(ingredient(item("clay_dust"), 9)),
                 List.of(stack(item("dense_clay_dust"), 1)), 4, 20, 0);
@@ -521,7 +533,7 @@ public final class ClayProcessingRecipes {
     }
 
     private static MachineIngredient ingredient(ItemLike item, int count) {
-        return new MachineIngredient(Ingredient.of(item), count);
+        return new MachineIngredient(CommonMaterialTags.ingredient(item), count);
     }
 
     private static ItemStack stack(ItemLike item, int count) {

@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:clay_steel_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:francium_ingot"
+      "tag": "c:ingots/francium"
     },
     "M": {
       "item": "clayium_neoforged:clayium_machine_hull"

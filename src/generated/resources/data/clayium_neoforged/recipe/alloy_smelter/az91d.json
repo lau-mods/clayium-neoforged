@@ -5,13 +5,13 @@
     {
       "count": 9,
       "ingredient": {
-        "item": "clayium_neoforged:magnesium_ingot"
+        "tag": "c:ingots/magnesium"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:zincalminium_ingot"
+        "tag": "c:ingots/zincalminium"
       }
     }
   ],

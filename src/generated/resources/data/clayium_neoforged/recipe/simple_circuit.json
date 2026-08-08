@@ -6,7 +6,7 @@
       "item": "clayium_neoforged:clay_circuit_board"
     },
     "-": {
-      "item": "clayium_neoforged:energetic_clay_dust"
+      "tag": "c:dusts/energetic_clay"
     }
   },
   "pattern": [

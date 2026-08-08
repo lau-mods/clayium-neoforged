@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:antimatter_machine_hull"
     },
     "I": {
-      "item": "clayium_neoforged:rubidium_ingot"
+      "tag": "c:ingots/rubidium"
     }
   },
   "pattern": [

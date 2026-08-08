@@ -12,10 +12,10 @@
       "count": 2,
       "ingredient": [
         {
-          "item": "minecraft:coal"
+          "tag": "c:gems/coal"
         },
         {
-          "item": "minecraft:charcoal"
+          "tag": "c:gems/charcoal"
         }
       ]
     }

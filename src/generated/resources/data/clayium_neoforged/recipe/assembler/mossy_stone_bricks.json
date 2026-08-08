@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:cracked_stone_bricks"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:vine"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:assembler",
+  "minimum_tier": "precision",
+  "processing_time_ticks": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:mossy_stone_bricks"
+    }
+  ]
+}

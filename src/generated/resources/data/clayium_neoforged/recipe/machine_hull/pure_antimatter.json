@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "clayium_neoforged:pure_antimatter_large_plate"
+      "tag": "c:large_plates/pure_antimatter"
     },
     "C": {
       "item": "clayium_neoforged:clay_soul"

@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "P": {
-      "item": "clayium_neoforged:clay_plate"
+      "tag": "c:plates/clay"
     },
     "S": {
       "item": "clayium_neoforged:clay_stick"

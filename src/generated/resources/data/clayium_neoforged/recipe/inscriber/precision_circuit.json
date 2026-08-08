@@ -5,13 +5,13 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:silicon_plate"
+        "tag": "c:plates/silicon"
       }
     },
     {
       "count": 32,
       "ingredient": {
-        "item": "clayium_neoforged:energetic_clay_dust"
+        "tag": "c:dusts/energetic_clay"
       }
     }
   ],

@@ -280,7 +280,9 @@ public final class ComponentCraftingRecipes {
                 .pattern(row2)
                 .pattern(row3);
         for (int index = 0; index < definitions.length; index += 2) {
-            builder.define((Character) definitions[index], (ItemLike) definitions[index + 1]);
+            char key=(Character)definitions[index];ItemLike value=(ItemLike)definitions[index+1];
+            var materialTag=CommonMaterialTags.tagFor(value);
+            if(materialTag.isPresent())builder.define(key,materialTag.get());else builder.define(key,value);
         }
         builder.unlockedBy("has_component", has((ItemLike) definitions[1]))
                 .save(output, Clayium.id(id));
@@ -293,8 +295,10 @@ public final class ComponentCraftingRecipes {
             int resultCount,
             ItemLike input,
             int inputCount) {
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result, resultCount)
-                .requires(input, inputCount)
+        ShapelessRecipeBuilder builder=ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC,result,resultCount);
+        var materialTag=CommonMaterialTags.tagFor(input);
+        if(materialTag.isPresent())builder.requires(net.minecraft.world.item.crafting.Ingredient.of(materialTag.get()),inputCount);else builder.requires(input,inputCount);
+        builder
                 .unlockedBy("has_input", has(input))
                 .save(output, Clayium.id(id));
     }

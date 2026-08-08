@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "#": {
-      "item": "clayium_neoforged:ultimate_alloy_large_plate"
+      "tag": "c:large_plates/ultimate_alloy"
     },
     "C": {
       "item": "clayium_neoforged:clay_brain"

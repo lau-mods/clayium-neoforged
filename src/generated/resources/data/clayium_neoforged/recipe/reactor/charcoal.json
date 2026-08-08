@@ -5,13 +5,13 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:charcoal_dust"
+        "tag": "c:dusts/charcoal"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:industrial_clay_dust"
+        "tag": "c:dusts/industrial_clay"
       }
     }
   ],

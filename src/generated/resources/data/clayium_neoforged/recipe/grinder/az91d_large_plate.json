@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:az91d_large_plate"
+        "tag": "c:large_plates/az91d"
       }
     }
   ],

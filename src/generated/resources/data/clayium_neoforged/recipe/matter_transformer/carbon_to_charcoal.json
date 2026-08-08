@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:carbon_dust"
+        "tag": "c:dusts/carbon"
       }
     }
   ],

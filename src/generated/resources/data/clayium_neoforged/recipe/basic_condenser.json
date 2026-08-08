@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:dense_clay_gear"
     },
     "P": {
-      "item": "clayium_neoforged:dense_clay_plate"
+      "tag": "c:plates/dense_clay"
     }
   },
   "pattern": [

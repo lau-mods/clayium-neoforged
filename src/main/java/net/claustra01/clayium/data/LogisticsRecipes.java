@@ -131,7 +131,7 @@ public final class LogisticsRecipes {
     }
 
     private static MachineIngredient ingredient(ItemLike item, int count) {
-        return new MachineIngredient(Ingredient.of(item), count);
+        return new MachineIngredient(CommonMaterialTags.ingredient(item), count);
     }
 
     private static ItemLike item(String id) {

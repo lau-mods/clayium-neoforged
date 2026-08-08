@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:oec_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:vanadium_ingot"
+      "tag": "c:ingots/vanadium"
     },
     "M": {
       "item": "clayium_neoforged:opa_machine_hull"

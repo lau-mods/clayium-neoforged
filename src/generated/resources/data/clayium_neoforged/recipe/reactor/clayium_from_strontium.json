@@ -5,13 +5,13 @@
     {
       "count": 8,
       "ingredient": {
-        "item": "clayium_neoforged:advanced_industrial_clay_dust"
+        "tag": "c:dusts/advanced_industrial_clay"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:strontium_dust"
+        "tag": "c:dusts/strontium"
       }
     }
   ],

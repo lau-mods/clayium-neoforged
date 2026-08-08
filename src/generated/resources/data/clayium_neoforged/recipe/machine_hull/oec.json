@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "clayium_neoforged:oec_large_plate"
+      "tag": "c:large_plates/oec"
     },
     "C": {
       "item": "clayium_neoforged:clay_anima"

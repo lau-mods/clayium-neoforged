@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:ca_reactor_hull_rank_6"
     },
     "I": {
-      "item": "clayium_neoforged:promethium_ingot"
+      "tag": "c:ingots/promethium"
     }
   },
   "pattern": [

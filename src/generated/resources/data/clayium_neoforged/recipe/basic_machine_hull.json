@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "clayium_neoforged:advanced_industrial_clay_large_plate"
+      "tag": "c:large_plates/advanced_industrial_clay"
     },
     "C": {
       "item": "clayium_neoforged:basic_circuit"

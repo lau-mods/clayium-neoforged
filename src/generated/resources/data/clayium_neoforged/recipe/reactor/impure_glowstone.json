@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10000,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:dusts/impure_glowstone"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "clay_steel",
+  "processing_time_ticks": 2000,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:glowstone_dust"
+    }
+  ]
+}

@@ -15,7 +15,7 @@
       "item": "clayium_neoforged:clay_energy_excitor"
     },
     "P": {
-      "item": "clayium_neoforged:advanced_industrial_clay_plate"
+      "tag": "c:plates/advanced_industrial_clay"
     }
   },
   "pattern": [

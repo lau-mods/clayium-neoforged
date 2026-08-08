@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "clayium_neoforged:dense_clay_large_plate"
+      "tag": "c:large_plates/dense_clay"
     },
     "C": {
       "item": "clayium_neoforged:clay_circuit"

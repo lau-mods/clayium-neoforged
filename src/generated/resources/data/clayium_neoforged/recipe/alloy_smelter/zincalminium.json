@@ -5,13 +5,13 @@
     {
       "count": 9,
       "ingredient": {
-        "item": "clayium_neoforged:zinc_ingot"
+        "tag": "c:ingots/zinc"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:aluminium_ingot"
+        "tag": "c:ingots/aluminum"
       }
     }
   ],

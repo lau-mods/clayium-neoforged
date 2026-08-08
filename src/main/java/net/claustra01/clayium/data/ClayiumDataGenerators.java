@@ -41,6 +41,8 @@ public final class ClayiumDataGenerators {
 
     public static void gatherData(GatherDataEvent event) {
         PackOutput packOutput = event.getGenerator().getPackOutput();
+        event.getGenerator().addProvider(event.includeServer(),new ClayiumItemTagProvider(
+                packOutput,event.getLookupProvider(),event.getExistingFileHelper()));
         event.getGenerator().addProvider(event.includeClient(), new LanguageProvider(packOutput, Clayium.MODID, "en_us") {
             @Override
             protected void addTranslations() {
@@ -409,7 +411,7 @@ public final class ClayiumDataGenerators {
         output.accept(
                 Clayium.id("clay_work_table/" + id),
                 new ClayWorkTableRecipe(
-                        Ingredient.of(input),
+                        CommonMaterialTags.ingredient(input),
                         inputCount,
                         new ItemStack(result, resultCount),
                         operation,
@@ -432,7 +434,7 @@ public final class ClayiumDataGenerators {
         output.accept(
                 Clayium.id("clay_work_table/" + id),
                 new ClayWorkTableRecipe(
-                        Ingredient.of(input),
+                        CommonMaterialTags.ingredient(input),
                         inputCount,
                         new ItemStack(result, resultCount),
                         remainder == null || remainderCount <= 0
@@ -486,7 +488,7 @@ public final class ClayiumDataGenerators {
         smelt(output, ClayiumRegistries.RAW_CLAY_SPATULA.get(), ClayiumRegistries.CLAY_SPATULA.get());
 
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ClayiumRegistries.RAW_CLAY_MACHINE_HULL.get())
-                .define('P', ClayiumRegistries.LARGE_CLAY_PLATE.get())
+                .define('P', CommonMaterialTags.tagFor(ClayiumRegistries.LARGE_CLAY_PLATE.get()).orElseThrow())
                 .define('G', ClayiumRegistries.CLAY_GEAR.get())
                 .pattern("PPP").pattern("PGP").pattern("PPP")
                 .unlockedBy("has_large_clay_plate", has(ClayiumRegistries.LARGE_CLAY_PLATE.get()))
@@ -519,12 +521,14 @@ public final class ClayiumDataGenerators {
                 .save(output, Clayium.id("filters/block_state_to_item_damage"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ClayiumRegistries.CLAY_SHOVEL.get())
-                .define('P', ClayiumRegistries.CLAY_PLATE.get()).define('S', ClayiumRegistries.CLAY_STICK.get())
+                .define('P', CommonMaterialTags.tagFor(ClayiumRegistries.CLAY_PLATE.get()).orElseThrow())
+                .define('S', ClayiumRegistries.CLAY_STICK.get())
                 .pattern("P").pattern("S").pattern("S")
                 .unlockedBy("has_clay_plate", has(ClayiumRegistries.CLAY_PLATE.get()))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ClayiumRegistries.CLAY_PICKAXE.get())
-                .define('P', ClayiumRegistries.DENSE_CLAY_PLATE.get()).define('S', ClayiumRegistries.DENSE_CLAY_STICK.get())
+                .define('P', CommonMaterialTags.tagFor(ClayiumRegistries.DENSE_CLAY_PLATE.get()).orElseThrow())
+                .define('S', ClayiumRegistries.DENSE_CLAY_STICK.get())
                 .pattern("PPP").pattern(" S ").pattern(" S ")
                 .unlockedBy("has_dense_clay_plate", has(ClayiumRegistries.DENSE_CLAY_PLATE.get()))
                 .save(output);

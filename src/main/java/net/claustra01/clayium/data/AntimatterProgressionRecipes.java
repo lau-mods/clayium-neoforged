@@ -266,23 +266,31 @@ public final class AntimatterProgressionRecipes {
     }
 
     private static void shaped(RecipeOutput output,String id,ItemLike result,ItemLike shell,ItemLike center,ItemLike ingot){
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC,result).pattern("#I#").pattern("#H#").pattern("###")
-                .define('#',shell).define('I',ingot).define('H',center)
+        ShapedRecipeBuilder builder=ShapedRecipeBuilder.shaped(RecipeCategory.MISC,result).pattern("#I#").pattern("#H#").pattern("###")
+                .define('#',shell).define('H',center);
+        define(builder,'I',ingot)
                 .unlockedBy("has_center",net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance.hasItems(center))
                 .save(output,Clayium.id(id));
     }
     private static void shapedHull(RecipeOutput output,String tier,ItemLike plate,ItemLike consciousness){
         ItemLike result=ClayiumRegistries.MACHINE_HULL_BLOCKS.get(tier+"_machine_hull").get();
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC,result).pattern("#E#").pattern("#C#").pattern("###")
-                .define('#',plate).define('E',component("clay_energy_excitor")).define('C',consciousness)
+        ShapedRecipeBuilder builder=ShapedRecipeBuilder.shaped(RecipeCategory.MISC,result)
+                .pattern("#E#").pattern("#C#").pattern("###")
+                .define('E',component("clay_energy_excitor")).define('C',consciousness);
+        define(builder,'#',plate)
                 .unlockedBy("has_plate",net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance.hasItems(plate))
                 .save(output,Clayium.id("machine_hull/"+tier));
     }
     private static void shapedPanDuplicator(RecipeOutput output,int tier,ItemLike result,ItemLike shell,ItemLike previous,ItemLike ingot){
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC,result).pattern("#I#").pattern("DMD").pattern("#I#")
-                .define('#',shell).define('I',ingot).define('D',previous).define('M',hull(tier))
+        ShapedRecipeBuilder builder=ShapedRecipeBuilder.shaped(RecipeCategory.MISC,result).pattern("#I#").pattern("DMD").pattern("#I#")
+                .define('#',shell).define('D',previous).define('M',hull(tier));
+        define(builder,'I',ingot)
                 .unlockedBy("has_previous",net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance.hasItems(previous))
                 .save(output,Clayium.id("pan/duplicator_"+tier));
+    }
+    private static ShapedRecipeBuilder define(ShapedRecipeBuilder builder,char key,ItemLike value){
+        var materialTag=CommonMaterialTags.tagFor(value);
+        return materialTag.isPresent()?builder.define(key,materialTag.get()):builder.define(key,value);
     }
     private static void reactor(RecipeOutput output,String id,ItemLike a,int ac,ItemLike b,int bc,ItemLike result,int rc,int tier,long ce,long time){
         machine(output,"reactor/"+id,ClayiumMachineIds.CLAY_REACTOR,List.of(ingredient(a,ac),ingredient(b,bc)),List.of(stack(result,rc)),time,ce,ClayTier.byLegacyIndex(tier));
@@ -293,7 +301,7 @@ public final class AntimatterProgressionRecipes {
     private static ItemLike hull(int tier){return ClayiumRegistries.MACHINE_HULL_BLOCKS.get(ClayTier.byLegacyIndex(tier).id()+"_machine_hull").get();}
     private static ItemLike item(String id){return ClayiumRegistries.MATERIAL_ITEMS.get(id).get();}
     private static ItemLike component(String id){return ClayiumRegistries.COMPONENT_ITEMS.get(id).get();}
-    private static MachineIngredient ingredient(ItemLike item,int count){return new MachineIngredient(Ingredient.of(item),count);}
+    private static MachineIngredient ingredient(ItemLike item,int count){return new MachineIngredient(CommonMaterialTags.ingredient(item),count);}
     private static ItemStack stack(ItemLike item,int count){return new ItemStack(item,count);}
     private static long energy(int tier){long value=1;for(int i=2;i<tier;i++)value*=10;return value;}
     private static long scaleEnergy(int numerator,int denominator,int tier){return energy(tier)/denominator*numerator;}

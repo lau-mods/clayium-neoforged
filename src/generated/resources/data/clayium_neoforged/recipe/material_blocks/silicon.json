@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "I": {
-      "item": "clayium_neoforged:silicon_ingot"
+      "tag": "c:ingots/silicon"
     }
   },
   "pattern": [

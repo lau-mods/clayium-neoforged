@@ -11,7 +11,7 @@
     {
       "count": 16,
       "ingredient": {
-        "item": "clayium_neoforged:silicon_plate"
+        "tag": "c:plates/silicon"
       }
     }
   ],

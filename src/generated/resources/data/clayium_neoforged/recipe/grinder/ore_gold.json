@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 25,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:ores/gold"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:grinder",
+  "minimum_tier": "advanced",
+  "processing_time_ticks": 80,
+  "results": [
+    {
+      "count": 2,
+      "id": "clayium_neoforged:gold_dust"
+    }
+  ]
+}

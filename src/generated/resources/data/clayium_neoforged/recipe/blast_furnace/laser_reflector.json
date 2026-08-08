@@ -5,7 +5,7 @@
     {
       "count": 16,
       "ingredient": {
-        "item": "clayium_neoforged:quartz_dust"
+        "tag": "c:dusts/quartz"
       }
     }
   ],

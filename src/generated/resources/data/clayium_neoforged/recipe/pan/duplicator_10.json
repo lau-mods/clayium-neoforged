@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:ultimate_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:tantalum_ingot"
+      "tag": "c:ingots/tantalum"
     },
     "M": {
       "item": "clayium_neoforged:antimatter_machine_hull"

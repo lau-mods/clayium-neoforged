@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 100000,
+  "ingredients": [
+    {
+      "count": 64,
+      "ingredient": {
+        "tag": "c:gems/coal"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:dusts/industrial_clay"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:clay_reactor",
+  "minimum_tier": "clay_steel",
+  "processing_time_ticks": 10000,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:diamond"
+    }
+  ]
+}

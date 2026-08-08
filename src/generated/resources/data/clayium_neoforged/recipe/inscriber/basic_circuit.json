@@ -11,7 +11,7 @@
     {
       "count": 32,
       "ingredient": {
-        "item": "clayium_neoforged:energetic_clay_dust"
+        "tag": "c:dusts/energetic_clay"
       }
     }
   ],

@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:dense_clay_dust"
+        "tag": "c:dusts/dense_clay"
       }
     }
   ],

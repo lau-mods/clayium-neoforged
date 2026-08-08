@@ -3,10 +3,10 @@
   "category": "building",
   "key": {
     "D": {
-      "item": "minecraft:light_gray_dye"
+      "tag": "c:dyes/light_gray"
     },
     "S": {
-      "item": "clayium_neoforged:silicone_block"
+      "tag": "c:storage_blocks/silicone"
     }
   },
   "pattern": [

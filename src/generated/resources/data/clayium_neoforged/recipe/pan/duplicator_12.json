@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:pure_antimatter_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:actinium_ingot"
+      "tag": "c:ingots/actinium"
     },
     "M": {
       "item": "clayium_neoforged:oec_machine_hull"

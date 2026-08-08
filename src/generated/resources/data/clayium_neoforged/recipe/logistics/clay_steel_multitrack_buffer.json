@@ -11,7 +11,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:clay_steel_large_plate"
+        "tag": "c:large_plates/clay_steel"
       }
     }
   ],

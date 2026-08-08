@@ -5,13 +5,13 @@
     {
       "count": 6,
       "ingredient": {
-        "item": "clayium_neoforged:antimatter_plate"
+        "tag": "c:plates/antimatter"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:platinum_ingot"
+        "tag": "c:ingots/platinum"
       }
     }
   ],

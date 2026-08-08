@@ -196,6 +196,8 @@ public final class ClayiumClientEvents {
         material(event, colors(10,10,10, 20,20,20, 30,30,30), "carbon_dust");
         material(event, colors(20,20,20, 50,50,50, 80,50,50), "charcoal_dust");
         material(event, colors(20,20,20, 50,50,50, 50,50,80), "coal_dust");
+        material(event, colors(151,70,70, 120,40,40, 220,150,150), "impure_redstone_dust");
+        material(event, colors(151,151,70, 120,120,40, 220,220,150), "impure_glowstone_dust");
         material(event, colors(90,240,210, 63,72,85, 255,205,200),
                 "clayium_dust", "clayium_ingot", "clayium_plate", "clayium_large_plate");
         material(event, colors(85,205,85, 245,255,255, 245,160,255), "impure_ultimate_alloy_ingot");

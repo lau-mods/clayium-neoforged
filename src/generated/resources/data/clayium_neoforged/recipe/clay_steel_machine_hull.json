@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "clayium_neoforged:clay_steel_large_plate"
+      "tag": "c:large_plates/clay_steel"
     },
     "C": {
       "item": "clayium_neoforged:integrated_circuit"

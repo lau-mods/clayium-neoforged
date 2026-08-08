@@ -5,13 +5,13 @@
     {
       "count": 2,
       "ingredient": {
-        "item": "clayium_neoforged:salt_dust"
+        "tag": "c:dusts/salt"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:calcareous_clay_dust"
+        "tag": "c:dusts/calcareous_clay"
       }
     }
   ],

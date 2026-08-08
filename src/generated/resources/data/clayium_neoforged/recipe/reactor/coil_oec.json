@@ -5,13 +5,13 @@
     {
       "count": 6,
       "ingredient": {
-        "item": "clayium_neoforged:oec_plate"
+        "tag": "c:plates/oec"
       }
     },
     {
       "count": 16,
       "ingredient": {
-        "item": "clayium_neoforged:osmium_ingot"
+        "tag": "c:ingots/osmium"
       }
     }
   ],

@@ -8,6 +8,7 @@ package net.claustra01.clayium.recipe;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.List;
+import java.util.Comparator;
 import net.claustra01.clayium.machine.ClayiumMachineIds;
 import net.claustra01.clayium.registry.ClayiumRecipes;
 import net.claustra01.clayium.tier.ClayTier;
@@ -46,6 +47,7 @@ public final class MachineRecipeLookup {
                     .filter(holder -> holder.value().machine().equals(machineId))
                     .filter(holder -> availableTier.isAtLeast(holder.value().minimumTier()))
                     .filter(holder -> holder.value().matches(recipeInput, level))
+                    .sorted(MATCH_PRIORITY)
                     .findFirst();
             return clayiumRecipe.isPresent()
                     ? clayiumRecipe
@@ -59,8 +61,17 @@ public final class MachineRecipeLookup {
                 .filter(holder -> holder.value().machine().equals(machineId))
                 .filter(holder -> availableTier.isAtLeast(holder.value().minimumTier()))
                 .filter(holder -> holder.value().matches(recipeInput, level))
+                .sorted(MATCH_PRIORITY)
                 .findFirst();
     }
+
+    /** Prefer the largest matching batch, then the most advanced recipe, with an ID tie-breaker. */
+    private static final Comparator<RecipeHolder<MachineRecipe>> MATCH_PRIORITY=
+            Comparator.<RecipeHolder<MachineRecipe>>comparingInt(holder->holder.value().ingredients().stream()
+                            .mapToInt(net.claustra01.clayium.recipe.MachineIngredient::count).sum()).reversed()
+                    .thenComparing(Comparator.comparingInt((RecipeHolder<MachineRecipe> holder)->
+                            holder.value().minimumTier().progressionIndex()).reversed())
+                    .thenComparing(holder->holder.id().toString());
 
     public static Optional<RecipeHolder<MachineRecipe>> find(
             Level level,

@@ -32,12 +32,12 @@ public final class MaterialCraftingRecipes {
             ItemLike block = ClayiumRegistries.MATERIAL_BLOCKS.get(material + "_block").get();
             ItemLike ingot = item(material + "_ingot");
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, block)
-                    .define('I', ingot)
+                    .define('I', CommonMaterialTags.tagFor(ingot).orElseThrow())
                     .pattern("III").pattern("III").pattern("III")
                     .unlockedBy("has_ingot", InventoryChangeTrigger.TriggerInstance.hasItems(ingot))
                     .save(output, Clayium.id("material_blocks/" + material));
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ingot, 9)
-                    .requires(block)
+                    .requires(CommonMaterialTags.tagFor(block).orElseThrow())
                     .unlockedBy("has_block", InventoryChangeTrigger.TriggerInstance.hasItems(block))
                     .save(output, Clayium.id("material_blocks/" + material + "_unpack"));
         }
@@ -45,8 +45,9 @@ public final class MaterialCraftingRecipes {
             ItemLike colored = ClayiumRegistries.COLORED_SILICONE_BLOCKS
                     .get(color.getSerializedName() + "_silicone_block").get();
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, colored, 8)
-                    .define('S', ClayiumRegistries.MATERIAL_BLOCKS.get("silicone_block").get())
-                    .define('D', dye(color))
+                    .define('S', CommonMaterialTags.tagFor(
+                            ClayiumRegistries.MATERIAL_BLOCKS.get("silicone_block").get()).orElseThrow())
+                    .define('D', CommonMaterialTags.common("dyes/"+color.getSerializedName()))
                     .pattern("SSS").pattern("SDS").pattern("SSS")
                     .unlockedBy("has_silicone", InventoryChangeTrigger.TriggerInstance.hasItems(
                             ClayiumRegistries.MATERIAL_BLOCKS.get("silicone_block").get()))
@@ -54,7 +55,7 @@ public final class MaterialCraftingRecipes {
         }
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,
                         ClayiumRegistries.OTHER_HULL_BLOCKS.get("zk60a_machine_hull").get())
-                .define('P', item("zk60a_large_plate"))
+                .define('P', CommonMaterialTags.tagFor(item("zk60a_large_plate")).orElseThrow())
                 .define('C', component("precision_circuit"))
                 .pattern("PPP").pattern("PCP").pattern("PPP")
                 .unlockedBy("has_plate", InventoryChangeTrigger.TriggerInstance.hasItems(item("zk60a_large_plate")))
@@ -64,11 +65,11 @@ public final class MaterialCraftingRecipes {
         highTierHull(output, "ultimate", item("ultimate_alloy_large_plate"), component("clay_brain"));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, item("impure_ultimate_alloy_ingot"), 9)
-                .requires(item("barium_ingot"))
-                .requires(item("strontium_ingot"))
-                .requires(item("calcium_ingot"))
-                .requires(item("clayium_ingot"))
-                .requires(item("aluminium_ingot"), 5)
+                .requires(CommonMaterialTags.tagFor(item("barium_ingot")).orElseThrow())
+                .requires(CommonMaterialTags.tagFor(item("strontium_ingot")).orElseThrow())
+                .requires(CommonMaterialTags.tagFor(item("calcium_ingot")).orElseThrow())
+                .requires(CommonMaterialTags.tagFor(item("clayium_ingot")).orElseThrow())
+                .requires(Ingredient.of(CommonMaterialTags.tagFor(item("aluminium_ingot")).orElseThrow()), 5)
                 .unlockedBy("has_clayium", InventoryChangeTrigger.TriggerInstance.hasItems(item("clayium_ingot")))
                 .save(output, Clayium.id("materials/impure_ultimate_alloy"));
     }
@@ -76,7 +77,7 @@ public final class MaterialCraftingRecipes {
     private static void highTierHull(RecipeOutput output, String tier, ItemLike plate, ItemLike circuit) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,
                         ClayiumRegistries.MACHINE_HULL_BLOCKS.get(tier + "_machine_hull").get())
-                .define('#', plate)
+                .define('#', CommonMaterialTags.tagFor(plate).orElseThrow())
                 .define('C', circuit)
                 .define('E', component("clay_energy_excitor"))
                 .pattern("#E#").pattern("#C#").pattern("###")
@@ -85,7 +86,7 @@ public final class MaterialCraftingRecipes {
     }
 
     private static void smelt(RecipeOutput output, String id, ItemLike input, ItemLike result) {
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(input), RecipeCategory.MISC, result, 0.0F, 200)
+        SimpleCookingRecipeBuilder.smelting(CommonMaterialTags.ingredient(input), RecipeCategory.MISC, result, 0.0F, 200)
                 .unlockedBy("has_input", InventoryChangeTrigger.TriggerInstance.hasItems(input))
                 .save(output, Clayium.id("smelting/" + id));
     }

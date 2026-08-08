@@ -141,6 +141,8 @@ public final class MaterialCatalog {
             item("carbon_dust", "Carbon Dust", "dust_base"),
             item("charcoal_dust", "Charcoal Dust", "dust_base"),
             item("coal_dust", "Coal Dust", "dust_base"),
+            item("impure_redstone_dust", "Impure Redstone Dust", "dust_base"),
+            item("impure_glowstone_dust", "Impure Glowstone Dust", "dust_base"),
             item("excited_clay_dust", "Excited Clay Dust", "excclaydust"),
             item("clayium_dust", "Clayium Dust", "dust_base"),
             item("clayium_ingot", "Clayium Ingot", "ingot_base"),

@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "I": {
-      "item": "clayium_neoforged:ultimate_alloy_ingot"
+      "tag": "c:ingots/ultimate_alloy"
     }
   },
   "pattern": [

@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:lead_ingot"
+        "tag": "c:ingots/lead"
       }
     }
   ],

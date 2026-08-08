@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:clayium_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:radium_ingot"
+      "tag": "c:ingots/radium"
     },
     "M": {
       "item": "clayium_neoforged:ultimate_machine_hull"

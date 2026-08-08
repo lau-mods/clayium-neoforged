@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "I": {
-      "item": "clayium_neoforged:impure_silicon_ingot"
+      "tag": "c:ingots/impure_silicon"
     }
   },
   "pattern": [

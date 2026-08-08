@@ -5,7 +5,7 @@
     {
       "count": 4,
       "ingredient": {
-        "item": "clayium_neoforged:advanced_industrial_clay_plate"
+        "tag": "c:plates/advanced_industrial_clay"
       }
     }
   ],

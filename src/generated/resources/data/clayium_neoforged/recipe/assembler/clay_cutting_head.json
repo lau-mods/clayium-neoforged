@@ -5,13 +5,13 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:large_clay_plate"
+        "tag": "c:large_plates/clay"
       }
     },
     {
       "count": 8,
       "ingredient": {
-        "item": "clayium_neoforged:clay_plate"
+        "tag": "c:plates/clay"
       }
     }
   ],

@@ -1,0 +1,22 @@
+{
+  "values": [
+    "#c:plates/clay",
+    "#c:plates/dense_clay",
+    "#c:plates/industrial_clay",
+    "#c:plates/advanced_industrial_clay",
+    "#c:plates/impure_silicon",
+    "#c:plates/silicon",
+    "#c:plates/silicone",
+    "#c:plates/impure_aluminium",
+    "#c:plates/aluminum",
+    "#c:plates/clay_steel",
+    "#c:plates/az91d",
+    "#c:plates/zk60a",
+    "#c:plates/clayium",
+    "#c:plates/ultimate_alloy",
+    "#c:plates/antimatter",
+    "#c:plates/pure_antimatter",
+    "#c:plates/oec",
+    "#c:plates/opa"
+  ]
+}

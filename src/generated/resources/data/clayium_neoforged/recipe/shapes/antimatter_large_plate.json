@@ -5,7 +5,7 @@
     {
       "count": 4,
       "ingredient": {
-        "item": "clayium_neoforged:antimatter_plate"
+        "tag": "c:plates/antimatter"
       }
     }
   ],

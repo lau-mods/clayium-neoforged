@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy_per_tick": 10,
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:sandstone"
+      }
+    }
+  ],
+  "machine": "clayium_neoforged:grinder",
+  "minimum_tier": "simple",
+  "processing_time_ticks": 100,
+  "results": [
+    {
+      "count": 4,
+      "id": "minecraft:sand"
+    }
+  ]
+}

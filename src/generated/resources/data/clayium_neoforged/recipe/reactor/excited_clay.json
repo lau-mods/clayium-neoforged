@@ -5,13 +5,13 @@
     {
       "count": 8,
       "ingredient": {
-        "item": "clayium_neoforged:energetic_clay_dust"
+        "tag": "c:dusts/energetic_clay"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:lithium_dust"
+        "tag": "c:dusts/lithium"
       }
     }
   ],

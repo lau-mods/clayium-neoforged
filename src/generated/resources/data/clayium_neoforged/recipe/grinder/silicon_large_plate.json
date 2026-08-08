@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:silicon_large_plate"
+        "tag": "c:large_plates/silicon"
       }
     }
   ],

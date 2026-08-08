@@ -5,7 +5,7 @@
     {
       "count": 4,
       "ingredient": {
-        "item": "clayium_neoforged:opa_plate"
+        "tag": "c:plates/opa"
       }
     }
   ],

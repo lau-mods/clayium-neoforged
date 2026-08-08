@@ -5,13 +5,13 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:sodium_carbonate_dust"
+        "tag": "c:dusts/sodium_carbonate"
       }
     },
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:clay_dust"
+        "tag": "c:dusts/clay"
       }
     }
   ],

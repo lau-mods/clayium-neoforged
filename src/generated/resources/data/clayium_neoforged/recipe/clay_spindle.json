@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "clayium_neoforged:clay_plate"
+      "tag": "c:plates/clay"
     },
     "0": {
       "item": "clayium_neoforged:small_clay_ring"

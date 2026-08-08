@@ -5,7 +5,7 @@
     {
       "count": 1,
       "ingredient": {
-        "item": "clayium_neoforged:opa_dust"
+        "tag": "c:dusts/opa"
       }
     }
   ],

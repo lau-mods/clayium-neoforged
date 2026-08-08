@@ -5,7 +5,7 @@
     {
       "count": 4,
       "ingredient": {
-        "item": "clayium_neoforged:impure_aluminium_plate"
+        "tag": "c:plates/impure_aluminium"
       }
     }
   ],

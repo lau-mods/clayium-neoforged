@@ -9,7 +9,7 @@
       "item": "clayium_neoforged:antimatter_pan_duplicator"
     },
     "I": {
-      "item": "clayium_neoforged:bismuth_ingot"
+      "tag": "c:ingots/bismuth"
     },
     "M": {
       "item": "clayium_neoforged:pure_antimatter_machine_hull"
