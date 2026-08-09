@@ -1,6 +1,6 @@
 {
   "type": "clayium_neoforged:machine",
-  "clay_energy_per_tick": 1000000,
+  "clay_energy_per_tick": 10000,
   "ingredients": [
     {
       "count": 4,
@@ -16,7 +16,7 @@
     }
   ],
   "machine": "clayium_neoforged:assembler",
-  "minimum_tier": "precision",
+  "minimum_tier": "basic",
   "processing_time_ticks": 120,
   "results": [
     {

@@ -424,7 +424,7 @@
   "container.clayium_neoforged.clay_work_table": "Clay Work Table",
   "container.clayium_neoforged.machine": "Clayium Machine",
   "gui.clayium_neoforged.energy": "%s",
-  "gui.clayium_neoforged.metal_chest.page": "%s / %s",
+  "gui.clayium_neoforged.metal_chest.page": "%s/%s",
   "gui.clayium_neoforged.pan_core.consumption": "Consumption: %s",
   "gui.clayium_neoforged.pan_core.cost": "Material cost: %s",
   "gui.clayium_neoforged.pan_core.prohibited": "Prohibited from duplication",

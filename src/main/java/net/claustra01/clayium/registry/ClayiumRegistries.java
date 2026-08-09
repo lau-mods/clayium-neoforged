@@ -958,7 +958,7 @@ public final class ClayiumRegistries {
         Map<String, DeferredItem<BlockItem>> items = new LinkedHashMap<>();
         LOGISTICS_BLOCKS.forEach((id, block) -> {
             DeferredItem<BlockItem> item = ITEMS.register(id, () -> id.equals("storage_container")
-                    ? new StorageContainerBlockItem(block.get(), new Item.Properties().stacksTo(1))
+                    ? new StorageContainerBlockItem(block.get(), new Item.Properties())
                     : new BlockItem(block.get(), new Item.Properties()));
             items.put(id, item);
         });

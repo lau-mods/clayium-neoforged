@@ -146,7 +146,7 @@ public final class ClayiumDataGenerators {
                 add("gui." + Clayium.MODID + ".pan_core.cost", "Material cost: %s");
                 add("gui." + Clayium.MODID + ".pan_core.consumption", "Consumption: %s");
                 add("gui." + Clayium.MODID + ".pan_core.prohibited", "Prohibited from duplication");
-                add("gui." + Clayium.MODID + ".metal_chest.page", "%s / %s");
+                add("gui." + Clayium.MODID + ".metal_chest.page", "%s/%s");
                 add("tooltip." + Clayium.MODID + ".storage_capacity", "Capacity: %s items");
                 add("tooltip." + Clayium.MODID + ".storage_contents", "Stored: %s x %s");
                 add("tooltip." + Clayium.MODID + ".metal_chest.capacity", "Capacity: %s x %s = %s slots");

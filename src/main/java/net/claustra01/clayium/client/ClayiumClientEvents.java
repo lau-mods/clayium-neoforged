@@ -27,6 +27,8 @@ import net.claustra01.clayium.client.gui.screens.inventory.MetalChestScreen;
 import net.claustra01.clayium.client.renderer.blockentity.ClayEnergyLaserRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.LaserReflectorRenderer;
 import net.claustra01.clayium.client.renderer.blockentity.IoOverlayRenderer;
+import net.claustra01.clayium.client.renderer.blockentity.MetalChestRenderer;
+import net.claustra01.clayium.client.renderer.item.MetalChestItemRenderer;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.world.level.block.ColoredSiliconeBlock;
 import net.claustra01.clayium.world.level.block.DecorativeMetalBlock;
@@ -37,6 +39,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.DyeColor;
 
 @EventBusSubscriber(modid = Clayium.MODID, value = Dist.CLIENT)
@@ -75,6 +82,8 @@ public final class ClayiumClientEvents {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(
+                ClayiumRegistries.METAL_CHEST_BLOCK_ENTITY.get(), MetalChestRenderer::new);
+        event.registerBlockEntityRenderer(
                 ClayiumRegistries.MACHINE_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.LOGISTICS_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
@@ -100,6 +109,17 @@ public final class ClayiumClientEvents {
                 ClayiumRegistries.PAN_DUPLICATOR_BLOCK_ENTITY.get(), context -> new IoOverlayRenderer<>());
         event.registerBlockEntityRenderer(
                 ClayiumRegistries.LASER_REFLECTOR_BLOCK_ENTITY.get(), context -> new LaserReflectorRenderer());
+    }
+
+    @SubscribeEvent
+    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        MetalChestItemRenderer renderer = new MetalChestItemRenderer(
+                minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+        event.registerItem(new IClientItemExtensions() {
+            @Override public BlockEntityWithoutLevelRenderer getCustomRenderer() { return renderer; }
+        }, ClayiumRegistries.METAL_CHEST_ITEMS.values().stream()
+                .map(holder -> (Item)holder.get()).toArray(Item[]::new));
     }
 
     @SubscribeEvent
@@ -248,9 +268,8 @@ public final class ClayiumClientEvents {
                     entry.getValue().get());
         }
         ClayiumRegistries.DECORATIVE_METAL_BLOCK_ITEMS.values().forEach(item ->
-                event.register((stack, tintIndex) -> tintIndex == 0
-                                && item.get().getBlock() instanceof DecorativeMetalBlock block
-                                ? block.definition().color() : 0xffffffff,
+                event.register((stack, tintIndex) -> item.get().getBlock() instanceof DecorativeMetalBlock block
+                                ? metalColor(block.definition().colors(), tintIndex) : 0xffffffff,
                         item.get()));
         ClayiumRegistries.METAL_CHEST_ITEMS.values().forEach(item ->
                 event.register((stack, tintIndex) -> tintIndex == 0
@@ -267,8 +286,8 @@ public final class ClayiumClientEvents {
         }
         ClayiumRegistries.DECORATIVE_METAL_BLOCKS.values().forEach(holder -> {
             DecorativeMetalBlock block = holder.get();
-            event.register((state, level, pos, tintIndex) -> tintIndex == 0
-                    ? block.definition().color() : 0xffffffff, block);
+            event.register((state, level, pos, tintIndex) ->
+                    metalColor(block.definition().colors(), tintIndex), block);
         });
         ClayiumRegistries.METAL_CHEST_BLOCKS.values().forEach(holder -> {
             MetalChestBlock block = holder.get();
@@ -292,6 +311,16 @@ public final class ClayiumClientEvents {
     }
 
     private static int argb(int r, int g, int b) { return 0xff000000 | r << 16 | g << 8 | b; }
+
+    private static int metalColor(net.claustra01.clayium.storage.MetalStorageCatalog.ChestColors colors,
+                                  int tintIndex) {
+        return switch (tintIndex) {
+            case 0 -> colors.base();
+            case 1 -> colors.dark();
+            case 2 -> colors.light();
+            default -> 0xffffffff;
+        };
+    }
 
     private static void dust(RegisterColorHandlersEvent.Item event, String id, int[] colors) {
         event.register((stack, tintIndex) -> tintIndex >= 0 && tintIndex < colors.length ? colors[tintIndex] : 0xffffffff,

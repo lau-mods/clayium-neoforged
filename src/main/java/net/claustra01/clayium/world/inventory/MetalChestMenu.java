@@ -48,10 +48,10 @@ public final class MetalChestMenu extends AbstractContainerMenu {
 
         int width = imageWidth();
         for (int slot = 0; slot < chestSlots; slot++) {
-            addSlot(new PageSlot(container, slot, (width - columns * 18) / 2 + slot % columns * 18,
-                    18 + slot / columns * 18));
+            addSlot(new PageSlot(container, slot, (width - columns * 18) / 2 + 1 + slot % columns * 18,
+                    (rows > 6 ? 6 : 18) + slot / columns * 18));
         }
-        int playerX = (width - 162) / 2;
+        int playerX = (width - 176) / 2 + 8;
         int playerY = machineHeight() + 12;
         for (int row = 0; row < 3; row++) for (int column = 0; column < 9; column++)
             addSlot(new Slot(inventory, column + row * 9 + 9, playerX + column * 18, playerY + row * 18));
@@ -68,14 +68,21 @@ public final class MetalChestMenu extends AbstractContainerMenu {
     public int rows() { return rows; }
     public int pages() { return pages; }
     public int page() { return page.get(); }
-    public int imageWidth() { return Math.max(176, columns * 18 + 14); }
-    public int machineHeight() { return rows * 18 + (pages > 1 ? 40 : 28); }
+    public int imageWidth() {
+        return 176 + Math.max(0, columns - 9) * 18 + (rows > 6 ? 8 : 0);
+    }
+    public int machineHeight() { return rows * 18 + 18 - (rows > 6 ? 20 : 0); }
+
+    public void changePageLocally(int button) {
+        if ((button == 0 || button == 1) && pages > 1) {
+            page.set(Math.floorMod(page.get() + (button == 0 ? -1 : 1), pages));
+        }
+    }
 
     @Override public boolean clickMenuButton(Player player, int id) {
         if (id != 0 && id != 1) return false;
-        int next = Math.floorMod(page.get() + (id == 0 ? -1 : 1), pages);
-        page.set(next);
-        broadcastChanges();
+        changePageLocally(id);
+        broadcastFullState();
         return true;
     }
 

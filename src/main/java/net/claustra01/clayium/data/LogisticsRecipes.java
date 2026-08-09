@@ -59,12 +59,12 @@ public final class LogisticsRecipes {
                 List.of(ingredient(ClayiumRegistries.OTHER_HULL_BLOCKS.get("az91d_machine_hull").get(), 4),
                         ingredient(ClayiumRegistries.MACHINE_INTERFACE_BLOCKS.get("advanced_clay_interface").get(), 1)),
                 ClayiumRegistries.LOGISTICS_BLOCKS.get("storage_container").get(), 4,
-                1_000_000, 120, 6);
+                10_000, 120, 4);
         recipe(output, "logistics/void_container",
                 List.of(ingredient(ClayiumRegistries.OTHER_HULL_BLOCKS.get("az91d_machine_hull").get(), 4),
                         ingredient(ClayiumRegistries.REDSTONE_INTERFACE_BLOCKS.get("advanced_redstone_interface").get(), 1)),
                 ClayiumRegistries.LOGISTICS_BLOCKS.get("void_container").get(), 4,
-                1_000_000, 120, 6);
+                10_000, 120, 4);
         recipe(output, "logistics/tools/clay_io_tool",
                 List.of(ingredient(ClayiumRegistries.CLAY_ROLLING_PIN.get(), 1),
                         ingredient(ClayiumRegistries.CLAY_SLICER.get(), 1)),

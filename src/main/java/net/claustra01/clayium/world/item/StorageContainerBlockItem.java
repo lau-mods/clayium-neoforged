@@ -16,6 +16,12 @@ import net.minecraft.world.level.block.Block;
 public final class StorageContainerBlockItem extends BlockItem {
     public StorageContainerBlockItem(Block block, Properties properties) { super(block, properties); }
 
+    @Override
+    public int getMaxStackSize(ItemStack stack) {
+        StorageContents contents = stack.get(ClayiumDataComponents.STORAGE_CONTENTS.get());
+        return contents != null && contents.count() > 0 ? 1 : super.getMaxStackSize(stack);
+    }
+
     @Override public void appendHoverText(ItemStack stack, Item.TooltipContext context,
                                           List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);

@@ -11,6 +11,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class MetalChestScreen extends AbstractContainerScreen<MetalChestMenu> {
+    private static final ResourceLocation BACK = Clayium.id("textures/gui/gui_back.png");
+    private static final ResourceLocation TOP = Clayium.id("textures/gui/gui_t.png");
+    private static final ResourceLocation BOTTOM = Clayium.id("textures/gui/gui_b.png");
+    private static final ResourceLocation LEFT = Clayium.id("textures/gui/gui_l.png");
+    private static final ResourceLocation RIGHT = Clayium.id("textures/gui/gui_r.png");
+    private static final ResourceLocation TOP_LEFT = Clayium.id("textures/gui/gui_tl.png");
+    private static final ResourceLocation TOP_RIGHT = Clayium.id("textures/gui/gui_tr.png");
+    private static final ResourceLocation BOTTOM_LEFT = Clayium.id("textures/gui/gui_bl.png");
+    private static final ResourceLocation BOTTOM_RIGHT = Clayium.id("textures/gui/gui_br.png");
+    private static final ResourceLocation SLOT = Clayium.id("textures/gui/slot.png");
     private static final ResourceLocation PLAYER = Clayium.id("textures/gui/gui_playerinventory.png");
 
     public MetalChestScreen(MetalChestMenu menu, Inventory inventory, Component title) {
@@ -24,37 +34,63 @@ public final class MetalChestScreen extends AbstractContainerScreen<MetalChestMe
         super.init();
         if (menu.pages() > 1) {
             addRenderableWidget(Button.builder(Component.literal("<"), button -> changePage(0))
-                    .bounds(leftPos + imageWidth / 2 - 32, topPos + menu.rows() * 18 + 20, 20, 16).build());
+                    .bounds(leftPos + playerOffsetX() + 170, topPos + menu.machineHeight() + 12, 16, 16).build());
             addRenderableWidget(Button.builder(Component.literal(">"), button -> changePage(1))
-                    .bounds(leftPos + imageWidth / 2 + 12, topPos + menu.rows() * 18 + 20, 20, 16).build());
+                    .bounds(leftPos + playerOffsetX() + 188, topPos + menu.machineHeight() + 12, 16, 16).build());
         }
     }
 
     private void changePage(int button) {
         if (minecraft != null && minecraft.gameMode != null) {
+            menu.changePageLocally(button);
             minecraft.gameMode.handleInventoryButtonClick(menu.containerId, button);
         }
     }
 
     @Override protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, 0xffc6c6c6);
-        graphics.fill(leftPos + 4, topPos + 4, leftPos + imageWidth - 4, topPos + menu.machineHeight() - 4, 0xff8b8b8b);
-        for (int row = 0; row < menu.rows(); row++) for (int column = 0; column < menu.columns(); column++) {
-            int x = leftPos + (imageWidth - menu.columns() * 18) / 2 + column * 18;
-            int y = topPos + 18 + row * 18;
-            graphics.fill(x - 1, y - 1, x + 17, y + 17, 0xff373737);
-            graphics.fill(x, y, x + 16, y + 16, 0xff8b8b8b);
-        }
-        int playerX = leftPos + (imageWidth - 176) / 2;
+        drawOriginalFrame(graphics, leftPos, topPos, imageWidth, imageHeight);
+        int playerX = leftPos + playerOffsetX();
         graphics.blit(PLAYER, playerX, topPos + menu.machineHeight(), 0, 0, 176, 94);
+        for (int row = 0; row < menu.rows(); row++) for (int column = 0; column < menu.columns(); column++) {
+            int x = leftPos + (imageWidth - menu.columns() * 18) / 2 + 1 + column * 18;
+            int y = topPos + (menu.rows() > 6 ? 6 : 18) + row * 18;
+            graphics.blit(SLOT, x - 1, y - 1, 0, 0, 18, 18, 256, 256);
+        }
     }
 
     @Override protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, 8, 6, 0x404040, false);
+        if (menu.rows() <= 6) graphics.drawString(font, title, 6, 6, 0x404040, false);
         if (menu.pages() > 1) {
             Component page = Component.translatable("gui.clayium_neoforged.metal_chest.page", menu.page() + 1, menu.pages());
-            graphics.drawCenteredString(font, page, imageWidth / 2, menu.rows() * 18 + 24, 0x404040);
+            graphics.drawString(font, page, playerOffsetX() + 170, menu.machineHeight() + 32, 0x404040, false);
         }
-        graphics.drawString(font, playerInventoryTitle, (imageWidth - 160) / 2, menu.machineHeight(), 0x404040, false);
+        if (menu.rows() <= 6)
+            graphics.drawString(font, playerInventoryTitle, playerOffsetX() + 8, menu.machineHeight(), 0x404040, false);
+    }
+
+    private int playerOffsetX() { return (imageWidth - 176) / 2; }
+
+    private static void drawOriginalFrame(GuiGraphics graphics, int x, int y, int width, int height) {
+        tile(graphics, BACK, x + 4, y + 4, width - 8, height - 8, 8, 8);
+        tile(graphics, TOP, x + 4, y, width - 8, 4, 1, 4);
+        tile(graphics, BOTTOM, x + 4, y + height - 4, width - 8, 4, 1, 4);
+        tile(graphics, LEFT, x, y + 4, 4, height - 8, 4, 1);
+        tile(graphics, RIGHT, x + width - 4, y + 4, 4, height - 8, 4, 1);
+        graphics.blit(TOP_LEFT, x, y, 0, 0, 4, 4, 4, 4);
+        graphics.blit(TOP_RIGHT, x + width - 4, y, 0, 0, 4, 4, 4, 4);
+        graphics.blit(BOTTOM_LEFT, x, y + height - 4, 0, 0, 4, 4, 4, 4);
+        graphics.blit(BOTTOM_RIGHT, x + width - 4, y + height - 4, 0, 0, 4, 4, 4, 4);
+    }
+
+    private static void tile(GuiGraphics graphics, ResourceLocation texture, int x, int y,
+                             int width, int height, int tileWidth, int tileHeight) {
+        for (int dy = 0; dy < height; dy += tileHeight) {
+            for (int dx = 0; dx < width; dx += tileWidth) {
+                int drawWidth = Math.min(tileWidth, width - dx);
+                int drawHeight = Math.min(tileHeight, height - dy);
+                graphics.blit(texture, x + dx, y + dy, 0, 0,
+                        drawWidth, drawHeight, tileWidth, tileHeight);
+            }
+        }
     }
 }

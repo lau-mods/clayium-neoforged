@@ -1,15 +1,45 @@
 {
   "parent": "minecraft:block/block",
-  "textures": { "all": "clayium_neoforged:block/aluminium_block", "particle": "clayium_neoforged:block/aluminium_block" },
-  "elements": [{
-    "from": [0, 0, 0], "to": [16, 16, 16],
-    "faces": {
-      "down": {"texture": "#all", "cullface": "down", "tintindex": 0},
-      "up": {"texture": "#all", "cullface": "up", "tintindex": 0},
-      "north": {"texture": "#all", "cullface": "north", "tintindex": 0},
-      "south": {"texture": "#all", "cullface": "south", "tintindex": 0},
-      "west": {"texture": "#all", "cullface": "west", "tintindex": 0},
-      "east": {"texture": "#all", "cullface": "east", "tintindex": 0}
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "particle": "clayium_neoforged:block/metalblock_base",
+    "base": "clayium_neoforged:block/metalblock_base",
+    "dark": "clayium_neoforged:block/metalblock_dark",
+    "light": "clayium_neoforged:block/metalblock_light"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0], "to": [16, 16, 16],
+      "faces": {
+        "down":  {"texture": "#base", "cullface": "down",  "tintindex": 0},
+        "up":    {"texture": "#base", "cullface": "up",    "tintindex": 0},
+        "north": {"texture": "#base", "cullface": "north", "tintindex": 0},
+        "south": {"texture": "#base", "cullface": "south", "tintindex": 0},
+        "west":  {"texture": "#base", "cullface": "west",  "tintindex": 0},
+        "east":  {"texture": "#base", "cullface": "east",  "tintindex": 0}
+      }
+    },
+    {
+      "from": [-0.001, -0.001, -0.001], "to": [16.001, 16.001, 16.001], "shade": false,
+      "faces": {
+        "down":  {"texture": "#dark", "cullface": "down",  "tintindex": 1},
+        "up":    {"texture": "#dark", "cullface": "up",    "tintindex": 1},
+        "north": {"texture": "#dark", "cullface": "north", "tintindex": 1},
+        "south": {"texture": "#dark", "cullface": "south", "tintindex": 1},
+        "west":  {"texture": "#dark", "cullface": "west",  "tintindex": 1},
+        "east":  {"texture": "#dark", "cullface": "east",  "tintindex": 1}
+      }
+    },
+    {
+      "from": [-0.002, -0.002, -0.002], "to": [16.002, 16.002, 16.002], "shade": false,
+      "faces": {
+        "down":  {"texture": "#light", "cullface": "down",  "tintindex": 2},
+        "up":    {"texture": "#light", "cullface": "up",    "tintindex": 2},
+        "north": {"texture": "#light", "cullface": "north", "tintindex": 2},
+        "south": {"texture": "#light", "cullface": "south", "tintindex": 2},
+        "west":  {"texture": "#light", "cullface": "west",  "tintindex": 2},
+        "east":  {"texture": "#light", "cullface": "east",  "tintindex": 2}
+      }
     }
-  }]
+  ]
 }
