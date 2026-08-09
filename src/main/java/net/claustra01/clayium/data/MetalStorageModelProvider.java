@@ -23,7 +23,7 @@ public final class MetalStorageModelProvider extends BlockStateProvider {
         ClayiumRegistries.METAL_CHEST_BLOCKS.values().forEach(holder -> {
             horizontalBlock(holder.get(), chest);
             itemModels().getBuilder(holder.getId().getPath())
-                    .parent(new ModelFile.UncheckedModelFile("builtin/entity"));
+                    .parent(new ModelFile.UncheckedModelFile("minecraft:item/chest"));
         });
     }
 }
