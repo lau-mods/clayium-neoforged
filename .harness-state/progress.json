@@ -1,7 +1,9 @@
 {
-  "status": "idle",
+  "status": "running",
   "active": [],
-  "completed": [],
+  "completed": [
+    "M01"
+  ],
   "lastCheckpoint": null,
   "fatal": null
 }

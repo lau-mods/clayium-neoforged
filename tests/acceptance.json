@@ -1,4 +1,42 @@
 {
-  "gameTests": [],
-  "e2e": []
+  "gameTests": [
+    {
+      "acId": "AC-F001-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "namedregistriesuseclayiumnamespace"
+    },
+    {
+      "acId": "AC-F001-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalregistrycatalogtracksallmachinevariants"
+    },
+    {
+      "acId": "AC-F001-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalpngbytesareunchanged"
+    },
+    {
+      "acId": "AC-F001-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "englishandjapanesetranslationsincludetierandunits"
+    }
+  ],
+  "e2e": [
+    {
+      "acId": "AC-F001-001",
+      "scenario": "tests/e2e/foundation-assets.mjs"
+    },
+    {
+      "acId": "AC-F001-002",
+      "scenario": "tests/e2e/foundation-assets.mjs"
+    },
+    {
+      "acId": "AC-F001-003",
+      "scenario": "tests/e2e/foundation-assets.mjs"
+    }
+  ]
 }

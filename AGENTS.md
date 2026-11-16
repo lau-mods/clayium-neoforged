@@ -1,7 +1,7 @@
 # Clayium 開発・検証
 
 - Minecraft 1.21.1、NeoForge 21.1.264、Java 21 を使用する。バージョンの正本は `gradle.properties`。
-- Mod ID は `clayium_neoforged`。Java の `ExampleMod.MODID` と生成される Mod metadata を一致させる。
+- Mod ID は `clayium`。Java の `ClayiumMod.MOD_ID` と生成される Mod metadata を一致させる。
 - 通常のビルド確認は `./gradlew build`。
 
 ## Harness E2E runtime
@@ -29,3 +29,63 @@ export MCT_SKILL_TARGETS=none
 再構築時は上記バージョンの MC Pilot、NeoForge dedicated server と client を用意する。サーバーの `eula.txt` を設定し、`mct client create clayium-a --version 1.21.1 --loader neoforge --ws-port 25594 --account clayium_a --width 1280 --height 720 --java <Java 21 executable>` で client を作成する。
 
 runtime の検証は Harness の `deployMod` → `startRuntime` → 撮影 → `stopRuntime` を通し、自 Mod が両側で読み込まれ、world に参加できることを確認する。ローカル疎通確認のログ・画像は `.harness-state/runtime/smoke/` に保存する。製品 AC の E2E シナリオは `tests/e2e/` に置く。
+
+## 登録と Datagen の追加規約
+
+- Registry 本体は `ClayiumRegistries` に一度だけ定義する。機能ごとの登録物は `registry` パッケージの `*Registration` クラスから既存の DeferredRegister へ追加し、新しい集約クラスを作らない。
+- Block と対応 Item は同じ名前付き path を使う。metadata、数値 ID、旧 TileEntity 別名は作らない。
+- BlockState、ItemModel、英日 Lang、Tag、LootTable、Recipe は `ClayiumDataGenerators` からドメイン別 Provider を追加し、`runData` の成果物を `src/generated/resources/` にコミットする。
+- PNG は Datagen で生成しない。原作 JAR のバイトを維持し、旧 `textures/blocks` と `textures/items` だけ現行の単数形ディレクトリへ移す。
+
+## 原作登録台帳
+
+`CBlocks`、`CItems`、`CMaterials` と旧 lang の調査結果を次の方針で名前付き ID へ移す。`OriginalClassInventory` は CBlocks 92フィールド、カプセルを除く CItems 31フィールド、CMaterials 268素材・25形状を保持する。33 機械系列の機械可読台帳は `OriginalRegistryCatalog` が Tier 列と名前付き ID 規則を保持する。原作 `.lang` の表示名 747 種と `CMaterials.materialShapeMap` の実在する 245 組の原作キー・登録予定 ID は `data/clayium/original_varieties.tsv` に記録する。GameTest は現在登録済みの ID をこの台帳と照合する。
+
+| 原作区分 | 1.21.1 の追跡単位 | 状態・除外理由 |
+|---|---|---|
+| `CBlocks` の通常 Block | metadata ごとの snake_case 名前付き Block ID | 対象。圧縮粘土、鉱石、筐体、素材、設備、物流、CA、PAN を各担当 Feature で登録 |
+| `CBlocks` の33機械系列 | 下表の ID stem と Tier の組 | 対象。全168機種を欠番のまま追跡 |
+| `CItems` の工具・フィルター・銃・ガジェット | 品種ごとの snake_case Item ID | 対象。旧 damage 値は名前付き ID または Data Component へ移行 |
+| `CItems.itemsCapsule` | `capsule_1000mb`、`capsule_125mb`、`capsule_25mb`、`capsule_5mb`、`capsule_1mb` | 除外。NeoForge Fluid Capability の直接輸送へ置換 |
+| `CMaterials` の素材×形状 | 原作 `materialShapeMap` に実在する組合せだけ | 対象。未定義の直積は生成しない |
+| 外部 Mod 固有の旧互換素材名 | 共通タグまたは導入済み Mod の条件付きデータ | 初回必須登録から除外。特定 Mod 依存を作らない |
+| 数値 Block/Item/Entity ID | なし | 除外。名前空間付き Registry ID のみ使用 |
+| 旧 TileEntity 代替名 | なし | 除外。旧ワールド移行を実装しない |
+
+現在登録済みの原作品種は `blockCompressedClay:0` → `dense_clay`、`:1` → `compressed_clay`、`blockClayOre:0` → `clay_ore`、`blockClayium` → `clayium_block`、`blocksBendingMachine:1` → `clay_bending_machine`、`itemDusts:IndustrialClay` → `industrial_clay_dust`、`itemClayWrench` → `clay_wrench`、`itemClayPickaxe` → `clay_pickaxe`、`itemGadgetHolder` → `gadget_holder` とする。機械系列の ID は Tier 1 の BendingMachine を `clay_bending_machine`、他の変種を `<stem>_tier_<Tier>` とする。
+
+| 原作系列 | 名前付き ID stem | Tier |
+|---|---|---|
+| BendingMachine | `bending_machine` | 1,2,3,4,5,6,7,9 |
+| WireDrawingMachine | `wire_drawing_machine` | 1,2,3,4 |
+| PipeDrawingMachine | `pipe_drawing_machine` | 1,2,3,4 |
+| CuttingMachine | `cutting_machine` | 1,2,3,4 |
+| Lathe | `lathe` | 1,2,3,4 |
+| Condenser | `condenser` | 2,3,4,5,10 |
+| Grinder | `grinder` | 2,3,4,5,6,10 |
+| Decomposer | `decomposer` | 2,3,4 |
+| MillingMachine | `milling_machine` | 3,4 |
+| Assembler | `assembler` | 3,4,6,10 |
+| Inscriber | `inscriber` | 3,4 |
+| Centrifuge | `centrifuge` | 3,4,5,6 |
+| Smelter | `smelter` | 4,5,6,7,8,9 |
+| Buffer | `buffer` | 4,5,6,7,8,9,10,11,12,13 |
+| MultitrackBuffer | `multitrack_buffer` | 4,5,6,7,8,9,10,11,12,13 |
+| ChemicalReactor | `chemical_reactor` | 4,5,8 |
+| SaltExtractor | `salt_extractor` | 4,5,6,7 |
+| AlloySmelter | `alloy_smelter` | 6 |
+| ClayInterface | `clay_interface` | 5,6,7,8,9,10,11,12,13 |
+| RedstoneInterface | `redstone_interface` | 5,6,7,8,9,10,11,12,13 |
+| ElectrolysisReactor | `electrolysis_reactor` | 6,7,8,9 |
+| ClayLaserInterface | `clay_laser_interface` | 7,8,9,10,11,12,13 |
+| Distributor | `distributor` | 7,8,9 |
+| AutoCrafter | `auto_crafter` | 5,6,7,8,9 |
+| Transformer | `transformer` | 7,8,9,10,11,12 |
+| CACondenser | `ca_condenser` | 9,10,11 |
+| CAInjector | `ca_injector` | 9,10,11,12,13 |
+| CAReactorCore | `ca_reactor_core` | 10,11,12,13 |
+| ClayEnergyLaser | `clay_energy_laser` | 7,8,9,10 |
+| PANAdapter | `pan_adapter` | 10,11,12,13 |
+| PANDuplicator | `pan_duplicator` | 4,5,6,7,8,9,10,11,12,13 |
+| FluidTranslator | `fluid_translator` | 4,5,6,7,8,9,10,11,12,13 |
+| FluidTransferMachine | `fluid_transfer_machine` | 5 |

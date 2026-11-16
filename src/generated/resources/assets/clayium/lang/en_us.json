@@ -1,0 +1,20 @@
+{
+  "block.clayium.clay_bending_machine": "Clay Bending Machine",
+  "block.clayium.clay_ore": "Clay Ore",
+  "block.clayium.clayium_block": "Clayium Block",
+  "block.clayium.compressed_clay": "Compressed Clay",
+  "block.clayium.dense_clay": "Dense Clay",
+  "gui.clayium.energy": "%1$sCE",
+  "item.clayium.clay_pickaxe": "Clay Pickaxe",
+  "item.clayium.clay_wrench": "Clay Wrench",
+  "item.clayium.gadget_holder": "Clay Gadget Holder",
+  "item.clayium.industrial_clay_dust": "Industrial Clay Dust",
+  "itemGroup.clayium": "Clayium",
+  "tooltip.clayium.clay_bending_machine.line1": "The first machine.",
+  "tooltip.clayium.clay_pickaxe.line1": "Harvests Clay Ores quickly",
+  "tooltip.clayium.clay_pickaxe.line2": "and increases their drops.",
+  "tooltip.clayium.clay_wrench.line1": "Rotates machines.",
+  "tooltip.clayium.gadget_holder.line1": "Clay Gadgets give effects",
+  "tooltip.clayium.gadget_holder.line2": "when they are put in this.",
+  "tooltip.clayium.tier": "Tier %1$d"
+}

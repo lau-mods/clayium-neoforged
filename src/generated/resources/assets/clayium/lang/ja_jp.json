@@ -1,0 +1,20 @@
+{
+  "block.clayium.clay_bending_machine": "粘土プレート作成機",
+  "block.clayium.clay_ore": "粘土鉱石",
+  "block.clayium.clayium_block": "クレイウムブロック",
+  "block.clayium.compressed_clay": "圧縮粘土",
+  "block.clayium.dense_clay": "高密度粘土",
+  "gui.clayium.energy": "%1$sCE",
+  "item.clayium.clay_pickaxe": "粘土ツルハシ",
+  "item.clayium.clay_wrench": "粘土レンチ",
+  "item.clayium.gadget_holder": "粘土ガジェットホルダー",
+  "item.clayium.industrial_clay_dust": "工業用粘土粉",
+  "itemGroup.clayium": "Clayium",
+  "tooltip.clayium.clay_bending_machine.line1": "初めての機械",
+  "tooltip.clayium.clay_pickaxe.line1": "粘土鉱石を素早く採掘し、",
+  "tooltip.clayium.clay_pickaxe.line2": "そのドロップ数を上昇させる",
+  "tooltip.clayium.clay_wrench.line1": "装置を回転させる",
+  "tooltip.clayium.gadget_holder.line1": "粘土ガジェットはこのホルダーに",
+  "tooltip.clayium.gadget_holder.line2": "入れて使用すること",
+  "tooltip.clayium.tier": "Tier %1$d"
+}

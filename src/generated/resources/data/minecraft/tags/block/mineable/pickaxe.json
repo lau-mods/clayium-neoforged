@@ -1,0 +1,9 @@
+{
+  "values": [
+    "clayium:dense_clay",
+    "clayium:compressed_clay",
+    "clayium:clay_ore",
+    "clayium:clayium_block",
+    "clayium:clay_bending_machine"
+  ]
+}

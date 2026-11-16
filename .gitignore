@@ -42,3 +42,6 @@ repo/
 .harness-state/runtime/
 
 .tmp/
+reference/original/
+
+.codex/rules/harness-gradle.rules
