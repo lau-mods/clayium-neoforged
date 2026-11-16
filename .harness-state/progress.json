@@ -1,10 +1,46 @@
 {
   "status": "running",
-  "active": [],
+  "active": [
+    {
+      "id": "M05",
+      "phase": "implementation",
+      "baseCommit": "67bea8405fbae0b626d2addc358de1f20590d9ca",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": null,
+      "codeReviewTree": null,
+      "e2eReview": null,
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
+    },
+    {
+      "id": "M03",
+      "phase": "implementation",
+      "baseCommit": "67bea8405fbae0b626d2addc358de1f20590d9ca",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": null,
+      "codeReviewTree": null,
+      "e2eReview": null,
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
+    }
+  ],
   "completed": [
     "M01",
-    "M02"
+    "M02",
+    "M04"
   ],
-  "lastCheckpoint": "e9bb96cf7ade63eadb89cc506289b7f81e654105",
+  "lastCheckpoint": "67bea8405fbae0b626d2addc358de1f20590d9ca",
   "fatal": null
 }

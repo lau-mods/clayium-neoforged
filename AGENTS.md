@@ -58,6 +58,8 @@ M02 では `CompressionTier` の旧 metadata 0～12 を `dense_clay`、`compress
 
 `original_varieties.tsv` にある 245 素材×形状だけを `MaterialRegistration` が登録する。`CLAY:BALL` と `CLAY:BLOCK` はバニラ、`DENSE_CLAY:BLOCK` と工業用・発展工業用・8重圧縮エネルギー粘土の BLOCK は既存圧縮段階に対応する。原作に単独の品目がある `impure_osmium_ingot` も登録する。`original_material_properties.tsv` は原作の形状別 Tier と色3層、`original_material_translations.tsv` は原作の英日表示名の正本。回路・Clay Core・モーター等の名前付き部品は `COMPONENT_DEFINITIONS` に置く。粉・インゴット・板・大板・宝石の `c:` タグは登録 ID の素材名を使う。汎用アイコンは原作 PNG の base/dark/light 層を不透明 ARGB の tint で着色し、専用 PNG は無改変で参照する。
 
+M04 の CE は `ClayEnergy` の非負 `long` 内部値で保持し、1 CE を 100,000 内部値とする。通常機械用の `ClayEnergyStorage` は FE Capability を公開せず、Tier 4 以上の圧縮エネルギー粘土だけを不足時に燃料へ変換する。`TierManager` の一般機械、精錬機、CA 凝縮機、通常搬送、バッファ搬送の既定値は原作 hotfix2 の `UtilTier.setTierManagers` を正本とする。正のレシピは原作の切り捨て後も最低 1 内部値・1進捗を必要とする。
+
 
 | 原作系列 | 名前付き ID stem | Tier |
 |---|---|---|

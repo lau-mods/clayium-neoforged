@@ -47,6 +47,36 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "materialnamescolorsandtooltipsarecomplete"
+    },
+    {
+      "acId": "AC-F006-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "energeticclayfuelvaluesandconsumptionareexact"
+    },
+    {
+      "acId": "AC-F006-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayenergyboundariesformattingandnbtroundtriparesafe"
+    },
+    {
+      "acId": "AC-F006-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "ordinaryclayenergystoragedoesnotexposefe"
+    },
+    {
+      "acId": "AC-F006-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originaltierandtransporttablesareexact"
+    },
+    {
+      "acId": "AC-F006-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tiercalculationspreserveroundingandpreventfreework"
     }
   ],
   "e2e": [
