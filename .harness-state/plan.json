@@ -1,0 +1,900 @@
+{
+  "milestones": [
+    {
+      "id": "M01",
+      "features": [
+        "F-001"
+      ],
+      "dependsOn": [],
+      "approach": "MDKテンプレートを置換し、Mod IDを`clayium`、基底パッケージを`net.claustra01.clayium`へ移す（gradle.propertiesの`mod_id`、neoforge.mods.toml、@Modクラス、AGENTS.mdのMod ID記述を同時更新。NeoForge版はPROJECT.mdのPlatformと実物を照合し、変更が必要な場合はAGENTS.md・runtime variantsも追従）。原作JAR `clayium-0.4.6.36.hotfix2.jar`を`reference/original/`へ配置しSHA-256を検証（Git管理外）、`.tmp/`の抽出scriptでassets/clayium配下の416 PNGと2 .langをバイト無変更でコピーし、`textures/blocks|items`→`textures/block|item`のディレクトリ名変更のみ行う（gui/entityはそのまま）。液体カプセル画像は登録対象外。`javap -c -p`等で`CBlocks`/`CItems`/`CMaterials`を解析し、原作全品種→新名前付きIDの台帳（除外理由付き）をAGENTS.mdに表としてまとめ、GameTestで登録一覧と照合できる形（Java定数またはdata）にする。`registry`パッケージにDeferredRegister（Block/Item/BlockEntityType/EntityType/MenuType/CreativeModeTab/DataComponentType/AttachmentType）を集約し、後続milestoneが自分のクラスからDeferredRegisterへ追記できる分割登録規約（ドメインごとの`*Registration`クラス）を定める。Datagen基盤（GatherDataEvent、BlockState/ItemModel/Lang(en_us, ja_jp)/Tag/LootTable/Recipe provider）をドメイン別provider追加方式で作り、並列milestoneの衝突を減らす。.lang→JSON変換はProvider内の静的翻訳表として実装し、Tier表示用tooltip基盤（Tier成分・共通tooltip付与）を用意する。GameTest基盤（runGameTestServer、テンプレート構造）とtests/acceptance.json・tests/e2e/の割当規約もここで確立し、専用サーバー起動・ID一覧・missing texture確認のE2Eを作る。LICENCEに原作CC BY 4.0の帰属表示を追記。",
+      "scope": [
+        "gradle.properties",
+        "build.gradle",
+        "src/main/templates/META-INF/neoforge.mods.toml",
+        "src/main/java/com/example/examplemod/ (削除・移設)",
+        "src/main/java/net/claustra01/clayium/ClayiumMod.java",
+        "src/main/java/net/claustra01/clayium/registry/",
+        "src/main/java/net/claustra01/clayium/datagen/",
+        "src/main/java/net/claustra01/clayium/client/",
+        "src/main/java/net/claustra01/clayium/gametest/",
+        "src/main/resources/assets/clayium/textures/",
+        "src/generated/resources/",
+        "src/main/resources/assets/examplemod/ (削除)",
+        "AGENTS.md",
+        "LICENCE",
+        ".gitignore",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M02",
+      "features": [
+        "F-002"
+      ],
+      "dependsOn": [
+        "M01"
+      ],
+      "approach": "`material`パッケージに原作`CMaterials`由来の素材定義（ID、色レイヤー、Tier）と形状定義（dust, ingot, plate, large_plate, stick, short_stick, wire, pipe, ring, gear, blade, needle, disc, cylinder, sphere, bearing等）を置き、原作JARから再生成した素材×形状の実在組合せ表だけを登録する（直積で自動生成しない）。13種の圧縮粘土ブロック（旧meta0～12、名前付きID）、エネルギー粘土各段階のCE価値（1～100,000,000 CE）を`CompressionTier`等の値として素材側に保持し、後続のCE計算・圧縮機・製造機が参照できる公開APIにする。回路、Clay Core、モーター等の名前付き部品も原作台帳どおり登録。アイテムモデルは原作専用PNGまたは原作のレイヤーPNG構成をtint/レイヤー参照で再現（画像は加工しない）。9→1圧縮・解凍のクラフトレシピ、`c:`素材タグ（ingots/dusts/plates等）、言語をdatagen providerで生成。GameTestで台帳照合（AC-F002-002）、9:1往復とCE値を検証し、E2Eで低/高Tier素材一覧の表示を撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/material/",
+        "src/main/java/net/claustra01/clayium/registry/MaterialRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/material/",
+        "src/main/java/net/claustra01/clayium/client/MaterialColors.java",
+        "src/main/java/net/claustra01/clayium/gametest/material/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M03",
+      "features": [
+        "F-005"
+      ],
+      "dependsOn": [
+        "M01",
+        "M02"
+      ],
+      "approach": "`recipe`パッケージに共通機械レシピ`ClayiumMachineRecipe`（加工方法ID、必要Tier、Ingredient+個数、FluidStack入出力、CE消費(long内部値)、処理tick、環境条件、重み付き/確率出力）をCodec(MapCodec)とStreamCodecで実装し、原作`CRecipes`の各レシピID（BendingMachine…FluidTransferMachine）を加工方法としてRecipeType/RecipeSerializerを登録する（加工方法ごとにRecipeTypeを分ける）。`CRecipes.e(v,t)`は値計算ユーティリティとして提供。レシピ検索はRecipeManagerから型・Tier・入力でindex化したキャッシュを持ち、`AddReloadListenerEvent`/`RecipesUpdatedEvent`で失効させ、`ClayiumRecipesReloadedEvent`等の再評価通知（機械・表示・PAN向け）を発行。NeoForgeのconditions（mod_loaded, item_exists等）で欠落外部アイテムを無効化。datagen用RecipeBuilderを作り、以降のmilestoneが原作レシピを生成するための共通入口にする。GameTestでテストデータパックの解析・Tier/入力不足時の不一致・reload後の追加/削除/変更反映・条件付き無効化を検証。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/recipe/",
+        "src/main/java/net/claustra01/clayium/registry/RecipeRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/recipe/ClayiumRecipeBuilder.java",
+        "src/main/java/net/claustra01/clayium/gametest/recipe/",
+        "src/main/resources/data/clayium/ (テスト用datapackはgametest配下)",
+        "AGENTS.md",
+        "tests/acceptance.json"
+      ]
+    },
+    {
+      "id": "M04",
+      "features": [
+        "F-006"
+      ],
+      "dependsOn": [
+        "M02"
+      ],
+      "approach": "`energy`パッケージに`ClayEnergy`（内部long、1 CE=100,000、加算・減算の飽和/オーバーフロー検査、表示フォーマット）、`ClayEnergyStorage`（NBT保存、燃料スロットから不足時に1個変換する`produceClayEnergy`相当処理）、圧縮エネルギー粘土の燃料価値参照（M02のCompressionTier）を実装。原作`UtilTier.setTierManagers`をJAR解析し、系列別・Tier別の処理時間倍率・CE倍率・搬送周期/量・オーバークロック係数の`TierManager`表を作成（一般機械Tier5:0.25/5等、精錬機表を厳密復元）。整数丸めは原作と一致させつつ0消費加工が起きないガードを設ける。FE Capabilityは一切公開しない方針を定数化。GameTestで燃料変換値、long境界、保存/再読込、Tier別計算・端数を検証（機械への組込検証はM06）。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/energy/",
+        "src/main/java/net/claustra01/clayium/gametest/energy/",
+        "AGENTS.md",
+        "tests/acceptance.json"
+      ]
+    },
+    {
+      "id": "M05",
+      "features": [
+        "F-003"
+      ],
+      "dependsOn": [
+        "M01",
+        "M02"
+      ],
+      "approach": "`worldgen`パッケージに6鉱石ブロック（clay_ore等、石/深層岩）を登録し、通常鉱脈→同基点サイズ10の高密度内部置換→基点+8,+0,+8の高密度鉱石に50%大型化試行を一つのカスタム`Feature`（Codec付き設定：主要サイズ、高密度サイズ、大型化確率、石/深層岩ターゲット）として実装。大型層は同Featureを独立モードで使用。`minecraft:stone_ore_replaceables`/`deepslate_ore_replaceables`で母岩変種を選択。4生成層のConfiguredFeature/PlacedFeature（count、height_range uniform、in_square、biome）とNeoForge Biome Modifier（`#minecraft:is_overworld`）をdatagen（DatapackBuiltinEntriesProvider）で生成。露出抑制は設定値0で初期無効。LootTableは原作鉱石ランクのドロップ（幸運・シルクタッチ対応）を両母岩で同一にし、採掘レベル/硬度は原作準拠のタグで付与。深層岩版は石版PNGを再利用したモデル。GameTestで固定シード生成・境界高度・ネザー/エンド非生成・データパック変更反映、E2Eで外観撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/worldgen/",
+        "src/main/java/net/claustra01/clayium/registry/WorldgenRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/worldgen/",
+        "src/main/java/net/claustra01/clayium/gametest/worldgen/",
+        "src/generated/resources/data/clayium/worldgen/",
+        "src/generated/resources/data/clayium/neoforge/biome_modifier/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M06",
+      "features": [
+        "F-007",
+        "F-011"
+      ],
+      "dependsOn": [
+        "M03",
+        "M04"
+      ],
+      "approach": "まず`machine`パッケージに共通加工機基盤を完成させる：`ClayMachineBlock`（向き・Tier・系列を持つ汎用Block）、`ClayMachineBlockEntity`（入力/出力/処理中退避/エネルギー粘土の4スロット、レシピ選択→入出力・CE・Tier検証→入力を退避スロットへ予約→tick進行→出力確定→待機のステートマシン、出力満杯・燃料不足・レシピreload・破壊時ドロップ・途中セーブ/チャンクアンロード復元）、オーバークロック/共鳴倍率を受け取るフック（値の供給はM33）、系列定義`MachineSeries`（レシピ型、登録Tierリスト、TierManager、GUIテクスチャ、特殊条件）、ItemHandler Capability（面設定付き）、`ClayMachineMenu`/`ClayMachineScreen`（原作GUI PNG、進捗・CE表示、面設定ボタン）とCustomPacketPayloadによるサーバー検証付き操作（距離・開いているメニュー一致・値域）。次に同じ基盤の実利用として原作`Condenser` 2,3,4,5,10、`Grinder` 2,3,4,5,6,10、`Decomposer` 2,3,4の14機種を系列定義だけで登録し、原作JARから凝縮・粉砕・分解レシピをdatagenで生成（Raw Ore系はM17）。個別機械にステートマシンを複製しない。GameTestで2系列（Condenser/Grinder）の状態遷移・資源収支・保存再起動・Grinder Tier3/4/6比較を検証し、E2EでGUI（処理中/停止/満杯）と14機種の外観を撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/",
+        "src/main/java/net/claustra01/clayium/machine/series/ProcessingSeries.java",
+        "src/main/java/net/claustra01/clayium/client/screen/",
+        "src/main/java/net/claustra01/clayium/network/",
+        "src/main/java/net/claustra01/clayium/registry/MachineRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/machine/",
+        "src/main/java/net/claustra01/clayium/datagen/recipe/CondenserGrinderDecomposerRecipes.java",
+        "src/main/java/net/claustra01/clayium/gametest/machine/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M07",
+      "features": [
+        "F-008"
+      ],
+      "dependsOn": [
+        "M02",
+        "M03"
+      ],
+      "approach": "Tier 0の粘土作業台（Clay Work Table）と粘土作業板（Clay Crafting Board、隣接チェストのIItemHandlerを材料在庫として参照）を専用Block/BlockEntity/Menu/Screenで実装し、原作の工具押下式加工（めん棒・へら・スライサー等による形状加工）を独自レシピ型（M03のRecipe基盤を使用、`clay_work_table`方法）として定義。Tier 1の粘土工具（レンチ、スライサー、めん棒、へら、設定複写ツール等）と未焼成配管工具、機械筐体等の初期部品を登録し、レシピをdatagenで生成。工具の個別機械連携（レンチ回転・設定複写）はインターフェースだけ置き、後続milestoneが実装。1.7.10のPNGを無変更使用。GameTestでバニラ資源のみからTier1部品到達・隣接チェスト消費の収支を検証、E2Eで作業台外観とGUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/workbench/",
+        "src/main/java/net/claustra01/clayium/tool/",
+        "src/main/java/net/claustra01/clayium/registry/WorkbenchRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/workbench/",
+        "src/main/java/net/claustra01/clayium/datagen/workbench/",
+        "src/main/java/net/claustra01/clayium/gametest/workbench/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M08",
+      "features": [
+        "F-009"
+      ],
+      "dependsOn": [
+        "M04",
+        "M06"
+      ],
+      "approach": "`energy`または`machine/waterwheel`に粘土水車Tier1～3を実装。共通の水判定ユーティリティ`WaterDetection`（FluidStateによる水存在、水源、流れる水を区別。水入りブロックは水存在に含めるが流速なし水源は流水数に含めない）を作り、M15でも再利用可能にする。中心3×3×3の流水数を数え、`random.nextInt(40)<流水数`で進捗、閾値20,000、初期効率`1000*max(tier,1)^3`、閾値到達時20%で効率-1、隣接Tier2～3の共通機械（M06のClayEnergyStorage）へ`max(tier,1)^8`内部値程度を原作上限で直接供給。走査は周期キャッシュで負荷を抑える。GameTestで流水0/複数・水入りブロック水源のみ・効率減衰・供給上限を検証、E2Eで外観確認。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/waterwheel/",
+        "src/main/java/net/claustra01/clayium/util/WaterDetection.java",
+        "src/main/java/net/claustra01/clayium/registry/WaterWheelRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/waterwheel/",
+        "src/main/java/net/claustra01/clayium/gametest/waterwheel/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M09",
+      "features": [
+        "F-010"
+      ],
+      "dependsOn": [
+        "M06",
+        "M07"
+      ],
+      "approach": "M06の`MachineSeries`定義を追加するだけで`BendingMachine` 1,2,3,4,5,6,7,9、`WireDrawingMachine` 1～4、`PipeDrawingMachine` 1～4、`CuttingMachine` 1～4、`Lathe` 1～4、`MillingMachine` 3～4の26機種を登録（欠番Tierを補わない）。各系列のGUI画像・時間倍率をTierManagerから適用し、原作JARの形状加工レシピをdatagenで生成。機械本体の製作レシピ（M07の作業台/クラフト）も生成。GameTestで26機種のID・Tier・レシピ型台帳照合と代表レシピ（板・棒・線・管・切断・旋盤）の収支、E2Eで機械一覧と稼働GUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/series/FormingSeries.java",
+        "src/main/java/net/claustra01/clayium/registry/FormingMachineRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/recipe/FormingRecipes.java",
+        "src/main/java/net/claustra01/clayium/datagen/machine/FormingMachineModels.java",
+        "src/main/java/net/claustra01/clayium/gametest/forming/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M10",
+      "features": [
+        "F-019"
+      ],
+      "dependsOn": [
+        "M06"
+      ],
+      "approach": "`logistics`パッケージに`Buffer` Tier4～13の10機種を実装。在庫・面設定（搬入/搬出/停止）・赤石条件・数量制限・Tier別転送周期/量（GR-04: T4 8tick/1個…T13 毎tick6400個）を持つ`BufferBlockEntity`を作り、外部搬送はすべて`Capabilities.ItemHandler.BLOCK`経由（BlockCapabilityCacheを使用、simulate→実行で複製/消失防止、相手スロット上限尊重）。統合アイテムフィルター（ホワイト/ブラック切替、ファジー、タグ、表示名、内部ID、Mod ID、耐久/データコンポーネント、入れ子）をItemStack Data Componentとしてフィルターアイテムに保持し、共通`ItemFilter`評価器とフィルターGUIを提供（後続の複線バッファ・インターフェース・範囲装置で再利用）。M07の設定複写ツールにバッファ設定のコピー/ペーストを実装。GameTestで10Tierの100tick転送量・方向・赤石、フィルター各条件・保存・複写を検証、E2Eで側面設定とフィルターGUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/logistics/",
+        "src/main/java/net/claustra01/clayium/logistics/filter/",
+        "src/main/java/net/claustra01/clayium/registry/LogisticsRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/logistics/",
+        "src/main/java/net/claustra01/clayium/tool/ (設定複写ツール連携)",
+        "src/main/java/net/claustra01/clayium/datagen/logistics/",
+        "src/main/java/net/claustra01/clayium/gametest/logistics/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M11",
+      "features": [
+        "F-013"
+      ],
+      "dependsOn": [
+        "M06"
+      ],
+      "approach": "M06の共通基盤に`Smelter` 4～9（精錬機専用TierManager表）、`AlloySmelter` 6、`ElectrolysisReactor` 6～9の11機種を系列定義で追加。Smelterはバニラ製錬レシピのフォールバック参照と原作独自精錬レシピを併用し、合金・電気分解・粘土鋼/クレイウム/究極合金の段階レシピを原作JARからdatagen生成。2入力が必要な合金はM06のスロット構成拡張パラメータ（系列定義のスロット数）で対応し、ステートマシンは共通のまま。GameTestで11機種の登録Tier、代表レシピの収支・CE、Tier制限、FE非受電を検証、E2EでGUIとモデル撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/series/SmeltingSeries.java",
+        "src/main/java/net/claustra01/clayium/registry/SmeltingMachineRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/recipe/SmeltingRecipes.java",
+        "src/main/java/net/claustra01/clayium/datagen/machine/SmeltingMachineModels.java",
+        "src/main/java/net/claustra01/clayium/gametest/smelting/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M12",
+      "features": [
+        "F-015",
+        "F-016",
+        "F-017"
+      ],
+      "dependsOn": [
+        "M04",
+        "M06",
+        "M07"
+      ],
+      "approach": "圧縮段階とCE価値を扱う粘土生産装置群を一つの`machine/clayproduction`パッケージで実装し、圧縮段階判定・段階上限・CE差計算を共有する。F-015：エネルギー粘土凝縮機Mk I/II（`ECCondenser`レシピ）、全自動粘土圧縮機Mk I/II（9→1、段階上限、原作の高度圧縮・材料併用レシピ）をM06共通基盤上で実装。F-016：ソーラー粘土製造機Mk I/IIとリチウムソーラー（上面の`canSeeSky`、原作の天候・昼夜条件、Mk別圧縮上限、リチウム入力経路、GUIのCE/tは入出力CE差から算出）。F-017：粘土製造機Mk I（6重まで）/Mk II（全段階）/Mk III（即時）で、見本を保持したまま同種粘土アイテムを複製し、処理時間は原作式（圧縮段階・スタック数依存）を再現。各装置の製作レシピをdatagenで生成。GameTestで圧縮収支・上限・屋外/屋内・CE/t表示値・複製数と時間を検証、E2Eで機械とGUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/clayproduction/",
+        "src/main/java/net/claustra01/clayium/registry/ClayProductionRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/clayproduction/",
+        "src/main/java/net/claustra01/clayium/datagen/clayproduction/",
+        "src/main/java/net/claustra01/clayium/gametest/clayproduction/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M13",
+      "features": [
+        "F-012"
+      ],
+      "dependsOn": [
+        "M06",
+        "M09"
+      ],
+      "approach": "M06の共通基盤に`Assembler` 3,4,6,10、`Inscriber` 3,4、`Centrifuge` 3,4,5,6の10機種を系列定義で追加（2入力・多出力はスロット構成パラメータで対応）。回路、粘土コア、モーター、レーザー部品、高Tier機械部材等の原作組立経路をhotfix2のCE値でdatagen生成し、1.12.2版のCE削減値は使わない。GUIの表示CEはレシピ×TierManagerからサーバーと同一式で算出。GameTestで10機種の登録・主要中間材料の製造収支とCE値照合、E2EでGUIと機械表示撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/series/AssemblySeries.java",
+        "src/main/java/net/claustra01/clayium/registry/AssemblyMachineRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/recipe/AssemblyRecipes.java",
+        "src/main/java/net/claustra01/clayium/datagen/machine/AssemblyMachineModels.java",
+        "src/main/java/net/claustra01/clayium/gametest/assembly/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M14",
+      "features": [
+        "F-014"
+      ],
+      "dependsOn": [
+        "M06",
+        "M11"
+      ],
+      "approach": "`ChemicalReactor` 4,5,8と`Transformer`（物質変換）7～12の9機種をM06共通基盤で系列定義追加し、液体入出力はFluidStackレシピ（カプセル無し）で処理。化学金属分離装置は工業用粘土粉1個・40tick・合計2CEで、重み表（合計488）の重み付き出力レシピとして表現し、出力スロットに空きがない場合は乱数・入力・CEを消費しない（共通基盤の出力容量事前確認に乗せ、抽選は確定時のみ）。原作の化学反応・物質変換レシピをdatagen生成。GameTestで固定乱数の分布・満杯時の非消費・9機種Tier・代表レシピ収支、E2EでGUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/series/ChemicalSeries.java",
+        "src/main/java/net/claustra01/clayium/machine/chemical/",
+        "src/main/java/net/claustra01/clayium/registry/ChemicalMachineRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/recipe/ChemicalRecipes.java",
+        "src/main/java/net/claustra01/clayium/gametest/chemical/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M15",
+      "features": [
+        "F-018"
+      ],
+      "dependsOn": [
+        "M06",
+        "M08",
+        "M11"
+      ],
+      "approach": "丸石製造機（M08の`WaterDetection`で隣接する水と溶岩を判定）、`SaltExtractor` 4～7（水源条件、水入りブロックはFluidStateで水として扱う）をM06共通基盤の環境条件付きレシピとして実装。クォーツるつぼは不純シリコン投入→待機→糸使用でシリコンを得る原作の段階状態機械を専用BlockEntityで実装し、途中材料の増殖を防ぐ。GameTestで水/溶岩/水入り/空気の各環境と消費CE、るつぼ手順の段階条件を検証、E2Eで外観確認。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/environment/",
+        "src/main/java/net/claustra01/clayium/machine/crucible/",
+        "src/main/java/net/claustra01/clayium/registry/EnvironmentMachineRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/environment/",
+        "src/main/java/net/claustra01/clayium/gametest/environment/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M16",
+      "features": [
+        "F-023"
+      ],
+      "dependsOn": [
+        "M04",
+        "M06",
+        "M13"
+      ],
+      "approach": "`energy/fe`にCE→FE変換器Tier4～13の10機種を実装。CE燃料スロットとClayEnergyStorageを共通基盤から利用し、GR-05表のCE消費/t・FE生成/t・出力上限/t・蓄積容量を定数表化。`Capabilities.EnergyStorage.BLOCK`で`canReceive=false`/`receiveEnergy`常に0の`IEnergyStorage`を公開し、隣接受電側へpush出力（int範囲安全）。赤石停止、FE蓄積のNBT保存、FE変換器専用のオーバークロック指数（原作値、適用はM33の倍率供給を利用可能な形）を保持。組立機レシピ（M13のAssembler型）を初期有効でdatagen生成し、データパック無効化はNeoForge条件で可能にする。GameTestで方向性・外部注入拒否・10Tier数値・赤石・再起動保持、通常機械のFE非受電を検証。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/energy/fe/",
+        "src/main/java/net/claustra01/clayium/registry/EnergyConverterRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/energyconverter/",
+        "src/main/java/net/claustra01/clayium/gametest/energyconverter/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json"
+      ]
+    },
+    {
+      "id": "M17",
+      "features": [
+        "F-004"
+      ],
+      "dependsOn": [
+        "M02",
+        "M03",
+        "M06",
+        "M07",
+        "M11",
+        "M13",
+        "M14"
+      ],
+      "approach": "既存のレシピdatagenへ追加providerを置き、`raw_iron`/`raw_gold`/`raw_copper`（`c:raw_materials/*`）とRaw Ore Block、石・深層岩バニラ鉱石（シルクタッチ品）を原作の鉱石・金属系統レシピ（粉砕・精錬・金属加工）に組み込む。Raw Ore1個=インゴット1個相当の金属量で、粉経由での増殖が起きない比率に限定し、バニラLootTableは改変しない。木材はサクラ・マングローブ・竹・ツツジ等1.21.1既存樹種を`minecraft:logs_that_burn`/`minecraft:planks`/`minecraft:saplings`等のタグで旧木材と同じClayiumレシピへ統合し、竹は板材として扱うが苗木扱いしない。`clayium:laser_tree_sources`タグ（バニラ苗木、サクラ苗木、マングローブの芽、ツツジ、開花ツツジ）を生成（利用はM32）。GameTestでRaw Ore収支と非増殖、新木材の受理、竹の非苗木扱いを検証。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/datagen/recipe/VanillaCompatRecipes.java",
+        "src/main/java/net/claustra01/clayium/datagen/tag/VanillaCompatTags.java",
+        "src/main/java/net/claustra01/clayium/gametest/vanillacompat/",
+        "src/generated/resources/data/clayium/",
+        "src/generated/resources/data/c/tags/",
+        "AGENTS.md",
+        "tests/acceptance.json"
+      ]
+    },
+    {
+      "id": "M18",
+      "features": [
+        "F-038"
+      ],
+      "dependsOn": [
+        "M01",
+        "M02",
+        "M04"
+      ],
+      "approach": "`gadget`パッケージにガジェットホルダーと14種以上のガジェット（オーバークロックI～IV、飛行/自由飛行/超音速飛行、体力I～III、自動摂食 倹約/通常、連続攻撃、ロングアーム3段階）を実装。装着内容はItemStack Data Component、効果状態はプレイヤーのNeoForge Data Attachmentに保存。属性は固定ResourceLocation IDの`AttributeModifier`で最大体力+20/+80/+180、`block_interaction_range`+3/+7/+20を付与し重複を防ぐ。飛行は`NeoForgeMod.CREATIVE_FLIGHT`属性modifierで付与し、クリエイティブ・他Modの権限を奪わない。PlayerTickEvent・死亡/Clone・ログアウト・次元移動・再ログイン時に再評価・撤去。速度/跳躍ガジェットは追加しない。GameTestで数値・取外し・持続、E2Eでアイコン・設定画面撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/gadget/",
+        "src/main/java/net/claustra01/clayium/registry/GadgetRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/gadget/",
+        "src/main/java/net/claustra01/clayium/datagen/gadget/",
+        "src/main/java/net/claustra01/clayium/gametest/gadget/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M19",
+      "features": [
+        "F-040"
+      ],
+      "dependsOn": [
+        "M01",
+        "M02",
+        "M18"
+      ],
+      "approach": "`weapon`パッケージに4種のClay Shooter（耐久・初速・拡散・ダメージ・チャージを原作値で定数化、射撃間隔・弾寿命・音・粒子は原作JARから復元）と`ClayBall`エンティティ、テレポートシューターと`TeleportBall`エンティティを実装。命中・消滅・衝突はサーバー側で確定し、エンティティはEntityType登録とクライアントレンダラ（原作弾丸PNG）で同期。テレポート着地点は空間（衝突箱・窒息）、ワールド境界・建築高度、次元、権限イベント（EntityTeleportEvent）を検証。GameTestで性能値・チャージ・テレポート安全性、E2Eで構え・発射・弾道撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/weapon/",
+        "src/main/java/net/claustra01/clayium/registry/WeaponRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/renderer/entity/",
+        "src/main/java/net/claustra01/clayium/datagen/weapon/",
+        "src/main/java/net/claustra01/clayium/gametest/weapon/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M20",
+      "features": [
+        "F-020"
+      ],
+      "dependsOn": [
+        "M10"
+      ],
+      "approach": "M10のバッファ基盤とItemFilterを再利用して`MultitrackBuffer` Tier4～13の10機種（色別トラックごとの内部在庫・面状態・フィルター、同色トラック間でのみ転送）と`Distributor` 7,8,9の3機種（原作の数量公平化・出力条件、満杯先をスキップ）を実装。トラック単位のCapabilityは面設定で選択。GameTestで交差接続の非混線・Tier速度・公平分配、E2Eで複数トラックGUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/logistics/multitrack/",
+        "src/main/java/net/claustra01/clayium/logistics/distributor/",
+        "src/main/java/net/claustra01/clayium/registry/MultitrackRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/logistics/multitrack/",
+        "src/main/java/net/claustra01/clayium/datagen/multitrack/",
+        "src/main/java/net/claustra01/clayium/gametest/multitrack/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M21",
+      "features": [
+        "F-021"
+      ],
+      "dependsOn": [
+        "M02",
+        "M10"
+      ],
+      "approach": "`storage`パッケージにストレージコンテナ（1品目、long保持、初期65,536、Clay Core適用で2,147,483,647、外部IItemHandlerには通常スタック単位で分割公開）、虚空コンテナ（明示投入品のみ破棄）、GR-08表をデータ化した57種の金属チェスト（横×縦×ページ、ページ切替GUIとCapability範囲を一致、最大ユーロピウム832スロット）を実装。素材別外観は原作PNG。複数クライアント同時操作はサーバー権威メニューで整合。GameTestで容量境界・オーバーフロー・保存、57種容量台帳照合、E2Eで全ページGUIと外観撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/storage/",
+        "src/main/java/net/claustra01/clayium/registry/StorageRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/storage/",
+        "src/main/java/net/claustra01/clayium/datagen/storage/",
+        "src/main/java/net/claustra01/clayium/gametest/storage/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M22",
+      "features": [
+        "F-022"
+      ],
+      "dependsOn": [
+        "M06",
+        "M10"
+      ],
+      "approach": "`fluid`パッケージに`FluidTranslator` Tier4～13の10機種（流体バッファ、GR-06の単一タンク容量・1tick合計輸送量）と`FluidTransferMachine` Tier5を直接流体装置として実装。`Capabilities.FluidHandler.BLOCK`で公開/接続し、面設定（初期:上面と水平4面=入力、下面=出力、入力/出力/両方/無効）、赤石条件、流体フィルター（Data Component）、1mB単位。転送はSIMULATE→実行、受け入れ差分は永続化した保留タンクに回収・再送し、保留容量が確保できない転送は開始しない、同tick往復防止フラグ。カプセル・変換レシピ・設定・流体ID表は実装しない。GameTestで全Tier量・保存・外部受入減少時の量保存・フィルター・再起動、カプセル不在の登録検査、E2EでmB表示GUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/fluid/",
+        "src/main/java/net/claustra01/clayium/registry/FluidRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/fluid/",
+        "src/main/java/net/claustra01/clayium/datagen/fluid/",
+        "src/main/java/net/claustra01/clayium/gametest/fluid/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M23",
+      "features": [
+        "F-024"
+      ],
+      "dependsOn": [
+        "M06",
+        "M10"
+      ],
+      "approach": "`machine/iface`に`ClayInterface` 5～13、`RedstoneInterface` 5～13、`ClayLaserInterface` 7～13の25機種を実装。共通の同期先データ（BlockPos＋次元ResourceKey）をNBT/Data Componentで保持し、シンクロナイザー（M07の工具系に追加）で登録。アクセス時は次元有効性・`isLoaded`・対象BlockEntity存在・権限を毎回サーバー検証し、未ロードには触れない。ClayInterfaceは対象のItemHandlerを代理公開、RedstoneInterfaceは対象機械の赤石制御状態を中継、LaserInterfaceはレーザー受信APIを中継（レーザー本体はM29、マルチブロック接続APIはM33/M35が利用）。GUIは原作PNG上に同期先座標・次元・状態（接続/未接続/切断）を常時描画。GameTestで25機種Tier・送受信・撤去・再起動、E2Eで3状態のGUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/iface/",
+        "src/main/java/net/claustra01/clayium/tool/Synchronizer.java",
+        "src/main/java/net/claustra01/clayium/registry/InterfaceRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/iface/",
+        "src/main/java/net/claustra01/clayium/datagen/iface/",
+        "src/main/java/net/claustra01/clayium/gametest/iface/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M24",
+      "features": [
+        "F-041"
+      ],
+      "dependsOn": [
+        "M02",
+        "M10",
+        "M12"
+      ],
+      "approach": "M10のバッファ実装を基にTier13の`CreativeEnergySource`を特殊バッファとして実装し、毎tick内部在庫を8重圧縮エネルギー粘土64個まで補充して面設定に従い搬出する。CE直接注入やFE送出は行わず、サバイバル製作レシピは作らない（クリエイティブタブのみ）。GameTestで補充量・搬出・CE燃料としての利用・FE非公開を検証。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/logistics/creative/",
+        "src/main/java/net/claustra01/clayium/registry/CreativeSourceRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/creative/",
+        "src/main/java/net/claustra01/clayium/gametest/creative/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json"
+      ]
+    },
+    {
+      "id": "M25",
+      "features": [
+        "F-025"
+      ],
+      "dependsOn": [
+        "M06",
+        "M10",
+        "M13"
+      ],
+      "approach": "`machine/autocrafter`に`AutoCrafter` 5～9の5機種を実装。3×3ゴーストグリッドに`CraftingRecipe`を保持し、CraftingInputで成立検証、在庫から材料を予約→出力容量・返却品（`getRemainingItems`）の格納可否確認→確定の順で処理しTier別周期で稼働。DataComponents一致・耐久消費・コンテナ返却をバニラAPIに合わせ、出力不能時は材料を失わない。CE消費・基盤はM06、搬送はM10のCapabilityを利用。製作レシピはM13の組立型でdatagen。GameTestで材料収支・満杯・不足・返却容器、E2Eでグリッド・結果表示GUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/autocrafter/",
+        "src/main/java/net/claustra01/clayium/registry/AutoCrafterRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/autocrafter/",
+        "src/main/java/net/claustra01/clayium/datagen/autocrafter/",
+        "src/main/java/net/claustra01/clayium/gametest/autocrafter/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M26",
+      "features": [
+        "F-026"
+      ],
+      "dependsOn": [
+        "M06",
+        "M10",
+        "M23"
+      ],
+      "approach": "`machine/trade`に自動取引装置を実装。装置上方付近の`Merchant`実装（村人・行商人）をサーバー側で探索し、選択`MerchantOffer`の`getCostA`/`getCostB`（現行割引価格）、在庫、`isOutOfStock`、ロックを検証、材料・出力空き・CEを事前確認してから`notifyTrade`相当で取引回数・経験値を更新し確定。不成立時は一切の状態を変えない。GUIに取引一覧・選択・必要材料を表示し、選択変更はPayloadでサーバー検証。GameTestで正常取引・割引・停止条件、E2Eで取引画面撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/trade/",
+        "src/main/java/net/claustra01/clayium/registry/TradeRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/trade/",
+        "src/main/java/net/claustra01/clayium/datagen/trade/",
+        "src/main/java/net/claustra01/clayium/gametest/trade/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M27",
+      "features": [
+        "F-027"
+      ],
+      "dependsOn": [
+        "M06",
+        "M10",
+        "M23"
+      ],
+      "approach": "`world/operation`にサーバー側ブロック操作の共通サービスを作る：機械所有者UUIDに紐づくFakePlayer（NeoForge `FakePlayerFactory`）、`BlockEvent.BreakEvent`等の保護判定発火、`Block.getDrops`＋ツールのエンチャント（幸運・シルクタッチ）でLootTable相当ドロップ、`isLoaded`未ロード停止、使用アイテムの耐久・返却物処理、右クリックは`useItemOn`/`useWithoutItem`相当をイベント経由で実行。これを用いて基本採掘機と右クリック代行機を実装（M28/M31/M29が再利用）。チャンク強制ロードは行わない。GameTestで採掘ドロップ・保護拒否・未ロード停止・代行の消費/状態変化と禁止時無副作用を検証。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/world/operation/",
+        "src/main/java/net/claustra01/clayium/machine/miner/",
+        "src/main/java/net/claustra01/clayium/registry/MinerRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/miner/",
+        "src/main/java/net/claustra01/clayium/gametest/miner/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json"
+      ]
+    },
+    {
+      "id": "M28",
+      "features": [
+        "F-029"
+      ],
+      "dependsOn": [
+        "M27"
+      ],
+      "approach": "`world/chunkloading`にNeoForge `TicketController`（RegisterTicketControllersEvent、`LoadingValidationCallback`）を使うチャンクローダーを実装し、中心チャンク±1の3×3=9チャンクのみをBlockEntity所有チケットで強制ロード。撤去・次元アンロードで解放、サーバー再起動時はValidationCallbackで実在する正当な装置だけを再取得し孤児チケットを削除。サーバー制約で拒否された場合はGUI/ツールチップで稼働不可表示。GameTestで9チャンク限定・解放・復元を検証。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/world/chunkloading/",
+        "src/main/java/net/claustra01/clayium/registry/ChunkLoaderRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/chunkloader/",
+        "src/main/java/net/claustra01/clayium/gametest/chunkloader/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json"
+      ]
+    },
+    {
+      "id": "M29",
+      "features": [
+        "F-030"
+      ],
+      "dependsOn": [
+        "M04",
+        "M06",
+        "M23"
+      ],
+      "approach": "`laser`パッケージに`ClayEnergyLaser` 7～10（青/緑/赤/白、0.4/4/40/400 CE/t、成分[1,0,0]/[0,1,0]/[0,0,1]/[3,3,3]）、レーザー反射器、`LaserReceiver`API（M23のLaserInterfaceが中継）を実装。光線経路はブロック変化時と周期で再計算・キャッシュし、受信側で成分を加算して原作の非線形エネルギー値に変換。赤石停止と`InvertClayLaserRSCondition`（共通Config値、M38で統合整理）を実装。効果の受け手（反応炉時間短縮、範囲装置加速、苗木変換、鉱石作用）は受信APIで公開し各milestoneが実装。クライアントはBlockEntityRendererで原作PNGを使った色・幅・方向のビーム描画（z-fighting対策）。GameTestでCE消費・合成値・反射・赤石、E2Eで4色・反射・交差の撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/laser/",
+        "src/main/java/net/claustra01/clayium/client/renderer/laser/",
+        "src/main/java/net/claustra01/clayium/registry/LaserRegistration.java",
+        "src/main/java/net/claustra01/clayium/ClayiumConfig.java",
+        "src/main/java/net/claustra01/clayium/datagen/laser/",
+        "src/main/java/net/claustra01/clayium/gametest/laser/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M30",
+      "features": [
+        "F-028"
+      ],
+      "dependsOn": [
+        "M10",
+        "M27",
+        "M29"
+      ],
+      "approach": "`world/area`に通常・露天掘・整地・角柱マーカーを実装し、範囲高度拡張は`level.getMinBuildHeight()`～`getMaxBuildHeight()-1`を用いる（固定1/255廃止）。M27の操作サービスを使って範囲採掘機、発展型範囲採掘機、範囲収集機、範囲置換機（置換材スロット）、範囲代行機を実装し、順次走査カーソルをNBT保存、M10のItemFilterでの対象フィルター、幸運/シルクタッチ、M29のレーザー受信による加速、原作Tier別速度。保護対象・未ロード・対象外次元で停止。マーカー範囲はBlockEntityRendererで原作PNGを使い枠と装置方向を描画。GameTestで境界高度・範囲外非走査・数量一致・保護・加速、E2Eでマーカー表示撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/world/area/",
+        "src/main/java/net/claustra01/clayium/client/renderer/area/",
+        "src/main/java/net/claustra01/clayium/registry/AreaMachineRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/area/",
+        "src/main/java/net/claustra01/clayium/gametest/area/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M31",
+      "features": [
+        "F-039"
+      ],
+      "dependsOn": [
+        "M07",
+        "M27",
+        "M30"
+      ],
+      "approach": "`tool/advanced`に粘土ツルハシ・シャベル、粘土鋼ツルハシ・シャベルを実装。原作の採掘速度と粘土鉱石ドロップ補正、3×3範囲採掘、粘土ブロック配置から形状パターンを登録する記憶形状モードを持ち、パターン・モード・状態はData Componentに保存。範囲破壊はM27の操作サービス（保護・権限・ドロップ）を経由し、`ClaySteelPickaxeRange`（初期2、0～64）はConfigに定義。GameTestで3×3・記憶パターン・保護非破壊・保存後モード保持、E2Eでアイコン・耐久・モード表示撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/tool/advanced/",
+        "src/main/java/net/claustra01/clayium/registry/AdvancedToolRegistration.java",
+        "src/main/java/net/claustra01/clayium/ClayiumConfig.java",
+        "src/main/java/net/claustra01/clayium/datagen/advancedtool/",
+        "src/main/java/net/claustra01/clayium/gametest/advancedtool/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M32",
+      "features": [
+        "F-031"
+      ],
+      "dependsOn": [
+        "M17",
+        "M29"
+      ],
+      "approach": "`world/claytree`に粘土樹の苗木・葉・原木を実装。M29の受信APIでブロックへの照射値を受け、`clayium:laser_tree_sources`（M17で生成）に含まれる苗木/芽/ツツジにエネルギー値1000以上で粘土樹苗木へ変換（999以下や不適格は不変）。成長は1.21.1の`TreeGrower`/ConfiguredFeature（原作樹形を再現）でdatagen定義し、自然生成には追加しない。原木・葉のLootTableと加工レシピ、リチウム取得ルートを原作どおりdatagen生成。GameTestで閾値・タグ判定・成長・伐採資源、E2Eで外観撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/world/claytree/",
+        "src/main/java/net/claustra01/clayium/registry/ClayTreeRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/claytree/",
+        "src/main/java/net/claustra01/clayium/gametest/claytree/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M33",
+      "features": [
+        "F-032"
+      ],
+      "dependsOn": [
+        "M11",
+        "M23",
+        "M29"
+      ],
+      "approach": "`multiblock`パッケージに3×3×3中空構造の共通判定器（制御ブロック、筐体Tier、インターフェース位置、変更通知で再評価し結果をキャッシュ、毎tick全走査しない）を作り、粘土高炉（`BlastFurnace`レシピ）と粘土反応炉（`Reactor`レシピ、レーザー受信で原作時間短縮）を実装。処理はM06の共通ステートマシンを利用し、入出力はM23のClay/Redstone/LaserInterface経由。構造破損で停止。原作レシピをdatagen生成。GameTestで正構造/欠損/低Tier/位置誤り、レーザー有無の時間比較・破損停止、E2Eでモデル・インターフェース表示撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/multiblock/",
+        "src/main/java/net/claustra01/clayium/registry/MultiblockRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/multiblock/",
+        "src/main/java/net/claustra01/clayium/gametest/multiblock/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M34",
+      "features": [
+        "F-033",
+        "F-034"
+      ],
+      "dependsOn": [
+        "M04",
+        "M06",
+        "M29",
+        "M33"
+      ],
+      "approach": "共鳴と反物質系を同一milestoneで実装する（共鳴型反物質収集機のACが共鳴装置を必要とするため）。F-034：反物質/純反物質/OEC/OPAの共鳴装置（1.08/1.10/2.0/20.0、中心含む5×5×5範囲で乗算）、オーバークロッカー（隣接6面、1.5/2.3/3.5/5.0）、エネルギーストレージ拡張（+1/+3/+7/+63、最大64、撤去時は余剰を安全にドロップ）を`machine/augment`に実装し、M06の倍率フックへ`F=積、G=F>10?F/10:1、時間/G、CE*G^1.5、進捗F/G`を供給（FE変換器はM16の専用指数を使用）。F-033：`CACondenser` 9～11、`CAInjector` 9～13をM06共通基盤で系列定義追加（凝縮出力×(1+ln(共鳴倍率))）、共鳴型反物質収集機（共鳴なしでは進行せず、出力満杯時は非消費）を実装し、原作CAレシピをdatagen生成。GameTestで倍率式・範囲境界・乗算・燃料上限・8機種Tier・共鳴有無を検証、E2Eで外観確認。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/machine/augment/",
+        "src/main/java/net/claustra01/clayium/machine/ca/",
+        "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java (倍率フック接続のみ)",
+        "src/main/java/net/claustra01/clayium/registry/CaRegistration.java",
+        "src/main/java/net/claustra01/clayium/datagen/ca/",
+        "src/main/java/net/claustra01/clayium/gametest/ca/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M35",
+      "features": [
+        "F-035"
+      ],
+      "dependsOn": [
+        "M23",
+        "M29",
+        "M34"
+      ],
+      "approach": "`multiblock/careactor`に巨大CA反応炉コアMk I～IV（Tier10～13）、コイル、ランク1～10筐体を実装。構造探索はコアから中空リング状コイル経路（各コイル隣接コイル2、最大長128、6方向を構成部材で被覆）を辿り、外周筐体50個以上、コアTierとコイル・インターフェースTier・筐体ランクを検証。結果はブロック変更通知で失効するキャッシュに保持。平均ランクR・筐体数Nから`E=0.2*1.02^N*7.5^R`、`P=1.01^(N*R)`、圧縮ランク`min(int(R),8)`、時間倍率`9^R`をdoubleで計算し、非有限・負・long超過時は安全停止。入出力はM23インターフェース、CE/レーザーはM29、処理はM06基盤。`CAReactorGlittering`（初期true）の光彩描画をクライアントで実装。GameTestで構造違反・キャッシュ更新・式と出力・異常値停止、E2EでGUI・構造描画撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/multiblock/careactor/",
+        "src/main/java/net/claustra01/clayium/client/renderer/careactor/",
+        "src/main/java/net/claustra01/clayium/registry/CaReactorRegistration.java",
+        "src/main/java/net/claustra01/clayium/ClayiumConfig.java",
+        "src/main/java/net/claustra01/clayium/datagen/careactor/",
+        "src/main/java/net/claustra01/clayium/gametest/careactor/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M36",
+      "features": [
+        "F-036",
+        "F-037"
+      ],
+      "dependsOn": [
+        "M03",
+        "M10",
+        "M12",
+        "M23",
+        "M34"
+      ],
+      "approach": "`pan`パッケージにPANコア、ケーブル、`PANAdapter` 10～13と`PANDuplicator` 4～13を一体で実装。ネットワーク探索は反復BFS（深度1000、ノード10000上限、200tick周期、設置/撤去/チャンクアンロード/M03のreload通知で失効）で、計算は数tickに分割してtickを長時間停止しない。アダプターは隣接クラフト台・かまど・Clayium機械（M03のレシピindex）のレシピを収集し、コアは原作基準資源（粘土・圧縮粘土・塩・反物質・金属分離資源・木材・丸石等）から不動点反復でレシピ閉包を計算、`cost`/`consumption`を算出（循環・零/負費用・DataComponents非同一を明示規則で処理し、未知コンポーネント付きは禁止）。複製機は反物質1個＋見本保持＋コア計算CEで、到達不能・禁止品は不可、Tier別速度は原作値。GameTestで探索上限・循環・閉包・データパック変更・複製の材料/CE制限、E2Eで全Tier GUI撮影。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/pan/",
+        "src/main/java/net/claustra01/clayium/registry/PanRegistration.java",
+        "src/main/java/net/claustra01/clayium/client/screen/pan/",
+        "src/main/java/net/claustra01/clayium/datagen/pan/",
+        "src/main/java/net/claustra01/clayium/gametest/pan/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M37",
+      "features": [
+        "F-042"
+      ],
+      "dependsOn": [
+        "M03",
+        "M16",
+        "M22",
+        "M25",
+        "M35",
+        "M36"
+      ],
+      "approach": "`compat`パッケージにJEIプラグイン（`@JeiPlugin`、gradleのJEIは`compileOnly`＋`localRuntime`、必須依存にしない）とEMIプラグイン（同様にcompileOnly）を実装し、M03のレシピ型ごとにカテゴリを作り必要Tier・材料・生成物・処理tick・CE（TierManager適用値）・流体mBを表示。作業台・CA反応炉・PAN複製等の特殊レシピも表示。プラグインクラスは通常ロード経路から参照しない。タグ（`c:`/`minecraft:`/`clayium:`）の整合性とItem/Fluid/EnergyStorage Capabilityの標準接続を横断検証するGameTest、JEI/EMI未導入での起動確認、E2EでJEIレシピ画面撮影。neoforge.mods.tomlにoptional依存を宣言。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/compat/jei/",
+        "src/main/java/net/claustra01/clayium/compat/emi/",
+        "build.gradle",
+        "gradle.properties (emi_version追加)",
+        "src/main/templates/META-INF/neoforge.mods.toml",
+        "src/main/java/net/claustra01/clayium/gametest/compat/",
+        "AGENTS.md",
+        "tests/acceptance.json",
+        "tests/e2e/"
+      ]
+    },
+    {
+      "id": "M38",
+      "features": [
+        "F-043"
+      ],
+      "dependsOn": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08",
+        "M09",
+        "M10",
+        "M11",
+        "M12",
+        "M13",
+        "M14",
+        "M15",
+        "M16",
+        "M17",
+        "M18",
+        "M19",
+        "M20",
+        "M21",
+        "M22",
+        "M23",
+        "M24",
+        "M25",
+        "M26",
+        "M27",
+        "M28",
+        "M29",
+        "M30",
+        "M31",
+        "M32",
+        "M33",
+        "M34",
+        "M35",
+        "M36",
+        "M37"
+      ],
+      "approach": "`ClayiumConfig`へ各milestoneで追加された設定を統合整理し、`ProgressionRate`1.0、HardcoreAluminium/HardcoreOsmium false、EnableInjectorRecipeOfInterface false、ClaySteelPickaxeRange 2、InvertClayLaserRSCondition false、CAReactorGlittering true、LaserQuality 8、Tier別製造・搬送・収納倍率をNeoForge ModConfigSpecで提供し、レシピ条件（Hardcore系、Injector）をNeoForge condition実装でデータパックに反映。UtilityMode・カプセル設定・流体ID・旧TE代替名・数値Entity ID・PacketSendingRateが存在しないことを検査。原作JAR台帳との最終差分検査（33系列168機種、57金属チェスト、全素材・レシピ）を行うGameTest、粘土とバニラ資源からTier13到達までのレシピ依存グラフ閉包検査、専用サーバー＋2クライアントでの連続稼働・再起動・チャンク離脱/復帰・装着変更のE2Eを追加。全AGENTS.md・README・LICENCEの最終整合。",
+      "scope": [
+        "src/main/java/net/claustra01/clayium/ClayiumConfig.java",
+        "src/main/java/net/claustra01/clayium/recipe/condition/",
+        "src/main/java/net/claustra01/clayium/gametest/release/",
+        "src/generated/resources/",
+        "AGENTS.md",
+        "LICENCE",
+        "tests/acceptance.json",
+        "tests/e2e/",
+        ".harness-config.json (2クライアント構成)"
+      ]
+    }
+  ]
+}
