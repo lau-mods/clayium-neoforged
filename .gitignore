@@ -40,3 +40,5 @@ repo/
 !**/src/**/repo/
 .harness-state/runs/
 .harness-state/runtime/
+
+.tmp/
