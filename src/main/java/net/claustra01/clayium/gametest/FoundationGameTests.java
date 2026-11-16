@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.claustra01.clayium.registry.OriginalClassInventory;
 import net.claustra01.clayium.registry.OriginalRegistryCatalog;
+import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -50,6 +51,20 @@ public final class FoundationGameTests {
             }
             require(BuiltInRegistries.ITEM.containsKey(id), "Ledger item is absent: " + id);
         }
+        for (String idPath : MaterialRegistration.COMPRESSION_BLOCKS.keySet()) {
+            ResourceLocation id = ClayiumMod.id(idPath);
+            expectedBlocks.add(id);
+            expectedItems.add(id);
+        }
+        for (String idPath : MaterialRegistration.MATERIAL_ITEMS.keySet()) {
+            expectedItems.add(ClayiumMod.id(idPath));
+        }
+        for (String idPath : MaterialRegistration.MATERIAL_BLOCKS.keySet()) {
+            expectedBlocks.add(ClayiumMod.id(idPath));
+        }
+        for (String idPath : MaterialRegistration.COMPONENTS.keySet()) {
+            expectedItems.add(ClayiumMod.id(idPath));
+        }
         require(clayiumIds(BuiltInRegistries.BLOCK).equals(expectedBlocks), "Block registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).isEmpty(), "Unexpected block entity");
@@ -69,7 +84,9 @@ public final class FoundationGameTests {
         Set<String> originalKeys = new HashSet<>();
         for (OriginalRegistryCatalog.OriginalVariety variety : OriginalRegistryCatalog.ORIGINAL_VARIETIES) {
             require(originalKeys.add(variety.legacyId()), "Duplicate original variety: " + variety.legacyId());
-            require(variety.namedId().matches("[a-z][a-z0-9_]*"),
+            require(variety.namedId().matches("[a-z][a-z0-9_]*")
+                    || variety.namedId().equals("minecraft:clay")
+                    || variety.namedId().equals("minecraft:clay_ball"),
                     "Unnamed registration target: " + variety.legacyId());
         }
         for (OriginalRegistryCatalog.RegisteredEntry entry : OriginalRegistryCatalog.REGISTERED_ENTRIES) {
@@ -123,11 +140,28 @@ public final class FoundationGameTests {
                 require(language.get(translation.getKey()).getAsString().equals(translation.getValue()),
                         "Translation differs from original: " + translation.getKey());
             }
-            require(language.size() == original.size(), "Unused legacy translations were generated");
             for (OriginalRegistryCatalog.RegisteredEntry entry : OriginalRegistryCatalog.REGISTERED_ENTRIES) {
                 String key = entry.block() ? "block.clayium." + entry.namedId() : "item.clayium." + entry.namedId();
                 require(language.has(key), "Registered object's visible name is missing: " + key);
             }
+            Set<String> expectedKeys = new HashSet<>(original.keySet());
+            for (var tier : net.claustra01.clayium.material.CompressionTier.values()) {
+                expectedKeys.add("block.clayium." + tier.id());
+            }
+            for (var variant : net.claustra01.clayium.material.ClayMaterials.VARIANTS) {
+                if (!variant.id().startsWith("minecraft:")) {
+                    expectedKeys.add((variant.shape() == net.claustra01.clayium.material.MaterialShape.BLOCK
+                            ? "block.clayium." : "item.clayium.") + variant.id());
+                }
+            }
+            for (String id : MaterialRegistration.COMPONENTS.keySet()) {
+                expectedKeys.add("item.clayium." + id);
+            }
+            expectedKeys.add("item.clayium.impure_osmium_ingot");
+            expectedKeys.add("tooltip.clayium.ce_value");
+            expectedKeys.add("tooltip.clayium.clay_units");
+            require(language.keySet().equals(expectedKeys),
+                    "Generated language keys differ from the registered objects and tooltips");
         }
         for (OriginalRegistryCatalog.RegisteredEntry entry : OriginalRegistryCatalog.REGISTERED_ENTRIES) {
             Item item = BuiltInRegistries.ITEM.get(ClayiumMod.id(entry.namedId()));

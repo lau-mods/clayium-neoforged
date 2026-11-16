@@ -2,8 +2,9 @@
   "status": "running",
   "active": [],
   "completed": [
-    "M01"
+    "M01",
+    "M02"
   ],
-  "lastCheckpoint": null,
+  "lastCheckpoint": "e9bb96cf7ade63eadb89cc506289b7f81e654105",
   "fatal": null
 }

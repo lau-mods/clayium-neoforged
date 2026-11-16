@@ -1,0 +1,14 @@
+{
+  "values": [
+    "clayium:antimatter",
+    "clayium:compressed_pure_antimatter",
+    "clayium:double_compressed_pure_antimatter",
+    "clayium:triple_compressed_pure_antimatter",
+    "clayium:quadruple_compressed_pure_antimatter",
+    "clayium:quintuple_compressed_pure_antimatter",
+    "clayium:sextuple_compressed_pure_antimatter",
+    "clayium:septuple_compressed_pure_antimatter",
+    "clayium:octuple_compressed_pure_antimatter",
+    "clayium:pure_antimatter"
+  ]
+}

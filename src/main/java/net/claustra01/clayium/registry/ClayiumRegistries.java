@@ -31,6 +31,7 @@ public final class ClayiumRegistries {
     public static void register(IEventBus modEventBus) {
         FoundationBlockRegistration.ALL.size();
         FoundationItemRegistration.ALL.size();
+        MaterialRegistration.CREATIVE_TAB_ITEMS.size();
         FoundationDataComponentRegistration.TIER.getId();
         FoundationCreativeTabRegistration.MAIN.getId();
         BLOCKS.register(modEventBus);

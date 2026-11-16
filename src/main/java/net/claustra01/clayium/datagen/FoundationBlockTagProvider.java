@@ -3,6 +3,7 @@ package net.claustra01.clayium.datagen;
 import java.util.concurrent.CompletableFuture;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.FoundationBlockRegistration;
+import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -25,6 +26,7 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
                 FoundationBlockRegistration.CLAY_ORE.get(),
                 FoundationBlockRegistration.CLAYIUM_BLOCK.get(),
                 FoundationBlockRegistration.CLAY_BENDING_MACHINE.get());
+        MaterialRegistration.MATERIAL_OWNED_BLOCKS.forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
         tag(BlockTags.NEEDS_STONE_TOOL).add(
                 FoundationBlockRegistration.CLAY_ORE.get(),
                 FoundationBlockRegistration.CLAYIUM_BLOCK.get());

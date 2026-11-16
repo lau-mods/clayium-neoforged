@@ -4,6 +4,26 @@
     "clayium:compressed_clay",
     "clayium:clay_ore",
     "clayium:clayium_block",
-    "clayium:clay_bending_machine"
+    "clayium:clay_bending_machine",
+    "clayium:industrial_clay",
+    "clayium:advanced_industrial_clay",
+    "clayium:energetic_clay",
+    "clayium:compressed_energetic_clay",
+    "clayium:double_compressed_energetic_clay",
+    "clayium:triple_compressed_energetic_clay",
+    "clayium:quadruple_compressed_energetic_clay",
+    "clayium:quintuple_compressed_energetic_clay",
+    "clayium:sextuple_compressed_energetic_clay",
+    "clayium:septuple_compressed_energetic_clay",
+    "clayium:octuple_compressed_energetic_clay",
+    "clayium:aluminium_block",
+    "clayium:antimatter_block",
+    "clayium:clay_steel_block",
+    "clayium:impure_silicon_block",
+    "clayium:opa_block",
+    "clayium:pure_antimatter_block",
+    "clayium:silicon_block",
+    "clayium:silicone_block",
+    "clayium:ultimate_alloy_block"
   ]
 }

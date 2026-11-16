@@ -1,0 +1,22 @@
+{
+  "values": [
+    "clayium:advanced_industrial_clay_plate",
+    "clayium:aluminium_plate",
+    "clayium:antimatter_plate",
+    "clayium:az91_d_alloy_plate",
+    "clayium:clay_plate",
+    "clayium:clayium_plate",
+    "clayium:clay_steel_plate",
+    "clayium:dense_clay_plate",
+    "clayium:impure_aluminium_plate",
+    "clayium:impure_silicon_plate",
+    "clayium:industrial_clay_plate",
+    "clayium:octuple_energetic_clay_plate",
+    "clayium:octuple_pure_antimatter_plate",
+    "clayium:pure_antimatter_plate",
+    "clayium:silicon_plate",
+    "clayium:silicone_plate",
+    "clayium:ultimate_alloy_plate",
+    "clayium:zk60_a_alloy_plate"
+  ]
+}

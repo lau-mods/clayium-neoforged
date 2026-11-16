@@ -1,0 +1,276 @@
+block.clayium.advanced_industrial_clay	Advanced Industrial Clay	発展工業用粘土
+block.clayium.aluminium_block	Aluminium Block	アルミニウムブロック
+block.clayium.antimatter_block	Antimatter Block	反物質ブロック
+block.clayium.clay_steel_block	Clay Steel Block	粘土鋼ブロック
+block.clayium.clayium_block	Clayium Block	クレイウムブロック
+block.clayium.compressed_clay	Compressed Clay	圧縮粘土
+block.clayium.compressed_energetic_clay	Compressed Energetic Clay	圧縮エネルギー粘土
+block.clayium.dense_clay	Dense Clay	高密度粘土
+block.clayium.double_compressed_energetic_clay	Double Compressed Energetic Clay	2重圧縮エネルギー粘土
+block.clayium.energetic_clay	Energetic Clay	エネルギー粘土
+block.clayium.impure_silicon_block	Impure Silicon Block	不純なシリコンブロック
+block.clayium.industrial_clay	Industrial Clay	工業用粘土
+block.clayium.octuple_compressed_energetic_clay	Octuple Compressed Energetic Clay	8重圧縮エネルギー粘土
+block.clayium.opa_block	OPA Block	OPA ブロック
+block.clayium.pure_antimatter_block	Pure Antimatter Block	純反物質ブロック
+block.clayium.quadruple_compressed_energetic_clay	Quadruple Compressed Energetic Clay	4重圧縮エネルギー粘土
+block.clayium.quintuple_compressed_energetic_clay	Quintuple Compressed Energetic Clay	5重圧縮エネルギー粘土
+block.clayium.septuple_compressed_energetic_clay	Septuple Compressed Energetic Clay	7重圧縮エネルギー粘土
+block.clayium.sextuple_compressed_energetic_clay	Sextuple Compressed Energetic Clay	6重圧縮エネルギー粘土
+block.clayium.silicon_block	Silicon Block	シリコンブロック
+block.clayium.silicone_block	Silicone Block	シリコーンブロック
+block.clayium.triple_compressed_energetic_clay	Triple Compressed Energetic Clay	3重圧縮エネルギー粘土
+block.clayium.ultimate_alloy_block	Ultimate Alloy Block	究極合金ブロック
+item.clayium.actinium_ingot	Actinium Ingot	アクチニウムインゴット
+item.clayium.advanced_circuit	Advanced Circuit	発展回路
+item.clayium.advanced_industrial_clay_dust	Advanced Industrial Clay Dust	発展工業用粘土粉
+item.clayium.advanced_industrial_clay_plate	Advanced Industrial Clay Plate	発展工業用粘土プレート
+item.clayium.aluminium_dust	Aluminium Dust	アルミニウムの粉
+item.clayium.aluminium_ingot	Aluminium Ingot	アルミニウムインゴット
+item.clayium.aluminium_plate	Aluminium Plate	アルミニウムプレート
+item.clayium.americium_ingot	Americium Ingot	アメリシウムインゴット
+item.clayium.antimatter	Antimatter	反物質
+item.clayium.antimatter_dust	Antimatter Dust	反物質の粉
+item.clayium.antimatter_plate	Antimatter Plate	反物質プレート
+item.clayium.antimatter_seed	Antimatter Seed	反物質の種
+item.clayium.antimony_ingot	Antimony Ingot	アンチモンインゴット
+item.clayium.az91_d_alloy_dust	AZ91D Alloy Dust	AZ91D 合金の粉
+item.clayium.az91_d_alloy_ingot	AZ91D Alloy Ingot	AZ91D 合金インゴット
+item.clayium.az91_d_alloy_plate	AZ91D Alloy Plate	AZ91D 合金プレート
+item.clayium.barium_dust	Barium Dust	バリウムの粉
+item.clayium.barium_ingot	Barium Ingot	バリウムインゴット
+item.clayium.basic_circuit	Basic Circuit	基本回路
+item.clayium.beryllium_dust	Beryllium Dust	ベリリウムの粉
+item.clayium.beryllium_ingot	Beryllium Ingot	ベリリウムインゴット
+item.clayium.bismuth_ingot	Bismuth Ingot	ビスマスインゴット
+item.clayium.brass_dust	Brass Dust	ブラスの粉
+item.clayium.brass_ingot	Brass Ingot	ブラスインゴット
+item.clayium.bronze_dust	Bronze Dust	ブロンズの粉
+item.clayium.bronze_ingot	Bronze Ingot	ブロンズインゴット
+item.clayium.caesium_ingot	Caesium Ingot	セシウムインゴット
+item.clayium.calcareous_clay_dust	Calcareous Clay Dust	石灰質粘土粉
+item.clayium.calcium_chloride_dust	Calcium Chloride Dust	塩化カルシウム
+item.clayium.calcium_dust	Calcium Dust	カルシウムの粉
+item.clayium.calcium_ingot	Calcium Ingot	カルシウムインゴット
+item.clayium.carbon_dust	Carbon Dust	炭素の粉
+item.clayium.cee_board	CEE Board	CEE 回路板
+item.clayium.cee_circuit	CEE Circuit	CEE 回路
+item.clayium.cerium_ingot	Cerium Ingot	セリウムインゴット
+item.clayium.charcoal_dust	Charcoal Dust	木炭の粉
+item.clayium.chrome_dust	Chrome Dust	クロムの粉
+item.clayium.chrome_ingot	Chrome Ingot	クロムインゴット
+item.clayium.clay_anima	Clay Anima	粘土アニマ
+item.clayium.clay_bearing	Clay Bearing	粘土軸受
+item.clayium.clay_blade	Clay Blade	粘土ブレード
+item.clayium.clay_brain	Clay Brain	粘土脳
+item.clayium.clay_circuit	Clay Circuit	粘土回路
+item.clayium.clay_circuit_board	Clay Circuit Board	粘土回路板
+item.clayium.clay_core	Clay Core	粘土コア
+item.clayium.clay_cutting_head	Clay Cutting Head	粘土切断機ヘッド
+item.clayium.clay_cylinder	Clay Cylinder	粘土円柱
+item.clayium.clay_disc	Clay Disc	粘土円盤
+item.clayium.clay_dust	Clay Dust	粘土粉
+item.clayium.clay_energy_excitor	Clay Energy Excitor	粘土エネルギー励起装置
+item.clayium.clay_gear	Clay Gear	粘土歯車
+item.clayium.clay_grinding_head	Clay Grinding Head	粘土粉砕機ヘッド
+item.clayium.clay_needle	Clay Needle	粘土ニードル
+item.clayium.clay_pipe	Clay Pipe	粘土パイプ
+item.clayium.clay_plate	Clay Plate	粘土プレート
+item.clayium.clay_psyche	Clay Psyche	粘土プシュケー
+item.clayium.clay_ring	Clay Ring	粘土リング
+item.clayium.clay_soul	Clay Soul	粘土ソウル
+item.clayium.clay_spindle	Clay Spindle	粘土主軸
+item.clayium.clay_spirit	Clay Spirit	粘土スピリット
+item.clayium.clay_steel_dust	Clay Steel Dust	粘土鋼の粉
+item.clayium.clay_steel_ingot	Clay Steel Ingot	粘土鋼インゴット
+item.clayium.clay_steel_plate	Clay Steel Plate	粘土鋼プレート
+item.clayium.clay_stick	Clay Stick	粘土棒
+item.clayium.clay_wheel	Clay Wheel	粘土水車パーツ
+item.clayium.clayium_dust	Clayium Dust	クレイウムの粉
+item.clayium.clayium_ingot	Clayium Ingot	クレイウムインゴット
+item.clayium.clayium_plate	Clayium Plate	クレイウムプレート
+item.clayium.coal_dust	Coal Dust	石炭の粉
+item.clayium.cobalt_ingot	Cobalt Ingot	コバルトインゴット
+item.clayium.compressed_pure_antimatter	Compressed Pure Antimatter	圧縮純反物質
+item.clayium.copper_dust	Copper Dust	銅の粉
+item.clayium.copper_ingot	Copper Ingot	銅インゴット
+item.clayium.curium_ingot	Curium Ingot	キュリウムインゴット
+item.clayium.dense_clay_ball	Dense Clay Ball	高密度粘土玉
+item.clayium.dense_clay_bearing	Dense Clay Bearing	高密度粘土軸受
+item.clayium.dense_clay_blade	Dense Clay Blade	高密度粘土ブレード
+item.clayium.dense_clay_cutting_head	Dense Clay Cutting Head	高密度粘土切断機ヘッド
+item.clayium.dense_clay_cylinder	Dense Clay Cylinder	高密度粘土円柱
+item.clayium.dense_clay_disc	Dense Clay Disc	高密度粘土円盤
+item.clayium.dense_clay_dust	Dense Clay Dust	高密度粘土粉
+item.clayium.dense_clay_gear	Dense Clay Gear	高密度粘土歯車
+item.clayium.dense_clay_grinding_head	Dense Clay Grinding Head	高密度粘土粉砕機ヘッド
+item.clayium.dense_clay_needle	Dense Clay Needle	高密度粘土ニードル
+item.clayium.dense_clay_pipe	Dense Clay Pipe	高密度粘土パイプ
+item.clayium.dense_clay_plate	Dense Clay Plate	高密度粘土プレート
+item.clayium.dense_clay_ring	Dense Clay Ring	高密度粘土リング
+item.clayium.dense_clay_spindle	Dense Clay Spindle	高密度粘土主軸
+item.clayium.dense_clay_stick	Dense Clay Stick	高密度粘土棒
+item.clayium.dense_clay_wheel	Dense Clay Wheel	高密度粘土水車パーツ
+item.clayium.double_compressed_pure_antimatter	Double Compressed Pure Antimatter	2重圧縮純反物質
+item.clayium.electrum_dust	Electrum Dust	エレクトラムの粉
+item.clayium.electrum_ingot	Electrum Ingot	エレクトラムインゴット
+item.clayium.energized_clay_dust	Energized Clay Dust	活性化粘土粉
+item.clayium.europium_ingot	Europium Ingot	ユウロピウムインゴット
+item.clayium.excited_clay_dust	Excited Clay Dust	励起粘土粉
+item.clayium.francium_ingot	Francium Ingot	フランシウムインゴット
+item.clayium.gold_dust	Gold Dust	金の粉
+item.clayium.gold_ingot	Gold Ingot	金インゴット
+item.clayium.hafnium_dust	Hafnium Dust	ハフニウムの粉
+item.clayium.hafnium_ingot	Hafnium Ingot	ハフニウムインゴット
+item.clayium.impure_aluminium_dust	Impure Aluminium Dust	不純なアルミニウムの粉
+item.clayium.impure_aluminium_ingot	Impure Aluminium Ingot	不純なアルミニウムインゴット
+item.clayium.impure_aluminium_plate	Impure Aluminium Plate	不純なアルミニウムプレート
+item.clayium.impure_barium_dust	Impure Barium Dust	不純なバリウムの粉
+item.clayium.impure_beryllium_dust	Impure Beryllium Dust	不純なベリリウムの粉
+item.clayium.impure_calcium_dust	Impure Calcium Dust	不純なカルシウムの粉
+item.clayium.impure_chrome_dust	Impure Chrome Dust	不純なクロムの粉
+item.clayium.impure_copper_dust	Impure Copper Dust	不純な銅の粉
+item.clayium.impure_glowstone_dust	Impure Glowstone Dust	不純なグロウストーンダスト
+item.clayium.impure_hafnium_dust	Impure Hafnium Dust	不純なハフニウムの粉
+item.clayium.impure_iron_dust	Impure Iron Dust	不純な鉄の粉
+item.clayium.impure_lead_dust	Impure Lead Dust	不純な鉛の粉
+item.clayium.impure_lithium_dust	Impure Lithium Dust	不純なリチウムの粉
+item.clayium.impure_magnesium_dust	Impure Magnesium Dust	不純なマグネシウムの粉
+item.clayium.impure_manganese_dust	Impure Manganese Dust	不純なマンガンの粉
+item.clayium.impure_nickel_dust	Impure Nickel Dust	不純なニッケルの粉
+item.clayium.impure_potassium_dust	Impure Potassium Dust	不純なカリウムの粉
+item.clayium.impure_redstone	Impure Redstone	不純なレッドストーン
+item.clayium.impure_silicon_dust	Impure Silicon Dust	不純なシリコンの粉
+item.clayium.impure_silicon_ingot	Impure Silicon Ingot	不純なシリコンインゴット
+item.clayium.impure_silicon_plate	Impure Silicon Plate	不純なシリコンプレート
+item.clayium.impure_sodium_dust	Impure Sodium Dust	不純なナトリウムの粉
+item.clayium.impure_strontium_dust	Impure Strontium Dust	不純なストロンチウムの粉
+item.clayium.impure_titanium_dust	Impure Titanium Dust	不純なチタンの粉
+item.clayium.impure_zinc_dust	Impure Zinc Dust	不純な亜鉛の粉
+item.clayium.impure_zirconium_dust	Impure Zirconium Dust	不純なジルコニウムの粉
+item.clayium.industrial_clay_dust	Industrial Clay Dust	工業用粘土粉
+item.clayium.industrial_clay_plate	Industrial Clay Plate	工業用粘土プレート
+item.clayium.integrated_circuit	Integrated Circuit	集積回路
+item.clayium.invar_dust	Invar Dust	インバーの粉
+item.clayium.invar_ingot	Invar Ingot	インバーインゴット
+item.clayium.iridium_ingot	Iridium Ingot	イリジウムインゴット
+item.clayium.iron_dust	Iron Dust	鉄の粉
+item.clayium.iron_ingot	Iron Ingot	鉄インゴット
+item.clayium.lanthanum_ingot	Lanthanum Ingot	ランタンインゴット
+item.clayium.lapis_lazuli_dust	Lapis Lazuli Dust	ラピスラズリの粉
+item.clayium.large_advanced_industrial_clay_plate	Large Advanced Industrial Clay Plate	発展工業用粘土大プレート
+item.clayium.large_aluminium_plate	Large Aluminium Plate	アルミニウム大プレート
+item.clayium.large_antimatter_plate	Large Antimatter Plate	反物質大プレート
+item.clayium.large_az91_d_alloy_plate	Large AZ91D Alloy Plate	AZ91D 合金大プレート
+item.clayium.large_clay_ball	Large Clay Ball	大粘土玉
+item.clayium.large_clay_plate	Large Clay Plate	粘土大プレート
+item.clayium.large_clay_steel_plate	Large Clay Steel Plate	粘土鋼大プレート
+item.clayium.large_clayium_plate	Large Clayium Plate	クレイウム大プレート
+item.clayium.large_dense_clay_plate	Large Dense Clay Plate	高密度粘土大プレート
+item.clayium.large_impure_aluminium_plate	Large Impure Aluminium Plate	不純なアルミニウム大プレート
+item.clayium.large_impure_silicon_plate	Large Impure Silicon Plate	不純なシリコン大プレート
+item.clayium.large_industrial_clay_plate	Large Industrial Clay Plate	工業用粘土大プレート
+item.clayium.large_octuple_energetic_clay_plate	Large Octuple Energetic Clay Plate	OEC 大プレート
+item.clayium.large_octuple_pure_antimatter_plate	Large Octuple Pure Antimatter Plate	OPA 大プレート
+item.clayium.large_pure_antimatter_plate	Large Pure Antimatter Plate	純反物質大プレート
+item.clayium.large_silicon_plate	Large Silicon Plate	シリコン大プレート
+item.clayium.large_silicone_plate	Large Silicone Plate	シリコーン大プレート
+item.clayium.large_ultimate_alloy_plate	Large Ultimate Alloy Plate	究極合金大プレート
+item.clayium.large_zk60_a_alloy_plate	Large ZK60A Alloy Plate	ZK60A 合金大プレート
+item.clayium.laser_parts	Laser Parts	レーザーパーツ
+item.clayium.lead_dust	Lead Dust	鉛の粉
+item.clayium.lead_ingot	Lead Ingot	鉛インゴット
+item.clayium.lithium_dust	Lithium Dust	リチウムの粉
+item.clayium.lithium_ingot	Lithium Ingot	リチウムインゴット
+item.clayium.magnesium_dust	Magnesium Dust	マグネシウムの粉
+item.clayium.magnesium_ingot	Magnesium Ingot	マグネシウムインゴット
+item.clayium.manganese_dust	Manganese Dust	マンガンの粉
+item.clayium.manganese_ingot	Manganese Ingot	マンガンインゴット
+item.clayium.manipulator_mk_i	Manipulator Mk I	マジック・ハンド Mk I
+item.clayium.manipulator_mk_ii	Manipulator Mk II	マジック・ハンド Mk II
+item.clayium.manipulator_mk_iii	Manipulator Mk III	マジック・ハンド Mk III
+item.clayium.molybdenum_ingot	Molybdenum Ingot	モリブデンインゴット
+item.clayium.neodymium_ingot	Neodymium Ingot	ネオジムインゴット
+item.clayium.neptunium_ingot	Neptunium Ingot	ネプツニウムインゴット
+item.clayium.nickel_dust	Nickel Dust	ニッケルの粉
+item.clayium.nickel_ingot	Nickel Ingot	ニッケルインゴット
+item.clayium.octuple_compressed_pure_antimatter	Octuple Compressed Pure Antimatter	8重圧縮純反物質
+item.clayium.octuple_energetic_clay_dust	Octuple Energetic Clay Dust	OEC の粉
+item.clayium.octuple_energetic_clay_plate	Octuple Energetic Clay Plate	OEC プレート
+item.clayium.octuple_pure_antimatter_dust	Octuple Pure Antimatter Dust	OPA の粉
+item.clayium.octuple_pure_antimatter_plate	Octuple Pure Antimatter Plate	OPA プレート
+item.clayium.organic_clay	Organic Clay	有機粘土
+item.clayium.osmium_ingot	Osmium Ingot	オスミウムインゴット
+item.clayium.palladium_ingot	Palladium Ingot	パラジウムインゴット
+item.clayium.phosphorus_dust	Phosphorus Dust	リンの粉
+item.clayium.platinum_ingot	Platinum Ingot	白金インゴット
+item.clayium.plutonium_ingot	Plutonium Ingot	プルトニウムインゴット
+item.clayium.potassium_dust	Potassium Dust	カリウムの粉
+item.clayium.potassium_ingot	Potassium Ingot	カリウムインゴット
+item.clayium.praseodymium_ingot	Praseodymium Ingot	プラセオジムインゴット
+item.clayium.precision_circuit	Precision Circuit	精密回路
+item.clayium.promethium_ingot	Promethium Ingot	プロメチウムインゴット
+item.clayium.protactinium_ingot	Protactinium Ingot	プロトアクチニウムインゴット
+item.clayium.pure_antimatter	Pure Antimatter	純反物質
+item.clayium.pure_antimatter_dust	Pure Antimatter Dust	純反物質の粉
+item.clayium.pure_antimatter_plate	Pure Antimatter Plate	純反物質プレート
+item.clayium.quadruple_compressed_pure_antimatter	Quadruple Compressed Pure Antimatter	4重圧縮純反物質
+item.clayium.quartz_dust	Quartz Dust	クォーツの粉
+item.clayium.quintuple_compressed_pure_antimatter	Quintuple Compressed Pure Antimatter	5重圧縮純反物質
+item.clayium.radium_ingot	Radium Ingot	ラジウムインゴット
+item.clayium.rhenium_ingot	Rhenium Ingot	レニウムインゴット
+item.clayium.rubidium_ingot	Rubidium Ingot	ルビジウムインゴット
+item.clayium.salt	Salt	塩
+item.clayium.saltpeter	Saltpeter	硝石
+item.clayium.samarium_ingot	Samarium Ingot	サマリウムインゴット
+item.clayium.septuple_compressed_pure_antimatter	Septuple Compressed Pure Antimatter	7重圧縮純反物質
+item.clayium.sextuple_compressed_pure_antimatter	Sextuple Compressed Pure Antimatter	6重圧縮純反物質
+item.clayium.short_clay_stick	Short Clay Stick	粘土小棒
+item.clayium.short_dense_clay_stick	Short Dense Clay Stick	高密度粘土小棒
+item.clayium.silicon_dust	Silicon Dust	シリコンの粉
+item.clayium.silicon_ingot	Silicon Ingot	シリコンインゴット
+item.clayium.silicon_plate	Silicon Plate	シリコンプレート
+item.clayium.silicone_dust	Silicone Dust	シリコーンの粉
+item.clayium.silicone_ingot	Silicone Ingot	シリコーンインゴット
+item.clayium.silicone_plate	Silicone Plate	シリコーンプレート
+item.clayium.silver_ingot	Silver Ingot	銀インゴット
+item.clayium.simple_circuit	Simple Circuit	簡易回路
+item.clayium.small_clay_disc	Small Clay Disc	粘土小円盤
+item.clayium.small_clay_ring	Small Clay Ring	粘土小リング
+item.clayium.small_dense_clay_disc	Small Dense Clay Disc	高密度粘土小円盤
+item.clayium.small_dense_clay_ring	Small Dense Clay Ring	高密度粘土小リング
+item.clayium.sodium_carbonate_dust	Sodium Carbonate Dust	炭酸ナトリウム
+item.clayium.sodium_dust	Sodium Dust	ナトリウムの粉
+item.clayium.sodium_ingot	Sodium Ingot	ナトリウムインゴット
+item.clayium.steel_dust	Steel Dust	スチールの粉
+item.clayium.steel_ingot	Steel Ingot	スチールインゴット
+item.clayium.strontium_dust	Strontium Dust	ストロンチウムの粉
+item.clayium.strontium_ingot	Strontium Ingot	ストロンチウムインゴット
+item.clayium.sulfur	Sulfur	硫黄
+item.clayium.synchronous_parts	Synchronous Parts	シンクロパーツ
+item.clayium.tantalum_ingot	Tantalum Ingot	タンタルインゴット
+item.clayium.teleportation_parts	Teleportation Parts	空間転移パーツ
+item.clayium.thorium_ingot	Thorium Ingot	トリウムインゴット
+item.clayium.tin_ingot	Tin Ingot	錫インゴット
+item.clayium.titanium_dust	Titanium Dust	チタンの粉
+item.clayium.titanium_ingot	Titanium Ingot	チタンインゴット
+item.clayium.triple_compressed_pure_antimatter	Triple Compressed Pure Antimatter	3重圧縮純反物質
+item.clayium.tungsten_ingot	Tungsten Ingot	タングステンインゴット
+item.clayium.ultimate_alloy_dust	Ultimate Alloy Dust	究極合金の粉
+item.clayium.ultimate_alloy_ingot	Ultimate Alloy Ingot	究極合金インゴット
+item.clayium.ultimate_alloy_plate	Ultimate Alloy Plate	究極合金プレート
+item.clayium.ultimate_compound_ingot	Ultimate Compound Ingot	究極合金の素
+item.clayium.uranium_ingot	Uranium Ingot	ウランインゴット
+item.clayium.vanadium_ingot	Vanadium Ingot	バナジウムインゴット
+item.clayium.zinc_aluminium_compound_dust	Zinc-Aluminium Compound Dust	亜鉛アルミ合金の粉
+item.clayium.zinc_aluminium_compound_ingot	Zinc-Aluminium Compound Ingot	亜鉛アルミ合金インゴット
+item.clayium.zinc_dust	Zinc Dust	亜鉛の粉
+item.clayium.zinc_ingot	Zinc Ingot	亜鉛インゴット
+item.clayium.zinc_zirconium_compound_dust	Zinc-Zirconium Compound Dust	亜鉛ジルコニウム合金の粉
+item.clayium.zinc_zirconium_compound_ingot	Zinc-Zirconium Compound Ingot	亜鉛ジルコニウム合金インゴット
+item.clayium.zirconium_dust	Zirconium Dust	ジルコニウムの粉
+item.clayium.zirconium_ingot	Zirconium Ingot	ジルコニウムインゴット
+item.clayium.zk60_a_alloy_dust	ZK60A Alloy Dust	ZK60A 合金の粉
+item.clayium.zk60_a_alloy_ingot	ZK60A Alloy Ingot	ZK60A 合金インゴット
+item.clayium.zk60_a_alloy_plate	ZK60A Alloy Plate	ZK60A 合金プレート
+item.clayium.impure_osmium_ingot	Impure Osmium Ingot	不純なオスミウムインゴット

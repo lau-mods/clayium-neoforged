@@ -52,7 +52,12 @@ runtime の検証は Harness の `deployMod` → `startRuntime` → 撮影 → `
 | 数値 Block/Item/Entity ID | なし | 除外。名前空間付き Registry ID のみ使用 |
 | 旧 TileEntity 代替名 | なし | 除外。旧ワールド移行を実装しない |
 
-現在登録済みの原作品種は `blockCompressedClay:0` → `dense_clay`、`:1` → `compressed_clay`、`blockClayOre:0` → `clay_ore`、`blockClayium` → `clayium_block`、`blocksBendingMachine:1` → `clay_bending_machine`、`itemDusts:IndustrialClay` → `industrial_clay_dust`、`itemClayWrench` → `clay_wrench`、`itemClayPickaxe` → `clay_pickaxe`、`itemGadgetHolder` → `gadget_holder` とする。機械系列の ID は Tier 1 の BendingMachine を `clay_bending_machine`、他の変種を `<stem>_tier_<Tier>` とする。
+M01 の登録済み原作品種は `blockCompressedClay:0` → `dense_clay`、`:1` → `compressed_clay`、`blockClayOre:0` → `clay_ore`、`blockClayium` → `clayium_block`、`blocksBendingMachine:1` → `clay_bending_machine`、`itemDusts:IndustrialClay` → `industrial_clay_dust`、`itemClayWrench` → `clay_wrench`、`itemClayPickaxe` → `clay_pickaxe`、`itemGadgetHolder` → `gadget_holder` とする。機械系列の ID は Tier 1 の BendingMachine を `clay_bending_machine`、他の変種を `<stem>_tier_<Tier>` とする。
+
+M02 では `CompressionTier` の旧 metadata 0～12 を `dense_clay`、`compressed_clay`、`industrial_clay`、`advanced_industrial_clay`、`energetic_clay`、`compressed_energetic_clay`、`double_compressed_energetic_clay`、`triple_compressed_energetic_clay`、`quadruple_compressed_energetic_clay`、`quintuple_compressed_energetic_clay`、`sextuple_compressed_energetic_clay`、`septuple_compressed_energetic_clay`、`octuple_compressed_energetic_clay` に対応させる。粘土換算量は順に 9、81、729、6,561、59,049、531,441、4,782,969、43,046,721、387,420,489、3,486,784,401、31,381,059,609、282,429,536,481、2,541,865,828,329。CE 価値は旧 metadata 0～3 が 0、4～12 が順に 1、10、100、1,000、10,000、100,000、1,000,000、10,000,000、100,000,000。隣接段階は Datagen の 9:1 圧縮・解凍クラフトで往復する。
+
+`original_varieties.tsv` にある 245 素材×形状だけを `MaterialRegistration` が登録する。`CLAY:BALL` と `CLAY:BLOCK` はバニラ、`DENSE_CLAY:BLOCK` と工業用・発展工業用・8重圧縮エネルギー粘土の BLOCK は既存圧縮段階に対応する。原作に単独の品目がある `impure_osmium_ingot` も登録する。`original_material_properties.tsv` は原作の形状別 Tier と色3層、`original_material_translations.tsv` は原作の英日表示名の正本。回路・Clay Core・モーター等の名前付き部品は `COMPONENT_DEFINITIONS` に置く。粉・インゴット・板・大板・宝石の `c:` タグは登録 ID の素材名を使う。汎用アイコンは原作 PNG の base/dark/light 層を不透明 ARGB の tint で着色し、専用 PNG は無改変で参照する。
+
 
 | 原作系列 | 名前付き ID stem | Tier |
 |---|---|---|

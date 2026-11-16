@@ -12,7 +12,10 @@ public final class FoundationCreativeTabRegistration {
                     () -> CreativeModeTab.builder()
                             .title(Component.translatable("itemGroup." + ClayiumMod.MOD_ID))
                             .icon(() -> FoundationItemRegistration.INDUSTRIAL_CLAY_DUST.get().getDefaultInstance())
-                            .displayItems((parameters, output) -> FoundationItemRegistration.ALL.forEach(output::accept))
+                            .displayItems((parameters, output) -> {
+                                FoundationItemRegistration.ALL.forEach(output::accept);
+                                MaterialRegistration.CREATIVE_TAB_ITEMS.forEach(output::accept);
+                            })
                             .build());
 
     private FoundationCreativeTabRegistration() {

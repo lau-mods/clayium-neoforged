@@ -23,6 +23,30 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "englishandjapanesetranslationsincludetierandunits"
+    },
+    {
+      "acId": "AC-F002-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "compressiontierspreserveoriginalvalues"
+    },
+    {
+      "acId": "AC-F002-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "compressionrecipesroundtripninetoone"
+    },
+    {
+      "acId": "AC-F002-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalmaterialshapeledgerisexact"
+    },
+    {
+      "acId": "AC-F002-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "materialnamescolorsandtooltipsarecomplete"
     }
   ],
   "e2e": [
@@ -37,6 +61,10 @@
     {
       "acId": "AC-F001-003",
       "scenario": "tests/e2e/foundation-assets.mjs"
+    },
+    {
+      "acId": "AC-F002-003",
+      "scenario": "tests/e2e/material-catalog.mjs"
     }
   ]
 }

@@ -3,6 +3,12 @@ package net.claustra01.clayium.datagen;
 import java.util.List;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.datagen.material.MaterialBlockLoot;
+import net.claustra01.clayium.datagen.material.MaterialBlockStateProvider;
+import net.claustra01.clayium.datagen.material.MaterialItemModelProvider;
+import net.claustra01.clayium.datagen.material.MaterialItemTagProvider;
+import net.claustra01.clayium.datagen.material.MaterialLanguageProvider;
+import net.claustra01.clayium.datagen.material.MaterialRecipeProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -16,15 +22,17 @@ public final class ClayiumDataGenerators {
 
         generator.addProvider(event.includeClient(), new FoundationBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new FoundationItemModelProvider(output, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new FoundationLanguageProvider(output, "en_us"));
-        generator.addProvider(event.includeClient(), new FoundationLanguageProvider(output, "ja_jp"));
+        generator.addProvider(event.includeClient(), new MaterialBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new MaterialItemModelProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "en_us"));
+        generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "ja_jp"));
 
         FoundationBlockTagProvider blockTags = new FoundationBlockTagProvider(
                 output, event.getLookupProvider(), event.getExistingFileHelper());
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(
                 event.includeServer(),
-                new FoundationItemTagProvider(
+                new MaterialItemTagProvider(
                         output,
                         event.getLookupProvider(),
                         blockTags.contentsGetter(),
@@ -34,9 +42,11 @@ public final class ClayiumDataGenerators {
                 new LootTableProvider(
                         output,
                         Set.of(),
-                        List.of(new LootTableProvider.SubProviderEntry(FoundationBlockLoot::new, LootContextParamSets.BLOCK)),
+                        List.of(
+                                new LootTableProvider.SubProviderEntry(FoundationBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(MaterialBlockLoot::new, LootContextParamSets.BLOCK)),
                         event.getLookupProvider()));
-        generator.addProvider(event.includeServer(), new FoundationRecipeProvider(output, event.getLookupProvider()));
+        generator.addProvider(event.includeServer(), new MaterialRecipeProvider(output, event.getLookupProvider()));
     }
 
     private ClayiumDataGenerators() {
