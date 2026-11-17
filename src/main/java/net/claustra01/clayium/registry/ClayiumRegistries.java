@@ -9,6 +9,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -33,11 +34,14 @@ public final class ClayiumRegistries {
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, ClayiumMod.MOD_ID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, ClayiumMod.MOD_ID);
+    public static final DeferredRegister<Feature<?>> FEATURES =
+            DeferredRegister.create(Registries.FEATURE, ClayiumMod.MOD_ID);
 
     public static void register(IEventBus modEventBus) {
         FoundationBlockRegistration.ALL.size();
         FoundationItemRegistration.ALL.size();
         MaterialRegistration.CREATIVE_TAB_ITEMS.size();
+        WorldgenRegistration.BLOCKS.size();
         FoundationDataComponentRegistration.TIER.getId();
         FoundationCreativeTabRegistration.MAIN.getId();
         RecipeRegistration.MACHINE_SERIALIZER.getId();
@@ -51,6 +55,7 @@ public final class ClayiumRegistries {
         RECIPE_SERIALIZERS.register(modEventBus);
         DATA_COMPONENT_TYPES.register(modEventBus);
         ATTACHMENT_TYPES.register(modEventBus);
+        FEATURES.register(modEventBus);
     }
 
     private ClayiumRegistries() {

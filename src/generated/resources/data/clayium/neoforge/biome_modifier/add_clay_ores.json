@@ -1,0 +1,11 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "clayium:clay_ore_main_middle",
+    "clayium:clay_ore_main_deep",
+    "clayium:large_dense_clay_ore_middle",
+    "clayium:large_dense_clay_ore_deep"
+  ],
+  "step": "underground_ores"
+}

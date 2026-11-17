@@ -11,7 +11,6 @@ public final class FoundationItemRegistration {
     public static final DeferredItem<BlockItem> DENSE_CLAY = registerBlockItem("dense_clay", FoundationBlockRegistration.DENSE_CLAY);
     public static final DeferredItem<BlockItem> COMPRESSED_CLAY = registerBlockItem(
             "compressed_clay", FoundationBlockRegistration.COMPRESSED_CLAY);
-    public static final DeferredItem<BlockItem> CLAY_ORE = registerBlockItem("clay_ore", FoundationBlockRegistration.CLAY_ORE);
     public static final DeferredItem<BlockItem> CLAYIUM_BLOCK = registerBlockItem(
             "clayium_block", FoundationBlockRegistration.CLAYIUM_BLOCK);
     public static final DeferredItem<FoundationBlockItem> CLAY_BENDING_MACHINE = ClayiumRegistries.ITEMS.register(
@@ -32,7 +31,6 @@ public final class FoundationItemRegistration {
     public static final List<DeferredItem<? extends Item>> ALL = List.of(
             DENSE_CLAY,
             COMPRESSED_CLAY,
-            CLAY_ORE,
             CLAYIUM_BLOCK,
             CLAY_BENDING_MACHINE,
             INDUSTRIAL_CLAY_DUST,
@@ -42,7 +40,8 @@ public final class FoundationItemRegistration {
 
     private static DeferredItem<BlockItem> registerBlockItem(
             String id, net.neoforged.neoforge.registries.DeferredBlock<? extends net.minecraft.world.level.block.Block> block) {
-        return ClayiumRegistries.ITEMS.register(id, () -> new FoundationBlockItem(block.get(), tier(id.equals("clay_ore") ? 1 : id.equals("dense_clay") ? 0 : id.equals("compressed_clay") ? 1 : 8)));
+        return ClayiumRegistries.ITEMS.register(id, () -> new FoundationBlockItem(
+                block.get(), tier(id.equals("dense_clay") ? 0 : id.equals("compressed_clay") ? 1 : 8)));
     }
 
     private static Item.Properties tier(int tier) {

@@ -14,6 +14,7 @@ public final class FoundationCreativeTabRegistration {
                             .icon(() -> FoundationItemRegistration.INDUSTRIAL_CLAY_DUST.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
                                 FoundationItemRegistration.ALL.forEach(output::accept);
+                                WorldgenRegistration.ITEMS.forEach(output::accept);
                                 MaterialRegistration.CREATIVE_TAB_ITEMS.forEach(output::accept);
                             })
                             .build());

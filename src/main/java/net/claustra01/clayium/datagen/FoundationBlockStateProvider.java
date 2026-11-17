@@ -20,7 +20,6 @@ public final class FoundationBlockStateProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         cubeAll(FoundationBlockRegistration.DENSE_CLAY.get(), "compressedclay-0");
         cubeAll(FoundationBlockRegistration.COMPRESSED_CLAY.get(), "compressedclay-1");
-        cubeAll(FoundationBlockRegistration.CLAY_ORE.get(), "clayore-0");
         cubeAll(FoundationBlockRegistration.CLAYIUM_BLOCK.get(), "clayium");
 
         ModelFile machine = models().getBuilder(FoundationBlockRegistration.CLAY_BENDING_MACHINE.getId().getPath())

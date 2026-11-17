@@ -49,6 +49,30 @@
       "name": "materialnamescolorsandtooltipsarecomplete"
     },
     {
+      "acId": "AC-F003-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "compositeoregenerationisnestedandhostaware"
+    },
+    {
+      "acId": "AC-F003-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fourorelayersusespecifiedtrialssizesandheights"
+    },
+    {
+      "acId": "AC-F003-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "worldgenisoverworldonlyanddatapackdriven"
+    },
+    {
+      "acId": "AC-F003-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "oredropsmatchranksfortuneandsilktouch"
+    },
+    {
       "acId": "AC-F005-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -107,6 +131,10 @@
     {
       "acId": "AC-F002-003",
       "scenario": "tests/e2e/material-catalog.mjs"
+    },
+    {
+      "acId": "AC-F003-003",
+      "scenario": "tests/e2e/clay-ores.mjs"
     }
   ]
 }

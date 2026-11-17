@@ -24,6 +24,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.claustra01.clayium.registry.OriginalClassInventory;
 import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -65,6 +66,8 @@ public final class FoundationGameTests {
         for (String idPath : MaterialRegistration.COMPONENTS.keySet()) {
             expectedItems.add(ClayiumMod.id(idPath));
         }
+        WorldgenRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        WorldgenRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         require(clayiumIds(BuiltInRegistries.BLOCK).equals(expectedBlocks), "Block registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).isEmpty(), "Unexpected block entity");

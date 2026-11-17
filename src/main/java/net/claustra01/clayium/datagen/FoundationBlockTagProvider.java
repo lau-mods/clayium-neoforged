@@ -4,9 +4,11 @@ import java.util.concurrent.CompletableFuture;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.FoundationBlockRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -23,12 +25,18 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
                 FoundationBlockRegistration.DENSE_CLAY.get(),
                 FoundationBlockRegistration.COMPRESSED_CLAY.get(),
-                FoundationBlockRegistration.CLAY_ORE.get(),
                 FoundationBlockRegistration.CLAYIUM_BLOCK.get(),
                 FoundationBlockRegistration.CLAY_BENDING_MACHINE.get());
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WorldgenRegistration.BLOCKS.stream()
+                .map(block -> block.get()).toArray(Block[]::new));
         MaterialRegistration.MATERIAL_OWNED_BLOCKS.forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
         tag(BlockTags.NEEDS_STONE_TOOL).add(
-                FoundationBlockRegistration.CLAY_ORE.get(),
+                WorldgenRegistration.CLAY_ORE.get(),
+                WorldgenRegistration.DEEPSLATE_CLAY_ORE.get(),
+                WorldgenRegistration.DENSE_CLAY_ORE.get(),
+                WorldgenRegistration.DEEPSLATE_DENSE_CLAY_ORE.get(),
+                WorldgenRegistration.LARGE_DENSE_CLAY_ORE.get(),
+                WorldgenRegistration.DEEPSLATE_LARGE_DENSE_CLAY_ORE.get(),
                 FoundationBlockRegistration.CLAYIUM_BLOCK.get());
     }
 }

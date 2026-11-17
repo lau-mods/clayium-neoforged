@@ -52,7 +52,20 @@ runtime の検証は Harness の `deployMod` → `startRuntime` → 撮影 → `
 | 数値 Block/Item/Entity ID | なし | 除外。名前空間付き Registry ID のみ使用 |
 | 旧 TileEntity 代替名 | なし | 除外。旧ワールド移行を実装しない |
 
-M01 の登録済み原作品種は `blockCompressedClay:0` → `dense_clay`、`:1` → `compressed_clay`、`blockClayOre:0` → `clay_ore`、`blockClayium` → `clayium_block`、`blocksBendingMachine:1` → `clay_bending_machine`、`itemDusts:IndustrialClay` → `industrial_clay_dust`、`itemClayWrench` → `clay_wrench`、`itemClayPickaxe` → `clay_pickaxe`、`itemGadgetHolder` → `gadget_holder` とする。機械系列の ID は Tier 1 の BendingMachine を `clay_bending_machine`、他の変種を `<stem>_tier_<Tier>` とする。
+M01 の登録済み原作品種は `blockCompressedClay:0` → `dense_clay`、`:1` → `compressed_clay`、`blockClayium` → `clayium_block`、`blocksBendingMachine:1` → `clay_bending_machine`、`itemDusts:IndustrialClay` → `industrial_clay_dust`、`itemClayWrench` → `clay_wrench`、`itemClayPickaxe` → `clay_pickaxe`、`itemGadgetHolder` → `gadget_holder` とする。`blockClayOre:0` → `clay_ore` は M05 の `WorldgenRegistration` が担当する。機械系列の ID は Tier 1 の BendingMachine を `clay_bending_machine`、他の変種を `<stem>_tier_<Tier>` とする。
+
+M05 の `WorldgenRegistration` は原作 `blockClayOre:0/1/2` をそれぞれ `clay_ore`、`dense_clay_ore`、`large_dense_clay_ore` に対応させ、`deepslate_clay_ore`、`deepslate_dense_clay_ore`、`deepslate_large_dense_clay_ore` を追加する。通常鉱石は幸運が効く粘土玉4～16個、シルクタッチでは自身を落とし、高密度・大型は工具や幸運に関係なく適正採掘時に自身を1個落とす。全6種の採掘ランクは石ツルハシ、硬度3.0、爆発耐性5.0。深層岩版モデルも対応する原作の石版PNGをそのまま参照する。
+
+`clayium:composite_clay_ore` は `targets`（石・深層岩の置換タグと3ランクの状態）、`primary_size`、`dense_size`、`large_chance`、`discard_chance_on_air_exposure`、`independent_large` をCodecで読み込む。主要層は通常鉱脈の同基点に高密度部分を作り、高密度の基点+8,+0,+8だけを50%で大型化する。独立大型層は大型鉱石だけを生成する。露出抑制の初期値は0である。
+
+| M05 の ConfiguredFeature / PlacedFeature ID | Y（両端を含む） | 試行回数/chunk | サイズ | 高密度サイズ |
+|---|---:|---:|---:|---:|
+| `clay_ore_main_middle` | 16～95 | 8 | 24 | 10 |
+| `clay_ore_main_deep` | -48～15 | 3 | 24 | 10 |
+| `large_dense_clay_ore_middle` | 8～23 | 1 | 6 | 独立 |
+| `large_dense_clay_ore_deep` | -48～-9 | 1 | 6 | 独立 |
+
+`add_clay_ores` NeoForge Biome Modifier は4層を `#minecraft:is_overworld` の `underground_ores` に追加する。新規チャンクだけが対象で、既存チャンクは再生成しない。
 
 M02 では `CompressionTier` の旧 metadata 0～12 を `dense_clay`、`compressed_clay`、`industrial_clay`、`advanced_industrial_clay`、`energetic_clay`、`compressed_energetic_clay`、`double_compressed_energetic_clay`、`triple_compressed_energetic_clay`、`quadruple_compressed_energetic_clay`、`quintuple_compressed_energetic_clay`、`sextuple_compressed_energetic_clay`、`septuple_compressed_energetic_clay`、`octuple_compressed_energetic_clay` に対応させる。粘土換算量は順に 9、81、729、6,561、59,049、531,441、4,782,969、43,046,721、387,420,489、3,486,784,401、31,381,059,609、282,429,536,481、2,541,865,828,329。CE 価値は旧 metadata 0～3 が 0、4～12 が順に 1、10、100、1,000、10,000、100,000、1,000,000、10,000,000、100,000,000。隣接段階は Datagen の 9:1 圧縮・解凍クラフトで往復する。
 
