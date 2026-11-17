@@ -10,6 +10,7 @@ import net.claustra01.clayium.ClayiumMod;
 import net.minecraft.resources.ResourceLocation;
 
 public enum ClayiumRecipeMethod {
+    CLAY_WORK_TABLE("clay_work_table"),
     BENDING_MACHINE("bending_machine"),
     WIRE_DRAWING_MACHINE("wire_drawing_machine"),
     PIPE_DRAWING_MACHINE("pipe_drawing_machine"),

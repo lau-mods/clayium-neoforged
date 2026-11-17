@@ -10,6 +10,7 @@ import net.claustra01.clayium.datagen.material.MaterialRecipeProvider;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.datagen.workbench.WorkbenchRecipeProvider;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -25,6 +26,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
         MaterialRecipeProvider.buildRecipes(recipeOutput);
+        WorkbenchRecipeProvider.buildWorkbenchRecipes(recipeOutput);
         CondenserGrinderDecomposerRecipes.buildRecipes(recipeOutput);
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BENDING_MACHINE, 4)
                 .requires(Items.CLAY, 2)

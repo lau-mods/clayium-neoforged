@@ -77,12 +77,30 @@ public final class FoundationGameTests {
         }
         WorldgenRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         WorldgenRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
+        Set<String> workbenchOriginalKeys = Set.of(
+                "tile.blockClayWorkTable.name", "tile.blockClayCraftingTable.name",
+                "tile.blockRawClayMachineHull.0.name", "tile.blockMachineHull.0.name",
+                "item.itemRawClayCraftingTools.RollingPin.name", "item.itemRawClayCraftingTools.Slicer.name",
+                "item.itemRawClayCraftingTools.Spatula.name", "item.itemClayRollingPin.name",
+                "item.itemClaySlicer.name", "item.itemClaySpatula.name", "item.itemClayWrench.name",
+                "item.itemClayPipingTools.IO.name", "item.itemClayPipingTools.Piping.name",
+                "item.itemClayPipingTools.Memory.name", "item.itemDirectionMemory.name");
+        for (OriginalRegistryCatalog.OriginalVariety variety : OriginalRegistryCatalog.ORIGINAL_VARIETIES) {
+            if (workbenchOriginalKeys.contains(variety.legacyId())) {
+                ResourceLocation id = ClayiumMod.id(variety.namedId());
+                expectedItems.add(id);
+                if (variety.kind().equals("block")) {
+                    expectedBlocks.add(id);
+                }
+            }
+        }
         WeaponRegistration.ALL.forEach(item -> expectedItems.add(item.getId()));
         require(clayiumIds(BuiltInRegistries.BLOCK).equals(expectedBlocks), "Block registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
-        require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE)
-                        .equals(Set.of(ClayiumMod.id("processing_machine"))),
-                "Processing machine block entity registration differs");
+        require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).equals(Set.of(
+                        ClayiumMod.id("clay_work_table"), ClayiumMod.id("clay_crafting_board"),
+                        ClayiumMod.id("processing_machine"))),
+                "Block entity registrations differ from the workbench and machine blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
                 "Entity registry differs from the weapon ledger");

@@ -118,7 +118,7 @@ M04 の CE は `ClayEnergy` の非負 `long` 内部値で保持し、1 CE を 10
 
 ## M03 機械レシピ
 
-Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`fluid_transfer_machine`（すべて `clayium:` 名前空間）を登録する。
+Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`fluid_transfer_machine`、`clay_work_table`（すべて `clayium:` 名前空間）を登録する。
 
 レシピ JSON は `type: clayium:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
 
@@ -130,6 +130,14 @@ Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:
 - 在庫は入力 0、出力 1、処理中退避 2、エネルギー粘土 3 の4スロット。退避スロットは GUI と Capability から操作できない。入力は処理開始時に退避し、処理完了時に消費する。出力満杯や CE 不足では進捗を止め、レシピ削除・変更時には退避分を入力へ戻す。保存 NBT は `inventory`、`energy`、`state`、`active_recipe`、`pending_output`、`progress`、`required_progress`、`energy_per_progress`、`progress_remainder`、`progress_per_tick`、`faces` を使用する。
 - ItemHandler は上面・水平面が入力、下面が出力。各面を入力・出力・無効に変更できる。`machine_face_mode` Payload はサーバーで開いている `processing_machine` メニュー、位置、距離、方向とモードの値域を検証する。
 - 凝縮・粉砕・分解のレシピ JSON は `CondenserGrinderDecomposerRecipes` から生成する。Raw Ore 追加は M17 の担当であり、この系列では粘土・素材の加工を対象とする。
+
+## M07 手動製作
+
+`clay_work_table`、`clay_crafting_board`、`raw_clay_machine_hull`、`clay_machine_hull` を Block と Item に登録する。最初の2種類は同名の BlockEntity と Menu を持つ。`clay_work_table` レシピの `required_tier` は工具操作番号1～6を表す。操作1・2は工具不要、3は `clay_rolling_pin`、4・6は `clay_slicer` または `clay_spatula`、5は `clay_spatula` を要する。工具は完了時に1耐久を消費する。
+
+原作台帳の工具品種 `raw_clay_rolling_pin`、`raw_clay_slicer`、`raw_clay_spatula` は Tier 0 で耐久なし。焼成後の `clay_rolling_pin`、`clay_slicer` は Tier 1・耐久60、`clay_spatula` は Tier 1・耐久36。`clay_io_configurator`、`clay_piping_configurator` は Tier 1・耐久128、`memory_card` と `direction_memory_card` は Tier 1・耐久なし。既存の `clay_wrench` も初期製作対象。機械への設定複写・回転は後続の装置実装で扱う。
+
+作業板は上下・水平の6方向を順に調べ、最初に見つかった隣接 `IItemHandler` の先頭27スロットまでを表示する。3×3の配置で製作した後、消費で空いた配置スロットを隣接在庫の同一アイテム・同一コンポーネントの品で補充する。隣接 BlockEntity が撤去された場合はメニューを無効にする。GameTest は `vanillaResourcesReachTierOneParts`、`clayWorkTablePressesConsumeInputsAndDamageTools`、`clayCraftingBoardUsesAdjacentItemHandlerWithoutLoss`、`workbenchMenusExposeOperableSlots`。外観 E2E は `tests/e2e/clay-workbench.mjs`。
 
 ## M19 粘土銃
 

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.2,
+  "ingredient": {
+    "item": "clayium:raw_clay_rolling_pin"
+  },
+  "result": {
+    "count": 1,
+    "id": "clayium:clay_rolling_pin"
+  }
+}

@@ -26,7 +26,30 @@ public final class LegacyTranslations {
             Map.entry("tooltip.clayium.clay_pickaxe.line2", "and increases their drops."),
             Map.entry("item.clayium.gadget_holder", "Clay Gadget Holder"),
             Map.entry("tooltip.clayium.gadget_holder.line1", "Clay Gadgets give effects"),
-            Map.entry("tooltip.clayium.gadget_holder.line2", "when they are put in this.")
+            Map.entry("tooltip.clayium.gadget_holder.line2", "when they are put in this."),
+            Map.entry("block.clayium.clay_work_table", "Clay Work Table"),
+            Map.entry("block.clayium.clay_crafting_board", "Clay Crafting Board"),
+            Map.entry("block.clayium.raw_clay_machine_hull", "Raw Clay Machine Hull"),
+            Map.entry("block.clayium.clay_machine_hull", "Clay Machine Hull"),
+            Map.entry("item.clayium.raw_clay_rolling_pin", "Raw Clay Rolling Pin"),
+            Map.entry("item.clayium.raw_clay_slicer", "Raw Clay Slicer"),
+            Map.entry("item.clayium.raw_clay_spatula", "Raw Clay Spatula"),
+            Map.entry("item.clayium.clay_rolling_pin", "Clay Rolling Pin"),
+            Map.entry("item.clayium.clay_slicer", "Clay Slicer"),
+            Map.entry("item.clayium.clay_spatula", "Clay Spatula"),
+            Map.entry("item.clayium.clay_io_configurator", "Clay I/O Configurator"),
+            Map.entry("item.clayium.clay_piping_configurator", "Clay Piping Configurator"),
+            Map.entry("item.clayium.memory_card", "Memory Card"),
+            Map.entry("item.clayium.direction_memory_card", "Direction Memory Card"),
+            Map.entry("container.clayium.clay_work_table", "Clay Work Table"),
+            Map.entry("container.clayium.clay_crafting_board", "Clay Crafting Board"),
+            Map.entry("container.clayium.nearby_inventory", "Adjacent inventory"),
+            Map.entry("button.clayium.work_action.1", "Form by hand"),
+            Map.entry("button.clayium.work_action.2", "Knead"),
+            Map.entry("button.clayium.work_action.3", "Roll"),
+            Map.entry("button.clayium.work_action.4", "Slice"),
+            Map.entry("button.clayium.work_action.5", "Shape"),
+            Map.entry("button.clayium.work_action.6", "Finish")
     );
 
     public static final Map<String, String> JAPANESE = Map.ofEntries(
@@ -52,7 +75,30 @@ public final class LegacyTranslations {
             Map.entry("tooltip.clayium.clay_pickaxe.line2", "そのドロップ数を上昇させる"),
             Map.entry("item.clayium.gadget_holder", "粘土ガジェットホルダー"),
             Map.entry("tooltip.clayium.gadget_holder.line1", "粘土ガジェットはこのホルダーに"),
-            Map.entry("tooltip.clayium.gadget_holder.line2", "入れて使用すること")
+            Map.entry("tooltip.clayium.gadget_holder.line2", "入れて使用すること"),
+            Map.entry("block.clayium.clay_work_table", "粘土作業台"),
+            Map.entry("block.clayium.clay_crafting_board", "粘土作業板"),
+            Map.entry("block.clayium.raw_clay_machine_hull", "未焼成粘土機械筐体"),
+            Map.entry("block.clayium.clay_machine_hull", "粘土機械筐体"),
+            Map.entry("item.clayium.raw_clay_rolling_pin", "未焼成粘土めん棒"),
+            Map.entry("item.clayium.raw_clay_slicer", "未焼成粘土スライサー"),
+            Map.entry("item.clayium.raw_clay_spatula", "未焼成粘土へら"),
+            Map.entry("item.clayium.clay_rolling_pin", "粘土めん棒"),
+            Map.entry("item.clayium.clay_slicer", "粘土スライサー"),
+            Map.entry("item.clayium.clay_spatula", "粘土へら"),
+            Map.entry("item.clayium.clay_io_configurator", "粘土搬入出設定ツール"),
+            Map.entry("item.clayium.clay_piping_configurator", "粘土配管設定ツール"),
+            Map.entry("item.clayium.memory_card", "設定記憶カード"),
+            Map.entry("item.clayium.direction_memory_card", "方向記憶カード"),
+            Map.entry("container.clayium.clay_work_table", "粘土作業台"),
+            Map.entry("container.clayium.clay_crafting_board", "粘土作業板"),
+            Map.entry("container.clayium.nearby_inventory", "隣接在庫"),
+            Map.entry("button.clayium.work_action.1", "手で成形"),
+            Map.entry("button.clayium.work_action.2", "こねる"),
+            Map.entry("button.clayium.work_action.3", "延ばす"),
+            Map.entry("button.clayium.work_action.4", "切る"),
+            Map.entry("button.clayium.work_action.5", "形を整える"),
+            Map.entry("button.clayium.work_action.6", "仕上げる")
     );
 
     private LegacyTranslations() {

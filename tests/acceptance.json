@@ -115,6 +115,30 @@
       "name": "tiercalculationspreserveroundingandpreventfreework"
     },
     {
+      "acId": "AC-F008-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "vanillaresourcesreachtieroneparts"
+    },
+    {
+      "acId": "AC-F008-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayworktablepressesconsumeinputsanddamagetools"
+    },
+    {
+      "acId": "AC-F008-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "claycraftingboardusesadjacentitemhandlerwithoutloss"
+    },
+    {
+      "acId": "AC-F008-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "workbenchmenusexposeoperableslots"
+    },
+    {
       "acId": "AC-F007-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -237,6 +261,10 @@
     {
       "acId": "AC-F003-003",
       "scenario": "tests/e2e/clay-ores.mjs"
+    },
+    {
+      "acId": "AC-F008-002",
+      "scenario": "tests/e2e/clay-workbench.mjs"
     },
     {
       "acId": "AC-F040-003",

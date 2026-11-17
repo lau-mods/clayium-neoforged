@@ -15,6 +15,9 @@ import net.claustra01.clayium.datagen.worldgen.WorldgenBlockLoot;
 import net.claustra01.clayium.datagen.worldgen.WorldgenBlockStateProvider;
 import net.claustra01.clayium.datagen.worldgen.WorldgenDataProvider;
 import net.claustra01.clayium.datagen.recipe.MachineRecipeProvider;
+import net.claustra01.clayium.datagen.workbench.WorkbenchBlockLoot;
+import net.claustra01.clayium.datagen.workbench.WorkbenchBlockStateProvider;
+import net.claustra01.clayium.datagen.workbench.WorkbenchItemModelProvider;
 import net.claustra01.clayium.datagen.weapon.WeaponItemModelProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -32,7 +35,9 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new MaterialBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MachineBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new WorkbenchBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialItemModelProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new WorkbenchItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new GadgetItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WeaponItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "en_us"));
@@ -55,9 +60,10 @@ public final class ClayiumDataGenerators {
                         Set.of(),
                         List.of(
                                 new LootTableProvider.SubProviderEntry(FoundationBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(WorldgenBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MaterialBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MachineBlockLoot::new, LootContextParamSets.BLOCK),
-                                new LootTableProvider.SubProviderEntry(WorldgenBlockLoot::new, LootContextParamSets.BLOCK)),
+                                new LootTableProvider.SubProviderEntry(WorkbenchBlockLoot::new, LootContextParamSets.BLOCK)),
                         event.getLookupProvider()));
         generator.addProvider(event.includeServer(), WorldgenDataProvider.create(event));
         generator.addProvider(event.includeServer(), new MachineRecipeProvider(output, event.getLookupProvider()));

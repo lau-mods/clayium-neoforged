@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 0,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:clay"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 4,
+      "id": "clayium:clay_plate"
+    }
+  ],
+  "processing_method": "clayium:clay_work_table",
+  "processing_ticks": 4,
+  "required_tier": 3
+}
