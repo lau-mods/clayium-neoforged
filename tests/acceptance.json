@@ -157,6 +157,18 @@
       "name": "machinemenuandfacesenforceserverownedaccess"
     },
     {
+      "acId": "AC-F009-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "flowingwaterusesoriginalrollweartierandsupplycap"
+    },
+    {
+      "acId": "AC-F009-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "waterloggedsourcescountaswaterbutnotflowingpower"
+    },
+    {
       "acId": "AC-F011-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -253,6 +265,10 @@
     {
       "acId": "AC-F011-002",
       "scenario": "tests/e2e/processing-machines.mjs"
+    },
+    {
+      "acId": "AC-F009-001",
+      "scenario": "tests/e2e/water-wheels.mjs"
     },
     {
       "acId": "AC-F038-003",

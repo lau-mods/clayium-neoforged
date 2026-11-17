@@ -29,6 +29,7 @@ import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.registry.WeaponRegistration;
+import net.claustra01.clayium.registry.WaterWheelRegistration;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -99,7 +100,7 @@ public final class FoundationGameTests {
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).equals(Set.of(
                         ClayiumMod.id("clay_work_table"), ClayiumMod.id("clay_crafting_board"),
-                        ClayiumMod.id("processing_machine"))),
+                        ClayiumMod.id("processing_machine"), ClayiumMod.id("water_wheel"))),
                 "Block entity registrations differ from the workbench and machine blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
@@ -199,6 +200,9 @@ public final class FoundationGameTests {
             expectedKeys.add("tooltip.clayium.clay_units");
             for (String id : MachineRegistration.MACHINES.keySet()) {
                 expectedKeys.add("block.clayium." + id);
+            }
+            for (WaterWheelRegistration.WaterWheelDefinition definition : WaterWheelRegistration.DEFINITIONS) {
+                expectedKeys.add("block.clayium." + definition.id());
             }
             for (String state : List.of("idle", "running", "output_full", "waiting_for_energy", "recipe_changed")) {
                 expectedKeys.add("gui.clayium.machine.state." + state);

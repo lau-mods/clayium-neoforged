@@ -50,6 +50,8 @@ public final class OriginalRegistryCatalog {
             new RegisteredEntry("blockClayOre:0", "clay_ore", true),
             new RegisteredEntry("blockClayium", "clayium_block", true),
             new RegisteredEntry("blocksBendingMachine:1", "clay_bending_machine", true),
+            new RegisteredEntry("blockClayWaterWheel", "clay_water_wheel", true),
+            new RegisteredEntry("blockDenseClayWaterWheel", "dense_clay_water_wheel", true),
             new RegisteredEntry("itemDusts:IndustrialClay", "industrial_clay_dust", false),
             new RegisteredEntry("itemClayWrench", "clay_wrench", false),
             new RegisteredEntry("itemClayPickaxe", "clay_pickaxe", false),

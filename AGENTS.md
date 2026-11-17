@@ -131,6 +131,14 @@ Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:
 - ItemHandler は上面・水平面が入力、下面が出力。各面を入力・出力・無効に変更できる。`machine_face_mode` Payload はサーバーで開いている `processing_machine` メニュー、位置、距離、方向とモードの値域を検証する。
 - 凝縮・粉砕・分解のレシピ JSON は `CondenserGrinderDecomposerRecipes` から生成する。Raw Ore 追加は M17 の担当であり、この系列では粘土・素材の加工を対象とする。
 
+## M08 水車と流水動力
+
+`tile.blockClayWaterWheel.name` は `clayium:clay_water_wheel`（Tier 1）、`tile.blockDenseClayWaterWheel.name` は `clayium:dense_clay_water_wheel`（Tier 2）に対応する。両ブロックは `clayium:water_wheel` BlockEntity を使う。
+
+中心3×3×3の流水数を20 tickごとに走査し、毎tick `random.nextInt(40) < 流水数` なら進捗へ効率を加える。初期効率は `1000*max(tier,1)^3`、閾値は20,000。閾値到達ごとに20%の確率で効率を1下げ、隣接するTier 2～3の `processing_machine` へ `max(tier,1)^8` 内部CEを供給する。供給先の蓄積は `5*max(tier,1)^8` 内部CEを上限とする。進捗と効率は保存する。
+
+`WaterDetection` は `FluidState` で水存在・水源・流水を区別する。水入りブロックは水存在と水源に含め、流速のない水源は流水数へ含めない。
+
 ## M07 手動製作
 
 `clay_work_table`、`clay_crafting_board`、`raw_clay_machine_hull`、`clay_machine_hull` を Block と Item に登録する。最初の2種類は同名の BlockEntity と Menu を持つ。`clay_work_table` レシピの `required_tier` は工具操作番号1～6を表す。操作1・2は工具不要、3は `clay_rolling_pin`、4・6は `clay_slicer` または `clay_spatula`、5は `clay_spatula` を要する。工具は完了時に1耐久を消費する。
