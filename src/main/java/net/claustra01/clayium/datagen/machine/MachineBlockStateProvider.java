@@ -2,6 +2,8 @@ package net.claustra01.clayium.datagen.machine;
 
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.MachineRegistration;
+import net.claustra01.clayium.registry.FormingMachineRegistration;
+import net.claustra01.clayium.machine.ClayMachineBlock;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction;
@@ -21,21 +23,25 @@ public final class MachineBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        MachineRegistration.MACHINES.values().forEach(definition -> {
-            String id = definition.id();
-            ResourceLocation hull = ClayiumMod.id("block/machinehull-" + Math.max(0, definition.tier() - 1));
-            ResourceLocation front = ClayiumMod.id("block/" + definition.series().frontTexture());
-            ModelFile model = models().getBuilder(id)
-                    .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
-                    .texture("hull", hull)
-                    .texture("front", front)
-                    .texture("particle", "#hull")
-                    .renderType("minecraft:cutout")
-                    .element().from(0, 0, 0).to(16, 16, 16).cube("#hull").end()
-                    .element().from(0, 0, -0.01F).to(16, 16, 0)
-                    .face(Direction.NORTH).texture("#front").end().end();
-            horizontalBlock(definition.block().get(), model);
-            simpleBlockItem(definition.block().get(), model);
-        });
+        MachineRegistration.MACHINES.values().forEach(definition ->
+                machine(definition.id(), definition.tier(), definition.series().frontTexture(), definition.block().get()));
+        FormingMachineRegistration.MACHINES.values().forEach(definition ->
+                machine(definition.id(), definition.tier(), definition.series().frontTexture(), definition.block().get()));
+    }
+
+    private void machine(String id, int tier, String frontTexture, ClayMachineBlock block) {
+        ResourceLocation hull = ClayiumMod.id("block/machinehull-" + Math.max(0, tier - 1));
+        ResourceLocation front = ClayiumMod.id("block/" + frontTexture);
+        ModelFile model = models().getBuilder(id)
+                .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
+                .texture("hull", hull)
+                .texture("front", front)
+                .texture("particle", "#hull")
+                .renderType("minecraft:cutout")
+                .element().from(0, 0, 0).to(16, 16, 16).cube("#hull").end()
+                .element().from(0, 0, -0.01F).to(16, 16, 0)
+                .face(Direction.NORTH).texture("#front").end().end();
+        horizontalBlock(block, model);
+        simpleBlockItem(block, model);
     }
 }

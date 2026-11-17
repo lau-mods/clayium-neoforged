@@ -2,6 +2,7 @@ package net.claustra01.clayium.datagen.machine;
 
 import java.util.Set;
 import net.claustra01.clayium.registry.MachineRegistration;
+import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
@@ -14,11 +15,13 @@ public final class MachineBlockLoot extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        MachineRegistration.BLOCKS.forEach(block -> dropSelf(block.get()));
+        getKnownBlocks().forEach(this::dropSelf);
     }
 
     @Override
     protected Iterable<Block> getKnownBlocks() {
-        return MachineRegistration.BLOCKS.stream().map(block -> (Block)block.get()).toList();
+        return java.util.stream.Stream.concat(
+                        MachineRegistration.BLOCKS.stream(), FormingMachineRegistration.BLOCKS.stream())
+                .map(block -> (Block)block.get()).toList();
     }
 }

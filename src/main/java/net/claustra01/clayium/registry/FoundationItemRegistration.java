@@ -13,12 +13,6 @@ public final class FoundationItemRegistration {
             "compressed_clay", FoundationBlockRegistration.COMPRESSED_CLAY);
     public static final DeferredItem<BlockItem> CLAYIUM_BLOCK = registerBlockItem(
             "clayium_block", FoundationBlockRegistration.CLAYIUM_BLOCK);
-    public static final DeferredItem<FoundationBlockItem> CLAY_BENDING_MACHINE = ClayiumRegistries.ITEMS.register(
-            "clay_bending_machine",
-            () -> new FoundationBlockItem(
-                    FoundationBlockRegistration.CLAY_BENDING_MACHINE.get(),
-                    new Item.Properties().component(FoundationDataComponentRegistration.TIER.get(), 1)));
-
     public static final DeferredItem<Item> INDUSTRIAL_CLAY_DUST = ClayiumRegistries.ITEMS.register(
             "industrial_clay_dust", () -> new FoundationItem(tier(3)));
     public static final DeferredItem<Item> CLAY_WRENCH = ClayiumRegistries.ITEMS.register(
@@ -29,7 +23,6 @@ public final class FoundationItemRegistration {
             DENSE_CLAY,
             COMPRESSED_CLAY,
             CLAYIUM_BLOCK,
-            CLAY_BENDING_MACHINE,
             INDUSTRIAL_CLAY_DUST,
             CLAY_WRENCH,
             CLAY_PICKAXE);

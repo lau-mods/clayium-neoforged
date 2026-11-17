@@ -62,6 +62,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        graphics.blit(BACKGROUND, leftPos, topPos + imageHeight - 1, 0, 0, imageWidth, 1, 256, 256);
         graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 90);
         graphics.pose().pushPose();
         graphics.pose().translate(leftPos, topPos + imageHeight, 0);
@@ -74,26 +75,30 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         }
         graphics.blit(SLOT, leftPos + 115, topPos + 34, 0, 0, 18, 18);
         graphics.blit(SLOT, leftPos + 43, topPos + 56, 0, 0, 18, 18);
+        ClayMachineBlockEntity machine = menu.machine();
+        if (machine != null) {
+            ResourceLocation front = ClayiumMod.id("textures/block/" + machine.series().frontTexture() + ".png");
+            graphics.blit(front, leftPos + 72, topPos + 35, 0, 0, 16, 16, 16, 16);
+        }
         int width = menu.requiredProgress() <= 0
                 ? 0
                 : Math.min(24, (int)(24.0D * menu.progress() / Math.max(1L, menu.requiredProgress())));
-        graphics.blit(PROGRESS, leftPos + 88, topPos + 36, 0, 0, 24, 16);
+        graphics.blit(PROGRESS, leftPos + 89, topPos + 36, 0, 0, 24, 16);
         if (width > 0) {
-            graphics.blit(PROGRESS, leftPos + 88, topPos + 36, 0, 18, width, 16);
+            graphics.blit(PROGRESS, leftPos + 89, topPos + 36, 0, 18, width, 16);
         }
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         Component tier = Component.literal("Tier " + menu.tier());
-        int tierX = imageWidth - 7 - font.width(tier);
-        int titleWidth = tierX - 11;
-        String titleText = title.getString();
-        if (font.width(titleText) > titleWidth) {
-            titleText = font.plainSubstrByWidth(titleText, titleWidth - font.width("…")) + "…";
-        }
-        graphics.drawString(font, titleText, 7, 21, 0x404040, false);
-        graphics.drawString(font, tier, tierX, 21, 0x404040, false);
+        int titleWidth = imageWidth - 14;
+        float titleScale = Math.min(1.0F, (float)titleWidth / font.width(title));
+        graphics.pose().pushPose();
+        graphics.pose().scale(titleScale, titleScale, 1.0F);
+        graphics.drawString(font, title, (int)(7 / titleScale), (int)(21 / titleScale), 0x404040, false);
+        graphics.pose().popPose();
+        graphics.drawString(font, tier, 7, 58, 0x404040, false);
         graphics.drawString(font, Component.translatable("gui.clayium.machine.state." + menu.state().name().toLowerCase()),
                 80, 58, stateColor(), false);
         graphics.drawString(font, Component.literal(formatEnergy(menu.storedEnergy())), 80, 69, 0x404040, false);

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/cutting_machine_tier_2",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/cutting_machine_tier_2"
+    },
+    "facing=south": {
+      "model": "clayium:block/cutting_machine_tier_2",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/cutting_machine_tier_2",
+      "y": 270
+    }
+  }
+}

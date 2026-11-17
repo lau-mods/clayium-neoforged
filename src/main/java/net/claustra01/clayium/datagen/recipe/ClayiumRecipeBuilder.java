@@ -39,6 +39,10 @@ public final class ClayiumRecipeBuilder {
         return requires(Ingredient.of(item), count);
     }
 
+    public ClayiumRecipeBuilder requires(ItemLike item) {
+        return requires(item, 1);
+    }
+
     public ClayiumRecipeBuilder requires(Ingredient ingredient, int count) {
         itemInputs.add(new SizedIngredient(ingredient, count));
         return this;

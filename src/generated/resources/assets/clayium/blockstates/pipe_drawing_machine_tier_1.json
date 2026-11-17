@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/pipe_drawing_machine_tier_1",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/pipe_drawing_machine_tier_1"
+    },
+    "facing=south": {
+      "model": "clayium:block/pipe_drawing_machine_tier_1",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/pipe_drawing_machine_tier_1",
+      "y": 270
+    }
+  }
+}

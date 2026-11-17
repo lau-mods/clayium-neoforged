@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:clayium_ingot"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:clayium_plate"
+    }
+  ],
+  "processing_method": "clayium:bending_machine",
+  "processing_ticks": 120,
+  "required_tier": 4
+}

@@ -259,7 +259,7 @@ public final class MachineRecipeGameTests {
 
     private static ClayiumRecipeInput input(int tier, long energy, int itemCount, int fluidAmount, BlockPos position) {
         return new ClayiumRecipeInput(
-                List.of(new ItemStack(Items.CLAY, itemCount)),
+                List.of(new ItemStack(Items.TERRACOTTA, itemCount)),
                 List.of(new FluidStack(Fluids.WATER, fluidAmount)),
                 tier,
                 energy,

@@ -28,9 +28,10 @@ public final class MachineRecipeProvider extends RecipeProvider {
         MaterialRecipeProvider.buildRecipes(recipeOutput);
         WorkbenchRecipeProvider.buildWorkbenchRecipes(recipeOutput);
         CondenserGrinderDecomposerRecipes.buildRecipes(recipeOutput);
+        FormingRecipes.buildRecipes(recipeOutput);
         SmeltingRecipes.buildRecipes(recipeOutput);
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BENDING_MACHINE, 4)
-                .requires(Items.CLAY, 2)
+                .requires(Items.TERRACOTTA, 2)
                 .requiresFluid(new FluidStack(Fluids.WATER, 250))
                 .output(MaterialRegistration.COMPRESSION_BLOCKS.get("dense_clay").get(), 1)
                 .outputFluid(new FluidStack(Fluids.LAVA, 125))

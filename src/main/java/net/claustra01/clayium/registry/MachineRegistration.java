@@ -67,7 +67,8 @@ public final class MachineRegistration {
                     "processing_machine",
                     () -> BlockEntityType.Builder.of(
                                     ClayMachineBlockEntity::new,
-                                    BLOCKS.stream().map(DeferredBlock::get)
+                                    java.util.stream.Stream.concat(BLOCKS.stream(), FormingMachineRegistration.BLOCKS.stream())
+                                            .map(DeferredBlock::get)
                                             .toArray(net.minecraft.world.level.block.Block[]::new))
                             .build(null));
 

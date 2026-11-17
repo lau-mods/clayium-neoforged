@@ -4,6 +4,8 @@ import java.util.concurrent.CompletableFuture;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.FoundationBlockRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.FormingMachineRegistration;
+import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.registry.WaterWheelRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
@@ -28,11 +30,13 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
                 FoundationBlockRegistration.DENSE_CLAY.get(),
                 FoundationBlockRegistration.COMPRESSED_CLAY.get(),
                 FoundationBlockRegistration.CLAYIUM_BLOCK.get(),
-                FoundationBlockRegistration.CLAY_BENDING_MACHINE.get(),
                 WorkbenchRegistration.CLAY_WORK_TABLE.get(),
                 WorkbenchRegistration.CLAY_CRAFTING_BOARD.get(),
                 WorkbenchRegistration.RAW_CLAY_MACHINE_HULL.get(),
                 WorkbenchRegistration.CLAY_MACHINE_HULL.get());
+        java.util.stream.Stream.concat(
+                MachineRegistration.BLOCKS.stream(), FormingMachineRegistration.BLOCKS.stream())
+                .forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WorldgenRegistration.BLOCKS.stream()
                 .map(block -> block.get()).toArray(Block[]::new));
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WaterWheelRegistration.BLOCKS.stream()

@@ -171,6 +171,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         progress = Math.min(requiredProgress, saturatedAdd(progress, completedProgress));
         if (progress >= requiredProgress) {
             finishProcess();
+            tryStart(serverLevel);
         } else {
             setChanged();
         }
@@ -390,7 +391,6 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         progressRemainder = 0.0D;
         progressPerTick = 1.0D;
 
-        setState(MachineState.IDLE);
         setChanged();
     }
 

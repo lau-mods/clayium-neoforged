@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_machine_hull": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium:clay_machine_hull"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium:forming_machine/bending_machine_tier_7"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_machine_hull"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium:forming_machine/bending_machine_tier_7"
+    ]
+  }
+}

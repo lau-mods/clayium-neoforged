@@ -161,6 +161,13 @@ Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`
 
 射撃 cooldown は原作 rate の整数除算 `rate / 3` tick。チャージ割合 `f=min(使用 tick, チャージ tick)/チャージ tick` の威力は `min((f²+2f)/3,1)`、消費耐久は `1+floor(威力×チャージ tick)`。弾丸は1200 tickで消滅する。転移は使用者と弾丸の次元一致、建築高度、ワールド境界、ロード済みチャンク、プレイヤー衝突箱の空間、`EntityTeleportEvent` を確認する。
 
+## M09 成形加工機
+
+- `FormingSeries` は BendingMachine Tier 1,2,3,4,5,6,7,9、WireDrawingMachine・PipeDrawingMachine・CuttingMachine・Lathe Tier 1～4、MillingMachine Tier 3,4 の26機種を定義する。登録 ID は `OriginalRegistryCatalog.machineId` に従い、Tier 1 の曲げ加工機だけ `clay_bending_machine`、その他は `<stem>_tier_<Tier>` とする。
+- レシピ種別は順に `bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`。すべて `processing_machine` BlockEntity と共通 GUI を使い、Tier の時間・CE 倍率は `TierManager.general` に従う。GUI の正面像は系列ごとの原作ブロック PNG を参照する。
+- `FormingRecipes` が板・大板、棒、線材、管、切断品、旋盤品、フライス加工品、粘土と高密度粘土の切断ヘッド・ベアリング・スピンドル、および26機種の製作レシピを生成する。製作レシピの系列別部材は異なるため、同じ Tier のクラフト格子は衝突しない。
+- GameTest は `allTwentySixFormingMachinesMatchTheOriginalTierLedger`、`representativeFormingRecipesPreserveOriginalInputsOutputsAndConditions`。E2E は `tests/e2e/forming-machines.mjs` で全機種と6系列の稼働 GUI を撮影する。
+
 ## M11 精錬・合金・電気分解
 
 `SmeltingSeries` は `smelter_tier_{4,5,6,7,8,9}`、`alloy_smelter_tier_6`、`electrolysis_reactor_tier_{6,7,8,9}` の11機種を登録する。Smelter は `TierManager.smelter`、他の2系列は `TierManager.general` を用いる。英日表示名は原作の Smelter / Alloy Smelter / Electrolysis Reactor 各 Tier 名に対応する。

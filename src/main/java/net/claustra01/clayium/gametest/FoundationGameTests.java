@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
+import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
@@ -75,6 +76,11 @@ public final class FoundationGameTests {
             expectedItems.add(ClayiumMod.id(idPath));
         }
         for (String idPath : MachineRegistration.MACHINES.keySet()) {
+            ResourceLocation id = ClayiumMod.id(idPath);
+            expectedBlocks.add(id);
+            expectedItems.add(id);
+        }
+        for (String idPath : FormingMachineRegistration.MACHINES.keySet()) {
             ResourceLocation id = ClayiumMod.id(idPath);
             expectedBlocks.add(id);
             expectedItems.add(id);
@@ -210,6 +216,9 @@ public final class FoundationGameTests {
             expectedKeys.add("tooltip.clayium.ce_value");
             expectedKeys.add("tooltip.clayium.clay_units");
             for (String id : MachineRegistration.MACHINES.keySet()) {
+                expectedKeys.add("block.clayium." + id);
+            }
+            for (String id : FormingMachineRegistration.MACHINES.keySet()) {
                 expectedKeys.add("block.clayium." + id);
             }
             for (WaterWheelRegistration.WaterWheelDefinition definition : WaterWheelRegistration.DEFINITIONS) {

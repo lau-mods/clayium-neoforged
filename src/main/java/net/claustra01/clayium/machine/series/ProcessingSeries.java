@@ -16,14 +16,17 @@ public enum ProcessingSeries implements MachineSeries {
         this.tiers = tiers;
     }
 
+    @Override
     public ClayiumRecipeMethod recipeMethod() {
         return recipeMethod;
     }
 
+    @Override
     public int[] tiers() {
         return tiers.clone();
     }
 
+    @Override
     public TierManager.MachineParameters parameters(int tier) {
         return TierManager.general(tier);
     }

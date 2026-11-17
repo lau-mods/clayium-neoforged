@@ -241,6 +241,24 @@
       "name": "teleportballcheckssideimpactborderanddimension"
     },
     {
+      "acId": "AC-F010-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltwentysixformingmachinesmatchtheoriginaltierledger"
+    },
+    {
+      "acId": "AC-F010-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "representativeformingrecipespreserveoriginalinputsoutputsandconditions"
+    },
+    {
+      "acId": "AC-F010-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "consecutiveformingrecipesstayrunningbetweenoutputs"
+    },
+    {
       "acId": "AC-F013-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -361,6 +379,10 @@
     {
       "acId": "AC-F040-002",
       "scenario": "tests/e2e/clay-shooters.mjs"
+    },
+    {
+      "acId": "AC-F010-002",
+      "scenario": "tests/e2e/forming-machines.mjs"
     },
     {
       "acId": "AC-F013-002",

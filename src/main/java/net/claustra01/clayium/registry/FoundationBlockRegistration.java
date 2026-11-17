@@ -13,12 +13,8 @@ public final class FoundationBlockRegistration {
     public static final DeferredBlock<Block> CLAYIUM_BLOCK = ClayiumRegistries.BLOCKS.registerSimpleBlock(
             "clayium_block",
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(6.0F, 8.0F).sound(SoundType.METAL));
-    public static final DeferredBlock<Block> CLAY_BENDING_MACHINE = ClayiumRegistries.BLOCKS.registerSimpleBlock(
-            "clay_bending_machine",
-            BlockBehaviour.Properties.of().mapColor(MapColor.CLAY).strength(3.0F, 5.0F).sound(SoundType.STONE));
-
     public static final List<DeferredBlock<? extends Block>> ALL = List.of(
-            DENSE_CLAY, COMPRESSED_CLAY, CLAYIUM_BLOCK, CLAY_BENDING_MACHINE);
+            DENSE_CLAY, COMPRESSED_CLAY, CLAYIUM_BLOCK);
 
     private static DeferredBlock<Block> registerClayBlock(String id, float hardness, float resistance) {
         return ClayiumRegistries.BLOCKS.registerSimpleBlock(

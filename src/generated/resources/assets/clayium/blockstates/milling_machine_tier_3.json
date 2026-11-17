@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/milling_machine_tier_3",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/milling_machine_tier_3"
+    },
+    "facing=south": {
+      "model": "clayium:block/milling_machine_tier_3",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/milling_machine_tier_3",
+      "y": 270
+    }
+  }
+}
