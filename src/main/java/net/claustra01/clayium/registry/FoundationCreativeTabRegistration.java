@@ -17,6 +17,7 @@ public final class FoundationCreativeTabRegistration {
                                 WorldgenRegistration.ITEMS.forEach(output::accept);
                                 MaterialRegistration.CREATIVE_TAB_ITEMS.forEach(output::accept);
                                 GadgetRegistration.ALL.forEach(output::accept);
+                                WeaponRegistration.ALL.forEach(output::accept);
                             })
                             .build());
 

@@ -13,6 +13,7 @@ import net.claustra01.clayium.datagen.worldgen.WorldgenBlockLoot;
 import net.claustra01.clayium.datagen.worldgen.WorldgenBlockStateProvider;
 import net.claustra01.clayium.datagen.worldgen.WorldgenDataProvider;
 import net.claustra01.clayium.datagen.recipe.MachineRecipeProvider;
+import net.claustra01.clayium.datagen.weapon.WeaponItemModelProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -30,6 +31,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new GadgetItemModelProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new WeaponItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "en_us"));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "ja_jp"));
 

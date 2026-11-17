@@ -123,3 +123,17 @@ Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:
 レシピ JSON は `type: clayium:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
 
 サーバーのデータパック適用後、全プレイヤー向け `OnDatapackSyncEvent` でキャッシュを失効させ、新しい RecipeManager を持つ `ClayiumRecipesReloadedEvent` を機械・表示・PAN に通知する。クライアントの `RecipesUpdatedEvent` でも検索キャッシュを更新する。GameTest 用レシピ ID は `gametest/machine_recipe`、`gametest/conditional_missing_external_item`、`gametest/reload_changed`、`gametest/reload_removed`。テスト中の追加レシピは `gametest/reload_added`。
+
+## M19 粘土銃
+
+Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`advanced_clay_shooter`=`item.itemClayShooter1.name`、`sniper_clay_shooter`=`item.itemClayShooter2.name`、`sniper_clay_shooter_pro`=`item.itemClayShooter3.name`、`instant_teleporter`=`item.itemInstantTeleporter.name`。Entity ID は `clay_ball` と `teleport_ball`。
+
+| 銃 | 耐久 | 直進 tick | 初速 | 拡散 | ダメージ | 原作射撃 rate | チャージ tick | Tier |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 粘土銃 | 10000 | 2 | 1.2 | 25 | 4 | 6 | 0 | 6 |
+| 発展粘土銃 | 1000 | 4 | 4.5 | 3 | 7 | 12 | 0 | 6 |
+| スナイパー | 8000 | 2 | 15 | 0 | 25 | 8 | 20 | 6 |
+| スナイパープロ | 2500 | 3 | 30 | 0 | 100 | 8 | 40 | 6 |
+| テレポート | 2500 | 3 | 30 | 0 | 100 | 8 | 40 | 11 |
+
+射撃 cooldown は原作 rate の整数除算 `rate / 3` tick。チャージ割合 `f=min(使用 tick, チャージ tick)/チャージ tick` の威力は `min((f²+2f)/3,1)`、消費耐久は `1+floor(威力×チャージ tick)`。弾丸は1200 tickで消滅する。転移は使用者と弾丸の次元一致、建築高度、ワールド境界、ロード済みチャンク、プレイヤー衝突箱の空間、`EntityTeleportEvent` を確認する。

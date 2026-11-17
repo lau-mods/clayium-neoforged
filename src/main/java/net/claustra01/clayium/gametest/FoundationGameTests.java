@@ -18,6 +18,7 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
+import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +27,7 @@ import net.claustra01.clayium.registry.OriginalClassInventory;
 import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
+import net.claustra01.clayium.registry.WeaponRegistration;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -69,10 +71,13 @@ public final class FoundationGameTests {
         }
         WorldgenRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         WorldgenRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
+        WeaponRegistration.ALL.forEach(item -> expectedItems.add(item.getId()));
         require(clayiumIds(BuiltInRegistries.BLOCK).equals(expectedBlocks), "Block registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).isEmpty(), "Unexpected block entity");
-        require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).isEmpty(), "Unexpected entity");
+        require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
+                        WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
+                "Entity registry differs from the weapon ledger");
         for (OriginalRegistryCatalog.ExcludedEntry entry : OriginalRegistryCatalog.EXCLUDED_ENTRIES) {
             ResourceLocation id = ClayiumMod.id(entry.legacyId());
             require(!BuiltInRegistries.ITEM.containsKey(id), "Excluded item was registered: " + id);
@@ -150,6 +155,7 @@ public final class FoundationGameTests {
             }
             Set<String> expectedKeys = new HashSet<>(original.keySet());
             expectedKeys.addAll(GadgetTranslations.forLocale(locale).keySet());
+            expectedKeys.addAll(WeaponTranslations.forLocale(locale).keySet());
             for (var tier : net.claustra01.clayium.material.CompressionTier.values()) {
                 expectedKeys.add("block.clayium." + tier.id());
             }

@@ -149,6 +149,30 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "creativetransitionspreservevanillaflight"
+    },
+    {
+      "acId": "AC-F040-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fourshooterspreserveoriginalperformanceandcharge"
+    },
+    {
+      "acId": "AC-F040-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayballcollisiondamageandremovalareserverauthoritative"
+    },
+    {
+      "acId": "AC-F040-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "teleportballacceptsonlysafeauthorizeddestinations"
+    },
+    {
+      "acId": "AC-F040-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "teleportballcheckssideimpactborderanddimension"
     }
   ],
   "e2e": [
@@ -175,6 +199,14 @@
     {
       "acId": "AC-F003-003",
       "scenario": "tests/e2e/clay-ores.mjs"
+    },
+    {
+      "acId": "AC-F040-003",
+      "scenario": "tests/e2e/clay-shooters.mjs"
+    },
+    {
+      "acId": "AC-F040-002",
+      "scenario": "tests/e2e/clay-shooters.mjs"
     }
   ]
 }
