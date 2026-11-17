@@ -18,6 +18,8 @@ public final class FoundationCreativeTabRegistration {
                                 MaterialRegistration.CREATIVE_TAB_ITEMS.forEach(output::accept);
                                 WorkbenchRegistration.ALL_ITEMS.forEach(output::accept);
                                 MachineRegistration.ITEMS.forEach(output::accept);
+                                LogisticsRegistration.BLOCK_ITEMS.forEach(output::accept);
+                                LogisticsRegistration.ITEMS.forEach(output::accept);
                                 WaterWheelRegistration.ITEMS.forEach(output::accept);
                                 GadgetRegistration.ALL.forEach(output::accept);
                                 WeaponRegistration.ALL.forEach(output::accept);

@@ -160,3 +160,13 @@ Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`
 | テレポート | 2500 | 3 | 30 | 0 | 100 | 8 | 40 | 11 |
 
 射撃 cooldown は原作 rate の整数除算 `rate / 3` tick。チャージ割合 `f=min(使用 tick, チャージ tick)/チャージ tick` の威力は `min((f²+2f)/3,1)`、消費耐久は `1+floor(威力×チャージ tick)`。弾丸は1200 tickで消滅する。転移は使用者と弾丸の次元一致、建築高度、ワールド境界、ロード済みチャンク、プレイヤー衝突箱の空間、`EntityTeleportEvent` を確認する。
+
+## M10 アイテムバッファと統合フィルター
+
+- `buffer_tier_4`～`buffer_tier_13` は `LogisticsRegistration` に登録する。BlockEntity と Menu は `clayium:buffer`、単体フィルター Menu は `clayium:item_filter`。
+- 原作台帳の `white_list_item_filter` をホワイト／ブラック統合フィルター、`direction_memory_card` を設定複写アイテムとして使う。Data Component は `clayium:item_filter` と `clayium:buffer_configuration`。フィルターは手持ちで使用して編集でき、バッファ GUI からも編集できる。
+- バッファは100スロットを GUI に表示し、別にフィルターと条件用見本の各1スロットを持つ。見本はフィルターを通さない。バッファの見本は破壊時にドロップし、単体フィルター画面の見本は閉じるときに返す。保存 NBT は `inventory`、`filter`、`example`、`faces`、`redstone_condition`、`transfer_limit`、`transfer_tick`、`next_output_direction`、`next_input_direction`、`selected_rule_type`、`selected_tag`。
+- 各面は `INPUT`、`OUTPUT`、`DISABLED`。初期状態は下面が出力、他の面が入力。赤石条件は `IGNORE`、`POWERED`、`UNPOWERED`。数量制限0は Tier の最大値を使用する。搬送は ItemHandler Block Capability だけを通し、Tier 4～13 の周期と上限は GR-04 に従う。
+- `clayium:buffer_control` の action 0～5 は Direction の面設定、6 は赤石、7 は白黒、8 は条件種別、9 は条件追加、10 は最後の条件削除、11 は数量制限、12 は次のタグ。`clayium:filter_control` の action 0～4 は白黒、条件種別、次のタグ、追加、削除。サーバーは開いた Menu と距離を確認する。
+- 条件種別は `FUZZY`、`TAG`、`DISPLAY_NAME`、`INTERNAL_ID`、`MOD_ID`、`DURABILITY`、`COMPONENTS`、`NESTED`。タグは見本のタグを順送りできる。入れ子は最大16段まで評価する。
+- バッファにフィルターを持って右クリックすると空きフィルタースロットに1個装着する。既存フィルターを上書きしない。`direction_memory_card` はしゃがんで使用するとコピー、通常使用で貼り付ける。

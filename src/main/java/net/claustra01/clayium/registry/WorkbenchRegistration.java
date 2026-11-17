@@ -3,6 +3,7 @@ package net.claustra01.clayium.registry;
 import java.util.List;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.item.FoundationItem;
+import net.claustra01.clayium.tool.BufferConfigurationToolItem;
 import net.claustra01.clayium.workbench.ClayCraftingBoardBlock;
 import net.claustra01.clayium.workbench.ClayCraftingBoardBlockEntity;
 import net.claustra01.clayium.workbench.ClayCraftingBoardMenu;
@@ -50,7 +51,9 @@ public final class WorkbenchRegistration {
     public static final DeferredItem<FoundationItem> CLAY_PIPING_CONFIGURATOR = tool(
             "clay_piping_configurator", 1, 128);
     public static final DeferredItem<FoundationItem> MEMORY_CARD = tool("memory_card", 1, 0);
-    public static final DeferredItem<FoundationItem> DIRECTION_MEMORY_CARD = tool("direction_memory_card", 1, 0);
+    public static final DeferredItem<BufferConfigurationToolItem> DIRECTION_MEMORY_CARD =
+            ClayiumRegistries.ITEMS.register("direction_memory_card", () -> new BufferConfigurationToolItem(
+                    new Item.Properties().stacksTo(1).component(FoundationDataComponentRegistration.TIER.get(), 1)));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayWorkTableBlockEntity>>
             CLAY_WORK_TABLE_BLOCK_ENTITY = ClayiumRegistries.BLOCK_ENTITY_TYPES.register(

@@ -239,6 +239,66 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "teleportballcheckssideimpactborderanddimension"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tenbuffertierstransferexactamountsoveronehundredticks"
+    },
+    {
+      "acId": "AC-F019-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "bufferpagesexposeallonehundredstorageslots"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "bufferdirectionsredstoneandsimulationpreserveitemtotals"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "unifiedfiltermatchesmodestagsidsnamesmodsdamagecomponentsandnesting"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "filtersettingssurvivesaveguiswitchandconfigurationcopy"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "installedfilterscontrolchesttransfersaftersaveandpaste"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "filterrulevaluesandchanginghandlerremainsafe"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltiersusechestcapabilitiesandconserveitems"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "customcapabilitytransfersthroughneighborcache"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "changinghandlersreturnrejecteditemstorecovery"
     }
   ],
   "e2e": [
@@ -289,6 +349,14 @@
     {
       "acId": "AC-F040-002",
       "scenario": "tests/e2e/clay-shooters.mjs"
+    },
+    {
+      "acId": "AC-F019-003",
+      "scenario": "tests/e2e/item-buffer.mjs"
+    },
+    {
+      "acId": "AC-F019-002",
+      "scenario": "tests/e2e/item-buffer.mjs"
     }
   ]
 }

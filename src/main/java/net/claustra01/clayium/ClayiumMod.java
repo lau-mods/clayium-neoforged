@@ -3,6 +3,8 @@ package net.claustra01.clayium;
 import net.claustra01.clayium.datagen.ClayiumDataGenerators;
 import net.claustra01.clayium.machine.MachineCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
+import net.claustra01.clayium.logistics.BufferControlPayload;
+import net.claustra01.clayium.logistics.LogisticsCapabilities;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -16,7 +18,13 @@ public final class ClayiumMod {
         ClayiumRegistries.register(modEventBus);
         modEventBus.addListener(ClayiumDataGenerators::gatherData);
         modEventBus.addListener(MachineCapabilities::register);
+        modEventBus.addListener(LogisticsCapabilities::register);
+        if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
+            modEventBus.addListener(net.claustra01.clayium.gametest.logistics.LogisticsGameTests::registerTestCapability);
+        }
         modEventBus.addListener(MachineFaceModePayload::register);
+        modEventBus.addListener(BufferControlPayload::register);
+        modEventBus.addListener(net.claustra01.clayium.logistics.filter.FilterControlPayload::register);
     }
 
     public static ResourceLocation id(String path) {

@@ -56,6 +56,8 @@ public final class OriginalRegistryCatalog {
             new RegisteredEntry("itemClayWrench", "clay_wrench", false),
             new RegisteredEntry("itemClayPickaxe", "clay_pickaxe", false),
             new RegisteredEntry("itemGadgetHolder", "gadget_holder", false),
+            new RegisteredEntry("item.itemFilterWhitelist.name", "white_list_item_filter", false),
+            new RegisteredEntry("item.itemDirectionMemory.name", "direction_memory_card", false),
             new RegisteredEntry("item.itemGadget.Blank.name", "clay_gadget_template", false),
             new RegisteredEntry("item.itemGadget.AntimatterOverclock.name", "clay_gadget_overclock_i", false),
             new RegisteredEntry("item.itemGadget.PureAntimatterOverclock.name", "clay_gadget_overclock_ii", false),

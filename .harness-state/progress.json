@@ -2,429 +2,9 @@
   "status": "running",
   "active": [
     {
-      "id": "M10",
-      "phase": "implementation",
-      "baseCommit": "9c24cbd923b6d4d96e9fb0420fea69931cbc5791",
-      "failures": {
-        "build": 0,
-        "gametest": 0,
-        "e2e": 0
-      },
-      "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
-        "issues": [
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/BufferBlock.java:79-97 / src/main/java/net/claustra01/clayium/tool/BufferConfigurationToolItem.java:21-37",
-            "acId": "AC-F019-002",
-            "problem": "Pasting the configuration without sneaking can't be reached in game. For any item other than the filter, BufferBlock.useItemOn returns PASS_TO_DEFAULT_BLOCK_INTERACTION. useWithoutItem then opens the buffer menu and returns SUCCESS, so BufferConfigurationToolItem.useOn never runs unless the player sneaks, and sneaking means copy.",
-            "reason": "The AC says settings are transferred to another buffer with the copy item. Only the static copyFrom/pasteTo helpers are tested, so the GameTest does not catch that the in-world interaction path is broken.",
-            "fix": "Handle the memory card in BufferBlock.useItemOn: return a consuming result and call paste, or copy when sneaking. Alternatively override Item.onItemUseFirst for the card. Then add a GameTest that runs the real interaction path, for example useBlock with a mock player, for both copy and paste.",
-            "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: カード操作をブロックの右クリック処理で受け、しゃがみコピーと通常ペーストを実操作の GameTest で確認しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "BufferBlock.useItemOn now handles the memory card (sneak copies, normal use pastes) and a GameTest runs it through helper.useBlock.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/BufferBlock.java:88-95",
-            "acId": "AC-F019-002",
-            "problem": "Right-clicking a buffer that already holds a filter with another filter replaces it through setFilterStack. The previous filter stack is thrown away without being returned or dropped.",
-            "reason": "The player's filter item and its stored conditions are destroyed.",
-            "fix": "Give the previous filter back to the player, or drop it, before inserting the new one. Alternatively refuse the action when the slot is occupied.",
-            "id": "CR-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: フィルタースロットが埋まっている場合は装着を拒否し、既存品を失わないようにしました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Installing a filter into an occupied slot returns FAIL, so the existing filter is not overwritten. Pasting a configuration drops the previous filter.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/BufferBlockEntity.java:291-307",
-            "acId": "AC-F019-002",
-            "problem": "addSelectedRule always builds the rule from the first non-empty stack in the buffer's own storage. Storage insertion is gated by the active filter (isItemValid), so once an allow list exists, an item it rejects cannot be put into the buffer. That item can then never become a new rule. The player also cannot choose which item or which tag is used: TAG picks the alphabetically first tag.",
-            "reason": "The AC needs the player to set tag, ID, name, Mod ID and damage conditions in the filter GUI. With this design, conditions for items not already stored cannot be set at all.",
-            "fix": "Add a dedicated example slot that does not pass through the filter, or a ghost slot, to the filter GUI. Build the rule from that stack. For TAG, let the player cycle through the stack's tags instead of always taking the first.",
-            "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: フィルターを通さない見本スロットから条件を作り、見本のタグを選択できるようにしました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "A dedicated example slot that bypasses the filter feeds addSelectedRule, and TAG rules use the selected tag, which NEXT_TAG cycles.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/filter/ItemFilterRule.java:9 / src/main/java/net/claustra01/clayium/logistics/BufferConfiguration.java:8-12",
-            "acId": "AC-F019-002",
-            "problem": "ItemFilterRule and BufferConfiguration are records that hold ItemStack fields, and they are used as data component values. ItemStack does not implement equals/hashCode, so FUZZY/COMPONENTS/NESTED rules and stored configurations with a filter never compare equal to an equal copy.",
-            "reason": "Data component values must have value equality. Without it, ItemStack.isSameItemSameComponents and menu change detection (broadcastChanges) treat identical filters as different. That means resyncing the filter slot every tick, filters not stacking or matching, and NESTED/COMPONENTS comparisons being wrong.",
-            "fix": "Override equals/hashCode in these records using ItemStack.matches and ItemStack.hashItemAndComponents, or store the reference as a value type with proper equality.",
-            "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: ItemStack を含む条件と設定に値ベースの equals/hashCode を実装しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "ItemFilterRule and BufferConfiguration now define equals/hashCode using ItemStack.matches and hashItemAndComponents.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/filter/ItemFilterRule.java:11, ItemFilterSettings.java:11, BufferConfiguration.java:15",
-            "acId": "AC-F019-002",
-            "problem": "Enum fields are decoded with Codec.STRING.xmap(Enum::valueOf, ...). An unknown string throws IllegalArgumentException inside the codec instead of producing a DataResult error.",
-            "reason": "Component data from commands, for example the E2E data merge, or from edited saves crashes decoding instead of being rejected cleanly. Vanilla provides StringRepresentable.fromEnum for this.",
-            "fix": "Make Mode, MatchType and RedstoneCondition implement StringRepresentable with lowercase serialized names, and use StringRepresentable.fromEnum codecs.",
-            "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 列挙値を StringRepresentable の Codec で読み、未知の値をデコードエラーにしました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Mode, MatchType and RedstoneCondition use StringRepresentable.fromEnum codecs, and a test checks that an unknown value returns a codec error.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/BufferBlockEntity.java:186-191",
-            "acId": "AC-F019-001",
-            "problem": "When a target accepts less on real insertion than it did in simulation, and the rejected remainder cannot be put back into the source, moveItems throws IllegalStateException from the server tick.",
-            "reason": "A third-party IItemHandler that changes between simulate and execute would crash the server, and the extracted items would be lost. The AC requires no loss.",
-            "fix": "Keep the unrestored remainder in the buffer instead of throwing, for example by inserting into the buffer's own inventory or dropping it at the block position, and stop the transfer for this cycle.",
-            "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 実挿入で拒否された品を回収し、戻せない分はバッファ内またはワールドへ保持します。変化するハンドラーの GameTest も追加しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "moveItems no longer throws. It passes unrestored items to dropRemainder, which stores them in the buffer or drops them in the world. A GameTest covers a changing handler.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/BufferBlockEntity.java:38 / src/main/java/net/claustra01/clayium/logistics/BufferMenu.java:17,33-38",
-            "acId": "AC-F019-003",
-            "problem": "The buffer stores 100 slots, but the menu exposes only the first 18. Items pulled or inserted into slots 18-99 cannot be seen or taken out through the GUI.",
-            "reason": "Stored items become hidden from the player, and the GUI does not show the buffer's real inventory.",
-            "fix": "Size the inventory to what the GUI shows, using the original per-Tier buffer inventory size, and build menu slots and background from the same count.",
-            "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 100スロットすべてをバッファ GUI に表示しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The menu and screen now show all 100 storage slots, built from the same STORAGE_SLOTS count.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/logistics/LogisticsBlockStateProvider.java:24-48",
-            "acId": "AC-F019-003",
-            "problem": "The block model hard-codes the face overlays: filter on north, input on S/W/E/U, output on down. It is then rotated by FACING, while the face modes are stored per absolute Direction and changed at runtime. The side display never reflects the configured faces, and the front shows the filter texture even with no filter installed.",
-            "reason": "The AC requires photographing the configured side display. The E2E changes faces with data merge, but the screenshot cannot show the change.",
-            "fix": "Render the per-face mode, for example with blockstate properties per direction or ModelData driven by the synced face modes and multipart overlays from the existing import/export textures. Show the filter overlay only when a filter is installed.",
-            "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 面設定とフィルター装着状態を BlockState に反映し、multipart モデルを runData で生成しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Per-face mode and filtered state are blockstate properties, rendered through multipart models that datagen generates, and updateDisplay keeps them in sync.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/client/screen/logistics/BufferScreen.java:116",
-            "acId": "AC-F019-003",
-            "problem": "The 'Filter'/'フィルター' label is drawn at (4,101). That overlaps the second storage row, which starts at x=28 and spans y=90-108.",
-            "reason": "The AC requires no broken text in the GUI.",
-            "fix": "Move the label to a free area, for example above the filter slot, or narrow it so it does not cross the storage slots.",
-            "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: フィルター表示を短いラベルへ変更し、収納スロットとの重なりを解消しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The filter label is now a short 'F' at (7,73), left of the storage grid, so it no longer overlaps the slots.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/client/screen/logistics/BufferScreen.java:1-176",
-            "acId": "AC-F019-002",
-            "problem": "The filter GUI exists only as controls inside BufferScreen and works on the buffer's installed filter. The filter item has no GUI of its own, and no reusable filter screen or menu exists.",
-            "reason": "The milestone approach requires a filter GUI shared by later multitrack buffers, interfaces and range devices. Embedding it in the buffer screen leaves no reusable path and no way to edit a filter outside a buffer.",
-            "fix": "Give UnifiedItemFilterItem its own menu and screen opened from use(), with mode toggle, rule type, example slot and rule list, editing the ITEM_FILTER_SETTINGS component. Have the buffer open or reuse it for its installed filter.",
-            "id": "CR-010",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: フィルターアイテムから開ける独立した Menu と Screen を追加しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "UnifiedItemFilterItem.use opens a standalone FilterMenu and FilterScreen with the mode toggle, rule type, example slot and rule add/remove controls.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/registry/LogisticsRegistration.java:74-80 / src/main/java/net/claustra01/clayium/gametest/FoundationGameTests.java:85",
-            "acId": "AC-F019-002",
-            "problem": "Two new item IDs, item_filter and memory_card, are registered that are not in the original registry ledger. FoundationGameTests then adds LogisticsRegistration.ITEMS straight to the expected set, which bypasses the ledger check. The ledger plans the filter IDs (white_list_item_filter, black_list_item_filter, fuzzy_item_filter, ...) and copy tools (direction_memory_card, synchronizer).",
-            "reason": "AGENTS.md requires that registered IDs follow the original ledger and that the GameTest compares them against it.",
-            "fix": "Register the unified filter and configuration copy tool under ledger IDs, or update the ledger and AGENTS.md with an explicit mapping. Remove the ledger bypass from FoundationGameTests.",
-            "id": "CR-011",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: フィルターとカードを原作台帳の ID で登録し、FoundationGameTests の登録一覧への直接追加を除きました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The items are registered as white_list_item_filter and direction_memory_card, both added to the catalog, and the FoundationGameTests bypass is removed.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/logistics/LogisticsGameTests.java:34-86",
-            "acId": "AC-F019-001",
-            "problem": "The other-mod IItemHandler is tested only through the static moveItems call, not connected through Capabilities.ItemHandler.BLOCK. The vanilla chest is tested only with Tier 4. Pulling from neighbors (INPUT face) and the UNPOWERED condition are never exercised.",
-            "reason": "The AC says all 10 buffers connect to a vanilla chest and to a third-party IItemHandler, with face, direction and redstone conditions varied over 100 ticks.",
-            "fix": "Register a test block or capability provider that exposes a custom IItemHandler next to the buffer. Run each Tier over 100 ticks against both a chest and that handler, covering push and pull. Assert UNPOWERED blocks transfer while powered, and conserve the total item count in every case.",
-            "id": "CR-012",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 全Tierのチェスト Capability 搬送に加え、テスト用の独立した IItemHandler を Block Capability 経由で接続し、搬入・搬出と赤石条件を検証しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "New GameTests cover all tiers against chests, a custom IItemHandler exposed through the Block capability (push and pull), and the UNPOWERED condition.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/logistics/LogisticsGameTests.java:114-200",
-            "acId": "AC-F019-002",
-            "problem": "The filter tests only call ItemFilterSettings.accepts directly. No test moves items through a buffer with an installed allow- or deny-list filter, and none checks that only matching items arrive.",
-            "reason": "The AC Action is to transfer items, and the Expected Result is that only matching items are transferred, both before and after save and copy.",
-            "fix": "Install the filters, before and after the save/load and paste steps, on a buffer feeding a chest. Tick it, and assert which items moved and which stayed.",
-            "id": "CR-013",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 装着した許可・禁止フィルターでチェストへ搬送し、保存と複写の後も選別される GameTest を追加しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "A new GameTest moves items through a buffer with an installed allow list, then a deny list, after save/load and paste, and checks which items arrive.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/BufferBlockEntity.java:73,112-114",
-            "acId": null,
-            "problem": "cacheLevel and the level comparison in ensureCaches guard a case the game never produces: a block entity's level does not change after it is placed.",
-            "reason": "The code style says to validate only states the game can produce.",
-            "fix": "Remove cacheLevel and create the caches once, for example in onLoad or on first tick when neighborCaches is null.",
-            "id": "CR-014",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 不要な level 比較と cacheLevel を削除しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "cacheLevel and the level comparison are removed from ensureCaches.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          },
-          {
-            "target": "AGENTS.md",
-            "acId": null,
-            "problem": "AGENTS.md has no M10 section. It does not record the buffer IDs, BlockEntity/Menu IDs, data component IDs (item_filter, buffer_configuration), the buffer_control payload and its action codes, saved NBT keys, face, redstone and limit rules, filter match types, or the copy-tool behaviour.",
-            "reason": "The project rules require AGENTS.md to be updated in the same change whenever IDs, registrations or user-visible behaviour change.",
-            "fix": "Add an M10 section to AGENTS.md that records these values and rules.",
-            "id": "CR-015",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: AGENTS.md に M10 の ID、保存キー、通信 action、面・フィルター・カード操作を記録しました。",
-                "at": "2026-11-17T08:18:43.907Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md now has an M10 section recording the IDs, components, NBT keys, payload actions, face/redstone/limit rules, filter types and card behaviour.",
-                "at": "2026-11-17T08:19:04.132Z"
-              }
-            ]
-          }
-        ]
-      },
-      "codeReviewTree": "9d154df63d4991504532e3efc556d18231a48ee6",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-17T08-19-33-700Z-144-M10-e2e/scenarios/tests-e2e-item-buffer.mjs/screenshots/AC-F019-003-ten-tier-original-hulls-and-logistics-faces.png",
-            "acId": "AC-F019-003",
-            "problem": "The screenshot shows only open sky, the sun and the empty hotbar. None of the ten buffer blocks (buffer_tier_4 to buffer_tier_13), their hull textures or their input/output face overlays are in frame, so the side display for this criterion cannot be checked.",
-            "reason": "In tests/e2e/item-buffer.mjs:21-22 the camera is placed at (0.5, 101.0, -9.5) with yaw 0 / pitch 7, then `mct look at 0.5 100.5 0.5` runs. The final view points steeply upward, so the row of buffers at y=100, z=0 (x=-9..9) is below the frame.",
-            "fix": "Frame the row directly and drop the `look at` override, or check that it really ends with a downward pitch. For example, call camera with { x: 0.5, y: 102.5, z: -7.5, yaw: 0, pitch: 20 } (or move further back so x=-9..9 all fit) and remove the `mct look at` line. Also give some buffers non-default faces (output/disabled/filtered) before the shot so the logistics face overlays are visible.",
-            "id": "ER-001",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T08-19-33-700Z-144-M10-e2e/scenarios/tests-e2e-item-buffer.mjs/screenshots/AC-F019-003-integrated-filter-face-redstone-and-limit-gui.png",
-            "acId": "AC-F019-003",
-            "problem": "The buffer GUI is taller than the screen and is cut off. Off-screen at the top: the title, the 'Tier 9' label, the six face buttons (D/U/N/S/W/E), the allow/deny, redstone, rule-type, +/- and limit buttons, and most of the 'Tag ▶' button and the 'Rules:' text. Off-screen at the bottom: most of the player inventory (only part of one slot row shows).",
-            "reason": "BufferScreen sets imageHeight = 364 (BufferScreen.java:33). At 1280×720 the auto GUI scale gives a scaled height of 240, so topPos is negative and the controls at topPos+4..+59 and the inventory at topPos+274.. are drawn outside the window.",
-            "fix": "Rework the BufferScreen layout so it fits in 240 scaled pixels. Keep the original screen structure: the face, mode, redstone and limit controls in a compact strip or side column, and the 100 buffer slots in a scrollable or paged grid (for example 10×5 visible with a scrollbar or page buttons, and slot positions updated in BufferMenu). Then imageHeight ≤ ~230 and every control and the full player inventory stay on screen.",
-            "id": "ER-002",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T08-19-33-700Z-144-M10-e2e/scenarios/tests-e2e-item-buffer.mjs/screenshots/AC-F019-003-integrated-filter-face-redstone-and-limit-gui.png",
-            "acId": "AC-F019-003",
-            "problem": "The GUI background panel is broken. The grey panel covers only about the left 176 px and about 180 px of height. The right columns of the 10×10 slot grid and the lower half of the grid sit over the world with no panel. A second panel with its own top border starts above the player inventory, and the hotbar slot row runs past that panel's right edge.",
-            "reason": "renderBg blits textures/gui/back.png at imageWidth 220 × 256 and then again from v=0 for the remainder (BufferScreen.java:103-104). back.png only contains a ~176×180 panel inside a 256×256 sheet, with the rest transparent. That gives a transparent right and bottom area and a repeated top border. The panel has no right/bottom edges for widths or heights beyond 176×180.",
-            "fix": "Draw the background as a nine-slice sized to imageWidth×imageHeight: corners and edges from back.png, plus a stretched or tiled centre (for example with GuiGraphics.blitSprite and nine-slice scaling metadata, or manual 4-corner/4-edge/centre blits). Do not tile from v=0. Place the gui_playerinventory blit and the inventory slots inside that panel.",
-            "id": "ER-003",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T08-19-33-700Z-144-M10-e2e/scenarios/tests-e2e-item-buffer.mjs/screenshots/AC-F019-002-allow-list-and-rule-controls.png",
-            "acId": "AC-F019-002",
-            "problem": "This screenshot is identical to the integrated buffer GUI shot. It shows no allow-list (whitelist) mode and no configured rules: the allow/deny toggle and rule-type button are off-screen, and the visible summary reads 'Rules: 0' even though the scenario installs a filter with tag, internal-ID and mod-ID rules.",
-            "reason": "The scenario writes the rules under component key 'clayium:white_list_item_filter' (tests/e2e/item-buffer.mjs:27). AGENTS.md defines the filter Data Component as 'clayium:item_filter', so the rules are never decoded. Separately, the oversized BufferScreen pushes the mode and rule controls above the window.",
-            "fix": "In the scenario, put the rules under the 'clayium:item_filter' component (and match its codec's field names and values) so the GUI shows 'Rules: 3' with the rule-type names in Allow mode. After the BufferScreen layout fix, check that the allow/deny toggle and rule controls are visible in this shot.",
-            "id": "ER-004",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T08-19-33-700Z-144-M10-e2e/scenarios/tests-e2e-item-buffer.mjs/screenshots/AC-F019-003-standalone-unified-filter-gui.png",
-            "acId": "AC-F019-003",
-            "problem": "The standalone Unified Item Filter panel ends with no bottom border just under the third inventory row. The hotbar slot row (with the held filter) is drawn below the panel, over the world, with no background.",
-            "reason": "FilterScreen sets imageHeight = 200 and blits back.png 176×200 (FilterScreen.java:24,65). back.png's panel is only about 180 px tall with a transparent area below, so the bottom ~20 px, including the panel's bottom edge, are missing under the hotbar row.",
-            "fix": "Use the same nine-slice background as BufferScreen sized to 176×imageHeight, or blit back.png's top part and its bottom edge separately so the panel reaches topPos+imageHeight with a proper bottom border around the hotbar row.",
-            "id": "ER-005",
-            "status": "open",
-            "history": []
-          }
-        ]
-      },
-      "failure": null,
-      "conflicts": [],
-      "reviewConflicts": []
-    },
-    {
       "id": "M09",
-      "phase": "implementation",
-      "baseCommit": "e97496528b9e9107591cf69e95754377f3b6fd88",
+      "phase": "gametest",
+      "baseCommit": "fcef2405b087fba2dbfee99c31b54468b32b80f8",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -441,8 +21,51 @@
             "reason": "Vanilla crafting can return only one result for a given grid, so all but one machine per tier cannot be crafted. The milestone requires generating the machines' own construction recipes on the M07 work table or crafting table, ported from the original.",
             "fix": "Generate each machine's construction recipe from the original JAR's recipe for that series and tier. At minimum, give each series a distinct key ingredient so no two recipes share the same grid. Then add a GameTest assertion that the crafting grid for each machine resolves to that machine.",
             "id": "CR-001",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 系列固有の部材を製作レシピに加え、同Tierの格子衝突を解消しました。26機種それぞれの格子が目的の機械に解決されることをGameTestで確認しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Construction recipes use series-specific ingredients; a GameTest verifies that each of the 26 crafting grids resolves to its intended machine.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Each series now has a distinct key ingredient (seriesPart), and the GameTest checks that each of the 26 grids resolves to its own recipe.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff touches only the E2E script, so the series-specific construction recipes and the GameTest are unchanged from the last review.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Diff doesn't touch FormingRecipes or the grid-resolution GameTest, so the series-specific construction recipes are unchanged.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only resolves merge markers and E2E checks; the series-specific construction recipes are unchanged.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Diff only touches the E2E script; series-specific construction recipes and the GameTest are unchanged.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/datagen/recipe/FormingRecipes.java:28-130",
@@ -451,8 +74,33 @@
             "reason": "The approach says to generate the original JAR's shape recipes with datagen, and AC-F010-002 requires keeping the original inputs, outputs and processing conditions. A partial set leaves registered materials and intermediates unobtainable.",
             "fix": "Port every bending, wire drawing, pipe drawing, cutting, lathe and milling recipe from the original JAR for the material×shape pairs in original_varieties.tsv, with the original tier, CE and time. Generate them from the material ledger, not one by one.",
             "id": "CR-002",
-            "status": "open",
-            "history": []
+            "status": "accepted",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 原作JARで確認した粘土・高密度粘土の加工経路を補い、素材台帳から金属系の板・大板レシピを生成しました。高密度粘土の円柱と円盤にも製造経路を追加しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Expanded shape recipes across the registered material variants and added missing dense-clay paths. Corrected the original high-tier plate recipes’ tier requirement.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "Plates and large plates are now generated for the metal variants, and the clay and dense-clay paths were added. Other registered metal shapes still have no wire drawing, pipe drawing, cutting, lathe or milling recipes. The recipe set is still not the full original port.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "accepted",
+                "by": "codex",
+                "note": "accepted: 指定された原作JARのCRecipesを照合すると、伸線7件、製管2件、切断9件、旋盤11件、フライス3件で、生成済みレシピ数と一致します。指摘された金属・合金形状の変換は原作に登録されていません。AC-F010-002が求める原作の入出力量と処理条件を守るため、原作にないレシピは追加しません。",
+                "at": "2026-11-17T10:08:05.497Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/recipe/ClayiumRecipeCache.java:29-35",
@@ -461,8 +109,51 @@
             "reason": "Neither M09 criterion requires this. It silently changes behaviour owned by M03/M06 and is not recorded in AGENTS.md, which breaks the rule of implementing only the target criteria.",
             "fix": "Revert to findFirst. If a forming recipe really conflicts, fix that recipe data, or document the original selection rule in AGENTS.md and cover it with a GameTest.",
             "id": "CR-003",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 共通レシピ検索をfindFirstへ戻しました。重複していたM03のテスト入力は固有の品目へ変更しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Shared recipe lookup again selects the first matching recipe.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ClayiumRecipeCache goes back to findFirst.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the recipe cache fix is unchanged.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ClayiumRecipeCache is untouched by the diff, so it still uses findFirst.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ClayiumRecipeCache still uses findFirst.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ClayiumRecipeCache is not touched by the diff; it still uses findFirst.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/registry/FormingMachineRegistration.java:55-59",
@@ -471,8 +162,51 @@
             "reason": "Duplicated logic. It also means the test cannot catch an ID that differs from the original ledger rule.",
             "fix": "Remove FormingMachineRegistration.id. Register with OriginalRegistryCatalog.machineId(family, tier), and in the GameTest derive expected IDs from OriginalRegistryCatalog.MACHINE_FAMILIES and machineId.",
             "id": "CR-004",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 重複したID生成メソッドを削除し、登録とGameTestでOriginalRegistryCatalog.machineIdを使用しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Registration and the ledger GameTest use OriginalRegistryCatalog.machineId.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "FormingMachineRegistration.id is removed. Registration and the GameTest both use OriginalRegistryCatalog.machineId.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; registration and the GameTest still use OriginalRegistryCatalog.machineId.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Registration and the GameTest are untouched, so both still use OriginalRegistryCatalog.machineId.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the registration still uses OriginalRegistryCatalog.machineId. The diff's merge fixes only add FormingMachineRegistration.MACHINES loops.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; registration still uses OriginalRegistryCatalog.machineId.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/datagen/machine/FormingMachineModels.java:23-40",
@@ -481,8 +215,51 @@
             "reason": "The approach says only to add MachineSeries definitions to the M06 mechanism. The code style asks for one direct path per behaviour and a shared helper once two call sites exist.",
             "fix": "Generate both machine sets with one model routine using definition.series().frontTexture(): either have one provider iterate both registrations or extract a shared method. Do the same in MachineLanguageEntries, where one loop body with a combined name switch is enough.",
             "id": "CR-005",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 重複したモデルProviderを削除し、モデル、言語、LootTable、採掘タグの生成経路を各機械群で共有しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Machine models, language entries, loot, and mining tags use shared generation paths.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "FormingMachineModels is deleted and one machine() routine generates both sets of models. Language entries use one loop and loot uses getKnownBlocks. The mining tag provider concatenates both block lists.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the shared generation paths are unchanged.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Diff doesn't change the datagen providers, so the shared generation paths are unchanged.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Shared generation paths are untouched. No conflict markers remain in the repository.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Shared datagen paths are unchanged by the diff.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/gametest/forming/FormingMachineGameTests.java:170-172",
@@ -491,8 +268,51 @@
             "reason": "Unused code.",
             "fix": "Drop the branch and return MaterialRegistration.MATERIAL_ITEMS.get(id).get() directly.",
             "id": "CR-006",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 使用されないminecraft:clay_ballの分岐を削除しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Removed the unused clay-ball special case.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The clay_ball branch is gone from material().",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the unused clay_ball branch stays removed.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The clay_ball branch stays removed. The new GameTest's material() calls don't bring it back.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the unused branch stays removed.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the unused clay_ball branch stays removed.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/gametest/forming/FormingMachineGameTests.java:174-183",
@@ -501,8 +321,51 @@
             "reason": "The precondition is loading materials into the forming machines. Bypassing placement leaves the new BlockEntityType wiring in MachineRegistration untested.",
             "fix": "Place the block with helper.setBlock(pos, definition.block().get().defaultBlockState()), fetch the BlockEntity with helper.getBlockEntity(pos), and run the recipes on that instance.",
             "id": "CR-007",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GameTestで機械ブロックをワールドに設置し、生成されたBlockEntityを取得して処理するよう変更しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The GameTest places each machine block and processes recipes through its world-created block entity.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTest now places the block with helper.setBlock and gets the BlockEntity with helper.getBlockEntity.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the GameTest still places each machine block in the level.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The new test uses the same machine(helper, series, tier) helper as the existing tests, so machines are still created in the level. The diff doesn't change that helper.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the GameTest still places machine blocks in the level.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the GameTest still places machine blocks in the level.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
           },
           {
             "target": "tests/e2e/forming-machines.mjs:43-53",
@@ -511,8 +374,51 @@
             "reason": "The expected result is that each machine can be identified visually by its original image in the running GUI. One screenshot cannot show the series being distinguished.",
             "fix": "For one machine of each of the six series, load a matching input, open the running GUI and take a screenshot.",
             "id": "CR-008",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2Eシナリオに6系列それぞれの稼働GUI撮影を追加しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The E2E scenario captures a running GUI for each of the six forming series.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E scenario captures a running GUI for one machine of each of the six series.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The current script still loops over six examples, one per series (bending, wire-drawing, pipe-drawing, cutting, lathe, milling). Each loads input, opens the GUI and takes a screenshot. The diff only adjusted positions, input count and added block verification.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E script still captures one running GUI per series, six in total. The diff only changes inputs and adds look-at commands.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff removes only the block-verification loop from the E2E script. The per-series running GUI captures are unchanged.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The six per-series running GUI captures are still in the E2E script (lines 55-70).",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
           },
           {
             "target": "AGENTS.md",
@@ -521,13 +427,444 @@
             "reason": "The project rules require updating AGENTS.md in the same change whenever registrations, recipes, user-visible behaviour or verification steps change. AGENTS.md is in the milestone scope.",
             "fix": "Add an M09 section listing the forming registration and ID rule, the generated recipe groups and construction recipes, the GUI front-image rule, the GameTest names and tests/e2e/forming-machines.mjs.",
             "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.mdにM09の26機種、ID規則、レシピ種別、生成レシピ、GUI画像、GameTestとE2Eを記録しました。",
+                "at": "2026-11-17T08:28:34.481Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md records M09’s tiers, ID rule, recipes, GUI behavior, and verification.",
+                "at": "2026-11-17T10:05:19.885Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md has an M09 section covering the 26 machines, the ID rule, recipe types, recipe groups, GUI images, GameTests and the E2E scenario.",
+                "at": "2026-11-17T10:05:33.878Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the AGENTS.md M09 section is still present.",
+                "at": "2026-11-17T10:11:42.133Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The AGENTS.md M09 section is present and the diff doesn't touch it.",
+                "at": "2026-11-17T10:19:31.456Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The AGENTS.md M09 section is still present and untouched.",
+                "at": "2026-11-17T10:24:04.727Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The AGENTS.md M09 section is present and untouched.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/forming-machines.mjs:39-42",
+            "acId": "AC-F010-002",
+            "problem": "The merge resolution deleted a block of code from a file that had no conflict. The removed loop checked that each of the 26 `clayium:<id>` forming machines actually existed at its `setblock` position before the overview screenshot. Now the scenario takes the 'all-twenty-six-tier-hulls-and-six-original-fronts' screenshot without checking anything. If a machine is missing or a `setblock` fails silently (feedback is turned off by `sendCommandFeedback false`), the scenario still passes.",
+            "reason": "A conflict resolution should only reconcile the conflicting hunks. This change removes M09's own runtime check that all 26 machines are registered and placeable, which is the evidence for the machine-list capture. The deleted loop was also broken: it called the async `mct(...)` without `await` inside `forEach`, so `JSON.stringify` got a Promise. The fix is to repair the check, not delete it.",
+            "fix": "Put the check back as a sequential loop placed before the screenshot: `for (const [index, id] of machines.entries()) { const column = index % 9; const row = Math.floor(index / 9); const x = -8 + column * 2; const y = 100 + row * 2; const z = row * 2; const block = await mct(client, 'block', 'get', String(x), String(y), String(z)); if (!JSON.stringify(block).includes(`clayium:${id}`)) throw new Error(`Expected clayium:${id} at ${x} ${y} ${z}: ${JSON.stringify(block)}`); }`",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 一覧撮影前に各機械のブロックを順番に await で取得し、期待するIDと一致しなければ失敗するようにしました。",
+                "at": "2026-11-17T10:26:19.719Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "A sequential for-of loop with await now runs before the overview screenshot (lines 38-48). It uses the same position formula as the setblock loop and mct 'block get'. It throws if the result does not contain clayium:<id>.",
+                "at": "2026-11-17T10:26:29.608Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "ec09e3304ca636dd9ee908e08326380bdd540855",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-17T10-12-06-443Z-025-M09-e2e/scenarios/tests-e2e-forming-machines.mjs/screenshots/AC-F010-002-running-wire-drawing-gui.png",
+            "acId": "AC-F010-002",
+            "problem": "The machine title is cut off as \"Clay Wire Drawing Machi...\" because the right-aligned \"Tier 1\" label leaves too little room. The full machine name never appears in the GUI.",
+            "reason": "Text overflow. The pipe drawing machine is cut to the same \"Clay ... Drawing Machi...\" shape, so the title no longer clearly names the machine. The AC expects each machine to be identifiable.",
+            "fix": "In ClayMachineScreen.renderLabels (ClayMachineScreen.java:85-93), stop truncating long names. Either move the Tier label to its own line (for example, under the energy text or on the second row next to the energy slot), or shrink the title with a pose scale when it is wider than titleWidth, so the full localized name always fits inside the 176-px panel.",
+            "id": "ER-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: タイトルを省略せず、必要な場合は GUI 幅に収まるよう縮小表示します。",
+                "at": "2026-11-17T10:19:22.576Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The wire drawing GUI title now reads \"Clay Wire Drawing Machine\" in full. It is not cut off, and the Tier label is on its own row.",
+                "at": "2026-11-17T10:21:43.943Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T10-12-06-443Z-025-M09-e2e/scenarios/tests-e2e-forming-machines.mjs/screenshots/AC-F010-002-running-pipe-drawing-gui.png",
+            "acId": "AC-F010-002",
+            "problem": "The machine title is cut off as \"Clay Pipe Drawing Machi...\", so the full name of the Tier 1 pipe drawing machine is not shown.",
+            "reason": "Text overflow in the shared machine GUI title. The name is clipped instead of fitting inside the panel.",
+            "fix": "Apply the same title layout fix in ClayMachineScreen.renderLabels: give the title the full width by moving the \"Tier N\" label to another line, or scale the title down when it is too wide, instead of cutting it with \"…\".",
+            "id": "ER-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 配管加工機にも共通のタイトル表示修正が適用されます。",
+                "at": "2026-11-17T10:19:22.576Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The pipe drawing GUI title now reads \"Clay Pipe Drawing Machine\" in full, with no ellipsis.",
+                "at": "2026-11-17T10:21:43.943Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T10-12-06-443Z-025-M09-e2e/scenarios/tests-e2e-forming-machines.mjs/screenshots/AC-F010-002-running-bending-gui.png",
+            "acId": "AC-F010-002",
+            "problem": "Below the hotbar row the panel has a large empty gray strip (about 18 GUI px) with no bottom border. The same gap appears in all six forming machine GUIs.",
+            "reason": "Broken GUI layout. imageHeight is 180, but the player inventory texture is drawn at y=72 with a height of 90 and ends at y=162. The background is stretched past the real content.",
+            "fix": "In the ClayMachineScreen constructor (ClayMachineScreen.java:27), set imageHeight to match the content: 72 + 90 = 162, plus the bottom margin of the inventory texture if needed (for example, 166). Make sure the back.png area drawn still includes its bottom border.",
+            "id": "ER-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GUI の高さを内容に合わせて 166 にし、原作 PNG の枠線を下端に再利用しました。",
+                "at": "2026-11-17T10:19:22.576Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The panel now ends about 6 GUI px below the hotbar row and has a bottom border. The large empty strip is gone in all the running GUIs.",
+                "at": "2026-11-17T10:21:43.943Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T10-12-06-443Z-025-M09-e2e/scenarios/tests-e2e-forming-machines.mjs/screenshots/AC-F010-002-running-lathe-gui.png",
+            "acId": "AC-F010-002",
+            "problem": "The running lathe GUI shows the state \"Idle\" with an empty progress arrow. At the same time 37 clay discs are still in the input and the output (27 items) has room, so the machine is clearly mid-batch.",
+            "reason": "The status shown contradicts the machine contents, and the screenshot does not show the running state the AC asks for. When a recipe finishes, ClayMachineBlockEntity sets IDLE (around line 326) and only restarts on the next tick. With short recipes the client often receives that Idle state between cycles.",
+            "fix": "When a recipe completes, call tryStart in the same tick, or keep the RUNNING state while the input can still start the next cycle. That way IDLE is only shown when there is nothing left to process. Then re-capture the lathe GUI showing \"Processing\" with a partly filled arrow.",
+            "id": "ER-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 加工完了と同じ tick に次のレシピを開始します。E2E の旋盤入力も進捗を撮影しやすいレシピへ変更しました。",
+                "at": "2026-11-17T10:19:22.576Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The lathe GUI now shows \"Processing\" in green with a partly filled progress arrow, and the input and output counts are changing.",
+                "at": "2026-11-17T10:21:43.943Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T10-12-06-443Z-025-M09-e2e/scenarios/tests-e2e-forming-machines.mjs/screenshots/AC-F010-002-running-milling-gui.png",
+            "acId": "AC-F010-002",
+            "problem": "The running milling machine GUI shows \"Idle\" with an empty progress arrow, even though 24 industrial clay plates are still in the input and the output stack (40) has room.",
+            "reason": "Same state flicker as the lathe. The machine drops to IDLE between consecutive recipes, so the running GUI shows a wrong idle state instead of processing.",
+            "fix": "Use the same fix in ClayMachineBlockEntity: start the next recipe in the tick where the previous one finishes, or skip setting IDLE when the input still matches a recipe. Then re-capture the milling GUI in the Processing state.",
+            "id": "ER-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 同じ連続加工修正を適用し、E2E のフライス盤入力を処理時間 32 tick のレシピへ変更しました。",
+                "at": "2026-11-17T10:19:22.576Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The milling GUI now shows \"Processing\" in green with a partly filled progress arrow, not Idle.",
+                "at": "2026-11-17T10:21:43.943Z"
+              }
+            ]
+          }
+        ]
+      },
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
+    },
+    {
+      "id": "M11",
+      "phase": "implementation",
+      "baseCommit": "fcef2405b087fba2dbfee99c31b54468b32b80f8",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "AGENTS.md:74-160 (no M11 section)",
+            "acId": "AC-F013-001",
+            "problem": "AGENTS.md has no M11 section. It does not record the 11 IDs and their Tiers, which TierManager table each series uses (smelter vs general), the 2-input slot layout (inputs 0..n-1, output n, reserved n+1..2n, fuel 2n+1) or the new `vanilla_smelting_recipe` NBT key. It also omits the vanilla furnace fallback for the Smelter only, with its fixed 4 internal CE and 200 ticks, the original-recipe list and the display names.",
+            "reason": "The project rules say any change to registered content, save format or recipe rules must update AGENTS.md in the same change, and AGENTS.md is in this milestone's scope. The hard-coded fallback values (4L, 200) in ClayMachineBlockEntity.vanillaSmeltingRecipe have no documented source.",
+            "fix": "Add an M11 section to AGENTS.md. Record: the 11 machine IDs and Tiers; TierManager.smelter for Smelter and TierManager.general for AlloySmelter and ElectrolysisReactor; the slot layout and the `vanilla_smelting_recipe` NBT key; the Smelter-only vanilla SMELTING fallback (4 internal CE, 200 ticks, checked against the original JAR); the generated smelter, alloy and electrolysis recipe sets; and the GameTest and E2E names.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に11機種、Tier 表、スロット配置、保存キー、原作 JAR で確認したフォールバック値、レシピ群とテスト名を記録しました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has the M11 section covering the 11 IDs, TierManager tables, slot layout, NBT key, fallback values, recipes and test names.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/SmeltingRecipes.java:12-23",
+            "acId": "AC-F013-001",
+            "problem": "The Smelter recipe list stops at Tier 6 (aluminium through zk60_a_alloy). The original staged recipes are missing: clay_steel_dust→clay_steel_ingot, clayium_dust→clayium_ingot, ultimate_alloy_dust→ultimate_alloy_ingot, plus the other original smelter products such as silicon, silicone, impure silicon, impure aluminium and steel. Smelter Tiers 7–9 therefore have no recipe of their own.",
+            "reason": "The milestone approach requires generating the clay steel, clayium and ultimate alloy staged recipes from the original JAR. The AC expects every machine to produce the same metal products as the original. Smelter 7/8/9 (Clay Steel/Clayium/Ultimate Smelter) currently add nothing over Tier 6.",
+            "fix": "Add the missing original Smelter recipes to SMELTING, with Tier, CE and time taken from the original JAR's smelter recipe table. Run runData and commit the generated JSON. Extend the GameTest with a representative Tier 7–9 Smelter recipe and its Tier limit, e.g. a Tier 8 Smelter rejecting the Tier 9 ultimate alloy recipe.",
+            "id": "CR-002",
+            "status": "accepted",
+            "history": [
+              {
+                "status": "accepted",
+                "by": "codex",
+                "note": "accepted: 原作 JAR の CRecipes では粘土鋼・クレイウム・究極合金の粉→インゴットは recipeBlastFurnace に属し、recipeSmelter の Tier 7～9 専用レシピではありません。Smelter に追加すると原作の加工種別が変わります。原作で通常かまどに登録されるシリコン・鋼などの経路は追加しました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/SmeltingRecipes.java:47-100",
+            "acId": "AC-F013-001",
+            "problem": "Smelter, alloy and electrolysis recipes use exact clayium item ingredients (e.g. `clayium:copper_ingot`, `clayium:gold_ingot`, `clayium:iron_ingot`). An iron or copper ingot made by the Smelter from vanilla raw ore is `minecraft:iron_ingot` or `minecraft:copper_ingot`. The bronze, brass and invar alloy recipes reject those ingots.",
+            "reason": "The AC precondition supplies iron and copper raw ore, and the expected result is producing equivalent metal products and alloys. The original used OreDictionary names. The mod already generates `c:` ingot and dust tags for its materials, and NeoForge tags the vanilla ingots too.",
+            "fix": "Use `c:ingots/<material>` and `c:dusts/<material>` tag ingredients (Ingredient.of(TagKey)) in SmeltingRecipes, and regenerate the recipes. In the GameTest, feed the bronze or invar recipe with the vanilla ingot produced from RAW_COPPER or RAW_IRON.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 粉とインゴットの入力を c: タグに変更し、Raw Copper の製錬結果をブロンズの GameTest に渡しました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "SmeltingRecipes now uses c: dust and ingot tag ingredients. The GameTest feeds the bronze recipe with the smelted copper item.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/SmeltingMachineRegistration.java:20-40",
+            "acId": null,
+            "problem": "The registration loop copies MachineRegistration's ProcessingSeries loop line for line (block properties, item with TIER component, definition, list adds), with the shared lists passed in as parameters.",
+            "reason": "The code style asks for one direct path per behavior and no duplicate implementations. The block properties now live in two copies that can drift apart.",
+            "fix": "Make the MachineRegistration loop iterate over all MachineSeries values (ProcessingSeries.values() followed by SmeltingSeries.values()) through one loop body. Remove the duplicated body in SmeltingMachineRegistration, or reduce that class to only supplying the series list.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: MachineRegistration の単一ループで両系列を登録し、重複した登録クラスを削除しました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "MachineRegistration registers both series in one loop. SmeltingMachineRegistration is deleted and has no remaining references.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/machine/SmeltingMachineModels.java:9-18",
+            "acId": "AC-F013-002",
+            "problem": "The front texture is chosen by an `instanceof SmeltingSeries` check with a fallback path for every other series. MachineBlockStateProvider sends all machines, including ProcessingSeries ones, through this smelting-specific class.",
+            "reason": "The type-switch helper adds indirection. A smelting-named class now decides textures for unrelated machines.",
+            "fix": "Add a front texture name to MachineSeries, e.g. `String frontTexture()`, defaulting to recipeMethod().id(), with SmeltingSeries returning `smelter`, `alloysmelter` and `electrolysisreactor`. Use it directly in MachineBlockStateProvider and delete SmeltingMachineModels.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 前面テクスチャ名を MachineSeries に置き、モデル生成側の型分岐を削除しました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "MachineSeries.frontTexture() is used directly in MachineBlockStateProvider. SmeltingMachineModels is deleted and has no remaining references.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineMenu.java:81-85",
+            "acId": null,
+            "problem": "In quickMoveStack's player-inventory branch, `machine.inputSlots()` is dereferenced even when `machine` is null. The guard `machine != null` only covers the fuel move. The menu explicitly supports a null machine, with player slots only.",
+            "reason": "Shift-clicking in a menu whose block entity was not found throws a NullPointerException. The code before this change used constant indices and did not crash.",
+            "fix": "Return ItemStack.EMPTY from the else-branch when machine is null, or put the input move inside the same `machine != null` guard.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 機械が存在しないメニューでの Shift クリック時に空を返すよう修正しました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "A null machine now returns EMPTY in the quickMoveStack player-inventory branch.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:54-57",
+            "acId": null,
+            "problem": "The public constants INPUT_SLOT=0, OUTPUT_SLOT=1, RESERVED_SLOT=2 and FUEL_SLOT=3 remain, but slot indices now depend on the series. For the 2-input alloy smelter, slot 2 is the reserved slot for input 0 and slot 3 is the reserved slot for input 1, not fuel. Production code no longer uses the constants; only the M06 GameTests do.",
+            "reason": "These are stale, misleading public constants. The code style says to remove code the current behavior no longer uses.",
+            "fix": "Remove the constants. Have the M06 GameTests use the instance accessors outputSlot(), reservedSlot(0) and fuelSlot(), with input index 0.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 固定スロット定数を削除し、GameTest を機械インスタンスのスロット位置参照へ変更しました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The fixed slot constants are removed from ClayMachineBlockEntity, and no references to them remain. The remaining INPUT_SLOT uses belong to ClayWorkTableBlockEntity.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/smelting/SmeltingMachineGameTests.java:46-54",
+            "acId": "AC-F013-001",
+            "problem": "The FE check covers only `smelter_tier_4`, and only from Direction.UP. The AlloySmelter and all ElectrolysisReactor tiers are never checked for FE exposure.",
+            "reason": "The AC requires all 11 machines to run on CE without FE input. A GameTest should assert the criterion for every machine it names.",
+            "fix": "Loop over all 11 SmeltingSeries definitions: place each block and assert `Capabilities.EnergyStorage.BLOCK` is null for every Direction and for null.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 11機種それぞれについて、全方向と方向なしの FE Capability が存在しないことを検証します。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTest loops over all SmeltingSeries tiers and checks that FE is null for every direction and for null.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/smelting-machines.mjs:43-47",
+            "acId": "AC-F013-002",
+            "problem": "The scenario freezes ticks, runs `tick step 1` and then takes the 'running' GUI screenshots. After one tick the process has only started, so progress is 0 and the progress arrow is empty. The screenshots do not show a running machine. The M06 scenario steps 10 ticks.",
+            "reason": "The AC Action asks to capture the running screen. An empty progress bar cannot be told apart from an idle machine.",
+            "fix": "Step enough ticks for the progress arrow to be visibly part-filled before opening each GUI, e.g. `tick step 20`, while staying below each recipe's required progress. Or set progress directly in the data merge.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2E で各 GUI の撮影前に進捗が見える tick 数を進め、完了が早い電気分解機は投入時点を分けました。",
+                "at": "2026-11-17T10:23:49.461Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E steps 20 ticks before the smelter and alloy GUIs and 3 ticks before the electrolysis GUI. The recipes run 500 ticks, so they are still in progress.",
+                "at": "2026-11-17T10:24:05.846Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "e33afaac0bd9a5df2c7a2a64d10baed3abcbe3f4",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-17T10-24-34-513Z-060-M11-e2e/scenarios/tests-e2e-smelting-machines.mjs/screenshots/AC-F013-002-alloy-smelter-two-input-running-gui.png",
+            "acId": "AC-F013-002",
+            "problem": "This screenshot is meant to show the Alloy Smelter running, but it isn't. The status reads \"Waiting for CE\" in orange, stored energy is 0.000 CE, the fuel slot is empty and the progress arrow has hardly started. Both input slots and the output slot are empty, so nothing shows two-input processing in progress.",
+            "reason": "AC-F013-002 asks for the screen of each series while it runs (稼働画面). The Smelter and Electrolysis Reactor captures show \"Processing\" with stored CE. The alloy capture shows a stalled machine with no energy, so it doesn't show the running GUI for the two-input machine.",
+            "fix": "In tests/e2e/smelting-machines.mjs, give the alloy_smelter_tier_6 CE before the capture: put Tier 4+ compressed energetic clay in its fuel slot (slot 2n+1 = 5) or pre-charge it the way the Smelter and Electrolysis Reactor scenarios do. Wait until the state is RUNNING (\"Processing\") with stored CE above zero and the arrow visibly filling, then take the screenshot. If the scenario already supplies fuel, find out why the alloy machine doesn't turn fuel into CE when both inputs are filled.",
+            "id": "ER-001",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T10-24-34-513Z-060-M11-e2e/scenarios/tests-e2e-smelting-machines.mjs/screenshots/AC-F013-002-smelter-running-gui.png",
+            "acId": "AC-F013-002",
+            "problem": "The bottom of the machine GUI panel looks cut off. Below the hotbar row there's an empty grey band about 18 GUI px tall. The panel's left highlight and right shadow run straight to the bottom with no bottom frame line or corners. The same panel shows up in the alloy smelter and electrolysis reactor GUI screenshots.",
+            "reason": "ClayMachineScreen sets imageHeight = 180 and blits a 176×180 area of back.png. back.png has no bottom border inside that area: its grey fill simply stops. The player inventory (topPos+72, 90 px tall) ends at y=162, so the remaining space is blank and the frame is left open. This breaks the GUI layout that AC-F013-002 requires to be intact.",
+            "fix": "In ClayMachineScreen, either draw the closing bottom edge the way the original GUI does (for example, blit the body at imageHeight-4 and then a 4 px bottom-edge strip from the original texture), or reduce imageHeight to fit the content (about 166, following vanilla's 72+90+4 layout). Make sure the bottom frame line and corners appear without the blank band, and keep the original back.png bytes unchanged.",
+            "id": "ER-002",
             "status": "open",
             "history": []
           }
         ]
       },
-      "codeReviewTree": "51f8cdd9a50b94c3a1fce781513e2d5f7eef6202",
-      "e2eReview": null,
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
@@ -543,8 +880,9 @@
     "M19",
     "M06",
     "M07",
-    "M08"
+    "M08",
+    "M10"
   ],
-  "lastCheckpoint": "e97496528b9e9107591cf69e95754377f3b6fd88",
+  "lastCheckpoint": "fcef2405b087fba2dbfee99c31b54468b32b80f8",
   "fatal": null
 }

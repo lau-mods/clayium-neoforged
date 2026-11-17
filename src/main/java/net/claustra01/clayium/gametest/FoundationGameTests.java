@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
+import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -27,6 +29,7 @@ import net.claustra01.clayium.registry.OriginalClassInventory;
 import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
+import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.registry.WeaponRegistration;
 import net.claustra01.clayium.registry.WaterWheelRegistration;
@@ -76,6 +79,10 @@ public final class FoundationGameTests {
             expectedBlocks.add(id);
             expectedItems.add(id);
         }
+        LogisticsRegistration.BUFFERS.values().forEach(definition -> {
+            expectedBlocks.add(definition.block().getId());
+            expectedItems.add(definition.item().getId());
+        });
         WorldgenRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         WorldgenRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         Set<String> workbenchOriginalKeys = Set.of(
@@ -100,8 +107,9 @@ public final class FoundationGameTests {
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).equals(Set.of(
                         ClayiumMod.id("clay_work_table"), ClayiumMod.id("clay_crafting_board"),
-                        ClayiumMod.id("processing_machine"), ClayiumMod.id("water_wheel"))),
-                "Block entity registrations differ from the workbench and machine blocks");
+                        ClayiumMod.id("processing_machine"), ClayiumMod.id("water_wheel"),
+                        ClayiumMod.id("buffer"))),
+                "Block entity registrations differ from registered blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
                 "Entity registry differs from the weapon ledger");
@@ -183,6 +191,9 @@ public final class FoundationGameTests {
             Set<String> expectedKeys = new HashSet<>(original.keySet());
             expectedKeys.addAll(GadgetTranslations.forLocale(locale).keySet());
             expectedKeys.addAll(WeaponTranslations.forLocale(locale).keySet());
+            var logistics = new HashMap<String, String>();
+            LogisticsLanguageEntries.add(locale, logistics::put);
+            expectedKeys.addAll(logistics.keySet());
             for (var tier : net.claustra01.clayium.material.CompressionTier.values()) {
                 expectedKeys.add("block.clayium." + tier.id());
             }
