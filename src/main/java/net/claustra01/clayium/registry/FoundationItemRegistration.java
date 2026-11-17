@@ -25,9 +25,6 @@ public final class FoundationItemRegistration {
             "clay_wrench", () -> new FoundationItem(tier(1).stacksTo(1)));
     public static final DeferredItem<Item> CLAY_PICKAXE = ClayiumRegistries.ITEMS.register(
             "clay_pickaxe", () -> new FoundationItem(tier(1).stacksTo(1)));
-    public static final DeferredItem<Item> GADGET_HOLDER = ClayiumRegistries.ITEMS.register(
-            "gadget_holder", () -> new FoundationItem(new Item.Properties().stacksTo(1)));
-
     public static final List<DeferredItem<? extends Item>> ALL = List.of(
             DENSE_CLAY,
             COMPRESSED_CLAY,
@@ -35,8 +32,7 @@ public final class FoundationItemRegistration {
             CLAY_BENDING_MACHINE,
             INDUSTRIAL_CLAY_DUST,
             CLAY_WRENCH,
-            CLAY_PICKAXE,
-            GADGET_HOLDER);
+            CLAY_PICKAXE);
 
     private static DeferredItem<BlockItem> registerBlockItem(
             String id, net.neoforged.neoforge.registries.DeferredBlock<? extends net.minecraft.world.level.block.Block> block) {

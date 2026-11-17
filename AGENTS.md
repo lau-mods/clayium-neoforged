@@ -110,6 +110,12 @@ M04 の CE は `ClayEnergy` の非負 `long` 内部値で保持し、1 CE を 10
 | FluidTranslator | `fluid_translator` | 4,5,6,7,8,9,10,11,12,13 |
 | FluidTransferMachine | `fluid_transfer_machine` | 5 |
 
+## M18 ガジェット
+
+`gadget_holder` は16スロットで、装着品は ItemStack の `clayium:gadgets` Data Component に保存する。17品目と原作キーは `clay_gadget_template`=`item.itemGadget.Blank.name`、`clay_gadget_overclock_i/ii/iii/iv`=`item.itemGadget.AntimatterOverclock/PureAntimatterOverclock/OECOverclock/OPAOverclock.name`、`clay_gadget_flight/free_flight/supersonic_flight`=`item.itemGadget.Flight0/Flight1/Flight2.name`、`clay_gadget_extra_health_i/ii/iii`=`item.itemGadget.Health0/Health1/Health2.name`、`clay_gadget_economical_auto_eat/auto_eat`=`item.itemGadget.AutoEat0/AutoEat1.name`、`clay_gadget_repeatedly_attack`=`item.itemGadget.RepeatedlyAttack.name`、`clay_gadget_long_arm/longer_arm/longest_arm`=`item.itemGadget.LongArm0/LongArm1/LongArm2.name`。速度・跳躍ガジェットは登録しない。
+
+プレイヤーの永続状態は `clayium:gadget_player_state` Data Attachment に置く。固定 modifier ID は `clayium:gadget_extra_health`（最大体力 +20/+80/+180、保存する）、`clayium:gadget_long_arm`（block_interaction_range +3/+7/+20）、`clayium:gadget_flight`（NeoForge `CREATIVE_FLIGHT` +1）。オーバークロック I～IV の使用間隔は8/4/2/1 tick、超音速飛行速度は0.2。通常飛行は飛行中80 tickごとに空腹消耗1、自由飛行は消耗なし。倹約自動摂食は不足空腹値を超えない最大栄養、通常型は最小栄養を選び、有害効果の食品は除く。効果は毎 PlayerTick とログイン・次元移動・死亡後 Clone で再評価し、ホルダー取外しで解除する。ログアウト時は保存前に体力 modifier を外さない。
+
 ## M03 機械レシピ
 
 Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`fluid_transfer_machine`（すべて `clayium:` 名前空間）を登録する。

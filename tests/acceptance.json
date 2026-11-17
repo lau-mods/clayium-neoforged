@@ -113,6 +113,42 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "tiercalculationspreserveroundingandpreventfreework"
+    },
+    {
+      "acId": "AC-F038-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "gadgetattributesuseexacthealthreachandflightvalues"
+    },
+    {
+      "acId": "AC-F038-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "activegadgetsdriveeatingattackandoperationintervals"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "holderremovalandrepeatedevaluationneverstackmodifiers"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "attachmentcloneandforeignflightpermissionsurvivelifecyclechanges"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "holdermenupersistsinstalledgadgets"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "creativetransitionspreservevanillaflight"
     }
   ],
   "e2e": [
@@ -131,6 +167,10 @@
     {
       "acId": "AC-F002-003",
       "scenario": "tests/e2e/material-catalog.mjs"
+    },
+    {
+      "acId": "AC-F038-003",
+      "scenario": "tests/e2e/gadget-holder.mjs"
     },
     {
       "acId": "AC-F003-003",

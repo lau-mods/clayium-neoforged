@@ -16,6 +16,7 @@ public final class FoundationCreativeTabRegistration {
                                 FoundationItemRegistration.ALL.forEach(output::accept);
                                 WorldgenRegistration.ITEMS.forEach(output::accept);
                                 MaterialRegistration.CREATIVE_TAB_ITEMS.forEach(output::accept);
+                                GadgetRegistration.ALL.forEach(output::accept);
                             })
                             .build());
 

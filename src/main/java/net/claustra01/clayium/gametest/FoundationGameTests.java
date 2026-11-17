@@ -17,6 +17,7 @@ import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
+import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -148,6 +149,7 @@ public final class FoundationGameTests {
                 require(language.has(key), "Registered object's visible name is missing: " + key);
             }
             Set<String> expectedKeys = new HashSet<>(original.keySet());
+            expectedKeys.addAll(GadgetTranslations.forLocale(locale).keySet());
             for (var tier : net.claustra01.clayium.material.CompressionTier.values()) {
                 expectedKeys.add("block.clayium." + tier.id());
             }

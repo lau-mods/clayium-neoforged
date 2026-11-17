@@ -53,7 +53,24 @@ public final class OriginalRegistryCatalog {
             new RegisteredEntry("itemDusts:IndustrialClay", "industrial_clay_dust", false),
             new RegisteredEntry("itemClayWrench", "clay_wrench", false),
             new RegisteredEntry("itemClayPickaxe", "clay_pickaxe", false),
-            new RegisteredEntry("itemGadgetHolder", "gadget_holder", false));
+            new RegisteredEntry("itemGadgetHolder", "gadget_holder", false),
+            new RegisteredEntry("item.itemGadget.Blank.name", "clay_gadget_template", false),
+            new RegisteredEntry("item.itemGadget.AntimatterOverclock.name", "clay_gadget_overclock_i", false),
+            new RegisteredEntry("item.itemGadget.PureAntimatterOverclock.name", "clay_gadget_overclock_ii", false),
+            new RegisteredEntry("item.itemGadget.OECOverclock.name", "clay_gadget_overclock_iii", false),
+            new RegisteredEntry("item.itemGadget.OPAOverclock.name", "clay_gadget_overclock_iv", false),
+            new RegisteredEntry("item.itemGadget.Flight0.name", "clay_gadget_flight", false),
+            new RegisteredEntry("item.itemGadget.Flight1.name", "clay_gadget_free_flight", false),
+            new RegisteredEntry("item.itemGadget.Flight2.name", "clay_gadget_supersonic_flight", false),
+            new RegisteredEntry("item.itemGadget.Health0.name", "clay_gadget_extra_health_i", false),
+            new RegisteredEntry("item.itemGadget.Health1.name", "clay_gadget_extra_health_ii", false),
+            new RegisteredEntry("item.itemGadget.Health2.name", "clay_gadget_extra_health_iii", false),
+            new RegisteredEntry("item.itemGadget.AutoEat0.name", "clay_gadget_economical_auto_eat", false),
+            new RegisteredEntry("item.itemGadget.AutoEat1.name", "clay_gadget_auto_eat", false),
+            new RegisteredEntry("item.itemGadget.RepeatedlyAttack.name", "clay_gadget_repeatedly_attack", false),
+            new RegisteredEntry("item.itemGadget.LongArm0.name", "clay_gadget_long_arm", false),
+            new RegisteredEntry("item.itemGadget.LongArm1.name", "clay_gadget_longer_arm", false),
+            new RegisteredEntry("item.itemGadget.LongArm2.name", "clay_gadget_longest_arm", false));
 
     public static String machineId(MachineFamily family, int tier) {
         if (family.legacyName().equals("BendingMachine") && tier == 1) {

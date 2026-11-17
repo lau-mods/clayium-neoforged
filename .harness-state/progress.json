@@ -2,329 +2,26 @@
   "status": "running",
   "active": [
     {
-      "id": "M18",
-      "phase": "gametest",
-      "baseCommit": "47b4c0307a9bf90e6ee10e897ac50364caddf382",
+      "id": "M06",
+      "phase": "implementation",
+      "baseCommit": "4654cc2c0b6dcfd21473fc2f61f27bf1ab279ce5",
       "failures": {
         "build": 0,
         "gametest": 0,
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
-        "issues": [
-          {
-            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetHolderMenu.java:17-28,67-72",
-            "acId": "AC-F038-002",
-            "problem": "`slotsChanged` is supposed to write the gadget slots back into the holder's `gadgets` Data Component, but it never runs for the `gadgets` SimpleContainer. A SimpleContainer only tells its registered `ContainerListener`s about changes, and the menu never registers one. Gadgets placed in the holder screen stay in the temporary container and are lost when the menu closes. The holder item never gets the gadgets, so they give no effect.",
-            "reason": "The holder configuration is the precondition for every gadget effect. With this bug, a player can never install gadgets through the GUI. The GameTests miss it because they call `GadgetHolderItem.setGadgets` directly.",
-            "fix": "In the constructor, register a listener on the container (`gadgets.addListener(this::slotsChanged)`), or write the component from `removed`/`broadcastChanges` on the server. Add a GameTest that opens `GadgetHolderMenu` for the player, places a gadget into a menu slot, and checks the holder stack's `GADGETS` component.",
-            "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: メニューのコンテナ変更を Data Component に保存し、メニュースロット経由の GameTest を追加しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The menu registers `gadgets.addListener(this::slotsChanged)`, so server-side slot changes write the `GADGETS` component. The new GameTest checks this through a menu slot.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEvents.java:39-42, GadgetEffects.java:34-42,55-68",
-            "acId": "AC-F038-002",
-            "problem": "The extra-health modifier is transient, and logout calls `clear()`, which removes it and clamps health to 20 before the player is saved. A player at 200/200 HP who logs out and back in comes back at 20 HP. Even without the logout clear, health loaded from NBT is clamped against the base 20 HP maximum before the transient modifier is re-applied.",
-            "reason": "AC-F038-002 requires effects to be restored correctly after relogin. The gadget's extra health is silently lost on every relogin.",
-            "fix": "Keep the current health across logout and login: either use a persistent (saved) modifier with the fixed ID and don't clear it on logout, or store the pre-clamp health in the attachment and restore it after re-applying the modifier at login. Add a GameTest that checks health is preserved through save/load or the logout/login handlers.",
-            "id": "CR-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 体力 modifier を永続化し、保存・再読込後の現在体力を検証しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The health modifier is now permanent (saved) and the logout clear is removed. The GameTest checks health after save/load.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEvents.java:33-37, GadgetEffects.java:138-151, registry/GadgetRegistration.java:28-34",
-            "acId": "AC-F038-002",
-            "problem": "`PLAYER_STATE` is `copyOnDeath`, so the new player gets `supersonicSpeed=true` copied from the old one, while the new player's abilities start at the default 0.05 flying speed. `update(newPlayer)` then sees `supersonic && state.supersonicSpeed()` as already applied and never sets 0.2. After respawning with the holder (for example with keepInventory), supersonic flight is not restored. Also, `clear(event.getOriginal())` mutates an entity that is being discarded, and it does nothing for the copy because attachments are copied before the Clone event fires.",
-            "reason": "Effects must be restored correctly after death. The attachment carries derived state that no longer matches the new entity's abilities.",
-            "fix": "Don't persist or copy derived ability state. Either compare the current flying speed directly, or reset `supersonicSpeed`/`previousFlightSpeed` on the clone before `update`. Remove the `clear(original)` call. Add a GameTest that fires `PlayerEvent.Clone` (original → new player with copied attachments) and asserts flying speed and modifiers on the new player.",
-            "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Clone 時の派生速度状態を再評価し、死亡後の飛行速度を検証しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The Clone handler resets `supersonicSpeed` on the new entity and re-runs update, and the `clear(original)` call is gone. `updateFlightSpeed` also compares against the actual flying speed.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/client/screen/gadget/GadgetClientEvents.java:33-42, gadget/GadgetEffects.java:22",
-            "acId": "AC-F038-001",
-            "problem": "The overclock is a second timer that calls `gameMode.useItem(MAIN_HAND)` alongside vanilla's own right-click repeat. It never changes the vanilla operation delay. `useItem` skips block and entity interaction (placing blocks, using blocks), only ever uses the main hand, and ignores the hit result. Block-breaking delay is not affected. With intervals {8,4,2,1}, Overclock I/II only add calls on top of vanilla's 4-tick repeat instead of setting a defined operation interval.",
-            "reason": "AC-F038-001 compares the operation interval with and without the gadget. This implementation doesn't give a defined interval for normal right-click operations, so the four overclocks don't work as the original intends.",
-            "fix": "Shorten the vanilla client delay itself (for example `Minecraft.rightClickDelay`, plus `MultiPlayerGameMode.destroyDelay` if the original also overclocks mining) using a narrowly scoped accessor/mixin on the client. Use the original's per-rank intervals so the normal `startUseItem` path (block, entity and item use) runs at the overclocked rate. Remove the duplicate `useItem` loop.",
-            "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 重複したアイテム使用ループを削除し、通常の操作遅延をランク別に変更しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The duplicate `useItem` loop is removed. The client now shortens `rightClickDelay` and `destroyDelay` per rank, with an access transformer for both fields. The AT file sits at the default META-INF path, which the NeoForge Gradle plugin picks up automatically.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEffects.java:186-189",
-            "acId": "AC-F038-001",
-            "problem": "Auto eat calls `player.eat(level, food, properties)` directly and skips `Item#finishUsingItem`. Foods with a remainder (mushroom/rabbit/beetroot stew, suspicious stew → bowl; honey bottle → glass bottle) lose their container, and item-specific effects (chorus fruit teleport, honey removing poison, suspicious stew effects) never happen. The selection also accepts any `DataComponents.FOOD` item, including harmful foods such as pufferfish or rotten flesh. Normal auto eat picks the lowest nutrition, so pufferfish is chosen first.",
-            "reason": "Vanilla has an eating path that handles remainders and item behavior, and the code should use it. Eating harmful food or deleting containers does not match the original's intended auto-eat behavior.",
-            "fix": "Consume through `food.finishUsingItem(player.level(), player)` and put the returned stack back into the slot, or add it to the inventory when the slot keeps other items. Skip foods whose `FoodProperties.effects()` are harmful, following the original's selection rule.",
-            "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 食品固有の使用完了処理と容器返却を使い、有害効果のある食品を候補から除外しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Auto eat uses `finishUsingItem` and returns the bowl or other result stack. Foods with harmful effects are skipped, and the GameTest covers pufferfish and mushroom stew.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetPlayerState.java:8-14,17-21; GadgetEffects.java:44-47,61-64,108-114",
-            "acId": null,
-            "problem": "The attachment stores `activeMask`, `operationInterval` and `repeatedAttack`, but no game behavior reads them. The client recomputes them from the inventory (`isActive`, `operationInterval`), and the attachment isn't synced to the client anyway. Only the GameTests read them. `mask()` exists only to fill `activeMask`.",
-            "reason": "The code style says to remove state and code that current behavior doesn't use. These fields are saved to disk and copied on death for nothing.",
-            "fix": "Remove `activeMask`, `operationInterval`, `repeatedAttack` and `mask()`. Keep only the state that behavior needs (auto-eat cooldown and the supersonic restore data). Make the GameTests assert real behavior instead of these fields.",
-            "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 効果処理で読まれない Attachment の保存フィールドと mask 計算を削除しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "`activeMask`, `operationInterval`, `repeatedAttack` and `mask()` are removed from `GadgetPlayerState` and the effects code.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/gadget/GadgetGameTests.java:61-81,52-57",
-            "acId": "AC-F038-001",
-            "problem": "The overclock assertion compares `state.operationInterval()` with `GadgetEffects.OVERCLOCK_INTERVALS[index + 1]`, so the implementation is checked against itself. Repeated attack only checks a flag that nothing uses. The flight assertions only check `CREATIVE_FLIGHT > 0` and never test the differences between the three flight tiers (hunger cost for Flight, none for Free Flight, 0.2 flying speed for Supersonic). Nothing compares attack or operation behavior with and without the gadget.",
-            "reason": "Each GameTest must perform the criterion's action (compare with and without the gadget) and assert the expected result. These assertions would pass even if the effects did nothing.",
-            "fix": "Assert against literal expected values from the original (interval ticks per rank). Check that `mayFly` is enabled and that flying speed is 0.2 for Supersonic and 0.05 otherwise. Check that Flight causes exhaustion while flying and Free Flight doesn't. Compare each value against a player without a gadget. Put the client-only behaviors (attack repeat, use delay) behind a testable common computation and assert on that.",
-            "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: GameTest を固定期待値、ガジェット有無、飛行速度・空腹消耗、摂食結果の検証に変更しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTests now use literal intervals, compare against no-gadget baselines, and check flying speed and flight exhaustion.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/gadget/GadgetGameTests.java:138-185",
-            "acId": "AC-F038-002",
-            "problem": "The lifecycle test doesn't perform the criterion's actions. Death is simulated with `copyAttachmentsFrom` instead of the Clone event handler, and nothing checks the clone's modifiers or flight. Creative transition is simulated by setting `mayfly = true` rather than changing the game mode (survival → creative → survival with and without the holder). Relogin doesn't check that health or the supersonic speed is restored.",
-            "reason": "Each GameTest must prepare the precondition, perform the action and assert the expected result. The bugs above in restoring health after relogin and supersonic speed after death are not caught.",
-            "fix": "Fire `GadgetEvents.clone` with a cloned player and assert its modifiers, flight permission and speed. Use `setGameMode`/`PlayerChangeGameModeEvent` on a server player to go into and out of creative, and assert `mayfly` and flying state each time. After the logout/login handlers, assert current health and flying speed.",
-            "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Clone イベント、保存・再読込、実際のゲームモード変更を使うライフサイクル検証を追加しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lifecycle test now fires `GadgetEvents.clone`, checks health through save/load, and changes the real game mode. The Clone test asserts speed and modifiers on the new player.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "tests/e2e/gadget-holder.mjs:39-53",
-            "acId": "AC-F038-003",
-            "problem": "The scenario screenshots the inventory icons and the holder screen, but no names. No gadget or holder tooltip is shown, and nothing captures the installed state on the holder item (its tooltip listing installed gadgets) after closing the menu. It also never checks that the shift-clicked gadgets actually ended up in the holder.",
-            "reason": "AC-F038-003's action is to photograph the icons, names and installed state of the gadgets.",
-            "fix": "Hover a gadget and capture its name tooltip. After configuring the holder, close the menu, hover the holder in the inventory and screenshot the 'N installed' tooltip with its list of gadget names.",
-            "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: E2E にガジェット名と設定後のホルダーの装着一覧を示すツールチップ撮影を追加しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E scenario hovers a gadget for its name and reopens the inventory to hover the holder's installed-gadget tooltip.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEffects.java:39-41,65-67",
-            "acId": null,
-            "problem": "After every max-health modifier change, the code manually clamps health with `if (player.getHealth() > player.getMaxHealth()) player.setHealth(...)`. In 1.21.1, `LivingEntity#onAttributeUpdated` already clamps health when `MAX_HEALTH` changes.",
-            "reason": "The code style says to rely on Minecraft guarantees and not validate states twice.",
-            "fix": "Remove both clamp blocks.",
-            "id": "CR-010",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 最大体力変更後の手動クランプを削除しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Both manual health clamp blocks are removed.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/registry/ClayiumRegistries.java:36-37",
-            "acId": null,
-            "problem": "`GadgetRegistration.PLAYER_STATE.getId()` and `GADGET_HOLDER_MENU.getId()` are redundant. `GadgetRegistration.ALL.size()` on the previous line already initializes the class, which registers every holder.",
-            "reason": "The code style asks for one direct path per behavior and no unnecessary code.",
-            "fix": "Keep only `GadgetRegistration.ALL.size();`.",
-            "id": "CR-011",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 登録初期化時の重複した getId 呼び出しを削除しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The redundant `getId()` calls are removed. Only `GadgetRegistration.ALL.size()` remains.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/gadget/GadgetTranslations.java:49-77",
-            "acId": null,
-            "problem": "The locale is guessed with `names[0].startsWith(\"粘土\")`, and the ID list is duplicated here instead of coming from `GadgetType.id()`. The two lists must be kept in sync by hand.",
-            "reason": "Names should say what the code does, and the same responsibility shouldn't be implemented twice. Detecting the locale from string content is fragile.",
-            "fix": "Pass the locale (or the screen and tooltip strings) explicitly. Build the keys from `GadgetType.values()` so the gadget IDs have one source of truth.",
-            "id": "CR-012",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 翻訳生成に明示的な言語指定と GadgetType の ID を使用しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "`GadgetTranslations` takes an explicit locale flag and builds its keys from `GadgetType.values()`.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          },
-          {
-            "target": "AGENTS.md:55",
-            "acId": null,
-            "problem": "AGENTS.md has no M18 entry. Not recorded: the 17 registered gadget IDs and their original keys, the `clayium:gadgets` Data Component, the `gadget_player_state` attachment, the fixed modifier IDs and values (+20/+80/+180 health, +3/+7/+20 block range, `CREATIVE_FLIGHT`), the overclock intervals, supersonic speed 0.2, the auto-eat rules, the 16-slot holder and the absence of speed/jump gadgets.",
-            "reason": "The project rules require updating AGENTS.md in the same change when IDs, registrations or user-visible behavior change, and that includes the numbers that define intent.",
-            "fix": "Add an M18 paragraph to AGENTS.md that records these IDs, components, attachment, modifier IDs and values, intervals and lifecycle re-evaluation points.",
-            "id": "CR-013",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: AGENTS.md に登録 ID、原作キー、保存先、modifier、数値、ライフサイクル規則を記録しました。",
-                "at": "2026-11-17T00:18:37.369Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md now has an M18 section covering the IDs, original keys, component, attachment, modifiers and values, intervals, auto-eat rules and lifecycle points.",
-                "at": "2026-11-17T00:19:01.844Z"
-              }
-            ]
-          }
-        ]
-      },
-      "codeReviewTree": "713df5c2c26ff88148e03da9c87b17f2472623af",
+      "codeReview": null,
+      "codeReviewTree": null,
       "e2eReview": null,
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M06",
+      "id": "M07",
       "phase": "implementation",
-      "baseCommit": "4654cc2c0b6dcfd21473fc2f61f27bf1ab279ce5",
+      "baseCommit": "d856ce85f4732fa6f8084004f0e9aa30a56403d7",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -344,8 +41,9 @@
     "M02",
     "M04",
     "M03",
-    "M05"
+    "M05",
+    "M18"
   ],
-  "lastCheckpoint": "4654cc2c0b6dcfd21473fc2f61f27bf1ab279ce5",
+  "lastCheckpoint": "d856ce85f4732fa6f8084004f0e9aa30a56403d7",
   "fatal": null
 }

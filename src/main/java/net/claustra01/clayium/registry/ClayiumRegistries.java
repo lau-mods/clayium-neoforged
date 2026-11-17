@@ -41,6 +41,7 @@ public final class ClayiumRegistries {
         FoundationBlockRegistration.ALL.size();
         FoundationItemRegistration.ALL.size();
         MaterialRegistration.CREATIVE_TAB_ITEMS.size();
+        GadgetRegistration.ALL.size();
         WorldgenRegistration.BLOCKS.size();
         FoundationDataComponentRegistration.TIER.getId();
         FoundationCreativeTabRegistration.MAIN.getId();

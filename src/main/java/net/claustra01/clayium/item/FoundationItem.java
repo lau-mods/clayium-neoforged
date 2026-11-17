@@ -6,7 +6,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-public final class FoundationItem extends Item {
+public class FoundationItem extends Item {
     public FoundationItem(Properties properties) {
         super(properties);
     }

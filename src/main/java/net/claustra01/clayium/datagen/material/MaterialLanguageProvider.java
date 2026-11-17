@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.LegacyTranslations;
+import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
@@ -23,6 +24,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         Map<String, String> foundation = locale.equals("ja_jp")
                 ? LegacyTranslations.JAPANESE : LegacyTranslations.ENGLISH;
         foundation.forEach(this::add);
+        GadgetTranslations.forLocale(locale).forEach(this::add);
         try (var stream = MaterialLanguageProvider.class.getClassLoader()
                 .getResourceAsStream("data/clayium/original_material_translations.tsv")) {
             if (stream == null) {

@@ -3,6 +3,7 @@ package net.claustra01.clayium.datagen;
 import java.util.List;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.datagen.gadget.GadgetItemModelProvider;
 import net.claustra01.clayium.datagen.material.MaterialBlockLoot;
 import net.claustra01.clayium.datagen.material.MaterialBlockStateProvider;
 import net.claustra01.clayium.datagen.material.MaterialItemModelProvider;
@@ -28,6 +29,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new MaterialBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialItemModelProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new GadgetItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "en_us"));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "ja_jp"));
 
