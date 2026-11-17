@@ -8,7 +8,7 @@ import net.claustra01.clayium.datagen.material.MaterialBlockStateProvider;
 import net.claustra01.clayium.datagen.material.MaterialItemModelProvider;
 import net.claustra01.clayium.datagen.material.MaterialItemTagProvider;
 import net.claustra01.clayium.datagen.material.MaterialLanguageProvider;
-import net.claustra01.clayium.datagen.material.MaterialRecipeProvider;
+import net.claustra01.clayium.datagen.recipe.MachineRecipeProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -46,7 +46,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(FoundationBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MaterialBlockLoot::new, LootContextParamSets.BLOCK)),
                         event.getLookupProvider()));
-        generator.addProvider(event.includeServer(), new MaterialRecipeProvider(output, event.getLookupProvider()));
+        generator.addProvider(event.includeServer(), new MachineRecipeProvider(output, event.getLookupProvider()));
     }
 
     private ClayiumDataGenerators() {

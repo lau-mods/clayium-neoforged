@@ -11,25 +11,315 @@
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": null,
-      "codeReviewTree": null,
-      "e2eReview": null,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/worldgen/WorldgenGameTests.java:41-82",
+            "acId": "AC-F003-001",
+            "problem": "The composite-generation test never generates overworld chunks with a fixed seed. It calls `CompositeClayOreFeature.place` directly on hand-filled stone and deepslate cubes. The large-ore roll is only tested with `largeChance = 1.0`. Nothing checks that the roll stays at 50%, or that a large ore never appears when the +8,+0,+8 center is not dense ore.",
+            "reason": "The criterion's precondition is a fixed number of new overworld chunks generated from a fixed seed. Its expected result covers the real placed layers: trial count, size and height. It also says the 50% roll applies only where the dense condition holds. A direct call with chance 1.0 checks none of the placement pipeline, the 50% probability, or the negative case.",
+            "fix": "Generate a fixed set of fresh overworld chunks far from other tests with the loaded placed features. Use `level.getChunk` on unvisited ChunkPos values or `PlacedFeature.placeWithBiomeCheck` with a seeded RandomSource. Then assert: every ore lies inside its layer's Y range plus the vein spread; every dense or large ore in composite mode touches or sits inside a primary vein; stone variants sit only in stone-replaceable hosts and deepslate variants only in deepslate hosts. Add a seeded case with `largeChance` 0.5 that checks the large/no-large outcome against `RandomSource` with the same seed. Add a case where the center is not dense (for example, a center block that is not replaceable) and assert no large ore is placed.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 固定シードで新規チャンクに4層を配置して鉱石と母岩変種を検査し、50%抽選と高密度でない中心の除外も確認しました。",
+                "at": "2026-11-17T00:09:24.600Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The test now runs the fixed-seed 50% roll and the non-dense-center case (bedrock at center gives no large ore). Mode and host-variant checks are also added. The roll only follows nextFloat in the dense-center branch of CompositeClayOreFeature, and the test records that float.",
+                "at": "2026-11-17T00:09:38.780Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/worldgen/WorldgenGameTests.java:84-95,206-237",
+            "acId": "AC-F003-001",
+            "problem": "`fourOreLayersUseSpecifiedTrialsSizesAndHeights` reads the generated JSON files from the classpath with `getResourceAsStream`. It does not check the configured and placed features the server actually loaded.",
+            "reason": "A JSON file on the classpath proves neither that the server loaded the datapack entries nor that each layer is evaluated with these values. The criterion asks that each layer be evaluated with the specified trials, size and height.",
+            "fix": "Look up `clayium:<id>` in `helper.getLevel().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE / PLACED_FEATURE)`. Assert on the decoded `ClayOreConfiguration` and on the `CountPlacement`, `InSquarePlacement`, `HeightRangePlacement` and `BiomeFilter` instances (for example, by encoding them with `PlacedFeature.DIRECT_CODEC`). Do the same in `mainConfiguration()` and for the biome modifier, using `NeoForgeRegistries.Keys.BIOME_MODIFIERS`.",
+            "id": "CR-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GameTest が実行時レジストリの ConfiguredFeature、PlacedFeature、Biome Modifier を参照するよう変更しました。",
+                "at": "2026-11-17T00:09:24.600Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Configured features, placed features and the biome modifier are now read from the server's registryAccess and checked there. The classpath JSON reads are gone.",
+                "at": "2026-11-17T00:09:38.780Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/worldgen/WorldgenGameTests.java:97-136",
+            "acId": "AC-F003-002",
+            "problem": "The datapack half only round-trips a `ClayOreConfiguration` through its codec and places it directly. It never changes a placed feature's height or count and checks the effect on new chunks. The 'existing chunk' check sets one block 32 blocks away, outside the feature's reach, so it cannot fail. The Y=-64..319 check only compares the numbers in the JSON.",
+            "reason": "The criterion requires that heights and trial counts set by a datapack apply to new chunks, that already generated chunks are not rewritten, and that generation stays inside the build range. None of these is observed.",
+            "fix": "Decode an overriding placed feature with `PlacedFeature.DIRECT_CODEC` from JSON that changes count and height range and references the loaded configured feature, as a datapack override would. Place it into fresh chunks with a seeded random and assert that every resulting ore falls inside the overridden Y range and that the number of veins follows the overridden count. For the existing-chunk check, generate a chunk, record its ore positions, request the chunk again or run generation of neighbouring chunks, and assert the recorded blocks are unchanged. Assert that the observed ore Y values of the standard layers stay within -64..319.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 配置データをデコードして高度と試行回数を変更し、新規領域の鉱石位置と既存チャンクの保持を検査しました。",
+                "at": "2026-11-17T00:09:24.600Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The test decodes a placed feature with overridden count and height, checks the ore Y range, checks a zero count gives no ore, and checks the recorded blocks are unchanged after re-requesting the chunk. The build range is checked against the level limits.",
+                "at": "2026-11-17T00:09:38.780Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/worldgen/WorldgenGameTests.java:49-54,124-129,251-259",
+            "acId": "AC-F003-001",
+            "problem": "The tests fill and generate blocks up to about 104 blocks from the test origin along x, and at z+96. These regions lie far outside the `empty` template's bounds and are never cleared.",
+            "reason": "GameTests in the same `clayium` batch are laid out next to each other and run in parallel. Writing outside the test structure can overwrite neighbouring tests' areas and make results depend on test order.",
+            "fix": "Run the generation checks in their own GameTest batch or in a dedicated, sufficiently large structure template. Alternatively, generate into fresh chunks far from the GameTest grid, as the Nether/End check already does, instead of writing next to the test origin.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 広い生成領域を GameTest テンプレート周辺から離れたチャンクへ移しました。",
+                "at": "2026-11-17T00:09:24.600Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The generation areas moved to distinct far-away coordinates (1600, 4096, 5120), outside the GameTest grid and separate from each other.",
+                "at": "2026-11-17T00:09:38.780Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/WorldgenRegistration.java:19-28,48-59",
+            "acId": "AC-F003-003",
+            "problem": "The deepslate variants copy `Blocks.DEEPSLATE_IRON_ORE` and keep its hardness and resistance (4.5/3.0). The stone variants are set to the original 3.0/5.0. `oreDropsMatchRanksFortuneAndSilkTouch` checks only the `needs_stone_tool` tag. It never checks hardness or resistance, and never checks that a tool below the stone tier gets no drops.",
+            "reason": "The criterion requires keeping the original mining characteristics for all six ores. The deepslate variants currently have a different blast resistance from the original ore, and this is untested.",
+            "fix": "Give all six ores the original strength (3.0F, 5.0F) together with `requiresCorrectToolForDrops`, copying only sound and map colour from deepslate. This also removes the `propertiesSource == Blocks.STONE` branch. In the GameTest, assert hardness and explosion resistance for all six. Also assert that breaking with a wooden pickaxe yields no drops while a stone pickaxe yields the expected drops.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 6鉱石すべてを硬度3.0・爆発耐性5.0に統一し、採掘ランクと工具適性の検査を追加しました。",
+                "at": "2026-11-17T00:09:24.600Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "registerOre now applies strength(3.0F, 5.0F) to all six ores together with requiresCorrectToolForDrops. The test checks hardness, explosion resistance, and wooden versus stone pickaxe.",
+                "at": "2026-11-17T00:09:38.780Z"
+              }
+            ]
+          },
+          {
+            "target": "AGENTS.md:55",
+            "acId": null,
+            "problem": "AGENTS.md is not updated for M05. It still records `clay_ore` under the M01 foundation registration. It does not list the six ore IDs and their rank drops (clay balls with Fortune and Silk Touch for `clay_ore`, the block itself for the dense and large ores), mining tier, hardness and the reused textures. It also does not document the `clayium:composite_clay_ore` feature and its config fields, the four layer IDs with their Y range, count and size, the overworld biome modifier, or the fact that exposure suppression is disabled at 0.",
+            "reason": "Project rules require AGENTS.md to be updated in the same change whenever IDs, registrations, data-generation rules or worldgen behavior change. AGENTS.md is also part of this milestone's scope.",
+            "fix": "Add an M05 section to AGENTS.md. It should list the six named ore IDs and their original keys (`blockClayOre:0/1/2` plus deepslate variants), drops, tool tier and strength, texture reuse, the composite feature's codec fields, the table of the four configured/placed features, and the `add_clay_ores` biome modifier. Also correct the M01 line so that `clay_ore` is now owned by `WorldgenRegistration`.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に6つの ID、ドロップ、採掘特性、テクスチャ再利用、複合 Feature、4層、Biome Modifier を記録し、M01 の登録担当表記を修正しました。",
+                "at": "2026-11-17T00:09:24.600Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has the M05 section: the six ore IDs, drops, mining rank and strength, texture reuse, the composite feature fields, the four-layer table, and the add_clay_ores biome modifier. The M01 line now says WorldgenRegistration owns clay_ore.",
+                "at": "2026-11-17T00:09:38.780Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "e4b340ae6d8fbcc1e080692fd0b98a37515a2bc8",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-17T00-10-00-336Z-144-M05-e2e/scenarios/tests-e2e-clay-ores.mjs/screenshots/AC-F003-003-six-stone-and-deepslate-ore-models.png",
+            "acId": "AC-F003-003",
+            "problem": "None of the six ore blocks are in the screenshot (clay_ore, dense_clay_ore, large_dense_clay_ore and their three deepslate variants). The smooth-stone platform is missing too. The frame shows only the flat-world grass plain, the sky and an empty hotbar, so the stone and deepslate ore models and textures cannot be checked.",
+            "reason": "The scenario fills smooth stone at y=99 from x -6..6, z -2..5, places the six ores at y=100 and points the camera from (0.5, 101.8, -5.5) with pitch 18. From that position the platform and ores would fill the lower half of the view. The grass close to the bottom of the frame shows large texels, so the camera is at the flat-world ground level, not at y≈101.8 above the scene. Either the camera position was not applied (only the rotation was), or the fill and setblock commands did not run (for example, missing operator permission or the commands being sent as chat). The scene was never in view, so this AC has no visual evidence for the Expected Result: original textures kept and block models not broken.",
+            "fix": "In tests/e2e/clay-ores.mjs, run an explicit `tp @s 0.5 101.8 -5.5 0 18` (or check that the camera helper moves the player's position) before taking the screenshot. Confirm that the client has operator permission when the fill and setblock commands run. Wait until the chunk is loaded and the blocks have rendered, and check the placements (for example with `execute if block -4 100 2 clayium:clay_ore`) before capturing. Then capture again so that all six stone and deepslate ore blocks are clearly in frame.",
+            "id": "ER-001",
+            "status": "open",
+            "history": []
+          }
+        ]
+      },
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M03",
+      "id": "M18",
       "phase": "implementation",
-      "baseCommit": "67bea8405fbae0b626d2addc358de1f20590d9ca",
+      "baseCommit": "47b4c0307a9bf90e6ee10e897ac50364caddf382",
       "failures": {
         "build": 0,
         "gametest": 0,
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": null,
-      "codeReviewTree": null,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetHolderMenu.java:17-28,67-72",
+            "acId": "AC-F038-002",
+            "problem": "`slotsChanged` is supposed to write the gadget slots back into the holder's `gadgets` Data Component, but it never runs for the `gadgets` SimpleContainer. A SimpleContainer only tells its registered `ContainerListener`s about changes, and the menu never registers one. Gadgets placed in the holder screen stay in the temporary container and are lost when the menu closes. The holder item never gets the gadgets, so they give no effect.",
+            "reason": "The holder configuration is the precondition for every gadget effect. With this bug, a player can never install gadgets through the GUI. The GameTests miss it because they call `GadgetHolderItem.setGadgets` directly.",
+            "fix": "In the constructor, register a listener on the container (`gadgets.addListener(this::slotsChanged)`), or write the component from `removed`/`broadcastChanges` on the server. Add a GameTest that opens `GadgetHolderMenu` for the player, places a gadget into a menu slot, and checks the holder stack's `GADGETS` component.",
+            "id": "CR-001",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEvents.java:39-42, GadgetEffects.java:34-42,55-68",
+            "acId": "AC-F038-002",
+            "problem": "The extra-health modifier is transient, and logout calls `clear()`, which removes it and clamps health to 20 before the player is saved. A player at 200/200 HP who logs out and back in comes back at 20 HP. Even without the logout clear, health loaded from NBT is clamped against the base 20 HP maximum before the transient modifier is re-applied.",
+            "reason": "AC-F038-002 requires effects to be restored correctly after relogin. The gadget's extra health is silently lost on every relogin.",
+            "fix": "Keep the current health across logout and login: either use a persistent (saved) modifier with the fixed ID and don't clear it on logout, or store the pre-clamp health in the attachment and restore it after re-applying the modifier at login. Add a GameTest that checks health is preserved through save/load or the logout/login handlers.",
+            "id": "CR-002",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEvents.java:33-37, GadgetEffects.java:138-151, registry/GadgetRegistration.java:28-34",
+            "acId": "AC-F038-002",
+            "problem": "`PLAYER_STATE` is `copyOnDeath`, so the new player gets `supersonicSpeed=true` copied from the old one, while the new player's abilities start at the default 0.05 flying speed. `update(newPlayer)` then sees `supersonic && state.supersonicSpeed()` as already applied and never sets 0.2. After respawning with the holder (for example with keepInventory), supersonic flight is not restored. Also, `clear(event.getOriginal())` mutates an entity that is being discarded, and it does nothing for the copy because attachments are copied before the Clone event fires.",
+            "reason": "Effects must be restored correctly after death. The attachment carries derived state that no longer matches the new entity's abilities.",
+            "fix": "Don't persist or copy derived ability state. Either compare the current flying speed directly, or reset `supersonicSpeed`/`previousFlightSpeed` on the clone before `update`. Remove the `clear(original)` call. Add a GameTest that fires `PlayerEvent.Clone` (original → new player with copied attachments) and asserts flying speed and modifiers on the new player.",
+            "id": "CR-003",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/client/screen/gadget/GadgetClientEvents.java:33-42, gadget/GadgetEffects.java:22",
+            "acId": "AC-F038-001",
+            "problem": "The overclock is a second timer that calls `gameMode.useItem(MAIN_HAND)` alongside vanilla's own right-click repeat. It never changes the vanilla operation delay. `useItem` skips block and entity interaction (placing blocks, using blocks), only ever uses the main hand, and ignores the hit result. Block-breaking delay is not affected. With intervals {8,4,2,1}, Overclock I/II only add calls on top of vanilla's 4-tick repeat instead of setting a defined operation interval.",
+            "reason": "AC-F038-001 compares the operation interval with and without the gadget. This implementation doesn't give a defined interval for normal right-click operations, so the four overclocks don't work as the original intends.",
+            "fix": "Shorten the vanilla client delay itself (for example `Minecraft.rightClickDelay`, plus `MultiPlayerGameMode.destroyDelay` if the original also overclocks mining) using a narrowly scoped accessor/mixin on the client. Use the original's per-rank intervals so the normal `startUseItem` path (block, entity and item use) runs at the overclocked rate. Remove the duplicate `useItem` loop.",
+            "id": "CR-004",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEffects.java:186-189",
+            "acId": "AC-F038-001",
+            "problem": "Auto eat calls `player.eat(level, food, properties)` directly and skips `Item#finishUsingItem`. Foods with a remainder (mushroom/rabbit/beetroot stew, suspicious stew → bowl; honey bottle → glass bottle) lose their container, and item-specific effects (chorus fruit teleport, honey removing poison, suspicious stew effects) never happen. The selection also accepts any `DataComponents.FOOD` item, including harmful foods such as pufferfish or rotten flesh. Normal auto eat picks the lowest nutrition, so pufferfish is chosen first.",
+            "reason": "Vanilla has an eating path that handles remainders and item behavior, and the code should use it. Eating harmful food or deleting containers does not match the original's intended auto-eat behavior.",
+            "fix": "Consume through `food.finishUsingItem(player.level(), player)` and put the returned stack back into the slot, or add it to the inventory when the slot keeps other items. Skip foods whose `FoodProperties.effects()` are harmful, following the original's selection rule.",
+            "id": "CR-005",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetPlayerState.java:8-14,17-21; GadgetEffects.java:44-47,61-64,108-114",
+            "acId": null,
+            "problem": "The attachment stores `activeMask`, `operationInterval` and `repeatedAttack`, but no game behavior reads them. The client recomputes them from the inventory (`isActive`, `operationInterval`), and the attachment isn't synced to the client anyway. Only the GameTests read them. `mask()` exists only to fill `activeMask`.",
+            "reason": "The code style says to remove state and code that current behavior doesn't use. These fields are saved to disk and copied on death for nothing.",
+            "fix": "Remove `activeMask`, `operationInterval`, `repeatedAttack` and `mask()`. Keep only the state that behavior needs (auto-eat cooldown and the supersonic restore data). Make the GameTests assert real behavior instead of these fields.",
+            "id": "CR-006",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/gadget/GadgetGameTests.java:61-81,52-57",
+            "acId": "AC-F038-001",
+            "problem": "The overclock assertion compares `state.operationInterval()` with `GadgetEffects.OVERCLOCK_INTERVALS[index + 1]`, so the implementation is checked against itself. Repeated attack only checks a flag that nothing uses. The flight assertions only check `CREATIVE_FLIGHT > 0` and never test the differences between the three flight tiers (hunger cost for Flight, none for Free Flight, 0.2 flying speed for Supersonic). Nothing compares attack or operation behavior with and without the gadget.",
+            "reason": "Each GameTest must perform the criterion's action (compare with and without the gadget) and assert the expected result. These assertions would pass even if the effects did nothing.",
+            "fix": "Assert against literal expected values from the original (interval ticks per rank). Check that `mayFly` is enabled and that flying speed is 0.2 for Supersonic and 0.05 otherwise. Check that Flight causes exhaustion while flying and Free Flight doesn't. Compare each value against a player without a gadget. Put the client-only behaviors (attack repeat, use delay) behind a testable common computation and assert on that.",
+            "id": "CR-007",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/gadget/GadgetGameTests.java:138-185",
+            "acId": "AC-F038-002",
+            "problem": "The lifecycle test doesn't perform the criterion's actions. Death is simulated with `copyAttachmentsFrom` instead of the Clone event handler, and nothing checks the clone's modifiers or flight. Creative transition is simulated by setting `mayfly = true` rather than changing the game mode (survival → creative → survival with and without the holder). Relogin doesn't check that health or the supersonic speed is restored.",
+            "reason": "Each GameTest must prepare the precondition, perform the action and assert the expected result. The bugs above in restoring health after relogin and supersonic speed after death are not caught.",
+            "fix": "Fire `GadgetEvents.clone` with a cloned player and assert its modifiers, flight permission and speed. Use `setGameMode`/`PlayerChangeGameModeEvent` on a server player to go into and out of creative, and assert `mayfly` and flying state each time. After the logout/login handlers, assert current health and flying speed.",
+            "id": "CR-008",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "tests/e2e/gadget-holder.mjs:39-53",
+            "acId": "AC-F038-003",
+            "problem": "The scenario screenshots the inventory icons and the holder screen, but no names. No gadget or holder tooltip is shown, and nothing captures the installed state on the holder item (its tooltip listing installed gadgets) after closing the menu. It also never checks that the shift-clicked gadgets actually ended up in the holder.",
+            "reason": "AC-F038-003's action is to photograph the icons, names and installed state of the gadgets.",
+            "fix": "Hover a gadget and capture its name tooltip. After configuring the holder, close the menu, hover the holder in the inventory and screenshot the 'N installed' tooltip with its list of gadget names.",
+            "id": "CR-009",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gadget/GadgetEffects.java:39-41,65-67",
+            "acId": null,
+            "problem": "After every max-health modifier change, the code manually clamps health with `if (player.getHealth() > player.getMaxHealth()) player.setHealth(...)`. In 1.21.1, `LivingEntity#onAttributeUpdated` already clamps health when `MAX_HEALTH` changes.",
+            "reason": "The code style says to rely on Minecraft guarantees and not validate states twice.",
+            "fix": "Remove both clamp blocks.",
+            "id": "CR-010",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/ClayiumRegistries.java:36-37",
+            "acId": null,
+            "problem": "`GadgetRegistration.PLAYER_STATE.getId()` and `GADGET_HOLDER_MENU.getId()` are redundant. `GadgetRegistration.ALL.size()` on the previous line already initializes the class, which registers every holder.",
+            "reason": "The code style asks for one direct path per behavior and no unnecessary code.",
+            "fix": "Keep only `GadgetRegistration.ALL.size();`.",
+            "id": "CR-011",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/gadget/GadgetTranslations.java:49-77",
+            "acId": null,
+            "problem": "The locale is guessed with `names[0].startsWith(\"粘土\")`, and the ID list is duplicated here instead of coming from `GadgetType.id()`. The two lists must be kept in sync by hand.",
+            "reason": "Names should say what the code does, and the same responsibility shouldn't be implemented twice. Detecting the locale from string content is fragile.",
+            "fix": "Pass the locale (or the screen and tooltip strings) explicitly. Build the keys from `GadgetType.values()` so the gadget IDs have one source of truth.",
+            "id": "CR-012",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "AGENTS.md:55",
+            "acId": null,
+            "problem": "AGENTS.md has no M18 entry. Not recorded: the 17 registered gadget IDs and their original keys, the `clayium:gadgets` Data Component, the `gadget_player_state` attachment, the fixed modifier IDs and values (+20/+80/+180 health, +3/+7/+20 block range, `CREATIVE_FLIGHT`), the overclock intervals, supersonic speed 0.2, the auto-eat rules, the 16-slot holder and the absence of speed/jump gadgets.",
+            "reason": "The project rules require updating AGENTS.md in the same change when IDs, registrations or user-visible behavior change, and that includes the numbers that define intent.",
+            "fix": "Add an M18 paragraph to AGENTS.md that records these IDs, components, attachment, modifier IDs and values, intervals and lifecycle re-evaluation points.",
+            "id": "CR-013",
+            "status": "open",
+            "history": []
+          }
+        ]
+      },
+      "codeReviewTree": "7cd6eb61f9726736cedf8d6094864aa0c545c2ee",
       "e2eReview": null,
       "failure": null,
       "conflicts": [],
@@ -39,8 +329,9 @@
   "completed": [
     "M01",
     "M02",
-    "M04"
+    "M04",
+    "M03"
   ],
-  "lastCheckpoint": "67bea8405fbae0b626d2addc358de1f20590d9ca",
+  "lastCheckpoint": "47b4c0307a9bf90e6ee10e897ac50364caddf382",
   "fatal": null
 }

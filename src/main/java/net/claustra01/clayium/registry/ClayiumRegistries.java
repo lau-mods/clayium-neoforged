@@ -6,6 +6,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -23,6 +25,10 @@ public final class ClayiumRegistries {
             DeferredRegister.create(BuiltInRegistries.MENU, ClayiumMod.MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ClayiumMod.MOD_ID);
+    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES =
+            DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, ClayiumMod.MOD_ID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
+            DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ClayiumMod.MOD_ID);
     public static final DeferredRegister.DataComponents DATA_COMPONENT_TYPES =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, ClayiumMod.MOD_ID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
@@ -34,12 +40,15 @@ public final class ClayiumRegistries {
         MaterialRegistration.CREATIVE_TAB_ITEMS.size();
         FoundationDataComponentRegistration.TIER.getId();
         FoundationCreativeTabRegistration.MAIN.getId();
+        RecipeRegistration.MACHINE_SERIALIZER.getId();
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITY_TYPES.register(modEventBus);
         ENTITY_TYPES.register(modEventBus);
         MENU_TYPES.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        RECIPE_TYPES.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
         DATA_COMPONENT_TYPES.register(modEventBus);
         ATTACHMENT_TYPES.register(modEventBus);
     }

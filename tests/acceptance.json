@@ -49,6 +49,18 @@
       "name": "materialnamescolorsandtooltipsarecomplete"
     },
     {
+      "acId": "AC-F005-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "machinerecipeparsingandexecutionconditionsarelossless"
+    },
+    {
+      "acId": "AC-F005-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "datapackreloadreplacescacheandskipsmissingexternalitem"
+    },
+    {
       "acId": "AC-F006-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
