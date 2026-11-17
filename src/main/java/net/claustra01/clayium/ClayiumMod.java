@@ -1,6 +1,7 @@
 package net.claustra01.clayium;
 
 import net.claustra01.clayium.datagen.ClayiumDataGenerators;
+import net.claustra01.clayium.energy.fe.EnergyConverterCapabilities;
 import net.claustra01.clayium.machine.MachineCapabilities;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
@@ -20,9 +21,11 @@ public final class ClayiumMod {
         modEventBus.addListener(ClayiumDataGenerators::gatherData);
         modEventBus.addListener(MachineCapabilities::register);
         modEventBus.addListener(ClayProductionCapabilities::register);
+        modEventBus.addListener(EnergyConverterCapabilities::register);
         modEventBus.addListener(LogisticsCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
             modEventBus.addListener(net.claustra01.clayium.gametest.logistics.LogisticsGameTests::registerTestCapability);
+            modEventBus.addListener(net.claustra01.clayium.gametest.energyconverter.EnergyConverterGameTests::registerTestCapability);
         }
         modEventBus.addListener(MachineFaceModePayload::register);
         modEventBus.addListener(BufferControlPayload::register);

@@ -10,6 +10,7 @@ import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.machine.MachineLanguageEntries;
 import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
+import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
 import net.claustra01.clayium.datagen.waterwheel.WaterWheelLanguageEntries;
@@ -33,6 +34,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         WeaponTranslations.forLocale(locale).forEach(this::add);
         WaterWheelLanguageEntries.add(locale, this::add);
         ClayProductionLanguageEntries.add(locale, this::add);
+        EnergyConverterLanguageEntries.add(locale, this::add);
         try (var stream = MaterialLanguageProvider.class.getClassLoader()
                 .getResourceAsStream("data/clayium/original_material_translations.tsv")) {
             if (stream == null) {

@@ -419,6 +419,18 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "chemicalandmattermachinesuseoriginaltiersrecipesanddirectfluids"
+    },
+    {
+      "acId": "AC-F023-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "convertersonlyturnclayenergyintoexternalfe"
+    },
+    {
+      "acId": "AC-F023-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allconvertertierspreserveratesrecipesredstoneandstoredfe"
     }
   ],
   "e2e": [

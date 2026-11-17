@@ -42,6 +42,7 @@ public final class ClayiumRegistries {
         FoundationItemRegistration.ALL.size();
         MaterialRegistration.CREATIVE_TAB_ITEMS.size();
         AssemblyMachineRegistration.MACHINES.size();
+        EnergyConverterRegistration.CONVERTERS.size();
         MachineRegistration.MACHINES.size();
         ClayProductionRegistration.BLOCKS.size();
         FormingMachineRegistration.MACHINES.size();

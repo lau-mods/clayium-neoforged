@@ -176,6 +176,27 @@ Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`
 
 射撃 cooldown は原作 rate の整数除算 `rate / 3` tick。チャージ割合 `f=min(使用 tick, チャージ tick)/チャージ tick` の威力は `min((f²+2f)/3,1)`、消費耐久は `1+floor(威力×チャージ tick)`。弾丸は1200 tickで消滅する。転移は使用者と弾丸の次元一致、建築高度、ワールド境界、ロード済みチャンク、プレイヤー衝突箱の空間、`EntityTeleportEvent` を確認する。
 
+## M16 CE→FE変換器
+
+`EnergyConverterRegistration` は次の同名 Block/Item を登録し、全機種が `clayium:energy_converter` BlockEntity と燃料1スロットを使う。原作キーは各行の `tile.block<原作名>RFGenerator.name`。
+
+| Tier | ID | 原作名 | 内部CE/t | FE生成/t | FE出力上限/t | FE容量 |
+|---:|---|---|---:|---:|---:|---:|
+| 4 | `ce_rf_converter` | Basic | 100 | 10 | 10 | 10,000 |
+| 5 | `advanced_ce_rf_converter` | Advanced | 1,000 | 30 | 30 | 30,000 |
+| 6 | `precision_ce_rf_converter` | Precision | 10,000 | 90 | 90 | 90,000 |
+| 7 | `clay_steel_ce_rf_converter` | ClaySteel | 100,000 | 270 | 270 | 270,000 |
+| 8 | `clayium_ce_rf_converter` | Clayium | 1,000,000 | 810 | 810 | 810,000 |
+| 9 | `ultimate_ce_rf_converter` | Ultimate | 10,000,000 | 2,430 | 2,430 | 2,430,000 |
+| 10 | `antimatter_ce_rf_converter` | Antimatter | 100,000,000 | 7,290 | 7,290 | 7,290,000 |
+| 11 | `pure_antimatter_ce_rf_converter` | PureAntimatter | 1,000,000,000 | 21,870 | 21,870 | 21,870,000 |
+| 12 | `oec_ce_rf_converter` | OEC | 10,000,000,000 | 65,610 | 65,610 | 65,610,000 |
+| 13 | `opa_ce_rf_converter` | OPA | 100,000,000,000 | 196,830 | 196,830 | 196,830,000 |
+
+NeoForge `Capabilities.EnergyStorage.BLOCK` の `IEnergyStorage` は `canReceive=false`、`receiveEnergy=0` とし、隣接先への push と外部からの引出だけを許す。両経路は1 tick の出力上限を共有する。赤石入力中は変換と出力を停止し、満杯時はCEを消費しない。保存NBTは `inventory`、`energy`、`fe_energy`。`OVERCLOCK_ENERGY_EXPONENT=1.0` は真正な原作 hotfix2 JAR の `mods.clayium.block.tile.TileClayRFGenerator` コンストラクタの `overclockExponent=1` と同クラスの tick 処理での `Math.pow(overclockTotalFactor, overclockExponent)` に基づく。CE消費・FE生成・FE出力上限に線形に適用し、隣接オーバークロッカーからの倍率供給は M33 で接続する。
+
+組立レシピは `energy_converter/<id>` に10件を初期有効で生成し、全て40 tick、CEは `ClayiumRecipeEnergy.e(1.0, Tier)` とする。Tier 4 は `basic_machine_hull` と `clay_energy_excitor`、Tier 5～13 は一段下の変換器と順に `advanced_circuit`、`precision_circuit`、`integrated_circuit`、`clayium_plate`、`ultimate_alloy_plate`、`antimatter_plate`、`pure_antimatter_plate`、`octuple_energetic_clay_plate`、`octuple_pure_antimatter_plate` を使う。必要組立機Tierは変換器Tier 4～5が4、6～9が6、10～13が10。データパックの NeoForge 条件で無効化できる。GameTest は `convertersOnlyTurnClayEnergyIntoExternalFe` と `allConverterTiersPreserveRatesRecipesRedstoneAndStoredFe`。
+
 ## M09 成形加工機
 
 - `FormingSeries` は BendingMachine Tier 1,2,3,4,5,6,7,9、WireDrawingMachine・PipeDrawingMachine・CuttingMachine・Lathe Tier 1～4、MillingMachine Tier 3,4 の26機種を定義する。登録 ID は `OriginalRegistryCatalog.machineId` に従い、Tier 1 の曲げ加工機だけ `clay_bending_machine`、その他は `<stem>_tier_<Tier>` とする。

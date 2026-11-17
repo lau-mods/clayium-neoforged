@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.gadget.GadgetItemModelProvider;
+import net.claustra01.clayium.datagen.energyconverter.EnergyConverterBlockLoot;
+import net.claustra01.clayium.datagen.energyconverter.EnergyConverterBlockStateProvider;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionBlockLoot;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionBlockStateProvider;
 import net.claustra01.clayium.datagen.material.MaterialBlockLoot;
@@ -42,6 +44,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new FoundationItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MachineBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new EnergyConverterBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new AssemblyMachineModels(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new ClayProductionBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsBlockStateProvider(output, event.getExistingFileHelper()));
@@ -76,6 +79,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(WorldgenBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MaterialBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MachineBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(EnergyConverterBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(ClayProductionBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(LogisticsBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WaterWheelBlockLoot::new, LootContextParamSets.BLOCK),

@@ -18,8 +18,10 @@ import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
+import net.claustra01.clayium.registry.EnergyConverterRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
+import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
@@ -90,6 +92,8 @@ public final class FoundationGameTests {
         }
         AssemblyMachineRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         AssemblyMachineRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
+        EnergyConverterRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        EnergyConverterRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         LogisticsRegistration.BUFFERS.values().forEach(definition -> {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
@@ -123,7 +127,8 @@ public final class FoundationGameTests {
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).equals(Set.of(
                         ClayiumMod.id("clay_work_table"), ClayiumMod.id("clay_crafting_board"),
                         ClayiumMod.id("processing_machine"), ClayiumMod.id("water_wheel"),
-                        ClayiumMod.id("buffer"), ClayiumMod.id("clay_production_machine"))),
+                        ClayiumMod.id("buffer"), ClayiumMod.id("clay_production_machine"),
+                        ClayiumMod.id("energy_converter"))),
                 "Block entity registrations differ from registered blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
@@ -212,6 +217,9 @@ public final class FoundationGameTests {
             var clayProduction = new HashMap<String, String>();
             ClayProductionLanguageEntries.add(locale, clayProduction::put);
             expectedKeys.addAll(clayProduction.keySet());
+            var energyConverters = new HashMap<String, String>();
+            EnergyConverterLanguageEntries.add(locale, energyConverters::put);
+            expectedKeys.addAll(energyConverters.keySet());
             for (var tier : net.claustra01.clayium.material.CompressionTier.values()) {
                 expectedKeys.add("block.clayium." + tier.id());
             }
