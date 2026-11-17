@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "H": {
+      "item": "clayium:solar_clay_fabricator_mk_ii"
+    },
+    "P": {
+      "item": "clayium:lithium_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "PRP",
+    "PHP",
+    "PRP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:lithium_solar_clay_fabricator"
+  }
+}

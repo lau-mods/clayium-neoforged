@@ -195,3 +195,11 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 - `clayium:buffer_control` の action 0～5 は Direction の面設定、6 は赤石、7 は白黒、8 は条件種別、9 は条件追加、10 は最後の条件削除、11 は数量制限、12 は次のタグ。`clayium:filter_control` の action 0～4 は白黒、条件種別、次のタグ、追加、削除。サーバーは開いた Menu と距離を確認する。
 - 条件種別は `FUZZY`、`TAG`、`DISPLAY_NAME`、`INTERNAL_ID`、`MOD_ID`、`DURABILITY`、`COMPONENTS`、`NESTED`。タグは見本のタグを順送りできる。入れ子は最大16段まで評価する。
 - バッファにフィルターを持って右クリックすると空きフィルタースロットに1個装着する。既存フィルターを上書きしない。`direction_memory_card` はしゃがんで使用するとコピー、通常使用で貼り付ける。
+
+## M12 粘土生産装置
+
+`ClayProductionRegistration` は `energetic_clay_condenser_mk_i/ii`（Tier 3/4、原作 ECCondenser）、`automatic_clay_condenser_mk_i/ii`（Tier 5/7、原作 AutoClayCondenser）、`solar_clay_fabricator_mk_i/ii`（Tier 5/6）、`lithium_solar_clay_fabricator`（Tier 7）、`clay_fabricator_mk_i/ii/iii`（Tier 8/9/13）を同名 Block/Item で登録する。BlockEntity と Menu は `clayium:clay_production_machine`。原作キーは順に `tile.blockEnergeticClayCondenser.name`／`tile.blockEnergeticClayCondenserMK2.name`、`tile.blockAutoClayCondenser.name`／`tile.blockAutoClayCondenserMK2.name`、`tile.blockSolarClayFabricatorMK1.name`／`tile.blockSolarClayFabricatorMK2.name`、`tile.blockLithiumSolarClayFabricator.name`、`tile.blockClayFabricatorMK1.name`／`MK2.name`／`MK3.name` に対応する。
+
+在庫は入力0、出力1、処理中退避2、燃料3、圧縮上限見本4。燃料はエネルギー粘土凝縮機だけ、上限見本は全自動圧縮機だけが使用する。保存キーは `inventory`、`energy`、`state`、`progress`、`required_progress`、`energy_per_tick`、`displayed_ce_per_tick`、`active_input_level`、`active_recipe`。エネルギー粘土凝縮の `clayium:ec_condenser` レシピは `clayproduction/ec_condenser_level_4`～`12`。9個を入力し、必要Tier・CE・tickをデータパックのレシピから読む。全自動圧縮は9:1、Mk II は出力の再圧縮を同 tick に進める。
+
+ソーラーは上面の空が見え、昼で雨が降っていない間だけ進む。Mk I/II の入力段階上限は4/6、リチウム型は9で `lithium_ingot` を段階8として段階9へ変換する。ソーラー所要tickは `floor(base^入力段階 × 初期倍率)`、初期倍率は `ClayProductionRules.solarTicks` に定義し、表示CE/tは `(出力CE内部値−入力CE内部値)/所要tick`。粘土製造機は見本を保持し、そのスタック数を複製する。Mk I は段階11（6重）まで、Mk II/III は段階13（8重）まで。Mk I/II の時間は `max(1, floor(base^段階 × 個数^指数 × 初期倍率))`、Mk III は1 tick。GameTest は `ClayProductionGameTests` の凝縮・ソーラー・複製テスト、外観 E2E は `tests/e2e/clay-production.mjs`。

@@ -331,6 +331,42 @@
       "name": "changinghandlersreturnrejecteditemstorecovery"
     },
     {
+      "acId": "AC-F015-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "condensersrequirenineitemsandpreserveoriginaltiersandtimes"
+    },
+    {
+      "acId": "AC-F015-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "automaticcondenserspreserveninetooneandlimits"
+    },
+    {
+      "acId": "AC-F015-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "productionmenusexposeonlyusableslotsandshiftinsert"
+    },
+    {
+      "acId": "AC-F016-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "solarmachinesrequireopenskyrespectcapsanduselithium"
+    },
+    {
+      "acId": "AC-F016-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "solarcepertickusesinputoutputdifference"
+    },
+    {
+      "acId": "AC-F017-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayfabricatorskeepsamplesduplicatecountsanduseoriginaltiming"
+    },
+    {
       "acId": "AC-F014-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -407,6 +443,14 @@
     {
       "acId": "AC-F019-002",
       "scenario": "tests/e2e/item-buffer.mjs"
+    },
+    {
+      "acId": "AC-F015-002",
+      "scenario": "tests/e2e/clay-production.mjs"
+    },
+    {
+      "acId": "AC-F016-002",
+      "scenario": "tests/e2e/clay-production.mjs"
     },
     {
       "acId": "AC-F014-002",

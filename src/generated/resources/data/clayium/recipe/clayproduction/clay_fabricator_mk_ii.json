@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "H": {
+      "item": "clayium:clay_fabricator_mk_i"
+    },
+    "P": {
+      "item": "clayium:quadruple_compressed_energetic_clay"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "PRP",
+    "PHP",
+    "PRP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:clay_fabricator_mk_ii"
+  }
+}

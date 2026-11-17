@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/automatic_clay_condenser_mk_i",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/automatic_clay_condenser_mk_i"
+    },
+    "facing=south": {
+      "model": "clayium:block/automatic_clay_condenser_mk_i",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/automatic_clay_condenser_mk_i",
+      "y": 270
+    }
+  }
+}

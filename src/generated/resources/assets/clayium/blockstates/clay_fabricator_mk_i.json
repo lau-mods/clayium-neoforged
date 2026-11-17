@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/clay_fabricator_mk_i",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/clay_fabricator_mk_i"
+    },
+    "facing=south": {
+      "model": "clayium:block/clay_fabricator_mk_i",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/clay_fabricator_mk_i",
+      "y": 270
+    }
+  }
+}

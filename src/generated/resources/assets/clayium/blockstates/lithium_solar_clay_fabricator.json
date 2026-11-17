@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/lithium_solar_clay_fabricator",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/lithium_solar_clay_fabricator"
+    },
+    "facing=south": {
+      "model": "clayium:block/lithium_solar_clay_fabricator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/lithium_solar_clay_fabricator",
+      "y": 270
+    }
+  }
+}

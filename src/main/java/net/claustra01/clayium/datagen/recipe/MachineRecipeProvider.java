@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.material.MaterialRecipeProvider;
+import net.claustra01.clayium.datagen.clayproduction.ClayProductionRecipes;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.MaterialRegistration;
@@ -28,6 +29,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
         MaterialRecipeProvider.buildRecipes(recipeOutput);
         WorkbenchRecipeProvider.buildWorkbenchRecipes(recipeOutput);
         CondenserGrinderDecomposerRecipes.buildRecipes(recipeOutput);
+        ClayProductionRecipes.buildRecipes(recipeOutput);
         FormingRecipes.buildRecipes(recipeOutput);
         SmeltingRecipes.buildRecipes(recipeOutput);
         ChemicalRecipes.buildRecipes(recipeOutput);
