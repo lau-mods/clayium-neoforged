@@ -14,6 +14,7 @@ import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEnt
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
 import net.claustra01.clayium.datagen.waterwheel.WaterWheelLanguageEntries;
+import net.claustra01.clayium.datagen.multitrack.MultitrackLanguageEntries;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
@@ -58,5 +59,6 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         add("tooltip.clayium.clay_units", locale.equals("ja_jp") ? "粘土換算: %1$s" : "Clay equivalent: %1$s");
         MachineLanguageEntries.add(locale, this::add);
         LogisticsLanguageEntries.add(locale, this::add);
+        MultitrackLanguageEntries.add(locale, this::add);
     }
 }

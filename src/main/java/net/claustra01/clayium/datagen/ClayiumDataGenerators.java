@@ -19,6 +19,8 @@ import net.claustra01.clayium.datagen.machine.AssemblyMachineModels;
 import net.claustra01.clayium.datagen.logistics.LogisticsBlockLoot;
 import net.claustra01.clayium.datagen.logistics.LogisticsBlockStateProvider;
 import net.claustra01.clayium.datagen.logistics.LogisticsItemModelProvider;
+import net.claustra01.clayium.datagen.multitrack.MultitrackBlockLoot;
+import net.claustra01.clayium.datagen.multitrack.MultitrackBlockStateProvider;
 import net.claustra01.clayium.datagen.worldgen.WorldgenBlockLoot;
 import net.claustra01.clayium.datagen.worldgen.WorldgenBlockStateProvider;
 import net.claustra01.clayium.datagen.worldgen.WorldgenDataProvider;
@@ -48,6 +50,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new AssemblyMachineModels(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new ClayProductionBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new MultitrackBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WaterWheelBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorkbenchBlockStateProvider(output, event.getExistingFileHelper()));
@@ -82,6 +85,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(EnergyConverterBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(ClayProductionBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(LogisticsBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(MultitrackBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WaterWheelBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WorkbenchBlockLoot::new, LootContextParamSets.BLOCK)),
                         event.getLookupProvider()));

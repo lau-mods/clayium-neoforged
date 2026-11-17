@@ -231,3 +231,13 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 在庫は入力0、出力1、処理中退避2、燃料3、圧縮上限見本4。燃料はエネルギー粘土凝縮機だけ、上限見本は全自動圧縮機だけが使用する。保存キーは `inventory`、`energy`、`state`、`progress`、`required_progress`、`energy_per_tick`、`displayed_ce_per_tick`、`active_input_level`、`active_recipe`。エネルギー粘土凝縮の `clayium:ec_condenser` レシピは `clayproduction/ec_condenser_level_4`～`12`。9個を入力し、必要Tier・CE・tickをデータパックのレシピから読む。全自動圧縮は9:1、Mk II は出力の再圧縮を同 tick に進める。
 
 ソーラーは上面の空が見え、昼で雨が降っていない間だけ進む。Mk I/II の入力段階上限は4/6、リチウム型は9で `lithium_ingot` を段階8として段階9へ変換する。ソーラー所要tickは `floor(base^入力段階 × 初期倍率)`、初期倍率は `ClayProductionRules.solarTicks` に定義し、表示CE/tは `(出力CE内部値−入力CE内部値)/所要tick`。粘土製造機は見本を保持し、そのスタック数を複製する。Mk I は段階11（6重）まで、Mk II/III は段階13（8重）まで。Mk I/II の時間は `max(1, floor(base^段階 × 個数^指数 × 初期倍率))`、Mk III は1 tick。GameTest は `ClayProductionGameTests` の凝縮・ソーラー・複製テスト、外観 E2E は `tests/e2e/clay-production.mjs`。
+
+## M20 複線バッファと分配機
+
+`MultitrackRegistration` は `multitrack_buffer_tier_4`～`13` の10種、`distributor_tier_7`～`9` の3種を登録する。BlockEntity と Menu の ID は `multitrack_buffer` と `distributor`。原作 JAR の `TileMultitrackBuffer.initParamsByTier` に従い、トラック数は Tier 4～8 が順に2、3、4、5、6、Tier 9～13 が6である。色は `DyeColor` の先頭から順に使う。7トラック固定ではない。
+
+複線バッファはトラックごとに9スロットの在庫、フィルター、6面の `INPUT`／`OUTPUT`／`DISABLED` を持つ。同色の隣接複線バッファ間だけ直接転送する。通常の隣接在庫への Capability は面ごとの `face_tracks` で選んだ1トラックを公開する。初期面状態は下面が出力、他面が入力。保存 NBT は `tracks` 内の `inventory`、`filter`、`faces`、`next_output_direction`、`next_input_direction`、および本体の `face_tracks`、`transfer_tick`。表示中のトラックは各 Menu で保持する。`multitrack_control` は action 0～5 が選択トラックの面状態、6 が表示トラック、7 が面のトラック結合である。
+
+分配機は9スロット在庫を持ち、初期面状態は下面が出力、他面が入力。原作 `TileClayDistributor` は Tier 7/8/9 の転送周期を各1 tick、最大数量を64/128/512とし、搬出開始面を成功時に進める。受入可能な出力面へ1個ずつ順送りし、満杯先は飛ばす。`distributor_control` の action 0～5 は面状態を変更する。保存 NBT は `inventory`、`faces`、`next_output_direction`、`next_input_direction`。複線バッファの Tier 別転送周期・数量は `TierManager.bufferTransport` を共通利用する。
+
+GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` と `distributorsShareFairlyAcrossThreeTiersAndSkipFullOutputs`。外観 E2E は `tests/e2e/multitrack-logistics.mjs`。

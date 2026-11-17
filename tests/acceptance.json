@@ -421,6 +421,18 @@
       "name": "chemicalandmattermachinesuseoriginaltiersrecipesanddirectfluids"
     },
     {
+      "acId": "AC-F020-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "matchingcolorscrosswithoutmixingandkeeptierspeedfiltersandstate"
+    },
+    {
+      "acId": "AC-F020-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "distributorssharefairlyacrossthreetiersandskipfulloutputs"
+    },
+    {
       "acId": "AC-F023-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -513,6 +525,10 @@
     {
       "acId": "AC-F014-002",
       "scenario": "tests/e2e/chemical-machines.mjs"
+    },
+    {
+      "acId": "AC-F020-002",
+      "scenario": "tests/e2e/multitrack-logistics.mjs"
     }
   ]
 }

@@ -14,11 +14,15 @@ public final class LogisticsLanguageEntries {
             "", "", "", "", "基本", "発展", "精密", "粘土鋼", "クレイウム", "究極", "反物質", "純反物質", "OEC", "OPA"
     };
 
+    public static String tierPrefix(String locale, int tier) {
+        return (locale.equals("ja_jp") ? JAPANESE_PREFIXES : ENGLISH_PREFIXES)[tier];
+    }
+
     public static void add(String locale, BiConsumer<String, String> add) {
         boolean japanese = locale.equals("ja_jp");
         LogisticsRegistration.BUFFERS.values().forEach(definition -> add.accept(
                 "block.clayium." + definition.id(),
-                (japanese ? JAPANESE_PREFIXES[definition.tier()] : ENGLISH_PREFIXES[definition.tier()])
+                tierPrefix(locale, definition.tier())
                         + (japanese ? "アイテムバッファ" : " Item Buffer")));
         add.accept("item.clayium.white_list_item_filter", japanese ? "統合アイテムフィルター" : "Unified Item Filter");
         add.accept("gui.clayium.buffer.mode.whitelist", japanese ? "許可" : "Allow");

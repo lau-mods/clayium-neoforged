@@ -29,6 +29,8 @@ public final class ClayiumMod {
         }
         modEventBus.addListener(MachineFaceModePayload::register);
         modEventBus.addListener(BufferControlPayload::register);
+        modEventBus.addListener(net.claustra01.clayium.logistics.multitrack.MultitrackControlPayload::register);
+        modEventBus.addListener(net.claustra01.clayium.logistics.distributor.DistributorControlPayload::register);
         modEventBus.addListener(net.claustra01.clayium.logistics.filter.FilterControlPayload::register);
     }
 

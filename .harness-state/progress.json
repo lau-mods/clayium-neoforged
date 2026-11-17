@@ -64,6 +64,18 @@
                 "by": "claude",
                 "note": "GameTest is not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "GameTest not touched by the diff; it still runs through block interaction.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "GameTest not touched by the diff; it still runs through block interaction.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -117,6 +129,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the lava step remains.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the lava step remains.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -170,6 +194,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; entityInside stays removed.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; entityInside stays removed.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -223,6 +259,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -276,6 +324,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -329,6 +389,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -382,6 +454,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -435,6 +519,18 @@
                 "by": "claude",
                 "note": "The diff only changes the contents element of the crucible model. The salt extractor models and horizontalBlock use remain.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only enlarges the crucible contents element in the model; the machine provider and horizontalBlock use remain.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -488,6 +584,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -498,7 +606,7 @@
             "reason": "The E2E for the silicon-making criterion should show the result of the real state machine, not block states the game cannot produce through play.",
             "fix": "Place an empty crucible and give the client impure silicon and string. Use the client to insert ingots and take the heating screenshot, wait out the heating (or use a small batch), take the ready screenshot, then use string and take a screenshot of the dropped silicon ingots.",
             "id": "CR-010",
-            "status": "open",
+            "status": "resolved",
             "history": [
               {
                 "status": "open",
@@ -541,6 +649,24 @@
                 "by": "claude",
                 "note": "The diff brings the problem back. The E2E now uses `setblock ... [stage=heating]` plus `data merge heating_ticks`, then `setblock [stage=ready]`. It no longer inserts impure silicon or uses string through block interaction. The screenshots show forced block states, not the real state machine.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 強制した BlockState と NBT を使わず、不純シリコンの投入、加熱待機、糸での取出しを実操作で行うよう変更した。",
+                "at": "2026-11-17T16:17:54.804Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E no longer forces stage via setblock or merges NBT. It places an empty crucible, gives impure silicon, inserts it via block interact, waits through real heating ticks until stage=ready, then continues to the string step.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E still inserts impure silicon and uses string through mct block interact, and the stages come from the real state machine. The diff only freezes ticks around the heating screenshot, switches gamemode and moves the camera. It adds no forced setblock stages or NBT merges.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           },
@@ -594,12 +720,24 @@
                 "by": "claude",
                 "note": "The lava-only controls and output views are not touched by the diff.",
                 "at": "2026-11-17T16:13:55.387Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Lava-only controls and output views remain; the diff only moves the camera.",
+                "at": "2026-11-17T16:18:04.279Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The lava-only controls and output views remain. The diff only changes camera positions and the gamemode in the crucible scene.",
+                "at": "2026-11-17T16:24:10.277Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "93e9dcd6666bf085a40cbdf63829bdf41f81ea63",
+      "codeReviewTree": "c53fdfa79c5b0c175ac2498c50c0e8e299653c07",
       "e2eReview": {
         "kind": "e2e",
         "issues": [
@@ -635,6 +773,18 @@
                 "by": "claude",
                 "note": "The frame shows the M15 setup rendered: the water surface, smooth stone floor, cobblestone, lava and machine blocks along the horizon. It is a low, distant camera angle, but it matches the framing accepted earlier and is no longer an empty grass world.",
                 "at": "2026-11-17T16:10:16.084Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The frame no longer shows an empty grass world. The M15 setup is rendered along the horizon: machine blocks, cobblestone, lava and waterlogged fences, with the smooth stone floor visible at the right edge. The camera is low and looks over a water surface, but the setup is in frame, as in the earlier accepted framing.",
+                "at": "2026-11-17T16:20:30.175Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The frame shows the M15 setup rendered along the horizon: machine blocks, cobblestone, lava and waterlogged fences, with the smooth stone floor at the right edge. The camera is low and looks over a water surface, but the setup is in frame and it is not an empty grass field.",
+                "at": "2026-11-17T16:26:50.735Z"
               }
             ]
           },
@@ -670,6 +820,18 @@
                 "by": "claude",
                 "note": "The generator frame shows the same rendered setup. The chat overlay with container NBT is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2.",
                 "at": "2026-11-17T16:10:16.084Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The generator frame shows the same rendered setup: generators, lava and cobblestone along the horizon. The chat overlay is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2, so the lava-only control stays empty.",
+                "at": "2026-11-17T16:20:30.175Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The generator frame shows the same rendered setup, with generators, lava and cobblestone along the horizon. The chat overlay is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2, so the lava-only control stays empty.",
+                "at": "2026-11-17T16:26:50.735Z"
               }
             ]
           },
@@ -717,6 +879,30 @@
                 "by": "codex",
                 "note": "fixed: 内容物の上面から cullface を除き、開口部が画面内に収まるようカメラを調整しました。E2E は加熱中と完成後の状態を固定して撮影するため、待機中に READY へ進む失敗も解消します。修正後の見た目は次回の E2E 撮影で確認が必要です。",
                 "at": "2026-11-17T16:13:47.693Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 内容物モデルの上面を高くし、側面も描画するよう変更した。カメラもるつぼの開口部へ向けた。描画結果は次回の E2E 撮影で確認が必要。",
+                "at": "2026-11-17T16:17:54.804Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The crucible contents are still not visible. The heating and ready frames show the camera looking down at a smooth stone floor. A pale pillar-like shape at the top is the only candidate for the crucible. No opening or interior can be seen, and neither frame shows a purple impure-silicon layer or a dark silicon layer. The heating and ready frames are pixel-identical apart from the chat line, so the stage progression is not shown. The final string frame looks the same, apart from the recipe toast and the string in the hand.",
+                "at": "2026-11-17T16:20:30.175Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 加熱完了前に tick を固定して撮影し、開口部を見下ろす固定視点に変更しました。既存の BlockState 遷移は GameTest で確認済みです。",
+                "at": "2026-11-17T16:24:02.366Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The camera is now close, looking down at the crucible. In the heating frame the visible interior is plain pale quartz, with no purple impure-silicon layer. The ready frame looks the same, with no dark silicon layer, and it is identical to the heating frame apart from the chat line. The camera only shows the near rim of the opening, so the contents surface is not in view and the stage progression is still not visible. The string frame differs only by a small dark shape at the top rim, the recipe toast and the string in the hand.",
+                "at": "2026-11-17T16:26:50.735Z"
               }
             ]
           }
@@ -743,496 +929,19 @@
       "reviewConflicts": []
     },
     {
-      "id": "M20",
-      "phase": "implementation",
-      "baseCommit": "be23128e2586e48c0a972866171eeac7c0ead737",
+      "id": "M17",
+      "phase": "code_review",
+      "baseCommit": "81f376202aab5236d1525745999385c0062de56b",
       "failures": {
         "build": 0,
         "gametest": 0,
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
-        "issues": [
-          {
-            "target": "AGENTS.md (no M20 section)",
-            "acId": null,
-            "problem": "AGENTS.md has no M20 section. The current spec for the 10 multitrack buffer IDs, the 3 distributor IDs, the BlockEntity/Menu IDs `multitrack_buffer`/`distributor`, the track count (7) and colors (DyeColor 0–6), the per-face track binding, the default face modes, the saved NBT keys (`tracks`, `face_tracks`, `selected_track`, `transfer_tick`, `next_*_direction`, `inventory`, `faces`), the `multitrack_control` action numbers (0–5 face, 6 select track, 7 face-track binding) and `distributor_control`, the distributor fairness and output rules taken from the original, the transport rates used, the GameTest names and the E2E scenario is not recorded.",
-            "reason": "The project rules require AGENTS.md to be updated in the same change as user-visible behavior, IDs, registrations, save data and verification steps. AGENTS.md is in the milestone scope. The original-derived values (track count, distributor algorithm) must be pinned against the original JAR.",
-            "fix": "Add an `## M20 複線バッファと分配機` section to AGENTS.md with the values above, in the same format as the M10 section. Verify the track count and the distributor's fair-share and output conditions against the original `TileMultitrackBuffer`/`TileDistributor` and record them there.",
-            "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: M20 仕様を AGENTS.md に記録しました。トラック数は原作 JAR で確認した Tier 別 2～6 とし、指摘文の固定 7 には従っていません。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md now has an M20 section covering IDs, track counts (2–6 by tier), NBT keys, control actions, distributor rules, GameTest and E2E.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The M20 section in AGENTS.md is unchanged and still present.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/multitrack/MultitrackGameTests.java:31-70",
-            "acId": "AC-F020-001",
-            "problem": "The test does not build a crossing. It places two buffers side by side, and both tracks run through the same EAST→WEST face pair. Filters are only checked with items that already match the whitelist, so a rejected item is never shown to stay behind. Tier speed is checked only as '1 item after 8 ticks' (it never asserts that nothing moves before the interval) and '64 in one tick for tier 7'.",
-            "reason": "The Preconditions call for differently colored multitrack buffers cross-connected (e.g. one track routed east–west and another north–south through the same junction buffer). The Expected Result requires no mixing at the crossing and that the filters are kept. The current assertions would pass even if routing ignored per-track face modes at a junction, or if a filter let everything through.",
-            "fix": "Build a real crossing: a junction buffer with track A INPUT west / OUTPUT east and track B INPUT north / OUTPUT south, plus a source and a destination on each axis. Run several transfers and assert that each destination receives only its track's item. Put an item the filter rejects into a filtered track and assert it is not transferred. Assert that 0 items move before the tier interval and exactly the tier maximum moves at the interval.",
-            "id": "CR-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 東西・南北が交差する GameTest に変更し、混線、フィルター拒否、転送周期と数量を検証しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTest builds a real east-west/north-south crossing and checks mixing, filter rejection, the pre-interval no-move case and the tier rate.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTest is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/multitrack/MultitrackGameTests.java:73-115",
-            "acId": "AC-F020-002",
-            "problem": "The fairness test uses identical 27-slot chests and a prefilled distributor inventory, then runs a single serverTick. Destinations of different capacity are never prepared, and items are never fed in continuously through an input face. The 'full destination' case is a completely full chest, not a destination that fills up partway through.",
-            "reason": "The Preconditions require destinations of different capacity, and the Action requires continuous input while measuring what each destination receives. Without that, the test does not show that delivery constraints are respected once a smaller destination fills while distribution continues.",
-            "fix": "For each tier, connect a source container on an INPUT face and outputs of different capacity (e.g. a hopper with 5 slots, a chest, a partially filled chest). Tick repeatedly over several intervals. Assert that counts stay even (within 1) while every output can accept, that a full output stops receiving while the rest keep sharing evenly, and that no items are lost.",
-            "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 入力面から複数 tick 搬入し、容量の異なる出力先の公平性、満杯後の配送、総量保存を検証しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The distributor test feeds items continuously through an input face into outputs of different capacity, and checks fairness, full-output handling and conservation.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTest is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/client/screen/logistics/multitrack/MultitrackBufferScreen.java:75-84",
-            "acId": "AC-F020-002",
-            "problem": "The track header draws white text (0xFFFFFF) on a fill colored with the track's dye. For track 0 (WHITE) and track 4 (YELLOW) the label is unreadable. The color name comes from `DyeColor.getName()` (e.g. `light_blue`), a raw ID that is not localized, so it shows in English IDs in ja_jp too. The condition `TRACKS > selectedTrack()` is always true.",
-            "reason": "The AC requires the multitrack GUI to show no display breakage. Raw IDs and invisible text are display defects. The dead conditional is unused code.",
-            "fix": "Pick a text color that contrasts with the fill (or draw the swatch next to the label instead of under it). Pass `Component.translatable(\"color.minecraft.\" + color.getName())` as the color argument. Remove the always-true ternary.",
-            "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 色見本と暗色の文字を分け、色名を翻訳キーで表示し、常に真となる条件を削除しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The swatch is separate from the label, the label is dark, the colour name is translated, and the always-true conditional is gone.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The screen code is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferMenu.java:58-64; src/main/java/net/claustra01/clayium/client/screen/logistics/multitrack/MultitrackBufferScreen.java:70; src/main/java/net/claustra01/clayium/logistics/distributor/DistributorMenu.java:35-38; src/main/java/net/claustra01/clayium/client/screen/logistics/multitrack/DistributorScreen.java:41",
-            "acId": "AC-F020-002",
-            "problem": "The player inventory slots sit 11 px below the top of the `gui_playerinventory.png` blit (multitrack: blit y=132, slots y=143/201; distributor: blit y=121, slots y=132/190). The established M10 BufferMenu/BufferScreen offset is 9 px (blit 132, slots 141/199), so slot highlights and items are drawn 2 px off the texture's slot frames.",
-            "reason": "Misaligned slots are a GUI display defect, which the AC excludes.",
-            "fix": "Use the same offsets as BufferMenu: player slot y = blit y + 9 (hotbar = blit y + 67). For example, set the multitrack slots to 141/199 and the distributor slots to 130/188, or move the blits down 2 px.",
-            "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 両メニューのプレイヤースロットを背景画像の枠へ合わせました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Player slots are now at blit y+9 for both menus (multitrack 141/199, distributor 130/188).",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The menu and screen code is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferMenu.java:112; src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferBlockEntity.java:353-356",
-            "acId": "AC-F020-001",
-            "problem": "The face→track binding (`faceTracks`) decides which track's Capability each face exposes, but the GUI never shows it. `MultitrackBufferMenu.faceTrack()` and ContainerData indices 8–13 are synchronized but never read. The face buttons only show I/O/X for the selected track, so the player cannot see which color a face actually connects to external blocks.",
-            "reason": "Per-track Capability selection by face setting is part of the milestone approach. Synchronized data that nothing uses is unused code.",
-            "fix": "Show the bound track color on each face button (e.g. tint the button or append the track number using `menu.faceTrack(direction)`). If the binding is not meant to be visible, remove `faceTrack()` and indices 8–13.",
-            "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 各面ボタンに結合先トラック番号を表示しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Face buttons now show the bound track number, so the synced faceTrack data is used.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The screen and menu code is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferBlockEntity.java:274-279",
-            "acId": null,
-            "problem": "`setChangedAndSync` calls `level.sendBlockUpdated`, but the block entity does not override `getUpdatePacket`/`getUpdateTag`, so no data reaches the client. All GUI state already travels through ContainerData and menu slots.",
-            "reason": "This is a no-op synchronization path and unnecessary code.",
-            "fix": "Remove `setChangedAndSync` and call `setChanged()` directly, or implement a client update packet only if a client-side renderer needs the data (none does now).",
-            "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 使われないブロック更新送信を削除しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "setChangedAndSync is removed and setChanged is called directly.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The block entity is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferBlockEntity.java:39,155-163,240,268,360-366",
-            "acId": "AC-F020-001",
-            "problem": "The selected track is a GUI view state, but it is stored on the block entity, saved to NBT (`selected_track`) and shared by every player who opens the buffer. When one player switches tracks, the slots and the face-button target change for everyone. `TrackContainerData.set` writes it too, even though only the client-side SimpleContainerData ever receives `set`.",
-            "reason": "View state belongs to the menu, not to persisted world data. The server-side `set` override is unused code.",
-            "fix": "Keep `selectedTrack` in MultitrackBufferMenu as a `DataSlot` (server-authoritative, updated by the SELECT_TRACK payload). Drop it from the block entity, NBT and ContainerData, and remove the `set` override.",
-            "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 選択トラックをメニューごとの状態へ移し、BlockEntity の保存対象から外しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The selected track lives in the menu, no longer in the block entity or NBT, and the server-side ContainerData set override is removed.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The block entity and menu are not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferBlockEntity.java:128; src/main/java/net/claustra01/clayium/logistics/distributor/DistributorBlockEntity.java:71,85",
-            "acId": null,
-            "problem": "Neighbor ItemHandlers are looked up with `level.getCapability` on every transfer. In `DistributorBlockEntity.distribute` this happens for every single item (up to 192 lookups per tick at tier 9). M10's BufferBlockEntity uses `BlockCapabilityCache` for the same job.",
-            "reason": "NeoForge provides BlockCapabilityCache for repeated neighbor lookups, and the existing buffer already uses it. Duplicating the lookup differently breaks the 'one direct path per behavior' rule.",
-            "fix": "Create per-direction `BlockCapabilityCache` instances lazily, as BufferBlockEntity.ensureCaches does, and use them in pushTrack/pullTrack and in distribute/pull.",
-            "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 両装置の隣接 ItemHandler 参照に BlockCapabilityCache を使用しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Both the multitrack buffer and the distributor now use BlockCapabilityCache.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The block entities are not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferBlock.java:27,33,50-63; src/main/java/net/claustra01/clayium/logistics/distributor/DistributorBlock.java:27,33,39-47",
-            "acId": null,
-            "problem": "Both blocks declare a HORIZONTAL_FACING property with placement and rotation handling. The generated blockstates are a single `\"\"` variant that is never rotated, and no logic reads FACING.",
-            "reason": "The property is unused state and code. The multitrack model also always shows import/export overlays on north/south regardless of the actual face settings, which misleads the player.",
-            "fix": "Remove FACING, getStateForPlacement, rotate and createBlockStateDefinition from both blocks, and drop `[facing=north]` from the E2E setblock commands. Alternatively, rotate the model in the BlockStateProvider if a facing is really needed.",
-            "id": "CR-010",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 使われない FACING 状態を削除し、固定の入出力表示に見えるモデル面を除きました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "FACING is removed from both blocks, the model is cubeAll, and the E2E setblock commands are updated.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E setblock commands still carry no facing property, so the fix holds.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferBlockEntity.java:300,324-330",
-            "acId": null,
-            "problem": "`Track.index` with `index()`, and `Track.color()`, are never used. The screen calls `DyeColor.byId` directly.",
-            "reason": "Unused code must be removed.",
-            "fix": "Delete the `index` field, `index()` and `color()`, or use `color()` from the screen through the menu instead of duplicating `DyeColor.byId`.",
-            "id": "CR-011",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 未使用の Track.index と color を削除しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Track.index and color are removed.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The block entity is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/multitrack/MultitrackLanguageEntries.java:7-10",
-            "acId": null,
-            "problem": "The English and Japanese tier prefix arrays are copied verbatim from LogisticsLanguageEntries (ENGLISH_PREFIXES/JAPANESE_PREFIXES).",
-            "reason": "Two call sites now use the same table, so the second copy duplicates one behavior.",
-            "fix": "Expose the prefix lookup once (e.g. a package-visible or public static method or array in LogisticsLanguageEntries) and reuse it from MultitrackLanguageEntries.",
-            "id": "CR-012",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Tier 接頭辞を LogisticsLanguageEntries の共通参照にまとめました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "MultitrackLanguageEntries now uses LogisticsLanguageEntries.tierPrefix.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The datagen code is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/multitrack/MultitrackBufferBlockEntity.java:254-271; src/main/java/net/claustra01/clayium/logistics/distributor/DistributorBlockEntity.java:160-168; MultitrackBufferMenu.java:107-111; DistributorMenu.java:63-67",
-            "acId": null,
-            "problem": "Load and menu code guards against states the mod never writes: try/catch around `FaceMode.valueOf`, `floorMod` on saved direction and track indices, `Math.max(0, transfer_tick)`, and ordinal range checks on synced ContainerData.",
-            "reason": "The code style says to validate only states the game can produce; these values are written only by this code.",
-            "fix": "Read the saved enum names and ints directly, and index `FaceMode.values()` with the synced ordinal without fallback branches.",
-            "id": "CR-013",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 保存値と同期値に対する不要なフォールバックと補正を削除しました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The try/catch, floorMod and ordinal fallbacks on load and menu reads are removed.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The load and menu code is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/logistics/distributor/DistributorBlockEntity.java:110-114",
-            "acId": null,
-            "problem": "`setFaceMode` calls `level.invalidateCapabilities`, but the exposed handler reads `faces` dynamically on every call, so the returned capability object never changes with the face mode.",
-            "reason": "Unneeded invalidation is unnecessary code. Invalidation is only needed when the handler returned for a side changes, which is the case for the multitrack `setFaceTrack`.",
-            "fix": "Remove the `invalidateCapabilities` call from `DistributorBlockEntity.setFaceMode`.",
-            "id": "CR-014",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 分配機の面変更時に不要な Capability 無効化を行わないようにしました。",
-                "at": "2026-11-17T16:02:31.398Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The invalidateCapabilities call is removed from DistributorBlockEntity.setFaceMode.",
-                "at": "2026-11-17T16:02:49.465Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The distributor block entity is not touched by this diff, so the earlier fix stands.",
-                "at": "2026-11-17T16:09:20.804Z"
-              }
-            ]
-          }
-        ]
-      },
-      "codeReviewTree": "32e44470410b7815e5dca51c85ff342f176b9f25",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-17T16-10-04-151Z-061-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/screenshots/AC-F020-002-ten-multitrack-tiers-and-three-distributors.png",
-            "acId": "AC-F020-002",
-            "problem": "The ten multitrack buffers (Tier 4–13) show only the bare tier machine-hull texture on every face. They have no buffer, track or input/output overlay, so they look the same as plain hull blocks, and their face state cannot be seen.",
-            "reason": "MultitrackBlockStateProvider generates `models().cubeAll(id, block/machinehull-(tier-1))` with nothing else. The single-track buffer in LogisticsBlockStateProvider builds a multipart with per-face `buffer_face_<dir>_<mode>` overlays. The original track overlays (`import_m0..m6`, `export_m0..m6` and their `_p` variants) are in textures/block but no model uses them.",
-            "fix": "Generate multitrack buffer models the same way as the buffer models: a hull cube base plus multipart cutout face overlays that use the original `import_m<track>` / `export_m<track>` PNGs. Each overlay should depend on block-state properties for each face's mode and bound track, or on a BlockEntity-driven model. Re-run runData and commit the regenerated blockstates and models.",
-            "id": "ER-001",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T16-10-04-151Z-061-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/screenshots/AC-F020-002-ten-multitrack-tiers-and-three-distributors.png",
-            "acId": "AC-F020-002",
-            "problem": "The visible edges of the distributors are flat white with black dots and have no machine-hull body. This is a transparent overlay drawn as an opaque solid cube.",
-            "reason": "The distributor model is `cube_all` with `all: clayium:block/distributor`. `distributor.png` is the original 16×16 overlay icon, which is mostly transparent. With the default solid render type, its transparent pixels render as opaque white or black, and no hull is drawn underneath.",
-            "fix": "Build the distributor model like the other machines: a tier-based `machinehull-<tier-1>` cube (Tier 7/8/9) plus the `distributor` texture as a cutout overlay layer slightly outside each face (or a cutout render type on a second element). Add face input/output overlays if they follow the buffer convention. Regenerate with runData.",
-            "id": "ER-002",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T16-10-04-151Z-061-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/screenshots/AC-F020-002-ten-multitrack-tiers-and-three-distributors.png",
-            "acId": "AC-F020-002",
-            "problem": "The three distributors are almost entirely hidden. Only two thin slivers show behind the multitrack buffers, and the third distributor cannot be seen at all, so their rendering cannot be checked.",
-            "reason": "The scenario places the distributors at x = -2, 0, 2, z = 5, directly behind the multitrack buffers at the same x (Tier 8/9/10, z = 2). The camera is at eye level (y -59.5, pitch 4) looking along +z, so the front row blocks the back row.",
-            "fix": "In tests/e2e/multitrack-logistics.mjs, place the distributors where they are not in the buffers' line of sight. For example, use odd x positions (-3, -1, 1) or a separate row in front of the buffers. Alternatively, raise the camera or increase its pitch so both rows are fully visible in the screenshot.",
-            "id": "ER-003",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T16-10-04-151Z-061-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/screenshots/AC-F020-002-colored-track-inventory-filter-and-face-controls.png",
-            "acId": "AC-F020-002",
-            "problem": "The track header 'Track 1: 白色' looks smeared and doubled, with a heavy dark shadow, unlike the flat dark-gray title, 'Track filter' and inventory labels.",
-            "reason": "MultitrackBufferScreen.renderLabels draws the track label with `graphics.drawCenteredString(font, track, imageWidth / 2, 25, 0x404040)`, which always adds a drop shadow. A dark-gray color with a shadow on the light-gray background looks blurred. The other labels use `drawString(..., false)`.",
-            "fix": "Draw the track label without a shadow. For example: `graphics.drawString(font, track, (imageWidth - font.width(track)) / 2, 25, 0x404040, false)`.",
-            "id": "ER-004",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T16-10-04-151Z-061-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/screenshots/AC-F020-002-colored-track-inventory-filter-and-face-controls.png",
-            "acId": "AC-F020-002",
-            "problem": "The bottom of the GUI is cut off. The panel has no bottom border, and the hotbar slot row ends at the panel's lower edge without its bottom slot borders, so the hotbar looks truncated.",
-            "reason": "imageHeight is 222 and the player-inventory background is blitted at topPos+132 with a height of 86, so the hotbar slots reach the very bottom of the panel. There is no padding left for the bottom border of LogisticsBackground, and the hotbar slot frames are clipped.",
-            "fix": "Increase imageHeight (for example to about 226–230) or move the player inventory block (inventoryLabelY, the blit Y and the menu's player slot Y offsets) up. The hotbar row, including its slot borders, must sit inside the panel with the bottom border visible. Keep the Menu slot coordinates in sync with the new background positions.",
-            "id": "ER-005",
-            "status": "open",
-            "history": []
-          }
-        ]
-      },
-      "failure": {
-        "phase": "e2e",
-        "summary": "1 E2E scenario(s) failed",
-        "details": "tests/e2e/multitrack-logistics.mjs: Error: MC Pilot gui wait-open --timeout 15 failed: \"TIMEOUT\"\n    at mct (file://.harness/e2e/lib.mjs:21:37)\n    at file://.harness-state/runtime/worktrees/M20/tests/e2e/multitrack-logistics.mjs:33:9\n    at async scenario (file://.harness/e2e/lib.mjs:59:5)\n    at async file://.harness-state/runtime/worktrees/M20/tests/e2e/multitrack-logistics.mjs:9:1\nAC-F020-002 Expected Result: 入出力可能な経路へ原作仕様に従って均等に分配し、出力先が満杯なら配送制約を尊重する。複数トラックのGUIに表示崩れがない。",
-        "logs": [
-          ".harness-state/runs/2026-11-17T16-04-52-657Z-049-M20-e2e/runtime/server.log",
-          ".harness-state/runs/2026-11-17T16-04-52-657Z-049-M20-e2e/runtime/client-clayium-a.log",
-          ".harness-state/runs/2026-11-17T16-04-52-657Z-049-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/stdout.log",
-          ".harness-state/runs/2026-11-17T16-04-52-657Z-049-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/stderr.log"
-        ],
-        "screenshots": [
-          ".harness-state/runs/2026-11-17T16-04-52-657Z-049-M20-e2e/scenarios/tests-e2e-multitrack-logistics.mjs/screenshots/AC-F020-002-ten-multitrack-tiers-and-three-distributors.png"
-        ]
-      },
+      "codeReview": null,
+      "codeReviewTree": null,
+      "e2eReview": null,
+      "failure": null,
       "conflicts": [],
       "reviewConflicts": []
     }
@@ -1254,8 +963,9 @@
     "M14",
     "M12",
     "M13",
-    "M16"
+    "M16",
+    "M20"
   ],
-  "lastCheckpoint": "ce35f5218f11bc41a63369ba6b57f2868fa6bbd4",
+  "lastCheckpoint": "81f376202aab5236d1525745999385c0062de56b",
   "fatal": null
 }
