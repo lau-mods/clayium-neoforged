@@ -3,7 +3,7 @@ package net.claustra01.clayium.machine.series;
 import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 
-public enum ProcessingSeries {
+public enum ProcessingSeries implements MachineSeries {
     CONDENSER(ClayiumRecipeMethod.CONDENSER, new int[] {2, 3, 4, 5, 10}),
     GRINDER(ClayiumRecipeMethod.GRINDER, new int[] {2, 3, 4, 5, 6, 10}),
     DECOMPOSER(ClayiumRecipeMethod.DECOMPOSER, new int[] {2, 3, 4});

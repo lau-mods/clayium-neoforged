@@ -2,7 +2,7 @@ package net.claustra01.clayium.machine;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
-import net.claustra01.clayium.machine.series.ProcessingSeries;
+import net.claustra01.clayium.machine.series.MachineSeries;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,10 +29,10 @@ import net.minecraft.world.phys.BlockHitResult;
 public final class ClayMachineBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    private final ProcessingSeries series;
+    private final MachineSeries series;
     private final int tier;
 
-    public ClayMachineBlock(Properties properties, ProcessingSeries series, int tier) {
+    public ClayMachineBlock(Properties properties, MachineSeries series, int tier) {
         super(properties);
         this.series = series;
         this.tier = tier;
@@ -44,7 +44,7 @@ public final class ClayMachineBlock extends BaseEntityBlock {
         return MapCodec.unit(this);
     }
 
-    public ProcessingSeries series() {
+    public MachineSeries series() {
         return series;
     }
 

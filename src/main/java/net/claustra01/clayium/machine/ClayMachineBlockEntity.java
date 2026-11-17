@@ -8,9 +8,11 @@ import java.util.Optional;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.energy.TierManager;
-import net.claustra01.clayium.machine.series.ProcessingSeries;
+import net.claustra01.clayium.machine.series.MachineSeries;
+import net.claustra01.clayium.machine.series.SmeltingSeries;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeCache;
+import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.recipe.ClayiumRecipesReloadedEvent;
 import net.claustra01.clayium.recipe.ClayiumRecipeInput;
 import net.claustra01.clayium.registry.MachineRegistration;
@@ -33,8 +35,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -45,10 +51,6 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 public final class ClayMachineBlockEntity extends BlockEntity implements MenuProvider {
-    public static final int INPUT_SLOT = 0;
-    public static final int OUTPUT_SLOT = 1;
-    public static final int RESERVED_SLOT = 2;
-    public static final int FUEL_SLOT = 3;
 
     private static final List<WeakReference<ClayMachineBlockEntity>> LOADED_MACHINES = new ArrayList<>();
 
@@ -67,30 +69,21 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         });
     }
 
-    private final ItemStackHandler inventory = new ItemStackHandler(4) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChanged();
-        }
-
-        @Override
-        public boolean isItemValid(int slot, ItemStack stack) {
-            return switch (slot) {
-                case INPUT_SLOT -> true;
-                case FUEL_SLOT -> ClayEnergyStorage.fuelValue(stack).internalValue() > 0L;
-                default -> false;
-            };
-        }
-    };
+    private final int inputSlots;
+    private final int outputSlot;
+    private final int reservedSlot;
+    private final int fuelSlot;
+    private final ItemStackHandler inventory;
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
     private final EnumMap<Direction, FaceMode> faceModes = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
-    private final IItemHandler unsidedHandler = new SidedItemHandler(null);
+    private final IItemHandler unsidedHandler;
     private final ContainerData menuData = new MachineContainerData();
 
     private MachineState state = MachineState.IDLE;
     private ResourceLocation activeRecipe;
     private ClayiumMachineRecipe activeRecipeValue;
+    private boolean activeVanillaSmeltingRecipe;
     private ItemStack pendingOutput = ItemStack.EMPTY;
     private long progress;
     private long requiredProgress;
@@ -101,6 +94,24 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
 
     public ClayMachineBlockEntity(BlockPos pos, BlockState state) {
         super(MachineRegistration.MACHINE_BLOCK_ENTITY.get(), pos, state);
+        MachineSeries series = ((ClayMachineBlock)state.getBlock()).series();
+        inputSlots = series.inputSlots();
+        outputSlot = inputSlots;
+        reservedSlot = outputSlot + 1;
+        fuelSlot = reservedSlot + inputSlots;
+        inventory = new ItemStackHandler(fuelSlot + 1) {
+            @Override
+            protected void onContentsChanged(int slot) {
+                setChanged();
+            }
+
+            @Override
+            public boolean isItemValid(int slot, ItemStack stack) {
+                return slot < inputSlots
+                        || slot == fuelSlot && ClayEnergyStorage.fuelValue(stack).internalValue() > 0L;
+            }
+        };
+        unsidedHandler = new SidedItemHandler(null);
         LOADED_MACHINES.add(new WeakReference<>(this));
         for (Direction direction : Direction.values()) {
             faceModes.put(direction, direction == Direction.DOWN ? FaceMode.OUTPUT : FaceMode.INPUT);
@@ -116,7 +127,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (activeRecipe == null && !inventory.getStackInSlot(RESERVED_SLOT).isEmpty()) {
+        if (activeRecipe == null && hasReservedInput()) {
             if (!recoverReservedInput()) {
                 setState(MachineState.RECIPE_CHANGED);
                 return;
@@ -132,7 +143,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 abortProcess();
                 return;
             }
-            ClayiumMachineRecipe recipe = (ClayiumMachineRecipe)serverLevel.getRecipeManager().byKey(activeRecipe).orElseThrow().value();
+            ClayiumMachineRecipe recipe = currentRecipe(serverLevel.getRecipeManager()).orElseThrow();
             TierManager.ProcessingParameters parameters = TierManager.calculate(
                     series().parameters(tier()), recipe.processingTicks(), recipe.clayEnergy(), overclockFactor());
             ItemStack fixedOutput = combinedFixedOutput(recipe);
@@ -166,25 +177,24 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     private void tryStart(ServerLevel serverLevel) {
-        if (inventory.getStackInSlot(INPUT_SLOT).isEmpty()
-                || !inventory.getStackInSlot(RESERVED_SLOT).isEmpty()) {
+        List<ItemStack> inputs = inputStacks();
+        if (inputs.stream().allMatch(ItemStack::isEmpty) || hasReservedInput()) {
             setState(MachineState.IDLE);
             return;
         }
-        ProcessingSeries series = series();
+        MachineSeries series = series();
         ClayiumRecipeInput input = new ClayiumRecipeInput(
-                List.of(inventory.getStackInSlot(INPUT_SLOT)),
+                inputs,
                 List.of(),
                 tier(),
                 availableClayEnergy(),
                 worldPosition);
-        Optional<RecipeHolder<ClayiumMachineRecipe>> match = ClayiumRecipeCache.find(
-                serverLevel.getRecipeManager(), RecipeRegistration.type(series.recipeMethod()), input, serverLevel);
+        Optional<SelectedRecipe> match = findRecipe(serverLevel, series, input);
         if (match.isEmpty()) {
             setState(MachineState.IDLE);
             return;
         }
-        ClayiumMachineRecipe recipe = match.get().value();
+        ClayiumMachineRecipe recipe = match.get().recipe();
         ItemStack fixedOutput = combinedFixedOutput(recipe);
         if (!fixedOutput.isEmpty() && !canAcceptOutput(fixedOutput)) {
             setState(MachineState.OUTPUT_FULL);
@@ -203,6 +213,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         }
         activeRecipe = match.get().id();
         activeRecipeValue = recipe;
+        activeVanillaSmeltingRecipe = match.get().vanillaSmelting();
 
         pendingOutput = output;
         progress = 0L;
@@ -212,6 +223,43 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         progressPerTick = parameters.progressPerTick();
         setState(MachineState.RUNNING);
         setChanged();
+    }
+
+    private Optional<SelectedRecipe> findRecipe(
+            ServerLevel serverLevel,
+            MachineSeries series,
+            ClayiumRecipeInput input) {
+        Optional<RecipeHolder<ClayiumMachineRecipe>> machineRecipe = ClayiumRecipeCache.find(
+                serverLevel.getRecipeManager(), RecipeRegistration.type(series.recipeMethod()), input, serverLevel);
+        if (machineRecipe.isPresent()) {
+            RecipeHolder<ClayiumMachineRecipe> holder = machineRecipe.get();
+            return Optional.of(new SelectedRecipe(holder.id(), holder.value(), false));
+        }
+        if (series != SmeltingSeries.SMELTER || input.items().size() != 1) {
+            return Optional.empty();
+        }
+        SingleRecipeInput smeltingInput = new SingleRecipeInput(input.items().getFirst());
+        return serverLevel.getRecipeManager().getRecipeFor(RecipeType.SMELTING, smeltingInput, serverLevel)
+                .filter(holder -> !holder.value().assemble(smeltingInput, serverLevel.registryAccess()).isEmpty())
+                .map(holder -> new SelectedRecipe(
+                        holder.id(), vanillaSmeltingRecipe(holder.value(), smeltingInput, serverLevel), true));
+    }
+
+    private ClayiumMachineRecipe vanillaSmeltingRecipe(
+            SmeltingRecipe smeltingRecipe,
+            SingleRecipeInput input,
+            ServerLevel serverLevel) {
+        return new ClayiumMachineRecipe(
+                ClayiumRecipeMethod.SMELTER,
+                0,
+                List.of(new SizedIngredient(Ingredient.of(input.item().getItem()), 1)),
+                List.of(),
+                List.of(smeltingRecipe.assemble(input, serverLevel.registryAccess())),
+                List.of(),
+                4L,
+                200,
+                ClayiumMachineRecipe.EnvironmentCondition.ANY,
+                List.of());
     }
 
     private ItemStack combinedFixedOutput(ClayiumMachineRecipe recipe) {
@@ -251,17 +299,35 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     private boolean reserveInput(ClayiumMachineRecipe recipe) {
-        ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
-        if (recipe.itemInputs().size() != 1) {
+        if (recipe.itemInputs().size() > inputSlots) {
             return false;
         }
-        SizedIngredient required = recipe.itemInputs().getFirst();
-        if (!required.ingredient().test(input) || input.getCount() < required.count()) {
-            return false;
+        int[] remaining = new int[inputSlots];
+        for (int index = 0; index < inputSlots; index++) {
+            remaining[index] = inventory.getStackInSlot(index).getCount();
         }
-        ItemStack reserved = input.copyWithCount(required.count());
-        inventory.extractItem(INPUT_SLOT, required.count(), false);
-        inventory.setStackInSlot(RESERVED_SLOT, reserved);
+        for (SizedIngredient required : recipe.itemInputs()) {
+            int missing = required.count();
+            for (int index = 0; index < inputSlots && missing > 0; index++) {
+                ItemStack input = inventory.getStackInSlot(index);
+                if (remaining[index] > 0 && required.ingredient().test(input)) {
+                    int used = Math.min(missing, remaining[index]);
+                    missing -= used;
+                    remaining[index] -= used;
+                }
+            }
+            if (missing > 0) {
+                return false;
+            }
+        }
+        for (int index = 0; index < inputSlots; index++) {
+            ItemStack input = inventory.getStackInSlot(index);
+            int used = input.getCount() - remaining[index];
+            if (used > 0) {
+                inventory.setStackInSlot(reservedSlot + index, input.copyWithCount(used));
+                inventory.extractItem(index, used, false);
+            }
+        }
         return true;
     }
 
@@ -269,7 +335,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         if (energyPerProgress == 0L) {
             return true;
         }
-        ItemStack fuel = tier() >= 4 ? inventory.getStackInSlot(FUEL_SLOT) : ItemStack.EMPTY;
+        ItemStack fuel = tier() >= 4 ? inventory.getStackInSlot(fuelSlot) : ItemStack.EMPTY;
         if (energyPerProgress > Long.MAX_VALUE / completedProgress) {
             return false;
         }
@@ -283,7 +349,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     private boolean canPower(long required) {
         return required == 0L
                 || energy.stored().internalValue() >= required
-                || tier() >= 4 && ClayEnergyStorage.fuelValue(inventory.getStackInSlot(FUEL_SLOT)).internalValue() > 0L;
+                || tier() >= 4 && ClayEnergyStorage.fuelValue(inventory.getStackInSlot(fuelSlot)).internalValue() > 0L;
     }
 
     private long availableClayEnergy() {
@@ -291,7 +357,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         if (tier() >= 4) {
             available = saturatedAdd(
                     available,
-                    ClayEnergyStorage.fuelValue(inventory.getStackInSlot(FUEL_SLOT)).internalValue());
+                    ClayEnergyStorage.fuelValue(inventory.getStackInSlot(fuelSlot)).internalValue());
         }
         return available;
     }
@@ -300,22 +366,23 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         if (result.isEmpty()) {
             return false;
         }
-        ItemStack existing = inventory.getStackInSlot(OUTPUT_SLOT);
+        ItemStack existing = inventory.getStackInSlot(outputSlot);
         return existing.isEmpty()
                 || ItemStack.isSameItemSameComponents(existing, result)
                 && existing.getCount() + result.getCount() <= existing.getMaxStackSize();
     }
 
     private void finishProcess() {
-        ItemStack existing = inventory.getStackInSlot(OUTPUT_SLOT);
+        ItemStack existing = inventory.getStackInSlot(outputSlot);
         if (existing.isEmpty()) {
-            inventory.setStackInSlot(OUTPUT_SLOT, pendingOutput.copy());
+            inventory.setStackInSlot(outputSlot, pendingOutput.copy());
         } else {
             existing.grow(pendingOutput.getCount());
         }
-        inventory.setStackInSlot(RESERVED_SLOT, ItemStack.EMPTY);
+        clearReservedInputs();
         activeRecipe = null;
         activeRecipeValue = null;
+        activeVanillaSmeltingRecipe = false;
         pendingOutput = ItemStack.EMPTY;
         progress = 0L;
         requiredProgress = 0L;
@@ -328,21 +395,59 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     private boolean activeRecipeIsCurrent(RecipeManager manager) {
-        return manager.byKey(activeRecipe)
-                .filter(holder -> holder.value() instanceof ClayiumMachineRecipe)
-                .map(holder -> (ClayiumMachineRecipe)holder.value())
+        return currentRecipe(manager)
                 .filter(recipe -> recipe.processingMethod() == series().recipeMethod())
                 .filter(recipe -> recipe.requiredTier() <= tier())
-                .filter(recipe -> activeRecipeValue == null || activeRecipeValue == recipe)
-                .filter(recipe -> recipe.itemInputs().size() == 1
-                        && recipe.itemInputs().getFirst().ingredient().test(inventory.getStackInSlot(RESERVED_SLOT))
-                        && recipe.itemInputs().getFirst().count() == inventory.getStackInSlot(RESERVED_SLOT).getCount())
+                .filter(recipe -> activeRecipeValue == null || activeVanillaSmeltingRecipe
+                        || activeRecipeValue == recipe)
+                .filter(this::matchesReservedInputs)
                 .isPresent();
+    }
+
+    private Optional<ClayiumMachineRecipe> currentRecipe(RecipeManager manager) {
+        if (!activeVanillaSmeltingRecipe) {
+            return manager.byKey(activeRecipe)
+                    .filter(holder -> holder.value() instanceof ClayiumMachineRecipe)
+                    .map(holder -> (ClayiumMachineRecipe)holder.value());
+        }
+        ItemStack reserved = inventory.getStackInSlot(reservedSlot);
+        if (!(level instanceof ServerLevel serverLevel) || reserved.isEmpty()) {
+            return Optional.empty();
+        }
+        SingleRecipeInput input = new SingleRecipeInput(reserved);
+        return manager.byKey(activeRecipe)
+                .filter(holder -> holder.value() instanceof SmeltingRecipe)
+                .map(holder -> vanillaSmeltingRecipe((SmeltingRecipe)holder.value(), input, serverLevel));
+    }
+
+    private boolean matchesReservedInputs(ClayiumMachineRecipe recipe) {
+        List<ItemStack> reserved = reservedStacks();
+        int reservedCount = reserved.stream().mapToInt(ItemStack::getCount).sum();
+        int requiredCount = recipe.itemInputs().stream().mapToInt(SizedIngredient::count).sum();
+        if (reservedCount != requiredCount) {
+            return false;
+        }
+        int[] remaining = reserved.stream().mapToInt(ItemStack::getCount).toArray();
+        for (SizedIngredient required : recipe.itemInputs()) {
+            int missing = required.count();
+            for (int index = 0; index < reserved.size() && missing > 0; index++) {
+                if (remaining[index] > 0 && required.ingredient().test(reserved.get(index))) {
+                    int used = Math.min(missing, remaining[index]);
+                    missing -= used;
+                    remaining[index] -= used;
+                }
+            }
+            if (missing > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void abortProcess() {
         activeRecipe = null;
         activeRecipeValue = null;
+        activeVanillaSmeltingRecipe = false;
         pendingOutput = ItemStack.EMPTY;
         progress = 0L;
         requiredProgress = 0L;
@@ -359,25 +464,56 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     private boolean recoverReservedInput() {
-        ItemStack reserved = inventory.getStackInSlot(RESERVED_SLOT);
-        if (reserved.isEmpty()) {
-            return true;
+        for (int index = 0; index < inputSlots; index++) {
+            ItemStack reserved = inventory.getStackInSlot(reservedSlot + index);
+            ItemStack input = inventory.getStackInSlot(index);
+            if (!reserved.isEmpty()
+                    && (!input.isEmpty() && !ItemStack.isSameItemSameComponents(input, reserved)
+                    || (input.isEmpty() ? reserved.getMaxStackSize() : input.getMaxStackSize() - input.getCount())
+                    < reserved.getCount())) {
+                return false;
+            }
         }
-        ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
-        if (!input.isEmpty() && !ItemStack.isSameItemSameComponents(input, reserved)) {
-            return false;
+        for (int index = 0; index < inputSlots; index++) {
+            ItemStack reserved = inventory.getStackInSlot(reservedSlot + index);
+            if (reserved.isEmpty()) {
+                continue;
+            }
+            ItemStack input = inventory.getStackInSlot(index);
+            if (input.isEmpty()) {
+                inventory.setStackInSlot(index, reserved.copy());
+            } else {
+                input.grow(reserved.getCount());
+            }
+            inventory.setStackInSlot(reservedSlot + index, ItemStack.EMPTY);
         }
-        int room = input.isEmpty() ? reserved.getMaxStackSize() : input.getMaxStackSize() - input.getCount();
-        if (room < reserved.getCount()) {
-            return false;
-        }
-        if (input.isEmpty()) {
-            inventory.setStackInSlot(INPUT_SLOT, reserved.copy());
-        } else {
-            input.grow(reserved.getCount());
-        }
-        inventory.setStackInSlot(RESERVED_SLOT, ItemStack.EMPTY);
         return true;
+    }
+
+    private boolean hasReservedInput() {
+        return reservedStacks().stream().anyMatch(stack -> !stack.isEmpty());
+    }
+
+    private List<ItemStack> inputStacks() {
+        List<ItemStack> inputs = new ArrayList<>(inputSlots);
+        for (int index = 0; index < inputSlots; index++) {
+            inputs.add(inventory.getStackInSlot(index));
+        }
+        return List.copyOf(inputs);
+    }
+
+    private List<ItemStack> reservedStacks() {
+        List<ItemStack> reserved = new ArrayList<>(inputSlots);
+        for (int index = 0; index < inputSlots; index++) {
+            reserved.add(inventory.getStackInSlot(reservedSlot + index));
+        }
+        return List.copyOf(reserved);
+    }
+
+    private void clearReservedInputs() {
+        for (int index = 0; index < inputSlots; index++) {
+            inventory.setStackInSlot(reservedSlot + index, ItemStack.EMPTY);
+        }
     }
 
     private static long saturatedAdd(long left, long right) {
@@ -388,7 +524,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         return 1.0D;
     }
 
-    public ProcessingSeries series() {
+    public MachineSeries series() {
         return ((ClayMachineBlock)getBlockState().getBlock()).series();
     }
 
@@ -398,6 +534,22 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
 
     public ItemStackHandler inventory() {
         return inventory;
+    }
+
+    public int inputSlots() {
+        return inputSlots;
+    }
+
+    public int outputSlot() {
+        return outputSlot;
+    }
+
+    public int reservedSlot(int inputIndex) {
+        return reservedSlot + inputIndex;
+    }
+
+    public int fuelSlot() {
+        return fuelSlot;
     }
 
     public ClayEnergyStorage energyStorage() {
@@ -443,7 +595,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     public Container dropInventory() {
-        SimpleContainer dropped = new SimpleContainer(4);
+        SimpleContainer dropped = new SimpleContainer(inventory.getSlots());
         for (int slot = 0; slot < inventory.getSlots(); slot++) {
             dropped.setItem(slot, inventory.getStackInSlot(slot).copy());
             inventory.setStackInSlot(slot, ItemStack.EMPTY);
@@ -470,6 +622,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         tag.putString("state", state.name());
         if (activeRecipe != null) {
             tag.putString("active_recipe", activeRecipe.toString());
+            tag.putBoolean("vanilla_smelting_recipe", activeVanillaSmeltingRecipe);
         }
         if (!pendingOutput.isEmpty()) {
             tag.put("pending_output", pendingOutput.save(registries));
@@ -496,6 +649,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         state = parseEnum(MachineState.class, tag.getString("state"), MachineState.IDLE);
         activeRecipe = tag.contains("active_recipe") ? ResourceLocation.tryParse(tag.getString("active_recipe")) : null;
         activeRecipeValue = null;
+        activeVanillaSmeltingRecipe = tag.getBoolean("vanilla_smelting_recipe");
         pendingOutput = tag.contains("pending_output")
                 ? ItemStack.parseOptional(registries, tag.getCompound("pending_output"))
                 : ItemStack.EMPTY;
@@ -511,7 +665,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 faceModes.put(direction, parseEnum(FaceMode.class, faces.getString(direction.getName()), faceModes.get(direction)));
             }
         }
-        if (activeRecipe != null && (pendingOutput.isEmpty() || inventory.getStackInSlot(RESERVED_SLOT).isEmpty())) {
+        if (activeRecipe != null && (pendingOutput.isEmpty() || !hasReservedInput())) {
             clearCorruptProcess();
         }
     }
@@ -519,6 +673,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     private void clearCorruptProcess() {
         activeRecipe = null;
         activeRecipeValue = null;
+        activeVanillaSmeltingRecipe = false;
         pendingOutput = ItemStack.EMPTY;
         progress = 0L;
         requiredProgress = 0L;
@@ -613,11 +768,11 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public int getSlots() {
             if (direction == null) {
-                return 3;
+                return inputSlots + 2;
             }
             return faceModes.get(direction) == FaceMode.DISABLED
                     ? 0
-                    : faceModes.get(direction) == FaceMode.INPUT ? 2 : 1;
+                    : faceModes.get(direction) == FaceMode.INPUT ? inputSlots + 1 : 1;
         }
 
         @Override
@@ -628,16 +783,16 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             int mappedSlot = mappedSlot(slot);
-            return (direction == null && mappedSlot != OUTPUT_SLOT)
+            return (direction == null && mappedSlot != outputSlot)
                             || direction != null && faceModes.get(direction) == FaceMode.INPUT
                     ? inventory.insertItem(mappedSlot, stack, simulate) : stack;
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return direction == null && mappedSlot(slot) == OUTPUT_SLOT
+            return direction == null && mappedSlot(slot) == outputSlot
                             || direction != null && faceModes.get(direction) == FaceMode.OUTPUT
-                    ? inventory.extractItem(OUTPUT_SLOT, amount, simulate)
+                    ? inventory.extractItem(outputSlot, amount, simulate)
                     : ItemStack.EMPTY;
         }
 
@@ -649,23 +804,22 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             int mappedSlot = mappedSlot(slot);
-            return ((direction == null && mappedSlot != OUTPUT_SLOT)
+            return ((direction == null && mappedSlot != outputSlot)
                             || direction != null && faceModes.get(direction) == FaceMode.INPUT)
                     && inventory.isItemValid(mappedSlot, stack);
         }
 
         private int mappedSlot(int slot) {
             if (direction == null) {
-                return switch (slot) {
-                    case 0 -> INPUT_SLOT;
-                    case 1 -> FUEL_SLOT;
-                    default -> OUTPUT_SLOT;
-                };
+                return slot < inputSlots ? slot : slot == inputSlots ? fuelSlot : outputSlot;
             }
             if (faceModes.get(direction) == FaceMode.OUTPUT) {
-                return OUTPUT_SLOT;
+                return outputSlot;
             }
-            return slot == 0 ? INPUT_SLOT : FUEL_SLOT;
+            return slot < inputSlots ? slot : fuelSlot;
         }
+    }
+
+    private record SelectedRecipe(ResourceLocation id, ClayiumMachineRecipe recipe, boolean vanillaSmelting) {
     }
 }

@@ -24,7 +24,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
 
     public ClayMachineScreen(ClayMachineMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageHeight = 180;
+        imageHeight = 166;
         inventoryLabelY = 72;
     }
 
@@ -63,9 +63,17 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 90);
-        for (int[] slot : new int[][] {{43, 34}, {115, 34}, {43, 56}}) {
-            graphics.blit(SLOT, leftPos + slot[0], topPos + slot[1], 0, 0, 18, 18);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos + imageHeight, 0);
+        graphics.pose().scale(1.0F, -1.0F, 1.0F);
+        graphics.blit(BACKGROUND, 0, 0, 0, 0, imageWidth, 4);
+        graphics.pose().popPose();
+        int inputSlots = menu.machine() == null ? 1 : menu.machine().inputSlots();
+        for (int input = 0; input < inputSlots; input++) {
+            graphics.blit(SLOT, leftPos + ClayMachineMenu.inputX(inputSlots, input) - 1, topPos + 34, 0, 0, 18, 18);
         }
+        graphics.blit(SLOT, leftPos + 115, topPos + 34, 0, 0, 18, 18);
+        graphics.blit(SLOT, leftPos + 43, topPos + 56, 0, 0, 18, 18);
         int width = menu.requiredProgress() <= 0
                 ? 0
                 : Math.min(24, (int)(24.0D * menu.progress() / Math.max(1L, menu.requiredProgress())));

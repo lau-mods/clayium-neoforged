@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:ingots/gold"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:ingots/silver"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 2,
+      "id": "clayium:electrum_ingot"
+    }
+  ],
+  "processing_method": "clayium:alloy_smelter",
+  "processing_ticks": 40,
+  "required_tier": 6
+}

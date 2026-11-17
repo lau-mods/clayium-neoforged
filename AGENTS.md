@@ -161,6 +161,16 @@ Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`
 
 射撃 cooldown は原作 rate の整数除算 `rate / 3` tick。チャージ割合 `f=min(使用 tick, チャージ tick)/チャージ tick` の威力は `min((f²+2f)/3,1)`、消費耐久は `1+floor(威力×チャージ tick)`。弾丸は1200 tickで消滅する。転移は使用者と弾丸の次元一致、建築高度、ワールド境界、ロード済みチャンク、プレイヤー衝突箱の空間、`EntityTeleportEvent` を確認する。
 
+## M11 精錬・合金・電気分解
+
+`SmeltingSeries` は `smelter_tier_{4,5,6,7,8,9}`、`alloy_smelter_tier_6`、`electrolysis_reactor_tier_{6,7,8,9}` の11機種を登録する。Smelter は `TierManager.smelter`、他の2系列は `TierManager.general` を用いる。英日表示名は原作の Smelter / Alloy Smelter / Electrolysis Reactor 各 Tier 名に対応する。
+
+共通機械の入力数を `n` とすると、入力は `0..n-1`、出力は `n`、処理中退避は `n+1..2n`、燃料は `2n+1`。合金機だけ `n=2`、他は `n=1`。バニラ製錬フォールバック中かどうかを保存する NBT キーは `vanilla_smelting_recipe`。
+
+Smelter のみバニラ `SMELTING` レシピをフォールバックとして参照し、基礎消費4内部CE・200 tickで処理する。これは原作 JAR の `mods.clayium.util.crafting.SmeltingRecipe` の `energySmelting=4`、`timeSmelting=200` に対応する。原作 `CRecipes.recipeSmelter` の専用レシピは Tier 5 のアルミニウム・ナトリウム・亜鉛・ニッケルと Tier 6 のマグネシウム・リチウム・ジルコニウム・亜鉛アルミニウム化合物・亜鉛ジルコニウム化合物・AZ91D・ZK60A。原作で通常かまどへ登録する不純シリコン・シリコン・シリコーン・鉄・金・鉛・銅・ブロンズ・真鍮・エレクトラム・インバーの粉→インゴットも生成し、Smelter のフォールバックから利用する。`cfgHardcoreAluminium` が有効な場合の不純アルミニウムは既定では対象外。原作 `CRecipes` では粘土鋼・クレイウム・究極合金の粉→インゴットは `recipeBlastFurnace` に登録され、Smelter のレシピではない。合金機の8レシピと電気分解機の19レシピは `SmeltingRecipes` から生成する。入力は原作 OreDictionary に相当する `c:ingots/<material>` と `c:dusts/<material>` を使う。
+
+GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingAlloyAndElectrolysisPreserveOriginalBalances`。外観 E2E は `tests/e2e/smelting-machines.mjs`。
+
 ## M10 アイテムバッファと統合フィルター
 
 - `buffer_tier_4`～`buffer_tier_13` は `LogisticsRegistration` に登録する。BlockEntity と Menu は `clayium:buffer`、単体フィルター Menu は `clayium:item_filter`。

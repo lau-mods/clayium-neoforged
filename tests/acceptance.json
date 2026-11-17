@@ -241,6 +241,18 @@
       "name": "teleportballcheckssideimpactborderanddimension"
     },
     {
+      "acId": "AC-F013-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allelevensmeltingmachinesuseoriginaltiersandrejectfe"
+    },
+    {
+      "acId": "AC-F013-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "smeltingalloyandelectrolysispreserveoriginalbalances"
+    },
+    {
       "acId": "AC-F019-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -349,6 +361,10 @@
     {
       "acId": "AC-F040-002",
       "scenario": "tests/e2e/clay-shooters.mjs"
+    },
+    {
+      "acId": "AC-F013-002",
+      "scenario": "tests/e2e/smelting-machines.mjs"
     },
     {
       "acId": "AC-F019-003",

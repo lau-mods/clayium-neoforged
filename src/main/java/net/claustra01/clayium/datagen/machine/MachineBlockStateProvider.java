@@ -24,7 +24,7 @@ public final class MachineBlockStateProvider extends BlockStateProvider {
         MachineRegistration.MACHINES.values().forEach(definition -> {
             String id = definition.id();
             ResourceLocation hull = ClayiumMod.id("block/machinehull-" + Math.max(0, definition.tier() - 1));
-            ResourceLocation front = ClayiumMod.id("block/" + definition.series().recipeMethod().id());
+            ResourceLocation front = ClayiumMod.id("block/" + definition.series().frontTexture());
             ModelFile model = models().getBuilder(id)
                     .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                     .texture("hull", hull)

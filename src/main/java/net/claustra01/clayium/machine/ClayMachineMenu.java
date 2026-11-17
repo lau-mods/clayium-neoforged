@@ -31,10 +31,14 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         this.machinePos = machine == null ? BlockPos.ZERO : machine.getBlockPos();
         this.data = data;
         if (machine != null) {
-            addSlot(new SlotItemHandler(machine.inventory(), ClayMachineBlockEntity.INPUT_SLOT, 44, 35));
-            addSlot(new SlotItemHandler(machine.inventory(), ClayMachineBlockEntity.OUTPUT_SLOT, 116, 35));
-            addSlot(new LockedSlot(machine, ClayMachineBlockEntity.RESERVED_SLOT, -1000, -1000));
-            addSlot(new SlotItemHandler(machine.inventory(), ClayMachineBlockEntity.FUEL_SLOT, 44, 57));
+            for (int input = 0; input < machine.inputSlots(); input++) {
+                addSlot(new SlotItemHandler(machine.inventory(), input, inputX(machine.inputSlots(), input), 35));
+            }
+            addSlot(new SlotItemHandler(machine.inventory(), machine.outputSlot(), 116, 35));
+            for (int input = 0; input < machine.inputSlots(); input++) {
+                addSlot(new LockedSlot(machine, machine.reservedSlot(input), -1000, -1000));
+            }
+            addSlot(new SlotItemHandler(machine.inventory(), machine.fuelSlot(), 44, 57));
         }
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -56,6 +60,10 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         }
     }
 
+    public static int inputX(int inputSlots, int input) {
+        return inputSlots == 1 ? 44 : 35 + input * 18;
+    }
+
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = slots.get(index);
@@ -64,15 +72,16 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         }
         ItemStack original = slot.getItem().copy();
         ItemStack moving = slot.getItem();
-        if (index < 4) {
-            if (!moveItemStackTo(moving, 4, slots.size(), true)) {
+        int machineSlots = machine == null ? 0 : machine.inventory().getSlots();
+        if (index < machineSlots) {
+            if (!moveItemStackTo(moving, machineSlots, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
         } else {
             boolean moved = machine != null
-                    && machine.inventory().isItemValid(ClayMachineBlockEntity.FUEL_SLOT, moving)
-                    && moveItemStackTo(moving, 3, 4, false);
-            if (!moved && !moveItemStackTo(moving, 0, 1, false)) {
+                    && machine.inventory().isItemValid(machine.fuelSlot(), moving)
+                    && moveItemStackTo(moving, machine.fuelSlot(), machine.fuelSlot() + 1, false);
+            if (!moved && (machine == null || !moveItemStackTo(moving, 0, machine.inputSlots(), false))) {
                 return ItemStack.EMPTY;
             }
         }

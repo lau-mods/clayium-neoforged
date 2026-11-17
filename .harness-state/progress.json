@@ -3,8 +3,8 @@
   "active": [
     {
       "id": "M09",
-      "phase": "gametest",
-      "baseCommit": "fcef2405b087fba2dbfee99c31b54468b32b80f8",
+      "phase": "e2e",
+      "baseCommit": "357a5f0ee481c9fd897d1eadb4d44f831a6191d5",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -64,6 +64,18 @@
                 "by": "claude",
                 "note": "Diff only touches the E2E script; series-specific construction recipes and the GameTest are unchanged.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Diff only resolves merge markers; series-specific construction recipes and the GameTest are unchanged.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only adds a blank line to AGENTS.md; the series-specific construction recipes and the GameTest are unchanged.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -152,6 +164,18 @@
                 "by": "claude",
                 "note": "ClayiumRecipeCache is not touched by the diff; it still uses findFirst.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ClayiumRecipeCache is not touched by the diff and still uses findFirst.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; ClayiumRecipeCache still uses findFirst.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -205,6 +229,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff; registration still uses OriginalRegistryCatalog.machineId.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only keeps both registration loops; registration still uses OriginalRegistryCatalog.machineId.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; registration still uses OriginalRegistryCatalog.machineId.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -258,6 +294,18 @@
                 "by": "claude",
                 "note": "Shared datagen paths are unchanged by the diff.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Shared datagen paths are untouched. No conflict markers remain in the repository.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the shared datagen paths are unchanged.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -311,6 +359,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff; the unused clay_ball branch stays removed.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the unused clay_ball branch stays removed.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the unused clay_ball branch stays removed.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -364,6 +424,18 @@
                 "by": "claude",
                 "note": "Not touched by the diff; the GameTest still places machine blocks in the level.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the GameTest still places machine blocks in the level.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the GameTest still places machine blocks in the level.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -417,6 +489,18 @@
                 "by": "claude",
                 "note": "The six per-series running GUI captures are still in the E2E script (lines 55-70).",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E script is not changed in this diff; the per-series running GUI captures are still there.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the E2E script still captures one running GUI per series.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -470,6 +554,18 @@
                 "by": "claude",
                 "note": "The AGENTS.md M09 section is present and untouched.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The AGENTS.md M09 section is still present, and the conflict markers around it are gone. The M10 section is kept.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The AGENTS.md M09 section is still present; the diff only adds a blank line after it.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           },
@@ -493,12 +589,47 @@
                 "by": "claude",
                 "note": "A sequential for-of loop with await now runs before the overview screenshot (lines 38-48). It uses the same position formula as the setblock loop and mct 'block get'. It throws if the result does not contain clayium:<id>.",
                 "at": "2026-11-17T10:26:29.608Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The sequential await loop with mct 'block get' is still in the E2E script (lines 44-46). It throws if the block is not clayium:<id>.",
+                "at": "2026-11-17T10:31:46.580Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the sequential await check loop is still in the E2E script.",
+                "at": "2026-11-17T10:34:16.430Z"
+              }
+            ]
+          },
+          {
+            "target": "AGENTS.md:169-170",
+            "acId": null,
+            "problem": "The merge removed the conflict markers but left no blank line between the last bullet of the M09 section and the `## M10 アイテムバッファと統合フィルター` heading. Every other section in the file is separated by a blank line.",
+            "reason": "With no separating blank line, the M10 heading runs straight into the M09 bullet list. The resolution should keep both sections in the same layout the file already uses.",
+            "fix": "Add one empty line between line 169 (the M09 GameTest/E2E bullet) and line 170 (`## M10 ...`).",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md の M09 最終箇条書きと M10 見出しの間に空行を1行追加しました。",
+                "at": "2026-11-17T10:34:01.730Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds one blank line between the last M09 bullet and the '## M10' heading, which is the fix requested.",
+                "at": "2026-11-17T10:34:16.430Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "ec09e3304ca636dd9ee908e08326380bdd540855",
+      "codeReviewTree": "7f075331721ce20c8bd1505caea45888847c73a7",
       "e2eReview": {
         "kind": "e2e",
         "issues": [
@@ -522,6 +653,12 @@
                 "by": "claude",
                 "note": "The wire drawing GUI title now reads \"Clay Wire Drawing Machine\" in full. It is not cut off, and the Tier label is on its own row.",
                 "at": "2026-11-17T10:21:43.943Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The wire drawing GUI title reads \"Clay Wire Drawing Machine\" in full with no ellipsis. The Tier 1 label is on its own row.",
+                "at": "2026-11-17T10:28:22.892Z"
               }
             ]
           },
@@ -545,6 +682,12 @@
                 "by": "claude",
                 "note": "The pipe drawing GUI title now reads \"Clay Pipe Drawing Machine\" in full, with no ellipsis.",
                 "at": "2026-11-17T10:21:43.943Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The pipe drawing GUI title reads \"Clay Pipe Drawing Machine\" in full. It is not truncated.",
+                "at": "2026-11-17T10:28:22.892Z"
               }
             ]
           },
@@ -568,6 +711,12 @@
                 "by": "claude",
                 "note": "The panel now ends about 6 GUI px below the hotbar row and has a bottom border. The large empty strip is gone in all the running GUIs.",
                 "at": "2026-11-17T10:21:43.943Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The panel ends just below the hotbar row and has a bottom border. The large empty gray strip is gone in the bending, wire drawing, pipe drawing, cutting, lathe and milling GUIs.",
+                "at": "2026-11-17T10:28:22.892Z"
               }
             ]
           },
@@ -591,6 +740,12 @@
                 "by": "claude",
                 "note": "The lathe GUI now shows \"Processing\" in green with a partly filled progress arrow, and the input and output counts are changing.",
                 "at": "2026-11-17T10:21:43.943Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The lathe GUI shows \"Processing\" in green. The progress arrow is partly filled, and the input (43) and output (20) counts are mid-batch. It no longer shows Idle.",
+                "at": "2026-11-17T10:28:22.892Z"
               }
             ]
           },
@@ -614,6 +769,12 @@
                 "by": "claude",
                 "note": "The milling GUI now shows \"Processing\" in green with a partly filled progress arrow, not Idle.",
                 "at": "2026-11-17T10:21:43.943Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The milling GUI shows \"Processing\" in green with a partly filled progress arrow, with 61 in the input. It no longer shows Idle.",
+                "at": "2026-11-17T10:28:22.892Z"
               }
             ]
           }
@@ -624,247 +785,18 @@
       "reviewConflicts": []
     },
     {
-      "id": "M11",
+      "id": "M12",
       "phase": "implementation",
-      "baseCommit": "fcef2405b087fba2dbfee99c31b54468b32b80f8",
+      "baseCommit": "357a5f0ee481c9fd897d1eadb4d44f831a6191d5",
       "failures": {
         "build": 0,
         "gametest": 0,
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
-        "issues": [
-          {
-            "target": "AGENTS.md:74-160 (no M11 section)",
-            "acId": "AC-F013-001",
-            "problem": "AGENTS.md has no M11 section. It does not record the 11 IDs and their Tiers, which TierManager table each series uses (smelter vs general), the 2-input slot layout (inputs 0..n-1, output n, reserved n+1..2n, fuel 2n+1) or the new `vanilla_smelting_recipe` NBT key. It also omits the vanilla furnace fallback for the Smelter only, with its fixed 4 internal CE and 200 ticks, the original-recipe list and the display names.",
-            "reason": "The project rules say any change to registered content, save format or recipe rules must update AGENTS.md in the same change, and AGENTS.md is in this milestone's scope. The hard-coded fallback values (4L, 200) in ClayMachineBlockEntity.vanillaSmeltingRecipe have no documented source.",
-            "fix": "Add an M11 section to AGENTS.md. Record: the 11 machine IDs and Tiers; TierManager.smelter for Smelter and TierManager.general for AlloySmelter and ElectrolysisReactor; the slot layout and the `vanilla_smelting_recipe` NBT key; the Smelter-only vanilla SMELTING fallback (4 internal CE, 200 ticks, checked against the original JAR); the generated smelter, alloy and electrolysis recipe sets; and the GameTest and E2E names.",
-            "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: AGENTS.md に11機種、Tier 表、スロット配置、保存キー、原作 JAR で確認したフォールバック値、レシピ群とテスト名を記録しました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md now has the M11 section covering the 11 IDs, TierManager tables, slot layout, NBT key, fallback values, recipes and test names.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/SmeltingRecipes.java:12-23",
-            "acId": "AC-F013-001",
-            "problem": "The Smelter recipe list stops at Tier 6 (aluminium through zk60_a_alloy). The original staged recipes are missing: clay_steel_dust→clay_steel_ingot, clayium_dust→clayium_ingot, ultimate_alloy_dust→ultimate_alloy_ingot, plus the other original smelter products such as silicon, silicone, impure silicon, impure aluminium and steel. Smelter Tiers 7–9 therefore have no recipe of their own.",
-            "reason": "The milestone approach requires generating the clay steel, clayium and ultimate alloy staged recipes from the original JAR. The AC expects every machine to produce the same metal products as the original. Smelter 7/8/9 (Clay Steel/Clayium/Ultimate Smelter) currently add nothing over Tier 6.",
-            "fix": "Add the missing original Smelter recipes to SMELTING, with Tier, CE and time taken from the original JAR's smelter recipe table. Run runData and commit the generated JSON. Extend the GameTest with a representative Tier 7–9 Smelter recipe and its Tier limit, e.g. a Tier 8 Smelter rejecting the Tier 9 ultimate alloy recipe.",
-            "id": "CR-002",
-            "status": "accepted",
-            "history": [
-              {
-                "status": "accepted",
-                "by": "codex",
-                "note": "accepted: 原作 JAR の CRecipes では粘土鋼・クレイウム・究極合金の粉→インゴットは recipeBlastFurnace に属し、recipeSmelter の Tier 7～9 専用レシピではありません。Smelter に追加すると原作の加工種別が変わります。原作で通常かまどに登録されるシリコン・鋼などの経路は追加しました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/SmeltingRecipes.java:47-100",
-            "acId": "AC-F013-001",
-            "problem": "Smelter, alloy and electrolysis recipes use exact clayium item ingredients (e.g. `clayium:copper_ingot`, `clayium:gold_ingot`, `clayium:iron_ingot`). An iron or copper ingot made by the Smelter from vanilla raw ore is `minecraft:iron_ingot` or `minecraft:copper_ingot`. The bronze, brass and invar alloy recipes reject those ingots.",
-            "reason": "The AC precondition supplies iron and copper raw ore, and the expected result is producing equivalent metal products and alloys. The original used OreDictionary names. The mod already generates `c:` ingot and dust tags for its materials, and NeoForge tags the vanilla ingots too.",
-            "fix": "Use `c:ingots/<material>` and `c:dusts/<material>` tag ingredients (Ingredient.of(TagKey)) in SmeltingRecipes, and regenerate the recipes. In the GameTest, feed the bronze or invar recipe with the vanilla ingot produced from RAW_COPPER or RAW_IRON.",
-            "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 粉とインゴットの入力を c: タグに変更し、Raw Copper の製錬結果をブロンズの GameTest に渡しました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "SmeltingRecipes now uses c: dust and ingot tag ingredients. The GameTest feeds the bronze recipe with the smelted copper item.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/registry/SmeltingMachineRegistration.java:20-40",
-            "acId": null,
-            "problem": "The registration loop copies MachineRegistration's ProcessingSeries loop line for line (block properties, item with TIER component, definition, list adds), with the shared lists passed in as parameters.",
-            "reason": "The code style asks for one direct path per behavior and no duplicate implementations. The block properties now live in two copies that can drift apart.",
-            "fix": "Make the MachineRegistration loop iterate over all MachineSeries values (ProcessingSeries.values() followed by SmeltingSeries.values()) through one loop body. Remove the duplicated body in SmeltingMachineRegistration, or reduce that class to only supplying the series list.",
-            "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: MachineRegistration の単一ループで両系列を登録し、重複した登録クラスを削除しました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "MachineRegistration registers both series in one loop. SmeltingMachineRegistration is deleted and has no remaining references.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/machine/SmeltingMachineModels.java:9-18",
-            "acId": "AC-F013-002",
-            "problem": "The front texture is chosen by an `instanceof SmeltingSeries` check with a fallback path for every other series. MachineBlockStateProvider sends all machines, including ProcessingSeries ones, through this smelting-specific class.",
-            "reason": "The type-switch helper adds indirection. A smelting-named class now decides textures for unrelated machines.",
-            "fix": "Add a front texture name to MachineSeries, e.g. `String frontTexture()`, defaulting to recipeMethod().id(), with SmeltingSeries returning `smelter`, `alloysmelter` and `electrolysisreactor`. Use it directly in MachineBlockStateProvider and delete SmeltingMachineModels.",
-            "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 前面テクスチャ名を MachineSeries に置き、モデル生成側の型分岐を削除しました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "MachineSeries.frontTexture() is used directly in MachineBlockStateProvider. SmeltingMachineModels is deleted and has no remaining references.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineMenu.java:81-85",
-            "acId": null,
-            "problem": "In quickMoveStack's player-inventory branch, `machine.inputSlots()` is dereferenced even when `machine` is null. The guard `machine != null` only covers the fuel move. The menu explicitly supports a null machine, with player slots only.",
-            "reason": "Shift-clicking in a menu whose block entity was not found throws a NullPointerException. The code before this change used constant indices and did not crash.",
-            "fix": "Return ItemStack.EMPTY from the else-branch when machine is null, or put the input move inside the same `machine != null` guard.",
-            "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 機械が存在しないメニューでの Shift クリック時に空を返すよう修正しました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "A null machine now returns EMPTY in the quickMoveStack player-inventory branch.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:54-57",
-            "acId": null,
-            "problem": "The public constants INPUT_SLOT=0, OUTPUT_SLOT=1, RESERVED_SLOT=2 and FUEL_SLOT=3 remain, but slot indices now depend on the series. For the 2-input alloy smelter, slot 2 is the reserved slot for input 0 and slot 3 is the reserved slot for input 1, not fuel. Production code no longer uses the constants; only the M06 GameTests do.",
-            "reason": "These are stale, misleading public constants. The code style says to remove code the current behavior no longer uses.",
-            "fix": "Remove the constants. Have the M06 GameTests use the instance accessors outputSlot(), reservedSlot(0) and fuelSlot(), with input index 0.",
-            "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 固定スロット定数を削除し、GameTest を機械インスタンスのスロット位置参照へ変更しました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The fixed slot constants are removed from ClayMachineBlockEntity, and no references to them remain. The remaining INPUT_SLOT uses belong to ClayWorkTableBlockEntity.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/smelting/SmeltingMachineGameTests.java:46-54",
-            "acId": "AC-F013-001",
-            "problem": "The FE check covers only `smelter_tier_4`, and only from Direction.UP. The AlloySmelter and all ElectrolysisReactor tiers are never checked for FE exposure.",
-            "reason": "The AC requires all 11 machines to run on CE without FE input. A GameTest should assert the criterion for every machine it names.",
-            "fix": "Loop over all 11 SmeltingSeries definitions: place each block and assert `Capabilities.EnergyStorage.BLOCK` is null for every Direction and for null.",
-            "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 11機種それぞれについて、全方向と方向なしの FE Capability が存在しないことを検証します。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTest loops over all SmeltingSeries tiers and checks that FE is null for every direction and for null.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          },
-          {
-            "target": "tests/e2e/smelting-machines.mjs:43-47",
-            "acId": "AC-F013-002",
-            "problem": "The scenario freezes ticks, runs `tick step 1` and then takes the 'running' GUI screenshots. After one tick the process has only started, so progress is 0 and the progress arrow is empty. The screenshots do not show a running machine. The M06 scenario steps 10 ticks.",
-            "reason": "The AC Action asks to capture the running screen. An empty progress bar cannot be told apart from an idle machine.",
-            "fix": "Step enough ticks for the progress arrow to be visibly part-filled before opening each GUI, e.g. `tick step 20`, while staying below each recipe's required progress. Or set progress directly in the data merge.",
-            "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: E2E で各 GUI の撮影前に進捗が見える tick 数を進め、完了が早い電気分解機は投入時点を分けました。",
-                "at": "2026-11-17T10:23:49.461Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E steps 20 ticks before the smelter and alloy GUIs and 3 ticks before the electrolysis GUI. The recipes run 500 ticks, so they are still in progress.",
-                "at": "2026-11-17T10:24:05.846Z"
-              }
-            ]
-          }
-        ]
-      },
-      "codeReviewTree": "e33afaac0bd9a5df2c7a2a64d10baed3abcbe3f4",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-17T10-24-34-513Z-060-M11-e2e/scenarios/tests-e2e-smelting-machines.mjs/screenshots/AC-F013-002-alloy-smelter-two-input-running-gui.png",
-            "acId": "AC-F013-002",
-            "problem": "This screenshot is meant to show the Alloy Smelter running, but it isn't. The status reads \"Waiting for CE\" in orange, stored energy is 0.000 CE, the fuel slot is empty and the progress arrow has hardly started. Both input slots and the output slot are empty, so nothing shows two-input processing in progress.",
-            "reason": "AC-F013-002 asks for the screen of each series while it runs (稼働画面). The Smelter and Electrolysis Reactor captures show \"Processing\" with stored CE. The alloy capture shows a stalled machine with no energy, so it doesn't show the running GUI for the two-input machine.",
-            "fix": "In tests/e2e/smelting-machines.mjs, give the alloy_smelter_tier_6 CE before the capture: put Tier 4+ compressed energetic clay in its fuel slot (slot 2n+1 = 5) or pre-charge it the way the Smelter and Electrolysis Reactor scenarios do. Wait until the state is RUNNING (\"Processing\") with stored CE above zero and the arrow visibly filling, then take the screenshot. If the scenario already supplies fuel, find out why the alloy machine doesn't turn fuel into CE when both inputs are filled.",
-            "id": "ER-001",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T10-24-34-513Z-060-M11-e2e/scenarios/tests-e2e-smelting-machines.mjs/screenshots/AC-F013-002-smelter-running-gui.png",
-            "acId": "AC-F013-002",
-            "problem": "The bottom of the machine GUI panel looks cut off. Below the hotbar row there's an empty grey band about 18 GUI px tall. The panel's left highlight and right shadow run straight to the bottom with no bottom frame line or corners. The same panel shows up in the alloy smelter and electrolysis reactor GUI screenshots.",
-            "reason": "ClayMachineScreen sets imageHeight = 180 and blits a 176×180 area of back.png. back.png has no bottom border inside that area: its grey fill simply stops. The player inventory (topPos+72, 90 px tall) ends at y=162, so the remaining space is blank and the frame is left open. This breaks the GUI layout that AC-F013-002 requires to be intact.",
-            "fix": "In ClayMachineScreen, either draw the closing bottom edge the way the original GUI does (for example, blit the body at imageHeight-4 and then a 4 px bottom-edge strip from the original texture), or reduce imageHeight to fit the content (about 166, following vanilla's 72+90+4 layout). Make sure the bottom frame line and corners appear without the blank band, and keep the original back.png bytes unchanged.",
-            "id": "ER-002",
-            "status": "open",
-            "history": []
-          }
-        ]
-      },
+      "codeReview": null,
+      "codeReviewTree": null,
+      "e2eReview": null,
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
@@ -881,8 +813,9 @@
     "M06",
     "M07",
     "M08",
-    "M10"
+    "M10",
+    "M11"
   ],
-  "lastCheckpoint": "fcef2405b087fba2dbfee99c31b54468b32b80f8",
+  "lastCheckpoint": "357a5f0ee481c9fd897d1eadb4d44f831a6191d5",
   "fatal": null
 }

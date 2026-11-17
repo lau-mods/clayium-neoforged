@@ -9,7 +9,9 @@ import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.machine.ClayMachineBlock;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
+import net.claustra01.clayium.machine.series.MachineSeries;
 import net.claustra01.clayium.machine.series.ProcessingSeries;
+import net.claustra01.clayium.machine.series.SmeltingSeries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
@@ -30,7 +32,10 @@ public final class MachineRegistration {
         Map<String, MachineDefinition> machines = new LinkedHashMap<>();
         List<DeferredBlock<ClayMachineBlock>> blocks = new ArrayList<>();
         List<DeferredItem<FoundationBlockItem>> items = new ArrayList<>();
-        for (ProcessingSeries series : ProcessingSeries.values()) {
+        List<MachineSeries> seriesList = new ArrayList<>();
+        Collections.addAll(seriesList, ProcessingSeries.values());
+        Collections.addAll(seriesList, SmeltingSeries.values());
+        for (MachineSeries series : seriesList) {
             for (int tier : series.tiers()) {
                 String id = series.recipeMethod().id() + "_tier_" + tier;
                 DeferredBlock<ClayMachineBlock> block = ClayiumRegistries.BLOCKS.register(
@@ -74,7 +79,7 @@ public final class MachineRegistration {
 
     public record MachineDefinition(
             String id,
-            ProcessingSeries series,
+            MachineSeries series,
             int tier,
             DeferredBlock<ClayMachineBlock> block) {
     }

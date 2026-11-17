@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/smelter_tier_9",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/smelter_tier_9"
+    },
+    "facing=south": {
+      "model": "clayium:block/smelter_tier_9",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/smelter_tier_9",
+      "y": 270
+    }
+  }
+}

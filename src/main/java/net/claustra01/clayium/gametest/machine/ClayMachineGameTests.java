@@ -50,7 +50,7 @@ public final class ClayMachineGameTests {
                 4_000L);
 
         ClayMachineBlockEntity changed = machine(helper, ProcessingSeries.GRINDER, 4);
-        changed.inventory().setStackInSlot(ClayMachineBlockEntity.INPUT_SLOT, new ItemStack(Items.IRON_INGOT));
+        changed.inventory().setStackInSlot(0, new ItemStack(Items.IRON_INGOT));
         changed.receiveClayEnergy(ClayEnergy.ofInternal(10_000L));
         tick(helper, changed);
         require(changed.activeRecipe() != null, "The recipe-change fixture did not reserve its input");
@@ -59,11 +59,11 @@ public final class ClayMachineGameTests {
         ClayMachineBlockEntity reloaded = load(helper, changed, changedTag);
         tick(helper, reloaded);
         require(reloaded.activeRecipe() == null, "A removed recipe remained active after reload");
-        require(reloaded.inventory().getStackInSlot(ClayMachineBlockEntity.INPUT_SLOT).is(Items.IRON_INGOT),
+        require(reloaded.inventory().getStackInSlot(0).is(Items.IRON_INGOT),
                 "A removed recipe did not return its reserved input");
-        require(reloaded.inventory().getStackInSlot(ClayMachineBlockEntity.RESERVED_SLOT).isEmpty(),
+        require(reloaded.inventory().getStackInSlot(reloaded.reservedSlot(0)).isEmpty(),
                 "A removed recipe left a duplicate reserved input");
-        require(reloaded.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT).isEmpty(),
+        require(reloaded.inventory().getStackInSlot(reloaded.outputSlot()).isEmpty(),
                 "A removed recipe produced an output");
         helper.succeed();
     }
@@ -74,7 +74,7 @@ public final class ClayMachineGameTests {
         ClayMachineBlockEntity tierFour = machine(helper, ProcessingSeries.GRINDER, 4);
         ClayMachineBlockEntity tierSix = machine(helper, ProcessingSeries.GRINDER, 6);
         for (ClayMachineBlockEntity machine : List.of(tierThree, tierFour, tierSix)) {
-            machine.inventory().setStackInSlot(ClayMachineBlockEntity.INPUT_SLOT, new ItemStack(Items.IRON_INGOT));
+            machine.inventory().setStackInSlot(0, new ItemStack(Items.IRON_INGOT));
             machine.receiveClayEnergy(ClayEnergy.ofInternal(100_000L));
             tick(helper, machine);
         }
@@ -92,17 +92,17 @@ public final class ClayMachineGameTests {
             IItemHandler ioInput = ioMachine.itemHandler(Direction.UP);
             IItemHandler ioOutput = ioMachine.itemHandler(Direction.DOWN);
             require(ioInput.insertItem(0, new ItemStack(Items.CLAY), false).isEmpty()
-                            && ioMachine.inventory().getStackInSlot(ClayMachineBlockEntity.INPUT_SLOT).is(Items.CLAY),
+                            && ioMachine.inventory().getStackInSlot(0).is(Items.CLAY),
                     "An input face rejected its item");
-            ioMachine.inventory().setStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT, new ItemStack(Items.CLAY));
+            ioMachine.inventory().setStackInSlot(ioMachine.outputSlot(), new ItemStack(Items.CLAY));
             require(ioOutput.extractItem(0, 1, false).is(Items.CLAY)
-                            && ioMachine.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT).isEmpty(),
+                            && ioMachine.inventory().getStackInSlot(ioMachine.outputSlot()).isEmpty(),
                     "An output face rejected extraction");
         }
         ClayMachineBlockEntity condenserThree = machine(helper, ProcessingSeries.CONDENSER, 3);
         ClayMachineBlockEntity condenserFive = machine(helper, ProcessingSeries.CONDENSER, 5);
         for (ClayMachineBlockEntity machine : List.of(condenserThree, condenserFive)) {
-            machine.inventory().setStackInSlot(ClayMachineBlockEntity.INPUT_SLOT, new ItemStack(Items.CLAY_BALL, 4));
+            machine.inventory().setStackInSlot(0, new ItemStack(Items.CLAY_BALL, 4));
             machine.receiveClayEnergy(ClayEnergy.ofInternal(100_000L));
             tick(helper, machine);
         }
@@ -110,7 +110,7 @@ public final class ClayMachineGameTests {
                 "The second series did not use shared TierManager speed parameters");
 
         require(tierThree.activeRecipe() == null
-                        && tierThree.inventory().getStackInSlot(ClayMachineBlockEntity.INPUT_SLOT).is(Items.IRON_INGOT),
+                        && tierThree.inventory().getStackInSlot(0).is(Items.IRON_INGOT),
                 "Tier 3 started the Tier 4 iron grinding recipe");
         require(tierFour.requiredProgress() == 40L,
                 "Tier 4 did not use the common base processing time");
@@ -121,16 +121,16 @@ public final class ClayMachineGameTests {
         tick(helper, tierFour);
         tick(helper, tierSix);
         tick(helper, tierSix);
-        require(tierFour.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT).isEmpty(),
+        require(tierFour.inventory().getStackInSlot(tierFour.outputSlot()).isEmpty(),
                 "Tier 4 completed as quickly as Tier 6");
-        require(tierSix.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT)
+        require(tierSix.inventory().getStackInSlot(tierSix.outputSlot())
                         .is(MaterialRegistration.MATERIAL_ITEMS.get("iron_dust").get()),
                 "Tier 6 did not emit the shared recipe output");
         require(tierSix.energyStorage().stored().internalValue() == 95_000L,
                 "Tier 6 did not apply its shared CE multiplier");
 
         runUntilIdle(helper, tierFour, 50);
-        require(tierFour.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT)
+        require(tierFour.inventory().getStackInSlot(tierFour.outputSlot())
                         .is(MaterialRegistration.MATERIAL_ITEMS.get("iron_dust").get()),
                 "Tier 4 did not emit the shared recipe output");
         require(tierFour.energyStorage().stored().internalValue() == 96_000L,
@@ -177,7 +177,7 @@ public final class ClayMachineGameTests {
         require(output.getSlots() == 1
                         && !output.insertItem(0, new ItemStack(Items.CLAY), false).isEmpty(),
                 "An output face accepted inserted items");
-        machine.inventory().setStackInSlot(ClayMachineBlockEntity.RESERVED_SLOT, new ItemStack(Items.BRICK));
+        machine.inventory().setStackInSlot(machine.reservedSlot(0), new ItemStack(Items.BRICK));
         IItemHandler unsided = machine.itemHandler(null);
         require(unsided.getSlots() == 3, "Unsided access exposed an internal machine slot");
         for (int slot = 0; slot < unsided.getSlots(); slot++) {
@@ -194,13 +194,18 @@ public final class ClayMachineGameTests {
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void allFourteenProcessingMachinesRegisterAndProcess(GameTestHelper helper) {
-        require(MachineRegistration.MACHINES.size() == 14, "The milestone did not register exactly 14 machines");
+        long processingMachines = MachineRegistration.MACHINES.values().stream()
+                .filter(definition -> definition.series() instanceof ProcessingSeries)
+                .count();
+        require(processingMachines == 14, "The milestone did not retain exactly 14 processing machines");
         for (MachineRegistration.MachineDefinition definition : MachineRegistration.MACHINES.values()) {
+            if (!(definition.series() instanceof ProcessingSeries series)) {
+                continue;
+            }
             int tier = definition.tier();
-            ProcessingSeries series = definition.series();
             RecipeExample example = example(series, tier);
             ClayMachineBlockEntity machine = machine(helper, series, tier);
-            machine.inventory().setStackInSlot(ClayMachineBlockEntity.INPUT_SLOT, example.input().copy());
+            machine.inventory().setStackInSlot(0, example.input().copy());
             machine.receiveClayEnergy(ClayEnergy.ofInternal(1_000_000_000_000_000L));
             tick(helper, machine);
             long requiredTicks = TierManager.calculate(TierManager.general(tier), example.ticks(),
@@ -210,11 +215,11 @@ public final class ClayMachineGameTests {
             require(machine.activeRecipe() != null && machine.requiredProgress() == requiredTicks,
                     definition.id() + " did not start its own-tier recipe with the expected time");
             runUntilIdle(helper, machine, (int)requiredTicks + 2);
-            ItemStack result = machine.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT);
+            ItemStack result = machine.inventory().getStackInSlot(machine.outputSlot());
             require(result.is(example.output().asItem()) && result.getCount() == example.outputCount(),
                     definition.id() + " produced the wrong amount");
-            require(machine.inventory().getStackInSlot(ClayMachineBlockEntity.INPUT_SLOT).isEmpty()
-                            && machine.inventory().getStackInSlot(ClayMachineBlockEntity.RESERVED_SLOT).isEmpty(),
+            require(machine.inventory().getStackInSlot(0).isEmpty()
+                            && machine.inventory().getStackInSlot(machine.reservedSlot(0)).isEmpty(),
                     definition.id() + " did not consume the required input");
             require(machine.energyStorage().stored().internalValue()
                             == 1_000_000_000_000_000L - requiredTicks * energyPerTick,
@@ -227,10 +232,10 @@ public final class ClayMachineGameTests {
             }
             if (lowerTier != 0) {
                 ClayMachineBlockEntity lower = machine(helper, series, lowerTier);
-                lower.inventory().setStackInSlot(ClayMachineBlockEntity.INPUT_SLOT, example.input().copy());
+                lower.inventory().setStackInSlot(0, example.input().copy());
                 lower.receiveClayEnergy(ClayEnergy.ofInternal(1_000_000_000_000_000L));
                 tick(helper, lower);
-                require(lower.activeRecipe() == null && lower.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT).isEmpty(),
+                require(lower.activeRecipe() == null && lower.inventory().getStackInSlot(lower.outputSlot()).isEmpty(),
                         series + " tier " + lowerTier + " started a tier " + tier + " recipe");
             }
         }
@@ -285,28 +290,28 @@ public final class ClayMachineGameTests {
             long expectedProgress,
             long expectedEnergyUse) {
         ClayMachineBlockEntity machine = machine(helper, series, 4);
-        machine.inventory().setStackInSlot(ClayMachineBlockEntity.INPUT_SLOT, input.copy());
+        machine.inventory().setStackInSlot(0, input.copy());
         machine.receiveClayEnergy(ClayEnergy.ofInternal(100_000L));
         tick(helper, machine);
         require(machine.state() == ClayMachineBlockEntity.MachineState.RUNNING,
                 series + " did not enter the shared running state");
         require(machine.requiredProgress() == expectedProgress,
                 series + " did not retain the recipe progress target");
-        require(machine.inventory().getStackInSlot(ClayMachineBlockEntity.INPUT_SLOT).isEmpty(),
+        require(machine.inventory().getStackInSlot(0).isEmpty(),
                 series + " did not reserve its input");
-        require(machine.inventory().getStackInSlot(ClayMachineBlockEntity.RESERVED_SLOT).getCount() == input.getCount(),
+        require(machine.inventory().getStackInSlot(machine.reservedSlot(0)).getCount() == input.getCount(),
                 series + " reserved the wrong input count");
 
         tick(helper, machine);
         long beforeBlockedTick = machine.energyStorage().stored().internalValue();
         machine.inventory().setStackInSlot(
-                ClayMachineBlockEntity.OUTPUT_SLOT, new ItemStack(Items.COBBLESTONE, 64));
+                machine.outputSlot(), new ItemStack(Items.COBBLESTONE, 64));
         tick(helper, machine);
         require(machine.state() == ClayMachineBlockEntity.MachineState.OUTPUT_FULL,
                 series + " did not stop for a full output slot");
         require(machine.energyStorage().stored().internalValue() == beforeBlockedTick,
                 series + " consumed CE while its output was full");
-        machine.inventory().setStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT, ItemStack.EMPTY);
+        machine.inventory().setStackInSlot(machine.outputSlot(), ItemStack.EMPTY);
         tick(helper, machine);
         require(machine.state() == ClayMachineBlockEntity.MachineState.RUNNING,
                 series + " did not resume after the output was cleared");
@@ -317,10 +322,10 @@ public final class ClayMachineGameTests {
         require(loaded.energyStorage().stored().equals(machine.energyStorage().stored()),
                 series + " lost CE while saving");
         runUntilIdle(helper, loaded, 80);
-        ItemStack result = loaded.inventory().getStackInSlot(ClayMachineBlockEntity.OUTPUT_SLOT);
+        ItemStack result = loaded.inventory().getStackInSlot(loaded.outputSlot());
         require(result.is(expectedOutput.asItem()) && result.getCount() == expectedCount,
                 series + " produced the wrong output after reloading");
-        require(loaded.inventory().getStackInSlot(ClayMachineBlockEntity.RESERVED_SLOT).isEmpty(),
+        require(loaded.inventory().getStackInSlot(loaded.reservedSlot(0)).isEmpty(),
                 series + " duplicated its reserved input after reloading");
         require(loaded.energyStorage().stored().internalValue() == 100_000L - expectedEnergyUse,
                 series + " consumed the wrong total CE across saving and output blocking");

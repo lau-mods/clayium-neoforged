@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 2000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:dusts/az91_d_alloy"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:az91_d_alloy_ingot"
+    }
+  ],
+  "processing_method": "clayium:smelter",
+  "processing_ticks": 400,
+  "required_tier": 6
+}
