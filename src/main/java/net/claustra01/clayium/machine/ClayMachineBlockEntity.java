@@ -21,11 +21,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -48,6 +51,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
 public final class ClayMachineBlockEntity extends BlockEntity implements MenuProvider {
@@ -70,6 +77,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     private final int inputSlots;
+    private final int outputSlots;
     private final int outputSlot;
     private final int reservedSlot;
     private final int fuelSlot;
@@ -78,13 +86,18 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     private final EnumMap<Direction, FaceMode> faceModes = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final IItemHandler unsidedHandler;
+    private final FluidTank fluidInput = tank();
+    private final FluidTank reservedFluid = tank();
+    private final FluidTank fluidOutput = tank();
+    private final IFluidHandler fluidHandler = new MachineFluidHandler();
     private final ContainerData menuData = new MachineContainerData();
 
     private MachineState state = MachineState.IDLE;
     private ResourceLocation activeRecipe;
     private ClayiumMachineRecipe activeRecipeValue;
     private boolean activeVanillaSmeltingRecipe;
-    private ItemStack pendingOutput = ItemStack.EMPTY;
+    private List<ItemStack> pendingOutputs = List.of();
+    private FluidStack pendingFluidOutput = FluidStack.EMPTY;
     private long progress;
     private long requiredProgress;
     private long energyPerProgress;
@@ -96,8 +109,9 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         super(MachineRegistration.MACHINE_BLOCK_ENTITY.get(), pos, state);
         MachineSeries series = ((ClayMachineBlock)state.getBlock()).series();
         inputSlots = series.inputSlots();
+        outputSlots = series.outputSlots();
         outputSlot = inputSlots;
-        reservedSlot = outputSlot + 1;
+        reservedSlot = outputSlot + outputSlots;
         fuelSlot = reservedSlot + inputSlots;
         inventory = new ItemStackHandler(fuelSlot + 1) {
             @Override
@@ -119,11 +133,20 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         }
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, ClayMachineBlockEntity machine) {
-        machine.tickServer();
+    private FluidTank tank() {
+        return new FluidTank(16_000) {
+            @Override
+            protected void onContentsChanged() {
+                setChanged();
+            }
+        };
     }
 
-    private void tickServer() {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, ClayMachineBlockEntity machine) {
+        machine.tickServer(level.random);
+    }
+
+    public void tickServer(RandomSource random) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -146,17 +169,19 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
             ClayiumMachineRecipe recipe = currentRecipe(serverLevel.getRecipeManager()).orElseThrow();
             TierManager.ProcessingParameters parameters = TierManager.calculate(
                     series().parameters(tier()), recipe.processingTicks(), recipe.clayEnergy(), overclockFactor());
-            ItemStack fixedOutput = combinedFixedOutput(recipe);
+            List<ItemStack> fixedOutputs = fixedOutputs(recipe);
             if (requiredProgress != parameters.requiredProgress()
                     || energyPerProgress != parameters.energyPerProgress().internalValue()
-                    || !fixedOutput.isEmpty() && (!ItemStack.isSameItemSameComponents(fixedOutput, pendingOutput)
-                    || fixedOutput.getCount() > pendingOutput.getCount())) {
+                    || !containsOutputs(pendingOutputs, fixedOutputs)
+                    || !pendingFluidContains(recipe.fluidOutputs())) {
                 abortProcess();
                 return;
             }
             activeRecipeValue = recipe;
         }
-        if (!canAcceptOutput(pendingOutput)) {
+        if (!canAcceptOutputs(pendingOutputs)
+                || !allRandomOutputsFit(pendingOutputs, activeRecipeValue.randomOutputs())
+                || !canAcceptFluid(pendingFluidOutput)) {
             setState(MachineState.OUTPUT_FULL);
             return;
         }
@@ -170,7 +195,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         progressRemainder = nextRemainder - completedProgress;
         progress = Math.min(requiredProgress, saturatedAdd(progress, completedProgress));
         if (progress >= requiredProgress) {
-            finishProcess();
+            finishProcess(random);
             tryStart(serverLevel);
         } else {
             setChanged();
@@ -186,7 +211,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         MachineSeries series = series();
         ClayiumRecipeInput input = new ClayiumRecipeInput(
                 inputs,
-                List.of(),
+                fluidInput.getFluid().isEmpty() ? List.of() : List.of(fluidInput.getFluid().copy()),
                 tier(),
                 availableClayEnergy(),
                 worldPosition);
@@ -196,8 +221,10 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
             return;
         }
         ClayiumMachineRecipe recipe = match.get().recipe();
-        ItemStack fixedOutput = combinedFixedOutput(recipe);
-        if (!fixedOutput.isEmpty() && !canAcceptOutput(fixedOutput)) {
+        List<ItemStack> fixedOutputs = fixedOutputs(recipe);
+        if (!canAcceptOutputs(fixedOutputs)
+                || !canAcceptFluidOutputs(recipe.fluidOutputs())
+                || !allRandomOutputsFit(fixedOutputs, recipe.randomOutputs())) {
             setState(MachineState.OUTPUT_FULL);
             return;
         }
@@ -207,16 +234,21 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
             setState(MachineState.WAITING_FOR_ENERGY);
             return;
         }
-        ItemStack output = combinedOutput(recipe, fixedOutput);
-        if (output.isEmpty() || !canAcceptOutput(output) || !reserveInput(recipe)) {
-            setState(output.isEmpty() ? MachineState.IDLE : MachineState.OUTPUT_FULL);
+        FluidStack fluidResult = combinedFluidOutput(recipe.fluidOutputs());
+        if (fixedOutputs.isEmpty() && recipe.randomOutputs().isEmpty() && fluidResult.isEmpty()) {
+            setState(MachineState.IDLE);
+            return;
+        }
+        if (!reserveInput(recipe)) {
+            setState(MachineState.OUTPUT_FULL);
             return;
         }
         activeRecipe = match.get().id();
         activeRecipeValue = recipe;
         activeVanillaSmeltingRecipe = match.get().vanillaSmelting();
 
-        pendingOutput = output;
+        pendingOutputs = copyItems(fixedOutputs);
+        pendingFluidOutput = fluidResult.copy();
         progress = 0L;
         requiredProgress = parameters.requiredProgress();
         energyPerProgress = parameters.energyPerProgress().internalValue();
@@ -263,40 +295,51 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 List.of());
     }
 
-    private ItemStack combinedFixedOutput(ClayiumMachineRecipe recipe) {
-        ItemStack combined = ItemStack.EMPTY;
-        for (ItemStack result : recipe.itemOutputs()) {
-            combined = appendOutput(combined, result);
-            if (combined.isEmpty()) {
-                return ItemStack.EMPTY;
-            }
-        }
-        return combined;
+    private static List<ItemStack> fixedOutputs(ClayiumMachineRecipe recipe) {
+        return combineStacks(recipe.itemOutputs());
     }
 
-    private ItemStack combinedOutput(ClayiumMachineRecipe recipe, ItemStack fixedOutput) {
-        ItemStack combined = fixedOutput.copy();
-        for (ClayiumMachineRecipe.RandomOutput randomOutput : recipe.randomOutputs()) {
-            if (level != null && level.random.nextFloat() <= randomOutput.chance()) {
-                combined = appendOutput(combined, randomOutput.stack());
-                if (combined.isEmpty()) {
-                    return ItemStack.EMPTY;
-                }
-            }
+    private List<ItemStack> selectedOutputs(ClayiumMachineRecipe recipe, List<ItemStack> fixedOutputs,
+                                            RandomSource random) {
+        List<ItemStack> outputs = new ArrayList<>(copyItems(fixedOutputs));
+        if (recipe.randomOutputs().isEmpty() || level == null) {
+            return List.copyOf(outputs);
         }
-        return combined;
+        int totalWeight = recipe.randomOutputs().stream().mapToInt(ClayiumMachineRecipe.RandomOutput::weight).sum();
+        int roll = random.nextInt(totalWeight);
+        ClayiumMachineRecipe.RandomOutput selected = recipe.randomOutputs().getLast();
+        for (ClayiumMachineRecipe.RandomOutput candidate : recipe.randomOutputs()) {
+            if (roll < candidate.weight()) {
+                selected = candidate;
+                break;
+            }
+            roll -= candidate.weight();
+        }
+        if (selected.chance() >= 1.0F || random.nextFloat() <= selected.chance()) {
+            outputs.add(selected.stack().copy());
+        }
+        return combineStacks(outputs);
     }
 
-    private static ItemStack appendOutput(ItemStack combined, ItemStack result) {
-        if (combined.isEmpty()) {
-            return result.copy();
+    private static List<ItemStack> combineStacks(List<ItemStack> stacks) {
+        List<ItemStack> combined = new ArrayList<>();
+        for (ItemStack result : stacks) {
+            if (result.isEmpty()) {
+                continue;
+            }
+            ItemStack matching = combined.stream()
+                    .filter(stack -> ItemStack.isSameItemSameComponents(stack, result))
+                    .findFirst()
+                    .orElse(ItemStack.EMPTY);
+            if (matching.isEmpty()) {
+                combined.add(result.copy());
+            } else if (matching.getCount() + result.getCount() <= matching.getMaxStackSize()) {
+                matching.grow(result.getCount());
+            } else {
+                return List.of();
+            }
         }
-        if (!ItemStack.isSameItemSameComponents(combined, result)
-                || combined.getCount() + result.getCount() > combined.getMaxStackSize()) {
-            return ItemStack.EMPTY;
-        }
-        combined.grow(result.getCount());
-        return combined;
+        return List.copyOf(combined);
     }
 
     private boolean reserveInput(ClayiumMachineRecipe recipe) {
@@ -321,6 +364,9 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 return false;
             }
         }
+        if (!canReserveFluids(recipe.fluidInputs())) {
+            return false;
+        }
         for (int index = 0; index < inputSlots; index++) {
             ItemStack input = inventory.getStackInSlot(index);
             int used = input.getCount() - remaining[index];
@@ -329,7 +375,26 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 inventory.extractItem(index, used, false);
             }
         }
+        for (FluidStack required : recipe.fluidInputs()) {
+            FluidStack drained = fluidInput.drain(required, IFluidHandler.FluidAction.EXECUTE);
+            reservedFluid.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+        }
         return true;
+    }
+
+    private boolean canReserveFluids(List<FluidStack> requiredFluids) {
+        if (requiredFluids.isEmpty()) {
+            return true;
+        }
+        FluidStack available = fluidInput.getFluid();
+        int requiredAmount = 0;
+        for (FluidStack required : requiredFluids) {
+            if (!FluidStack.isSameFluidSameComponents(available, required)) {
+                return false;
+            }
+            requiredAmount += required.getAmount();
+        }
+        return available.getAmount() >= requiredAmount && reservedFluid.isEmpty();
     }
 
     private boolean consumeProcessingEnergy(long completedProgress) {
@@ -363,28 +428,122 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         return available;
     }
 
-    private boolean canAcceptOutput(ItemStack result) {
-        if (result.isEmpty()) {
-            return false;
+    private boolean allRandomOutputsFit(
+            List<ItemStack> fixedOutputs,
+            List<ClayiumMachineRecipe.RandomOutput> randomOutputs) {
+        for (ClayiumMachineRecipe.RandomOutput randomOutput : randomOutputs) {
+            List<ItemStack> possible = new ArrayList<>(fixedOutputs);
+            possible.add(randomOutput.stack());
+            if (!canAcceptOutputs(combineStacks(possible))) {
+                return false;
+            }
         }
-        ItemStack existing = inventory.getStackInSlot(outputSlot);
-        return existing.isEmpty()
-                || ItemStack.isSameItemSameComponents(existing, result)
-                && existing.getCount() + result.getCount() <= existing.getMaxStackSize();
+        return true;
     }
 
-    private void finishProcess() {
-        ItemStack existing = inventory.getStackInSlot(outputSlot);
-        if (existing.isEmpty()) {
-            inventory.setStackInSlot(outputSlot, pendingOutput.copy());
-        } else {
-            existing.grow(pendingOutput.getCount());
+    private boolean canAcceptOutputs(List<ItemStack> results) {
+        if (results.size() > outputSlots) {
+            return false;
+        }
+        List<ItemStack> simulated = new ArrayList<>(outputSlots);
+        for (int slot = 0; slot < outputSlots; slot++) {
+            simulated.add(inventory.getStackInSlot(outputSlot + slot).copy());
+        }
+        for (ItemStack result : results) {
+            boolean stored = false;
+            for (ItemStack existing : simulated) {
+                if (!existing.isEmpty() && ItemStack.isSameItemSameComponents(existing, result)
+                        && existing.getCount() + result.getCount() <= existing.getMaxStackSize()) {
+                    existing.grow(result.getCount());
+                    stored = true;
+                    break;
+                }
+            }
+            if (!stored) {
+                for (int slot = 0; slot < simulated.size(); slot++) {
+                    if (simulated.get(slot).isEmpty()) {
+                        simulated.set(slot, result.copy());
+                        stored = true;
+                        break;
+                    }
+                }
+            }
+            if (!stored) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void storeOutputs(List<ItemStack> results) {
+        for (ItemStack result : results) {
+            for (int slot = 0; slot < outputSlots; slot++) {
+                ItemStack existing = inventory.getStackInSlot(outputSlot + slot);
+                if (existing.isEmpty()) {
+                    inventory.setStackInSlot(outputSlot + slot, result.copy());
+                    break;
+                }
+                if (ItemStack.isSameItemSameComponents(existing, result)
+                        && existing.getCount() + result.getCount() <= existing.getMaxStackSize()) {
+                    existing.grow(result.getCount());
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean canAcceptFluidOutputs(List<FluidStack> results) {
+        FluidStack combined = combinedFluidOutput(results);
+        return results.isEmpty() || !combined.isEmpty() && canAcceptFluid(combined);
+    }
+
+    private FluidStack combinedFluidOutput(List<FluidStack> results) {
+        FluidStack combined = FluidStack.EMPTY;
+        for (FluidStack result : results) {
+            if (combined.isEmpty()) {
+                combined = result.copy();
+            } else if (FluidStack.isSameFluidSameComponents(combined, result)) {
+                combined.grow(result.getAmount());
+            } else {
+                return FluidStack.EMPTY;
+            }
+        }
+        return combined;
+    }
+
+    private boolean canAcceptFluid(FluidStack result) {
+        return result.isEmpty()
+                || fluidOutput.fill(result, IFluidHandler.FluidAction.SIMULATE) == result.getAmount();
+    }
+
+    private static boolean containsOutputs(List<ItemStack> actual, List<ItemStack> expected) {
+        return expected.stream().allMatch(required -> actual.stream().anyMatch(candidate ->
+                ItemStack.isSameItemSameComponents(candidate, required)
+                        && candidate.getCount() >= required.getCount()));
+    }
+
+    private boolean pendingFluidContains(List<FluidStack> expected) {
+        FluidStack combined = combinedFluidOutput(expected);
+        return expected.isEmpty() ? pendingFluidOutput.isEmpty()
+                : !combined.isEmpty() && FluidStack.isSameFluidSameComponents(combined, pendingFluidOutput)
+                && pendingFluidOutput.getAmount() >= combined.getAmount();
+    }
+
+    private static List<ItemStack> copyItems(List<ItemStack> stacks) {
+        return stacks.stream().map(ItemStack::copy).toList();
+    }
+
+    private void finishProcess(RandomSource random) {
+        storeOutputs(selectedOutputs(activeRecipeValue, pendingOutputs, random));
+        if (!pendingFluidOutput.isEmpty()) {
+            fluidOutput.fill(pendingFluidOutput, IFluidHandler.FluidAction.EXECUTE);
         }
         clearReservedInputs();
         activeRecipe = null;
         activeRecipeValue = null;
         activeVanillaSmeltingRecipe = false;
-        pendingOutput = ItemStack.EMPTY;
+        pendingOutputs = List.of();
+        pendingFluidOutput = FluidStack.EMPTY;
         progress = 0L;
         requiredProgress = 0L;
         energyPerProgress = 0L;
@@ -441,14 +600,21 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 return false;
             }
         }
-        return true;
+        if (recipe.fluidInputs().isEmpty()) {
+            return reservedFluid.isEmpty();
+        }
+        int requiredAmount = recipe.fluidInputs().stream().mapToInt(FluidStack::getAmount).sum();
+        return recipe.fluidInputs().stream()
+                        .allMatch(required -> FluidStack.isSameFluidSameComponents(required, reservedFluid.getFluid()))
+                && reservedFluid.getFluidAmount() == requiredAmount;
     }
 
     private void abortProcess() {
         activeRecipe = null;
         activeRecipeValue = null;
         activeVanillaSmeltingRecipe = false;
-        pendingOutput = ItemStack.EMPTY;
+        pendingOutputs = List.of();
+        pendingFluidOutput = FluidStack.EMPTY;
         progress = 0L;
         requiredProgress = 0L;
         energyPerProgress = 0L;
@@ -464,6 +630,11 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     private boolean recoverReservedInput() {
+        if (!reservedFluid.isEmpty()
+                && fluidInput.fill(reservedFluid.getFluid(), IFluidHandler.FluidAction.SIMULATE)
+                != reservedFluid.getFluidAmount()) {
+            return false;
+        }
         for (int index = 0; index < inputSlots; index++) {
             ItemStack reserved = inventory.getStackInSlot(reservedSlot + index);
             ItemStack input = inventory.getStackInSlot(index);
@@ -487,11 +658,15 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
             }
             inventory.setStackInSlot(reservedSlot + index, ItemStack.EMPTY);
         }
+        if (!reservedFluid.isEmpty()) {
+            fluidInput.fill(reservedFluid.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE),
+                    IFluidHandler.FluidAction.EXECUTE);
+        }
         return true;
     }
 
     private boolean hasReservedInput() {
-        return reservedStacks().stream().anyMatch(stack -> !stack.isEmpty());
+        return !reservedFluid.isEmpty() || reservedStacks().stream().anyMatch(stack -> !stack.isEmpty());
     }
 
     private List<ItemStack> inputStacks() {
@@ -514,6 +689,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         for (int index = 0; index < inputSlots; index++) {
             inventory.setStackInSlot(reservedSlot + index, ItemStack.EMPTY);
         }
+        reservedFluid.setFluid(FluidStack.EMPTY);
     }
 
     private static long saturatedAdd(long left, long right) {
@@ -544,6 +720,14 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         return outputSlot;
     }
 
+    public int outputSlot(int outputIndex) {
+        return outputSlot + outputIndex;
+    }
+
+    public int outputSlots() {
+        return outputSlots;
+    }
+
     public int reservedSlot(int inputIndex) {
         return reservedSlot + inputIndex;
     }
@@ -554,6 +738,18 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
 
     public ClayEnergyStorage energyStorage() {
         return energy;
+    }
+
+    public FluidTank fluidInput() {
+        return fluidInput;
+    }
+
+    public FluidTank fluidOutput() {
+        return fluidOutput;
+    }
+
+    public IFluidHandler fluidHandler(@Nullable Direction direction) {
+        return fluidHandler;
     }
 
     public void receiveClayEnergy(ClayEnergy amount) {
@@ -619,13 +815,21 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         super.saveAdditional(tag, registries);
         tag.put("inventory", inventory.serializeNBT(registries));
         tag.put("energy", energy.serializeNBT(registries));
+        tag.put("fluid_input", fluidInput.writeToNBT(registries, new CompoundTag()));
+        tag.put("reserved_fluid", reservedFluid.writeToNBT(registries, new CompoundTag()));
+        tag.put("fluid_output", fluidOutput.writeToNBT(registries, new CompoundTag()));
         tag.putString("state", state.name());
         if (activeRecipe != null) {
             tag.putString("active_recipe", activeRecipe.toString());
             tag.putBoolean("vanilla_smelting_recipe", activeVanillaSmeltingRecipe);
         }
-        if (!pendingOutput.isEmpty()) {
-            tag.put("pending_output", pendingOutput.save(registries));
+        if (!pendingOutputs.isEmpty()) {
+            ListTag outputs = new ListTag();
+            pendingOutputs.forEach(stack -> outputs.add(stack.save(registries)));
+            tag.put("pending_outputs", outputs);
+        }
+        if (!pendingFluidOutput.isEmpty()) {
+            tag.put("pending_fluid_output", pendingFluidOutput.save(registries));
         }
         tag.putLong("progress", progress);
         tag.putLong("required_progress", requiredProgress);
@@ -646,13 +850,22 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         if (tag.contains("energy")) {
             energy.deserializeNBT(registries, tag.getCompound("energy"));
         }
+        fluidInput.readFromNBT(registries, tag.getCompound("fluid_input"));
+        reservedFluid.readFromNBT(registries, tag.getCompound("reserved_fluid"));
+        fluidOutput.readFromNBT(registries, tag.getCompound("fluid_output"));
         state = parseEnum(MachineState.class, tag.getString("state"), MachineState.IDLE);
         activeRecipe = tag.contains("active_recipe") ? ResourceLocation.tryParse(tag.getString("active_recipe")) : null;
         activeRecipeValue = null;
         activeVanillaSmeltingRecipe = tag.getBoolean("vanilla_smelting_recipe");
-        pendingOutput = tag.contains("pending_output")
-                ? ItemStack.parseOptional(registries, tag.getCompound("pending_output"))
-                : ItemStack.EMPTY;
+        ListTag outputs = tag.getList("pending_outputs", Tag.TAG_COMPOUND);
+        List<ItemStack> loadedOutputs = new ArrayList<>(outputs.size());
+        for (int index = 0; index < outputs.size(); index++) {
+            loadedOutputs.add(ItemStack.parseOptional(registries, outputs.getCompound(index)));
+        }
+        pendingOutputs = List.copyOf(loadedOutputs);
+        pendingFluidOutput = tag.contains("pending_fluid_output")
+                ? FluidStack.parseOptional(registries, tag.getCompound("pending_fluid_output"))
+                : FluidStack.EMPTY;
         progress = tag.getLong("progress");
         requiredProgress = tag.getLong("required_progress");
         energyPerProgress = tag.getLong("energy_per_progress");
@@ -665,7 +878,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 faceModes.put(direction, parseEnum(FaceMode.class, faces.getString(direction.getName()), faceModes.get(direction)));
             }
         }
-        if (activeRecipe != null && (pendingOutput.isEmpty() || !hasReservedInput())) {
+        if (activeRecipe != null && (pendingOutputs.isEmpty() && pendingFluidOutput.isEmpty() || !hasReservedInput())) {
             clearCorruptProcess();
         }
     }
@@ -674,7 +887,8 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         activeRecipe = null;
         activeRecipeValue = null;
         activeVanillaSmeltingRecipe = false;
-        pendingOutput = ItemStack.EMPTY;
+        pendingOutputs = List.of();
+        pendingFluidOutput = FluidStack.EMPTY;
         progress = 0L;
         requiredProgress = 0L;
         energyPerProgress = 0L;
@@ -743,6 +957,10 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 case 8, 9, 10, 11 -> (int)(energy.stored().internalValue() >>> ((index - 8) * 16)) & 0xFFFF;
                 case 12 -> state.ordinal();
                 case 13 -> tier();
+                case 14 -> fluidInput.isEmpty() ? 0 : BuiltInRegistries.FLUID.getId(fluidInput.getFluid().getFluid()) + 1;
+                case 15 -> fluidInput.getFluidAmount();
+                case 16 -> fluidOutput.isEmpty() ? 0 : BuiltInRegistries.FLUID.getId(fluidOutput.getFluid().getFluid()) + 1;
+                case 17 -> fluidOutput.getFluidAmount();
                 default -> 0;
             };
         }
@@ -753,7 +971,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
 
         @Override
         public int getCount() {
-            return 14;
+            return 18;
         }
     }
 
@@ -768,11 +986,11 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public int getSlots() {
             if (direction == null) {
-                return inputSlots + 2;
+                return inputSlots + outputSlots + 1;
             }
             return faceModes.get(direction) == FaceMode.DISABLED
                     ? 0
-                    : faceModes.get(direction) == FaceMode.INPUT ? inputSlots + 1 : 1;
+                    : faceModes.get(direction) == FaceMode.INPUT ? inputSlots + 1 : outputSlots;
         }
 
         @Override
@@ -783,16 +1001,17 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             int mappedSlot = mappedSlot(slot);
-            return (direction == null && mappedSlot != outputSlot)
+            return (direction == null && mappedSlot < outputSlot)
                             || direction != null && faceModes.get(direction) == FaceMode.INPUT
                     ? inventory.insertItem(mappedSlot, stack, simulate) : stack;
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return direction == null && mappedSlot(slot) == outputSlot
+            int mappedSlot = mappedSlot(slot);
+            return direction == null && mappedSlot >= outputSlot && mappedSlot < reservedSlot
                             || direction != null && faceModes.get(direction) == FaceMode.OUTPUT
-                    ? inventory.extractItem(outputSlot, amount, simulate)
+                    ? inventory.extractItem(mappedSlot, amount, simulate)
                     : ItemStack.EMPTY;
         }
 
@@ -804,19 +1023,57 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             int mappedSlot = mappedSlot(slot);
-            return ((direction == null && mappedSlot != outputSlot)
+            return ((direction == null && mappedSlot < outputSlot)
                             || direction != null && faceModes.get(direction) == FaceMode.INPUT)
                     && inventory.isItemValid(mappedSlot, stack);
         }
 
         private int mappedSlot(int slot) {
             if (direction == null) {
-                return slot < inputSlots ? slot : slot == inputSlots ? fuelSlot : outputSlot;
+                return slot < inputSlots ? slot
+                        : slot == inputSlots ? fuelSlot : outputSlot + slot - inputSlots - 1;
             }
             if (faceModes.get(direction) == FaceMode.OUTPUT) {
-                return outputSlot;
+                return outputSlot + slot;
             }
             return slot < inputSlots ? slot : fuelSlot;
+        }
+    }
+
+    private final class MachineFluidHandler implements IFluidHandler {
+        @Override
+        public int getTanks() {
+            return 2;
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            return tank == 0 ? fluidInput.getFluid() : fluidOutput.getFluid();
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return tank == 0 ? fluidInput.getCapacity() : fluidOutput.getCapacity();
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            return tank == 0 && fluidInput.isFluidValid(stack);
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            return fluidInput.fill(resource, action);
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            return fluidOutput.drain(resource, action);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            return fluidOutput.drain(maxDrain, action);
         }
     }
 

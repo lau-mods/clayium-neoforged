@@ -10,6 +10,10 @@ public final class MachineCapabilities {
                 Capabilities.ItemHandler.BLOCK,
                 MachineRegistration.MACHINE_BLOCK_ENTITY.get(),
                 ClayMachineBlockEntity::itemHandler);
+        event.registerBlockEntity(
+                Capabilities.FluidHandler.BLOCK,
+                MachineRegistration.MACHINE_BLOCK_ENTITY.get(),
+                ClayMachineBlockEntity::fluidHandler);
     }
 
     private MachineCapabilities() {

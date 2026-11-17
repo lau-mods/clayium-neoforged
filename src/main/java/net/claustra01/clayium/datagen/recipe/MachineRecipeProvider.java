@@ -30,6 +30,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
         CondenserGrinderDecomposerRecipes.buildRecipes(recipeOutput);
         FormingRecipes.buildRecipes(recipeOutput);
         SmeltingRecipes.buildRecipes(recipeOutput);
+        ChemicalRecipes.buildRecipes(recipeOutput);
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BENDING_MACHINE, 4)
                 .requires(Items.TERRACOTTA, 2)
                 .requiresFluid(new FluidStack(Fluids.WATER, 250))

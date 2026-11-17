@@ -17,4 +17,12 @@ public interface MachineSeries {
     default int inputSlots() {
         return 1;
     }
+
+    default int outputSlots() {
+        return 1;
+    }
+
+    default String registrationId(int tier) {
+        return recipeMethod().id() + "_tier_" + tier;
+    }
 }

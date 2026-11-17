@@ -2,6 +2,7 @@ package net.claustra01.clayium.machine;
 
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -9,6 +10,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
@@ -18,7 +20,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public ClayMachineMenu(int containerId, Inventory playerInventory, BlockPos machinePos) {
-        this(containerId, playerInventory, machineAt(playerInventory, machinePos), new SimpleContainerData(14));
+        this(containerId, playerInventory, machineAt(playerInventory, machinePos), new SimpleContainerData(18));
     }
 
     public ClayMachineMenu(
@@ -34,7 +36,10 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new SlotItemHandler(machine.inventory(), input, inputX(machine.inputSlots(), input), 35));
             }
-            addSlot(new SlotItemHandler(machine.inventory(), machine.outputSlot(), 116, 35));
+            for (int output = 0; output < machine.outputSlots(); output++) {
+                addSlot(new SlotItemHandler(
+                        machine.inventory(), machine.outputSlot(output), 116 + output * 18, 35));
+            }
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new LockedSlot(machine, machine.reservedSlot(input), -1000, -1000));
             }
@@ -137,6 +142,21 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
 
     public int tier() {
         return data.get(13);
+    }
+
+    public FluidStack inputFluid() {
+        return fluid(14);
+    }
+
+    public FluidStack outputFluid() {
+        return fluid(16);
+    }
+
+    private FluidStack fluid(int index) {
+        int id = data.get(index) & 0xFFFF;
+        int amount = data.get(index + 1) & 0xFFFF;
+        return id == 0 || amount == 0 ? FluidStack.EMPTY
+                : new FluidStack(BuiltInRegistries.FLUID.byId(id - 1), amount);
     }
 
     private static final class LockedSlot extends SlotItemHandler {

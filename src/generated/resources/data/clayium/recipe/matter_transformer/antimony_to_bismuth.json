@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:antimony_ingot"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:bismuth_ingot"
+    }
+  ],
+  "processing_method": "clayium:matter_transformer",
+  "processing_ticks": 200,
+  "required_tier": 9
+}

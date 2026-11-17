@@ -35,10 +35,17 @@ public final class MachineLanguageEntries {
                         case "smelter" -> smelterName(locale, definition.tier());
                         case "alloy_smelter" -> locale.equals("ja_jp") ? "合金精錬機" : "Alloy Smelter";
                         case "electrolysis_reactor" -> electrolysisName(locale, definition.tier());
+                        case "chemical_reactor" -> chemicalReactorName(locale, definition.tier());
+                        case "chemical_metal_separator" -> locale.equals("ja_jp")
+                                ? "精密化学金属分離装置" : "Precision Chemical Metal Separator";
+                        case "matter_transformer" -> matterTransformerName(locale, definition.tier());
                         default -> throw new IllegalStateException(definition.method());
                     };
                     if (definition.method().equals("smelter") || definition.method().equals("alloy_smelter")
-                            || definition.method().equals("electrolysis_reactor")) {
+                            || definition.method().equals("electrolysis_reactor")
+                            || definition.method().equals("chemical_reactor")
+                            || definition.method().equals("chemical_metal_separator")
+                            || definition.method().equals("matter_transformer")) {
                         add.accept("block.clayium." + definition.id(), name);
                         return;
                     }
@@ -52,6 +59,7 @@ public final class MachineLanguageEntries {
         add.accept("gui.clayium.machine.state.output_full", locale.equals("ja_jp") ? "出力満杯" : "Output full");
         add.accept("gui.clayium.machine.state.waiting_for_energy", locale.equals("ja_jp") ? "CE不足" : "Waiting for CE");
         add.accept("gui.clayium.machine.state.recipe_changed", locale.equals("ja_jp") ? "レシピ更新待ち" : "Recipe changed");
+        add.accept("gui.clayium.machine.empty", locale.equals("ja_jp") ? "空" : "Empty");
     }
 
     private record MachineName(String id, int tier, String method) {
@@ -97,6 +105,33 @@ public final class MachineLanguageEntries {
             case 9 -> "Ultimate Electrolysis Reactor";
             default -> throw new IllegalArgumentException("Unknown electrolysis tier: " + tier);
         };
+    }
+
+    private static String chemicalReactorName(String locale, int tier) {
+        if (locale.equals("ja_jp")) {
+            return switch (tier) {
+                case 4 -> "基本化学反応機";
+                case 5 -> "発展化学反応機";
+                case 8 -> "クレイウム化学反応機";
+                default -> throw new IllegalArgumentException("Unknown chemical reactor tier: " + tier);
+            };
+        }
+        return switch (tier) {
+            case 4 -> "Basic Chemical Reactor";
+            case 5 -> "Advanced Chemical Reactor";
+            case 8 -> "Clayium Chemical Reactor";
+            default -> throw new IllegalArgumentException("Unknown chemical reactor tier: " + tier);
+        };
+    }
+
+    private static String matterTransformerName(String locale, int tier) {
+        String[] english = {"Clay Steel", "Clayium", "Ultimate", "Antimatter", "Pure Antimatter", "OEC"};
+        String[] japanese = {"粘土鋼", "クレイウム", "究極", "反物質", "純反物質", "OEC"};
+        if (tier < 7 || tier > 12) {
+            throw new IllegalArgumentException("Unknown matter transformer tier: " + tier);
+        }
+        return (locale.equals("ja_jp") ? japanese[tier - 7] + "物質変換装置"
+                : english[tier - 7] + " Matter Transformer");
     }
 
     private MachineLanguageEntries() {

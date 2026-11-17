@@ -1,0 +1,25 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:energized_clay_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:impure_redstone"
+    },
+    {
+      "count": 1,
+      "id": "clayium:impure_glowstone_dust"
+    }
+  ],
+  "processing_method": "clayium:chemical_reactor",
+  "processing_ticks": 10,
+  "required_tier": 5
+}

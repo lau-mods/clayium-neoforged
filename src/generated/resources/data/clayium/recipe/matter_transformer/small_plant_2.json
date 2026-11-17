@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:fern"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "minecraft:dead_bush"
+    }
+  ],
+  "processing_method": "clayium:matter_transformer",
+  "processing_ticks": 20,
+  "required_tier": 7
+}

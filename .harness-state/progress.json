@@ -11,25 +11,618 @@
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": null,
-      "codeReviewTree": null,
-      "e2eReview": null,
-      "failure": null,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/clayproduction/ClayProductionBlockEntity.java:85-125 (tickEnergeticCondenser) and ClayProductionRules.java:12-50",
+            "acId": "AC-F015-001",
+            "problem": "The energetic clay condensers ignore the generated `clayium:ec_condenser` recipes. Inputs, required tier, CE and ticks are hard-coded again in ClayProductionRules (CONDENSER_ENERGY, energeticCondenserTier, energeticCondenserTicks). Datagen writes those same values into src/generated/resources/data/clayium/recipe/clayproduction/ec_condenser_level_*.json, and nothing at runtime reads them. The CE values are raw internal units (1, 10, … = 0.00001 CE …) and are not computed with `ClayiumRecipeEnergy.e(v,t)`, which the M03/M06 recipes use.",
+            "reason": "Each behaviour should have one direct path. Here the rule exists twice: data-pack edits, recipe reloads (`ClayiumRecipesReloadedEvent`) and recipe viewers all diverge from what the machine actually does. The approach says to implement on the M06 shared base, and M06's ClayMachineBlockEntity already looks up recipes through RecipeManager.",
+            "fix": "Have the energetic condensers resolve the `clayium:ec_condenser` RecipeType through RecipeManager, the same way ClayMachineBlockEntity does: match input and count, check `required_tier` against the machine tier, use the recipe's clay_energy and processing_ticks, and drop the active recipe on reload. Delete energeticCondenserEnergyPerTick, energeticCondenserTicks, energeticCondenserTier and CONDENSER_ENERGY from ClayProductionRules. Set the datagen CE with `ClayiumRecipeEnergy.e(v,t)` using the original values.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 凝縮機が RecipeManager の ec_condenser レシピから入力数、Tier、CE、時間、出力を読み、レシピ変更時に処理を取り消すようにしました。重複したルールを削除し、datagen の CE を ClayiumRecipeEnergy.e で算出します。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Energetic condensers now match `clayium:ec_condenser` recipes through RecipeManager. They check tier, input count, CE and ticks, and cancel the active recipe on change. Rules constants are removed and datagen uses ClayiumRecipeEnergy.e.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script and does not affect the recipe-driven condenser fix.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/clayproduction/ClayProductionBlockEntity.java:115-116, 280-283",
+            "acId": "AC-F015-001",
+            "problem": "Energetic Clay Condenser Mk I (Tier 3) cannot be powered in game. Fuel is used only when `type().tier() >= 4`. The water wheel supplies only `processing_machine` blocks. The only other energy input is `receiveClayEnergy`, which only the GameTest calls. The fuel slot still accepts compressed energetic clay for Mk I and never uses it.",
+            "reason": "The Mk I recipes (input levels 4–6) can never run in a real world, so the Mk I part of the criterion is met only in the test harness.",
+            "fix": "Give Mk I the CE source the original uses, for example accepting energetic-clay fuel on this machine or registering it as a water-wheel/CE receiver. Make isItemValid for FUEL_SLOT match the machines that actually consume fuel.",
+            "id": "CR-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Mk I も燃料スロットのエネルギー粘土を消費して稼働します。燃料だけで動く GameTest を追加しました。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Mk I now consumes fuel through energy.consume with the fuel slot. canPower and FUEL_SLOT isItemValid are keyed to the ENERGETIC_CONDENSER kind rather than tier >= 4.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/clayproduction/ClayProductionBlockEntity.java:178-184 (tickSolarFabricator)",
+            "acId": "AC-F016-001",
+            "problem": "The solar fabricators check only the block above (`canOcclude` and `canSeeSky`). The approach requires the original weather and day/night conditions, and none are applied: the machine runs at night and in rain or thunder. The `canOcclude` check is also redundant, because `canSeeSky(top)` is already false when a block sits above.",
+            "reason": "\"Only machines meeting the outdoor condition run the original recipe\" includes the original daytime/weather condition. The extra occlusion check validates a case vanilla already covers.",
+            "fix": "Add the original condition, e.g. `level.isDay()` and no rain at the top position, confirmed against the original TileSolarClayFabricator. Remove the `canOcclude` test. Cover night/rain in the GameTest.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 空の見通しに加えて昼と雨天を判定し、重複した遮蔽判定を削除しました。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The solar tick now requires canSeeSky, isDay and not isRaining. The redundant canOcclude check is gone.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/clayproduction/ClayProductionBlockEntity.java:120-123,146-151,180-182,204-213,236-241,429-434",
+            "acId": null,
+            "problem": "Every running tick (and every tick while SKY_BLOCKED) calls `level.sendBlockUpdated`. That sends a full `getUpdateTag` with the whole inventory and energy to every tracking client. Nothing on the client needs it: the model has no state-dependent parts, and the GUI already receives progress, CE and state through ContainerData.",
+            "reason": "This is per-tick network traffic and chunk re-render requests with no consumer. The saving/sync mechanism should match what is actually displayed.",
+            "fix": "Replace setChangedAndSync with setChanged. Remove the getUpdatePacket/getUpdateTag overrides, or limit the update tag to data a client renderer needs. Rely on the menu's ContainerData for GUI values.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 毎 tick のブロック更新送信と在庫を含む更新パケットを削除し、保存には setChanged を使用します。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "sendBlockUpdated, getUpdatePacket and getUpdateTag are all gone. Only setChanged remains.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/clayproduction/ClayProductionMenu.java:30-36 and client/screen/clayproduction/ClayProductionScreen.java:28-30",
+            "acId": "AC-F015-002",
+            "problem": "Every machine kind gets the same five slots and the screen draws the same four slot frames. Solar fabricators and clay fabricators show a fuel slot and a limit slot that never accept anything. The automatic condenser shows a fuel slot it doesn't use. The energetic condenser shows a limit slot it doesn't use. Shift-click from the player inventory only targets the input slot, so fuel and limit items can't be shift-inserted.",
+            "reason": "The GUI must match the original compressor, condenser and solar GUIs and let players read and operate them. Slots that look usable but are dead don't meet that and confuse the player.",
+            "fix": "Add the fuel slot only for machines that consume fuel and the limit slot only for automatic condensers, and draw frames only for the slots that exist. Make quickMoveStack target every slot that can accept the stack.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 機種が使うスロットだけをメニューと画面に表示し、燃料・上限見本へのシフト挿入を追加して GameTest で確認しました。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The menu adds fuel and limit slots per kind and the screen draws only existing frames. quickMoveStack targets the fuel or limit slot, and a GameTest covers it.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/clayproduction/ClayProductionBlockEntity.java:375-380 and ClayProductionMenu.java:21-29,41-44,103-107",
+            "acId": null,
+            "problem": "The code defends against states the game can't produce: a try/catch fallback for an unknown `state` string, `tag.contains` guards, a menu built with a null machine and `BlockPos.ZERO`, and an ordinal range check on `state()`. The screen also compares `menu.state().name().equals(\"RUNNING\")` instead of comparing the enum value.",
+            "reason": "Code style: validate only states the game can produce and rely on Minecraft/NeoForge guarantees.",
+            "fix": "Use `State.valueOf` directly, read the tags unconditionally, require a non-null ClayProductionBlockEntity in the client menu constructor, index `State.values()` directly, and compare with `== State.RUNNING`.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 通常生成されない状態へのフォールバックと null メニューを削除し、状態表示は enum を直接比較します。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Defensive fallbacks are removed: State.valueOf is direct, the menu has no null machine, and the screen compares the enum value. The only remaining tag.contains is for the genuinely optional active_recipe.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/clayproduction/ClayProductionGameTests.java:223-229",
+            "acId": "AC-F015-001",
+            "problem": "All tests build a detached `new ClayProductionBlockEntity(...)` with `setLevel` instead of placing the block in the test structure, and several tests reuse one position for multiple machines. Preconditions are therefore not set up in the world: the block entity is never in the level, so placement, capabilities and the registered ticker are never exercised. The solar indoor/outdoor check depends on positions with no machine block at them.",
+            "reason": "Each GameTest must prepare the criterion's Preconditions. Machines in the criteria are placed blocks.",
+            "fix": "Place each machine with `helper.setBlock(...)` at its own relative position, fetch the block entity with `helper.getBlockEntity`, and advance time with `helper.runAfterDelay`/`succeedWhen` or ticks of the real level instead of calling serverTick by hand.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GameTest は各機械を別々の位置に設置し、ワールドの登録 ticker と経過 tick で検証します。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "GameTests place real blocks via helper.setBlock and getBlockEntity at separate positions. They rely on world ticks and runAfterDelay.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/clayproduction/ClayProductionGameTests.java:24-112",
+            "acId": "AC-F015-001",
+            "problem": "The condenser test checks only input levels 4 and 7 and automatic compression up to level 2. The Mk II high-stage recipe is checked only for starting, not completion. It never advances any machine to the top stage (octuple, level 13). The expected 16/64 ticks are not compared with per-stage CE consumption. Recipes for levels 5, 6 and 8–12 are not exercised.",
+            "reason": "The Expected Result requires the original per-stage inputs/outputs, required tier and speed for every allowed stage, and progression to the corresponding high-tier stage.",
+            "fix": "Iterate over every energetic-condenser stage and assert required tier acceptance/rejection, processing ticks, CE consumed and the output item. Run the automatic condensers from clay to the highest allowed stage (and to the limit-slot stage) and assert the final item and count.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 凝縮の全入力段階 4～12 について出力、Tier、時間、CE 消費を確認し、自動圧縮の全段階と上限を確認します。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The tests cover every energetic stage 4–12 for time, output and CE. Automatic compression is tested at every level 0–12 plus a limit-slot case.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/clayproduction/ClayProductionGameTests.java:114-157",
+            "acId": "AC-F016-001",
+            "problem": "The solar test doesn't run the outdoor and roofed machines for the same period and compare their outputs. It checks a single tick and then jumps progress by rewriting NBT (`completeNextTick`). The Mk II and lithium caps are not tested, and neither is the night/weather condition.",
+            "reason": "The Action is \"advance the same number of ticks and compare whether each produced and what it produced\". Rewriting progress skips the real processing.",
+            "fix": "Place an outdoor and a roofed machine with the same input, advance both for the full original processing time, then assert the outdoor one produced the expected item and the roofed one produced nothing and kept its input. Add cap checks for Mk II and lithium and a night/rain check. Drop the NBT progress rewrite.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 屋外と屋内を同じ期間進め、Mk II の上限、夜・雨での停止、リチウム経路の実際の完了を検証します。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The solar test runs outdoor and roofed machines over real ticks. It also covers the Mk II cap, night and rain stops, and the full lithium completion with no NBT rewrite.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/clayproduction/ClayProductionGameTests.java:159-221",
+            "acId": "AC-F017-001",
+            "problem": "The fabricator timing assertions are tautological. They compare `requiredProgress` with `ClayProductionRules.fabricatorTicks(...)`, the same function the machine uses, and completion is forced by rewriting NBT. No original numeric tick values are asserted, the Mk II cap/acceptance at different stages isn't checked, and no actual elapsed time is measured. `solarCePerTickUsesInputOutputDifference` likewise recomputes the expected value with the implementation's own formula.",
+            "reason": "A test that reuses the implementation formula can't detect a wrong formula. The criterion requires checking the stage-and-stack-count dependence of the processing time against the original.",
+            "fix": "Assert literal original tick counts for several (Mk, stage, count) combinations. Run Mk I/II until the real completion tick and assert the output appears then and not before. Test Mk II with levels 12/13 and Mk I rejection above 11. Assert the CE/t read from the menu's data against literal expected values.",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 処理時間と GUI の CE/t を固定期待値で検査し、Mk I・II・III の複製、上限、実際の完了時刻を確認します。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The tests assert literal values: 897, 3675834, 16699, 890 ticks and 1011 CE/t. They also check the real completion time, the Mk I cap and Mk II at level 13.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/clay-production.mjs:32-41",
+            "acId": "AC-F015-002",
+            "problem": "Only the automatic condenser Mk I GUI is captured, and it compresses 64 clay instantly, so the screenshot shows no meaningful progress. The energetic condenser Mk I/II GUIs, which have real progress and CE, and the automatic Mk II GUI are never opened. The required \"for each Mk, running\" capture is missing.",
+            "reason": "The criterion requires photographing every Mk's machine and GUI while running, with progress, compression stage and remaining amount readable.",
+            "fix": "Open and screenshot each condenser Mk's GUI while it is processing. For the energetic condensers, capture mid-recipe. For the automatic condensers, use a state where the stage, limit and remaining input are visible.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 4 種の凝縮機の外観と各 GUI を撮影する E2E 手順を追加しました。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E now opens and photographs the GUI of all four condenser Mks with input and CE preset, so they run when captured.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E still opens and photographs all four condenser GUIs with input and CE preset. The diff only moves coordinates to the flat-world surface (y=-60 over a stone floor at -61) and adds a per-machine camera, which is consistent.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          },
+          {
+            "target": "AGENTS.md (no M12 section)",
+            "acId": null,
+            "problem": "AGENTS.md wasn't updated, although M12 adds new registry IDs (10 blocks/items, the `clay_production_machine` BlockEntity and Menu), tiers, slot layout, saved NBT keys, solar/fabricator formulas and caps, lithium mapping and recipe IDs.",
+            "reason": "Project rules require AGENTS.md to be updated in the same change whenever registrations, IDs, behaviour or verification steps change, and AGENTS.md is in the milestone scope.",
+            "fix": "Add an M12 section listing the IDs and original keys, the tier and maximum stage per machine, slot indices, NBT keys, the timing and CE/t formulas, sky/day/weather conditions, the lithium route, recipe IDs, and the GameTest/E2E names.",
+            "id": "CR-012",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に M12 の ID、原作キー、Tier、スロット、保存キー、計算式、稼働条件、レシピ ID、検証名を追加しました。",
+                "at": "2026-11-17T11:04:36.414Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md has an M12 section covering IDs, keys, tiers, slots, NBT keys, formulas, conditions and test names.",
+                "at": "2026-11-17T11:05:02.171Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff.",
+                "at": "2026-11-17T11:09:32.891Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "3157f6f623ada2d4c6ba5af86c80f9557a7d3a6b",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-energetic-mk-i-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "The second header line draws 'Remaining: 0 ticks' and 'CE/t: 0.00000' on top of each other, so it reads 'Remaining: 0 ticCE/t'. The same overlap appears in energetic-mk-ii-gui, automatic-mk-i-gui and automatic-mk-ii-gui.",
+            "reason": "CE/t is drawn at a fixed x position that starts inside the remaining-time text. The remaining time, which the criterion requires to be readable, is cut off.",
+            "fix": "Lay out the clay production screen using font.width(): put the remaining time and CE/t on separate lines, or right-align CE/t to the panel's inner edge and shorten the label so the two strings never overlap.",
+            "id": "ER-001",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-energetic-mk-i-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "The value in 'Compression stage: 0' is drawn past the right border of the GUI panel, out over the world background. The same happens in all four condenser GUI screenshots.",
+            "reason": "The status text starts at about x=970 of a 176-px-wide panel without checking its width. The compression stage the criterion asks for is outside the GUI and hard to read.",
+            "fix": "Start the status lines further left or wrap them, keep them inside imageWidth - 8 (measure with font.width), or use a shorter label such as 'Stage: N'.",
+            "id": "ER-002",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-energetic-mk-i-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "The player-inventory label ('物品栏') is drawn over the top edge of the first player-inventory row instead of in the gap above it. This occurs in all four condenser GUI screenshots.",
+            "reason": "inventoryLabelY doesn't match the y position of the player inventory slots, so the label overlaps the slot frames.",
+            "fix": "Set inventoryLabelY = (y of the first player inventory row) - 10, as vanilla does with imageHeight - 94 when the slots are at imageHeight - 84, or move the player inventory slots down to leave room for the label.",
+            "id": "ER-003",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-energetic-mk-ii-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "Titles are cut to 'Energetic Clay Condens...' for both Mk I and Mk II, and to 'Automatic Clay Condens...' for both automatic Mks. Each Mk I/Mk II pair can only be told apart by the Tier number.",
+            "reason": "Shortening the title removes the Mk suffix, so the GUI no longer shows which machine variant is open.",
+            "fix": "Give the title its own full-width line with the tier on a separate line, or shorten the middle of the name while keeping the Mk suffix (for example 'Energetic Clay Cond. Mk II').",
+            "id": "ER-004",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-energetic-mk-i-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "The Energetic Clay Condenser GUIs (Mk I and Mk II) show the status 'Invalid sample', but this machine has no compression-limit sample slot. They also show 'Compression stage: 0' while the output slot holds energetic clay, and the machine's stored CE or fuel remaining is not shown anywhere.",
+            "reason": "Under the spec only the automatic condenser uses the sample slot (slot 4). Showing a sample error on the energetic condenser is wrong, and the stage and remaining values in the GUI don't match its actual contents.",
+            "fix": "Only check and show the sample status for the automatic clay condenser. For the energetic condenser, show the active input level from the active recipe and the stored CE (energy) or fuel amount.",
+            "id": "ER-005",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-automatic-mk-i-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "The status text 'Idle' starts right at the right border of the sample slot, so the slot frame covers the 'I'. The same happens in automatic-mk-ii-gui. In both automatic GUIs, 'Compression stage: 0' is shown while the input holds compressed clay and the output holds 7 items.",
+            "reason": "The status text's x position is the same as the sample slot's right edge, so the two overlap. The stage value doesn't match the contents.",
+            "fix": "Move the status and stage text to the right of the sample slot with at least 4 px of padding, or move the sample slot. Compute the shown stage from the input or sample item's compression tier, not from a field that stays 0 while idle.",
+            "id": "ER-006",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-automatic-mk-ii-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "All four condenser GUIs were captured while the machine was not running: 'Remaining: 0 ticks', 'CE/t: 0.00000', an empty arrow, and the status 'Idle' or 'Invalid sample'.",
+            "reason": "The precondition says to place each Mk and run it, but no progress fill or non-zero remaining time is visible. The progress readout the criterion requires cannot be checked.",
+            "fix": "In tests/e2e/clay-production.mjs, give each condenser valid input (9 or more lower-tier clay, fuel or CE, and a valid sample for the automatic Mks), wait until state is processing with progress > 0, then take the GUI screenshot.",
+            "id": "ER-007",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-energetic-mk-i-gui.png",
+            "acId": "AC-F015-002",
+            "problem": "Every clay production GUI panel has an empty band about 20 GUI px tall below the hotbar row. The panel is taller than its content. The same band appears in the solar GUI.",
+            "reason": "imageHeight is larger than the slot layout needs, so the panel looks unbalanced compared with the original Clayium GUI.",
+            "fix": "Set imageHeight so the bottom border sits about 7 px below the hotbar slots, or shift the slot layout down consistently.",
+            "id": "ER-008",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F016-002-solar-ce-per-tick-and-progress.png",
+            "acId": "AC-F016-002",
+            "problem": "In the solar GUI, 'Remaining: 723 ticks' and 'CE/t: 0.01011' overlap so badly that the words 'ticks' and 'CE/t' become an unreadable blob.",
+            "reason": "The criterion is about reading the displayed CE/t value. Its label is drawn over the remaining-time text and cannot be read.",
+            "fix": "Use the same fix as the condenser GUI: put CE/t on its own line, or right-align it based on measured text width so it never overlaps the remaining-ticks text.",
+            "id": "ER-009",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F016-002-solar-ce-per-tick-and-progress.png",
+            "acId": "AC-F016-002",
+            "problem": "In the solar GUI, the '5' of 'Compression stage: 5' is drawn outside the right border of the panel. The inventory label also overlaps the first player-inventory row.",
+            "reason": "These are the same layout faults as in the condenser GUIs, so the solar GUI does not match the original image.",
+            "fix": "Keep status text inside the panel width (wrap it, shorten it, or move it left) and set inventoryLabelY above the player inventory rows.",
+            "id": "ER-010",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F016-002-solar-ce-per-tick-and-progress.png",
+            "acId": "AC-F016-002",
+            "problem": "The title is cut to 'Solar Clay Fabricator M... Tier 6', so the Mk number is hidden.",
+            "reason": "Mk I and Mk II have different input-stage limits (4/6), so the GUI should show which one is open.",
+            "fix": "Give the full title its own line or keep the Mk suffix when shortening, and show the tier separately.",
+            "id": "ER-011",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": ".harness-state/runs/2026-11-17T11-10-22-123Z-128-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F016-002-solar-ce-per-tick-and-progress.png",
+            "acId": "AC-F016-002",
+            "problem": "The progress indicator is a small white square at the top-left of the arrow shaft. It does not fill the arrow shape.",
+            "reason": "The progress fill uses the wrong UV or rectangle. It doesn't match the original progress-arrow image and doesn't look like progress along the arrow.",
+            "fix": "Draw the progress with the original filled-arrow sprite, using the same position and height as the empty arrow, with width = arrowWidth × progress / required_progress, instead of filling a fixed-size rectangle.",
+            "id": "ER-012",
+            "status": "open",
+            "history": []
+          }
+        ]
+      },
+      "failure": {
+        "phase": "e2e",
+        "summary": "1 E2E scenario(s) failed",
+        "details": "tests/e2e/clay-production.mjs: Error: MC Pilot gui wait-open --timeout 15 failed: \"TIMEOUT\"\n    at mct (file://.harness/e2e/lib.mjs:21:37)\n    at openMachine (file://.harness-state/runtime/worktrees/M12/tests/e2e/clay-production.mjs:11:9)\n    at async file://.harness-state/runtime/worktrees/M12/tests/e2e/clay-production.mjs:40:5\n    at async scenario (file://.harness/e2e/lib.mjs:59:5)\n    at async file://.harness-state/runtime/worktrees/M12/tests/e2e/clay-production.mjs:15:1\nAC-F015-002 Expected Result: 原作の圧縮機・凝縮機の画像が適用され、進捗・圧縮段階・残量を読み取れる。\nAC-F016-002 Expected Result: 1.12.2版の改善後の計算に準じ、CE/tが入出力のCE差を反映する。原作画像と整合したGUIである。",
+        "logs": [
+          ".harness-state/runs/2026-11-17T11-06-13-378Z-121-M12-e2e/runtime/server.log",
+          ".harness-state/runs/2026-11-17T11-06-13-378Z-121-M12-e2e/runtime/client-clayium-a.log",
+          ".harness-state/runs/2026-11-17T11-06-13-378Z-121-M12-e2e/scenarios/tests-e2e-clay-production.mjs/stdout.log",
+          ".harness-state/runs/2026-11-17T11-06-13-378Z-121-M12-e2e/scenarios/tests-e2e-clay-production.mjs/stderr.log"
+        ],
+        "screenshots": [
+          ".harness-state/runs/2026-11-17T11-06-13-378Z-121-M12-e2e/scenarios/tests-e2e-clay-production.mjs/screenshots/AC-F015-002-four-original-condenser-faces.png"
+        ]
+      },
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M14",
+      "id": "M13",
       "phase": "implementation",
-      "baseCommit": "93719415e122643b4720c33b9290c00e993458b7",
+      "baseCommit": "2090ddd7716cba9ea51e3fa7abdbb654d9b75472",
       "failures": {
         "build": 0,
         "gametest": 0,
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": null,
-      "codeReviewTree": null,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/AssemblyRecipes.java:178-213",
+            "acId": "AC-F012-001",
+            "problem": "Every machine construction recipe is an `assembler` recipe with required_tier 4 (6 for tier 10), and they are the only recipes that produce assembler_tier_3 and assembler_tier_4. To make the first Assembler you already need a Tier 4 Assembler, so no player can ever get an Assembler, Inscriber or Centrifuge. The recipes for tier 3 machines also need a tier 4 assembler. Tier 6 also has a second path (`assembler_tier_6_upgrade`) next to the hull+gear recipe, and the generic `hull + 4 dense_clay_gear` / `hull + spindle×max(tier-4,1)` / `e(1,tier)` formulas are not traced to the original data.",
+            "reason": "The AC requires that all 10 machines and the parts needed for progression can be made, using the original values. Right now the progression cannot start.",
+            "fix": "Generate the construction recipe for each of the 10 machines from the original hotfix2 CRecipes. Use shaped crafting where the original uses the crafting table (at least the entry Assembler/Inscriber/Centrifuge tier), and use assembler recipes with the original inputs, required tier, CE and ticks for the rest. Keep only the paths the original has. Add a GameTest that checks every machine can be obtained, starting from items that are already craftable.",
+            "id": "CR-001",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:202-205,303-316",
+            "acId": null,
+            "problem": "`startProcess` now stops with OUTPUT_FULL when `fixedOutputs` is empty, and `outputsMatch` returns false for an empty fixed list. Before this change, recipes with only `random_outputs` (or only fluid outputs) could run. Now they never start, and an active one is aborted on every reload check.",
+            "reason": "This breaks the M03/M06 recipe contract (any one non-empty output array is enough) for every machine that shares this BlockEntity.",
+            "fix": "Treat an empty fixed-output list as allowed: only check space for the fixed outputs when there are some, and in `outputsMatch` return true when the fixed list is empty. Reject only recipes whose fixed output count is larger than `outputSlots`.",
+            "id": "CR-002",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:688-699",
+            "acId": null,
+            "problem": "The load code falls back to the old `pending_output` key, which is migration code for an older format of a mod that has not been released.",
+            "reason": "AGENTS.md says old-world migration is not implemented, and the style rules ask to remove code the current behavior does not need.",
+            "fix": "Remove the `pending_output` fallback branch and read only `pending_outputs`.",
+            "id": "CR-003",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "AGENTS.md",
+            "acId": null,
+            "problem": "There is no M13 section. The 10 machine IDs, the slot layout (inputs/outputs/reserved/fuel with `outputSlots`), the 5 machine hull IDs and tiers, the recipe ID groups, the GUI `required_energy` display, the GameTest names and `tests/e2e/assembly-machines.mjs` are not documented. The M06 NBT key list still says `pending_output`, but the code now saves `pending_outputs`.",
+            "reason": "The project rules require AGENTS.md to be updated in the same change when IDs, registrations, saved data or verification steps change.",
+            "fix": "Add an M13 section covering these items, and change the M06 saved NBT key list to `pending_outputs`. Also state that the GUI shows the required CE instead of the stored CE.",
+            "id": "CR-004",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineMenu.java:71-77",
+            "acId": "AC-F012-002",
+            "problem": "The 2×2 centrifuge output grid sits at x 115–151, y 25–61. It overlaps the state label drawn at (80,58) (\"Processing\"/\"処理中\" reaches past x 115), and long titles drawn at y 21 run into the top output row.",
+            "reason": "The GUI is captured to show progress, slots and Tier in a readable way. Overlapping text and slots make the centrifuge screen hard to read.",
+            "fix": "Move the multi-output grid, or the state and energy labels, so they do not overlap (for example, put the labels below y 62, or shift the grid up or right). Check the result in the E2E screenshot.",
+            "id": "CR-005",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineMenu.java:132-134",
+            "acId": null,
+            "problem": "The screen no longer shows the stored CE, so `storedEnergy()` is now unused, and data slots 8–11 are synced for nothing.",
+            "reason": "The style rules say to remove code that the current behavior no longer uses.",
+            "fix": "Either show the stored CE next to the required CE, or remove `storedEnergy()` and the unused ContainerData indices, and renumber the slots.",
+            "id": "CR-006",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/machine/AssemblyMachineModels.java:32-46",
+            "acId": null,
+            "problem": "`machine(...)` is a copy of `MachineBlockStateProvider.machine(...)`.",
+            "reason": "The style rules ask for one direct path per behavior and no duplicate code.",
+            "fix": "Generate the assembly machine models through the existing `MachineBlockStateProvider.machine` logic (add the `AssemblyMachineRegistration.MACHINES` loop there). Keep only the hull models in a separate provider, or move them into the same provider.",
+            "id": "CR-007",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/AssemblyMachineRegistration.java:32-34,83-89",
+            "acId": null,
+            "problem": "`legacyName(series)` is a hand-written switch that maps each series to the catalog's legacy name. The catalog can already be matched by `namedIdStem().equals(series.recipeMethod().id())`, which is what the GameTest does.",
+            "reason": "This is an extra mapping that can drift from the catalog. The style asks for one direct path.",
+            "fix": "Look up the MachineFamily by `namedIdStem()` equal to `series.recipeMethod().id()` and delete `legacyName`.",
+            "id": "CR-008",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/assembly/AssemblyMachineGameTests.java:100-128",
+            "acId": "AC-F012-001",
+            "problem": "`hotfixTwoAssemblyBalancesAndCeValuesArePreserved` checks only tier, CE, ticks and outputs, not the input ingredients and counts, so the production balance is only half-checked. The final `require(ClayiumRecipeEnergy.e(1.0D,10) == 100_000_000L)` tests a math helper, not any recipe against the reduced 1.12.2 value. Hull recipes and Inscriber/Centrifuge construction recipes are not checked at all.",
+            "reason": "The criterion asks for the production balance of the main intermediate materials and original (non-reduced) CE values. The test should assert the recipe data against the original numbers.",
+            "fix": "Assert the inputs (item and count) of each listed recipe as well, include the hull and all 10 machine construction recipes with their original values, and remove the tautological `e(1,10)` check.",
+            "id": "CR-009",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "tests/acceptance.json:350-356",
+            "acId": "AC-F012-002",
+            "problem": "The only automated check that the displayed CE matches the CE actually consumed is `centrifugemultioutputstopssavesandconsumesexactlyonce`, and it is mapped only to AC-F012-001. AC-F012-002 has only the screenshot scenario, which cannot check that the values match.",
+            "reason": "The expected result of AC-F012-002 says the displayed value and the consumed CE must match. That needs a mapped assertion.",
+            "fix": "Add a GameTest mapped to AC-F012-002 (or map an existing one) that runs each of the 3 series, compares the menu's synced `requiredEnergy()` with the CE actually consumed, and list it under AC-F012-002.",
+            "id": "CR-010",
+            "status": "open",
+            "history": []
+          }
+        ]
+      },
+      "codeReviewTree": "2a6fc73d2f06edc88edb64a8126a40b8a4c02ea4",
       "e2eReview": null,
       "failure": null,
       "conflicts": [],
@@ -49,8 +642,9 @@
     "M08",
     "M10",
     "M11",
-    "M09"
+    "M09",
+    "M14"
   ],
-  "lastCheckpoint": "93719415e122643b4720c33b9290c00e993458b7",
+  "lastCheckpoint": "2090ddd7716cba9ea51e3fa7abdbb654d9b75472",
   "fatal": null
 }

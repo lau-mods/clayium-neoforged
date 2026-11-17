@@ -227,6 +227,7 @@ public final class FoundationGameTests {
             for (String state : List.of("idle", "running", "output_full", "waiting_for_energy", "recipe_changed")) {
                 expectedKeys.add("gui.clayium.machine.state." + state);
             }
+            expectedKeys.add("gui.clayium.machine.empty");
             require(language.keySet().equals(expectedKeys),
                     "Generated language keys differ from the registered objects and tooltips");
         }

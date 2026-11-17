@@ -329,6 +329,18 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "changinghandlersreturnrejecteditemstorecovery"
+    },
+    {
+      "acId": "AC-F014-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalseparatorpreservesweightstimeenergyandfulloutput"
+    },
+    {
+      "acId": "AC-F014-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "chemicalandmattermachinesuseoriginaltiersrecipesanddirectfluids"
     }
   ],
   "e2e": [
@@ -395,6 +407,10 @@
     {
       "acId": "AC-F019-002",
       "scenario": "tests/e2e/item-buffer.mjs"
+    },
+    {
+      "acId": "AC-F014-002",
+      "scenario": "tests/e2e/chemical-machines.mjs"
     }
   ]
 }

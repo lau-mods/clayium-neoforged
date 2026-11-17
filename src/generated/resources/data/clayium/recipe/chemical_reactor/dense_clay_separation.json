@@ -1,0 +1,25 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:dense_clay_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:impure_silicon_dust"
+    },
+    {
+      "count": 1,
+      "id": "clayium:impure_aluminium_dust"
+    }
+  ],
+  "processing_method": "clayium:chemical_reactor",
+  "processing_ticks": 30,
+  "required_tier": 5
+}

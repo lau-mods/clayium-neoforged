@@ -1,18 +1,23 @@
 package net.claustra01.clayium.client.screen;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachineMenu> {
@@ -73,7 +78,10 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         for (int input = 0; input < inputSlots; input++) {
             graphics.blit(SLOT, leftPos + ClayMachineMenu.inputX(inputSlots, input) - 1, topPos + 34, 0, 0, 18, 18);
         }
-        graphics.blit(SLOT, leftPos + 115, topPos + 34, 0, 0, 18, 18);
+        int outputSlots = menu.machine() == null ? 1 : menu.machine().outputSlots();
+        for (int output = 0; output < outputSlots; output++) {
+            graphics.blit(SLOT, leftPos + 115 + output * 18, topPos + 34, 0, 0, 18, 18);
+        }
         graphics.blit(SLOT, leftPos + 43, topPos + 56, 0, 0, 18, 18);
         ClayMachineBlockEntity machine = menu.machine();
         if (machine != null) {
@@ -86,6 +94,48 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         graphics.blit(PROGRESS, leftPos + 89, topPos + 36, 0, 0, 24, 16);
         if (width > 0) {
             graphics.blit(PROGRESS, leftPos + 89, topPos + 36, 0, 18, width, 16);
+        }
+        if (menu.machine() != null && menu.machine().series().recipeMethod().id().equals("chemical_reactor")) {
+            drawFluidGauge(graphics, menu.inputFluid(), 20);
+            drawFluidGauge(graphics, menu.outputFluid(), 160);
+        }
+    }
+
+    private void drawFluidGauge(GuiGraphics graphics, FluidStack fluid, int x) {
+        int left = leftPos + x;
+        int top = topPos + 35;
+        graphics.fill(left, top, left + 8, top + 32, 0xFF303030);
+        if (!fluid.isEmpty()) {
+            IClientFluidTypeExtensions appearance = IClientFluidTypeExtensions.of(fluid.getFluid());
+            int tint = appearance.getTintColor(fluid);
+            int fill = Math.min(30, Math.max(1, fluid.getAmount() * 30 / 16_000));
+            graphics.enableScissor(left + 1, top + 31 - fill, left + 7, top + 31);
+            graphics.blit(left + 1, top + 1, 0, 6, 30,
+                    Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                            .apply(appearance.getStillTexture(fluid)),
+                    (tint >> 16 & 0xFF) / 255.0F,
+                    (tint >> 8 & 0xFF) / 255.0F,
+                    (tint & 0xFF) / 255.0F,
+                    (tint >>> 24) / 255.0F);
+            graphics.disableScissor();
+        }
+        graphics.renderOutline(left, top, 8, 32, 0xFF707070);
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        if (menu.machine() == null || !menu.machine().series().recipeMethod().id().equals("chemical_reactor")) {
+            return;
+        }
+        int x = mouseX - leftPos;
+        int y = mouseY - topPos;
+        if ((x >= 20 && x < 28 || x >= 160 && x < 168) && y >= 35 && y < 67) {
+            FluidStack fluid = x < 28 ? menu.inputFluid() : menu.outputFluid();
+            graphics.renderTooltip(font, List.of(
+                    fluid.isEmpty() ? Component.translatable("gui.clayium.machine.empty") : fluid.getHoverName(),
+                    Component.literal(fluid.getAmount() + " / 16000 mB"))
+                    .stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
         }
     }
 

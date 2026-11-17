@@ -10,6 +10,7 @@ import net.claustra01.clayium.machine.ClayMachineBlock;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
 import net.claustra01.clayium.machine.series.MachineSeries;
+import net.claustra01.clayium.machine.series.ChemicalSeries;
 import net.claustra01.clayium.machine.series.ProcessingSeries;
 import net.claustra01.clayium.machine.series.SmeltingSeries;
 import net.minecraft.world.inventory.MenuType;
@@ -35,9 +36,10 @@ public final class MachineRegistration {
         List<MachineSeries> seriesList = new ArrayList<>();
         Collections.addAll(seriesList, ProcessingSeries.values());
         Collections.addAll(seriesList, SmeltingSeries.values());
+        Collections.addAll(seriesList, ChemicalSeries.values());
         for (MachineSeries series : seriesList) {
             for (int tier : series.tiers()) {
-                String id = series.recipeMethod().id() + "_tier_" + tier;
+                String id = series.registrationId(tier);
                 DeferredBlock<ClayMachineBlock> block = ClayiumRegistries.BLOCKS.register(
                         id,
                         () -> new ClayMachineBlock(
