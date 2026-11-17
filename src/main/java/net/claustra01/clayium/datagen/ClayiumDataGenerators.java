@@ -13,6 +13,7 @@ import net.claustra01.clayium.datagen.material.MaterialItemTagProvider;
 import net.claustra01.clayium.datagen.material.MaterialLanguageProvider;
 import net.claustra01.clayium.datagen.machine.MachineBlockLoot;
 import net.claustra01.clayium.datagen.machine.MachineBlockStateProvider;
+import net.claustra01.clayium.datagen.machine.AssemblyMachineModels;
 import net.claustra01.clayium.datagen.logistics.LogisticsBlockLoot;
 import net.claustra01.clayium.datagen.logistics.LogisticsBlockStateProvider;
 import net.claustra01.clayium.datagen.logistics.LogisticsItemModelProvider;
@@ -41,6 +42,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new FoundationItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MachineBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new AssemblyMachineModels(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new ClayProductionBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));

@@ -331,6 +331,48 @@
       "name": "changinghandlersreturnrejecteditemstorecovery"
     },
     {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltenassemblymachinesmatchtheoriginaltierledger"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyassemblytierprocessesitsrepresentativerecipe"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "hotfixtwoassemblybalancesandcevaluesarepreserved"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "centrifugemultioutputstopssavesandconsumesexactlyonce"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "centrifugemergesbeforeusingemptyoutputslots"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allassemblymachineshaveanobtainableconstructionpath"
+    },
+    {
+      "acId": "AC-F012-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "assemblymenuenergyequalsconsumedenergyforallthreeseries"
+    },
+    {
       "acId": "AC-F015-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -443,6 +485,10 @@
     {
       "acId": "AC-F019-002",
       "scenario": "tests/e2e/item-buffer.mjs"
+    },
+    {
+      "acId": "AC-F012-002",
+      "scenario": "tests/e2e/assembly-machines.mjs"
     },
     {
       "acId": "AC-F015-002",

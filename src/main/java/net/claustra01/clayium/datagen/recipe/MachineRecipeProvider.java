@@ -32,6 +32,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
         ClayProductionRecipes.buildRecipes(recipeOutput);
         FormingRecipes.buildRecipes(recipeOutput);
         SmeltingRecipes.buildRecipes(recipeOutput);
+        AssemblyRecipes.buildRecipes(recipeOutput);
         ChemicalRecipes.buildRecipes(recipeOutput);
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BENDING_MACHINE, 4)
                 .requires(Items.TERRACOTTA, 2)

@@ -449,9 +449,13 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         for (int slot = 0; slot < outputSlots; slot++) {
             simulated.add(inventory.getStackInSlot(outputSlot + slot).copy());
         }
+        return placeOutputs(simulated, results);
+    }
+
+    private boolean placeOutputs(List<ItemStack> slots, List<ItemStack> results) {
         for (ItemStack result : results) {
             boolean stored = false;
-            for (ItemStack existing : simulated) {
+            for (ItemStack existing : slots) {
                 if (!existing.isEmpty() && ItemStack.isSameItemSameComponents(existing, result)
                         && existing.getCount() + result.getCount() <= existing.getMaxStackSize()) {
                     existing.grow(result.getCount());
@@ -460,9 +464,9 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
                 }
             }
             if (!stored) {
-                for (int slot = 0; slot < simulated.size(); slot++) {
-                    if (simulated.get(slot).isEmpty()) {
-                        simulated.set(slot, result.copy());
+                for (int slot = 0; slot < slots.size(); slot++) {
+                    if (slots.get(slot).isEmpty()) {
+                        slots.set(slot, result.copy());
                         stored = true;
                         break;
                     }
@@ -476,19 +480,15 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     }
 
     private void storeOutputs(List<ItemStack> results) {
-        for (ItemStack result : results) {
-            for (int slot = 0; slot < outputSlots; slot++) {
-                ItemStack existing = inventory.getStackInSlot(outputSlot + slot);
-                if (existing.isEmpty()) {
-                    inventory.setStackInSlot(outputSlot + slot, result.copy());
-                    break;
-                }
-                if (ItemStack.isSameItemSameComponents(existing, result)
-                        && existing.getCount() + result.getCount() <= existing.getMaxStackSize()) {
-                    existing.grow(result.getCount());
-                    break;
-                }
-            }
+        List<ItemStack> placed = new ArrayList<>(outputSlots);
+        for (int slot = 0; slot < outputSlots; slot++) {
+            placed.add(inventory.getStackInSlot(outputSlot + slot).copy());
+        }
+        if (!placeOutputs(placed, results)) {
+            throw new IllegalStateException("Output capacity changed during processing");
+        }
+        for (int slot = 0; slot < outputSlots; slot++) {
+            inventory.setStackInSlot(outputSlot + slot, placed.get(slot));
         }
     }
 
@@ -954,13 +954,13 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
             return switch (index) {
                 case 0, 1, 2, 3 -> (int)(progress >>> (index * 16)) & 0xFFFF;
                 case 4, 5, 6, 7 -> (int)(requiredProgress >>> ((index - 4) * 16)) & 0xFFFF;
-                case 8, 9, 10, 11 -> (int)(energy.stored().internalValue() >>> ((index - 8) * 16)) & 0xFFFF;
-                case 12 -> state.ordinal();
-                case 13 -> tier();
-                case 14 -> fluidInput.isEmpty() ? 0 : BuiltInRegistries.FLUID.getId(fluidInput.getFluid().getFluid()) + 1;
-                case 15 -> fluidInput.getFluidAmount();
-                case 16 -> fluidOutput.isEmpty() ? 0 : BuiltInRegistries.FLUID.getId(fluidOutput.getFluid().getFluid()) + 1;
-                case 17 -> fluidOutput.getFluidAmount();
+                case 8 -> state.ordinal();
+                case 9 -> tier();
+                case 10 -> fluidInput.isEmpty() ? 0 : BuiltInRegistries.FLUID.getId(fluidInput.getFluid().getFluid()) + 1;
+                case 11 -> fluidInput.getFluidAmount();
+                case 12 -> fluidOutput.isEmpty() ? 0 : BuiltInRegistries.FLUID.getId(fluidOutput.getFluid().getFluid()) + 1;
+                case 13 -> fluidOutput.getFluidAmount();
+                case 14, 15, 16, 17 -> (int)(requiredEnergy() >>> ((index - 14) * 16)) & 0xFFFF;
                 default -> 0;
             };
         }
@@ -973,6 +973,11 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         public int getCount() {
             return 18;
         }
+    }
+
+    public long requiredEnergy() {
+        return requiredProgress == 0L || energyPerProgress <= Long.MAX_VALUE / requiredProgress
+                ? requiredProgress * energyPerProgress : Long.MAX_VALUE;
     }
 
     private final class SidedItemHandler implements IItemHandler {
@@ -1001,7 +1006,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             int mappedSlot = mappedSlot(slot);
-            return (direction == null && mappedSlot < outputSlot)
+            return (direction == null && !isOutputSlot(mappedSlot))
                             || direction != null && faceModes.get(direction) == FaceMode.INPUT
                     ? inventory.insertItem(mappedSlot, stack, simulate) : stack;
         }
@@ -1009,7 +1014,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             int mappedSlot = mappedSlot(slot);
-            return direction == null && mappedSlot >= outputSlot && mappedSlot < reservedSlot
+            return direction == null && isOutputSlot(mappedSlot)
                             || direction != null && faceModes.get(direction) == FaceMode.OUTPUT
                     ? inventory.extractItem(mappedSlot, amount, simulate)
                     : ItemStack.EMPTY;
@@ -1023,20 +1028,27 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             int mappedSlot = mappedSlot(slot);
-            return ((direction == null && mappedSlot < outputSlot)
+            return ((direction == null && !isOutputSlot(mappedSlot))
                             || direction != null && faceModes.get(direction) == FaceMode.INPUT)
                     && inventory.isItemValid(mappedSlot, stack);
         }
 
         private int mappedSlot(int slot) {
             if (direction == null) {
-                return slot < inputSlots ? slot
-                        : slot == inputSlots ? fuelSlot : outputSlot + slot - inputSlots - 1;
+                if (slot < inputSlots) {
+                    return slot;
+                }
+                return slot < inputSlots + outputSlots
+                        ? outputSlot + slot - inputSlots : fuelSlot;
             }
             if (faceModes.get(direction) == FaceMode.OUTPUT) {
                 return outputSlot + slot;
             }
             return slot < inputSlots ? slot : fuelSlot;
+        }
+
+        private boolean isOutputSlot(int slot) {
+            return slot >= outputSlot && slot < outputSlot + outputSlots;
         }
     }
 

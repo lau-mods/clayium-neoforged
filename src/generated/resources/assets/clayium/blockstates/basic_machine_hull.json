@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "clayium:block/basic_machine_hull"
+    }
+  }
+}

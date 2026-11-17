@@ -38,7 +38,8 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
             }
             for (int output = 0; output < machine.outputSlots(); output++) {
                 addSlot(new SlotItemHandler(
-                        machine.inventory(), machine.outputSlot(output), 116 + output * 18, 35));
+                        machine.inventory(), machine.outputSlot(output), outputX(machine.outputSlots(), output),
+                        outputY(machine.outputSlots(), output)));
             }
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new LockedSlot(machine, machine.reservedSlot(input), -1000, -1000));
@@ -67,6 +68,14 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
 
     public static int inputX(int inputSlots, int input) {
         return inputSlots == 1 ? 44 : 35 + input * 18;
+    }
+
+    public static int outputX(int outputSlots, int output) {
+        return outputSlots <= 2 ? 116 + output * 18 : 132 + output % 2 * 18;
+    }
+
+    public static int outputY(int outputSlots, int output) {
+        return outputSlots <= 2 ? 35 : 26 + output / 2 * 18;
     }
 
     @Override
@@ -122,10 +131,6 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         return readLong(4);
     }
 
-    public long storedEnergy() {
-        return readLong(8);
-    }
-
     private long readLong(int first) {
         long value = 0L;
         for (int index = 0; index < 4; index++) {
@@ -135,21 +140,25 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     }
 
     public ClayMachineBlockEntity.MachineState state() {
-        int ordinal = data.get(12);
+        int ordinal = data.get(8);
         ClayMachineBlockEntity.MachineState[] values = ClayMachineBlockEntity.MachineState.values();
         return ordinal >= 0 && ordinal < values.length ? values[ordinal] : ClayMachineBlockEntity.MachineState.IDLE;
     }
 
     public int tier() {
-        return data.get(13);
+        return data.get(9);
+    }
+
+    public long requiredEnergy() {
+        return readLong(14);
     }
 
     public FluidStack inputFluid() {
-        return fluid(14);
+        return fluid(10);
     }
 
     public FluidStack outputFluid() {
-        return fluid(16);
+        return fluid(12);
     }
 
     private FluidStack fluid(int index) {

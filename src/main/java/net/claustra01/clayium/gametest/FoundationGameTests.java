@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
@@ -87,6 +88,8 @@ public final class FoundationGameTests {
             expectedBlocks.add(id);
             expectedItems.add(id);
         }
+        AssemblyMachineRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        AssemblyMachineRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         LogisticsRegistration.BUFFERS.values().forEach(definition -> {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
@@ -230,12 +233,19 @@ public final class FoundationGameTests {
             for (String id : FormingMachineRegistration.MACHINES.keySet()) {
                 expectedKeys.add("block.clayium." + id);
             }
+            for (String id : AssemblyMachineRegistration.MACHINES.keySet()) {
+                expectedKeys.add("block.clayium." + id);
+            }
+            AssemblyMachineRegistration.MACHINE_HULLS.values().forEach(hull ->
+                    expectedKeys.add("block.clayium." + hull.getId().getPath()));
             for (WaterWheelRegistration.WaterWheelDefinition definition : WaterWheelRegistration.DEFINITIONS) {
                 expectedKeys.add("block.clayium." + definition.id());
             }
             for (String state : List.of("idle", "running", "output_full", "waiting_for_energy", "recipe_changed")) {
                 expectedKeys.add("gui.clayium.machine.state." + state);
             }
+            expectedKeys.add("gui.clayium.machine.required_energy");
+            expectedKeys.add("gui.clayium.machine.inventory");
             expectedKeys.add("gui.clayium.machine.empty");
             require(language.keySet().equals(expectedKeys),
                     "Generated language keys differ from the registered objects and tooltips");

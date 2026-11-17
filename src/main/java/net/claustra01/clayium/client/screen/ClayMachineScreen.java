@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -80,17 +81,24 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         }
         int outputSlots = menu.machine() == null ? 1 : menu.machine().outputSlots();
         for (int output = 0; output < outputSlots; output++) {
-            graphics.blit(SLOT, leftPos + 115 + output * 18, topPos + 34, 0, 0, 18, 18);
+            graphics.blit(
+                    SLOT,
+                    leftPos + ClayMachineMenu.outputX(outputSlots, output) - 1,
+                    topPos + ClayMachineMenu.outputY(outputSlots, output) - 1,
+                    0, 0, 18, 18);
         }
         graphics.blit(SLOT, leftPos + 43, topPos + 56, 0, 0, 18, 18);
         ClayMachineBlockEntity machine = menu.machine();
         if (machine != null) {
+            ResourceLocation hull = ClayiumMod.id("textures/block/machinehull-" + Math.max(0, machine.tier() - 1) + ".png");
             ResourceLocation front = ClayiumMod.id("textures/block/" + machine.series().frontTexture() + ".png");
+            graphics.blit(hull, leftPos + 72, topPos + 35, 0, 0, 16, 16, 16, 16);
             graphics.blit(front, leftPos + 72, topPos + 35, 0, 0, 16, 16, 16, 16);
         }
         int width = menu.requiredProgress() <= 0
                 ? 0
-                : Math.min(24, (int)(24.0D * menu.progress() / Math.max(1L, menu.requiredProgress())));
+                : menu.progress() > 0 ? Math.max(1, Math.min(24,
+                        (int)(24.0D * menu.progress() / menu.requiredProgress()))) : 0;
         graphics.blit(PROGRESS, leftPos + 89, topPos + 36, 0, 0, 24, 16);
         if (width > 0) {
             graphics.blit(PROGRESS, leftPos + 89, topPos + 36, 0, 18, width, 16);
@@ -141,18 +149,35 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        Component tier = Component.literal("Tier " + menu.tier());
-        int titleWidth = imageWidth - 14;
+        int titleWidth = menu.machine() != null && menu.machine().outputSlots() > 1 ? 120 : imageWidth - 14;
         float titleScale = Math.min(1.0F, (float)titleWidth / font.width(title));
         graphics.pose().pushPose();
         graphics.pose().scale(titleScale, titleScale, 1.0F);
         graphics.drawString(font, title, (int)(7 / titleScale), (int)(21 / titleScale), 0x404040, false);
         graphics.pose().popPose();
+        Component tier = Component.literal("Tier " + menu.tier());
         graphics.drawString(font, tier, 7, 58, 0x404040, false);
         graphics.drawString(font, Component.translatable("gui.clayium.machine.state." + menu.state().name().toLowerCase()),
                 80, 58, stateColor(), false);
-        graphics.drawString(font, Component.literal(formatEnergy(menu.storedEnergy())), 80, 69, 0x404040, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+        graphics.drawString(font, Component.translatable(
+                        "gui.clayium.machine.required_energy", formatEnergy(menu.requiredEnergy())),
+                80, 69, 0x404040, false);
+        ClayMachineBlockEntity machine = menu.machine();
+        if (machine != null && menu.state() == ClayMachineBlockEntity.MachineState.RUNNING) {
+            int reservedStart = machine.inputSlots() + machine.outputSlots();
+            for (int input = 0; input < machine.inputSlots(); input++) {
+                if (menu.slots.get(input).getItem().isEmpty()) {
+                    ItemStack reserved = menu.slots.get(reservedStart + input).getItem();
+                    if (!reserved.isEmpty()) {
+                        graphics.renderItem(reserved, ClayMachineMenu.inputX(machine.inputSlots(), input), 35);
+                        graphics.renderItemDecorations(font, reserved,
+                                ClayMachineMenu.inputX(machine.inputSlots(), input), 35);
+                    }
+                }
+            }
+        }
+        graphics.drawString(font, Component.translatable("gui.clayium.machine.inventory"),
+                inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 
     private int stateColor() {

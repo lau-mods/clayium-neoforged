@@ -148,7 +148,7 @@ public final class ClayMachineGameTests {
         var player = helper.makeMockPlayer(GameType.CREATIVE);
         player.setPos(machinePos.getX() + 0.5D, machinePos.getY() + 0.5D, machinePos.getZ() + 0.5D);
         ClayMachineMenu menu = new ClayMachineMenu(
-                1, player.getInventory(), machine, new SimpleContainerData(14));
+                1, player.getInventory(), machine, new SimpleContainerData(18));
         require(menu.stillValid(player), "A nearby player could not use the open machine menu");
         player.containerMenu = menu;
         MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, Direction.NORTH.get3DDataValue(), 1));

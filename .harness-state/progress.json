@@ -2,445 +2,300 @@
   "status": "running",
   "active": [
     {
-      "id": "M13",
-      "phase": "build",
-      "baseCommit": "2090ddd7716cba9ea51e3fa7abdbb654d9b75472",
+      "id": "M15",
+      "phase": "code_review",
+      "baseCommit": "96e5edffe4b48d70089abe264ad258f2b95825a6",
       "failures": {
         "build": 0,
         "gametest": 0,
-        "e2e": 0
+        "e2e": 1
       },
       "recoveries": 0,
       "codeReview": {
         "kind": "code",
         "issues": [
           {
-            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/AssemblyRecipes.java:178-213",
-            "acId": "AC-F012-001",
-            "problem": "Every machine construction recipe is an `assembler` recipe with required_tier 4 (6 for tier 10), and they are the only recipes that produce assembler_tier_3 and assembler_tier_4. To make the first Assembler you already need a Tier 4 Assembler, so no player can ever get an Assembler, Inscriber or Centrifuge. The recipes for tier 3 machines also need a tier 4 assembler. Tier 6 also has a second path (`assembler_tier_6_upgrade`) next to the hull+gear recipe, and the generic `hull + 4 dense_clay_gear` / `hull + spindle×max(tier-4,1)` / `e(1,tier)` formulas are not traced to the original data.",
-            "reason": "The AC requires that all 10 machines and the parts needed for progression can be made, using the original values. Right now the progression cannot start.",
-            "fix": "Generate the construction recipe for each of the 10 machines from the original hotfix2 CRecipes. Use shaped crafting where the original uses the crafting table (at least the entry Assembler/Inscriber/Centrifuge tier), and use assembler recipes with the original inputs, required tier, CE and ticks for the rest. Keep only the paths the original has. Add a GameTest that checks every machine can be obtained, starting from items that are already craftable.",
+            "target": "src/main/java/net/claustra01/clayium/gametest/environment/QuartzCrucibleGameTests.java:24-70",
+            "acId": "AC-F018-002",
+            "problem": "The test calls insertImpureSilicon/useString on the block entity directly instead of doing the insert and string steps through the block interaction. It never checks how much of the held impure-silicon stack (12 offered → 4 left) or of the string stack is consumed. Its `strings == 0` assertion is trivially true because no string item ever exists. It does not break the crucible mid-heating to check that exactly the held impure silicon drops and no silicon does, which AGENTS.md M15 specifies.",
+            "reason": "The test must carry out the criterion's Action (the original insert → wait → string steps) and assert that no intermediate material is duplicated. Calling the block entity's methods skips QuartzCrucibleBlock.useItemOn/onRemove, which is where stacks are consumed and contents are dropped.",
+            "fix": "Run the steps through the block: use helper.makeMockPlayer with a held stack plus helper.useBlock, or call useItemOn. Insert 12 impure silicon and assert 4 stay in hand. Use a string before heating finishes and assert it is not consumed. Use a string when ready and assert exactly 1 is consumed and 8 silicon ingots appear. In a second crucible, insert ingots, destroy the block mid-heating and assert that exactly the inserted impure silicon drops and no silicon does. Remove the vacuous string-entity count.",
             "id": "CR-001",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: Tier 3・4 の機械を原作の作業台パターンで製作可能にし、高Tier の材料を修正して余分なアップグレード経路を削除しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: The GameTest now inserts and draws through block interaction, checks both held stacks, and verifies drops after breaking a heating crucible.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "Tier 3/4 machines now use shaped crafting from craftable hulls. Higher tiers use assembler recipes. The extra tier 6 upgrade path was removed. A GameTest checks that every machine can be obtained.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the construction recipes, so the earlier fix still holds.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "GameTest now uses helper.useBlock with a mock player, checks held stack counts (12→4, string unconsumed early, 1 consumed when ready), 8 silicon output, and breaks a heating crucible to check only impure drops.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:202-205,303-316",
-            "acId": null,
-            "problem": "`startProcess` now stops with OUTPUT_FULL when `fixedOutputs` is empty, and `outputsMatch` returns false for an empty fixed list. Before this change, recipes with only `random_outputs` (or only fluid outputs) could run. Now they never start, and an active one is aborted on every reload check.",
-            "reason": "This breaks the M03/M06 recipe contract (any one non-empty output array is enough) for every machine that shares this BlockEntity.",
-            "fix": "Treat an empty fixed-output list as allowed: only check space for the fixed outputs when there are some, and in `outputsMatch` return true when the fixed list is empty. Reject only recipes whose fixed output count is larger than `outputSlots`.",
+            "target": "src/main/java/net/claustra01/clayium/gametest/environment/EnvironmentMachineGameTests.java:54-80",
+            "acId": "AC-F018-001",
+            "problem": "The salt extractor is tested with air, flowing water, a water source and a waterlogged block, but never with adjacent lava. The precondition requires each machine to be placed in the water, lava, waterlogged and air environments.",
+            "reason": "The criterion requires both machines to be checked in every listed environment. Without a lava case, nothing shows that lava does not satisfy the water-source condition or consume CE.",
+            "fix": "Before the source-water step, add a step that places lava next to the extractor, ticks it, and asserts no salt is produced and stored CE is unchanged.",
             "id": "CR-002",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 固定アイテム出力が空でも処理を許可し、出力スロット数を超える場合だけ拒否します。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Added adjacent lava to the extractor GameTest and checked that salt and CE remain unchanged.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "Empty fixed outputs are allowed. Only recipes with more item outputs than outputSlots are rejected, and outputsMatch no longer rejects an empty list.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the fixed-output handling in ClayMachineBlockEntity, so the earlier fix still holds.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "Adjacent lava step added, asserting no salt and unchanged CE.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:688-699",
-            "acId": null,
-            "problem": "The load code falls back to the old `pending_output` key, which is migration code for an older format of a mod that has not been released.",
-            "reason": "AGENTS.md says old-world migration is not implemented, and the style rules ask to remove code the current behavior does not need.",
-            "fix": "Remove the `pending_output` fallback branch and read only `pending_outputs`.",
+            "target": "src/main/java/net/claustra01/clayium/machine/crucible/QuartzCrucibleBlock.java:101-120",
+            "acId": "AC-F018-002",
+            "problem": "entityInside automatically takes in impure silicon and string from thrown ItemEntities and can complete the batch. Neither the criteria nor AGENTS.md describe this.",
+            "reason": "Code style: implement exactly what the target criteria require. The criterion only asks for the player's insert → wait → string steps; dropped-item input is an extra, untested way to take in and output material.",
+            "fix": "Remove the entityInside override and the imports it alone uses.",
             "id": "CR-003",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 旧 pending_output キーの読込分岐を削除しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Removed dropped-item interaction from the crucible.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "The pending_output fallback is gone; a grep finds no remaining use.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the NBT load code, so the earlier removal of the pending_output fallback still holds.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "entityInside override and its imports removed.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "AGENTS.md",
+            "target": "src/main/java/net/claustra01/clayium/machine/crucible/QuartzCrucibleBlockEntity.java:41,56,108-117",
             "acId": null,
-            "problem": "There is no M13 section. The 10 machine IDs, the slot layout (inputs/outputs/reserved/fuel with `outputSlots`), the 5 machine hull IDs and tiers, the recipe ID groups, the GUI `required_energy` display, the GameTest names and `tests/e2e/assembly-machines.mjs` are not documented. The M06 NBT key list still says `pending_output`, but the code now saves `pending_outputs`.",
-            "reason": "The project rules require AGENTS.md to be updated in the same change when IDs, registrations, saved data or verification steps change.",
-            "fix": "Add an M13 section covering these items, and change the M06 saved NBT key list to `pending_outputs`. Also state that the GUI shows the required CE instead of the stored CE.",
+            "problem": "insertImpureSilicon and useString check `level.isClientSide`, but they are only called from server-side paths. loadAdditional clamps the saved values to 0..CAPACITY and to impureSilicon*600 ticks. It also calls updateStage, which runs level.setBlock while NBT is loading, even though the stage is already stored in the block state.",
+            "reason": "Code style: validate only states the game can produce. Changing the world from loadAdditional is also an unsafe lifecycle side effect.",
+            "fix": "Drop the isClientSide guards and the clamping, and read impure_silicon and heating_ticks directly. Remove the updateStage call from loadAdditional, because the persisted block state already holds the stage.",
             "id": "CR-004",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: M13 の登録、スロット、保存、レシピ、GUI、検証を AGENTS.md に記載しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Removed redundant client guards, NBT clamping, and the block-state update during loading.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "AGENTS.md has an M13 section, and the M06 NBT key list now says pending_outputs.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch AGENTS.md, so the M13 section and the pending_outputs key list are unchanged.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "Client guards, clamping and updateStage in loadAdditional removed.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineMenu.java:71-77",
-            "acId": "AC-F012-002",
-            "problem": "The 2×2 centrifuge output grid sits at x 115–151, y 25–61. It overlaps the state label drawn at (80,58) (\"Processing\"/\"処理中\" reaches past x 115), and long titles drawn at y 21 run into the top output row.",
-            "reason": "The GUI is captured to show progress, slots and Tier in a readable way. Overlapping text and slots make the centrifuge screen hard to read.",
-            "fix": "Move the multi-output grid, or the state and energy labels, so they do not overlap (for example, put the labels below y 62, or shift the grid up or right). Check the result in the E2E screenshot.",
+            "target": "src/main/java/net/claustra01/clayium/machine/crucible/QuartzCrucibleBlock.java:80-87",
+            "acId": "AC-F018-002",
+            "problem": "On the client, the check returns SUCCESS for any impure silicon whenever the stage is not READY, even when the crucible already holds 8. The server then inserts nothing and passes. This mismatch causes a false hand swing and an incorrect interaction result.",
+            "reason": "The client and server results for the same interaction should agree.",
+            "fix": "Return SUCCESS on both sides and let only the server change state, or base the client check on a condition the client knows. Otherwise remove the client prediction branch and return SUCCESS once the stack type matches.",
             "id": "CR-005",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 遠心分離機の出力枠とタイトル幅を調整し、ラベルとの重なりを解消しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Matching item interactions now return SUCCESS on both sides, including when the crucible cannot accept more.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "The output grid moved to x 132–168, y 18–54, and the title width is limited to 120 for multi-output machines, so they no longer overlap the labels. I did not check the E2E screenshot.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The multi-output grid now sits at x 132–168, y 26–62 (outputY base is now 26). The title width is capped at 120, so it ends at x 127. The state label at (80,58) and the required-energy label at (80,69) do not reach the grid. I did not look at the E2E screenshot.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "Client returns SUCCESS for matching stacks and the server now also returns SUCCESS for matching stacks even if nothing is accepted.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineMenu.java:132-134",
+            "target": "src/main/java/net/claustra01/clayium/recipe/ClayiumMachineRecipe.java:221-223,244-249,262-331",
             "acId": null,
-            "problem": "The screen no longer shows the stored CE, so `storedEnergy()` is now unused, and data slots 8–11 are synced for nothing.",
-            "reason": "The style rules say to remove code that the current behavior no longer uses.",
-            "fix": "Either show the stored CE next to the required CE, or remove `storedEnergy()` and the unused ContainerData indices, and renumber the slots.",
+            "problem": "The new `requires_adjacent_water` and `requires_adjacent_lava` fields, their Match enum cases, and the split LocationCondition/NeighborCondition stream codecs are unused. Only `requires_adjacent_water_source` appears in any recipe, and the cobblestone generator uses its own block entity.",
+            "reason": "Code style: remove unused code; add an abstraction only when two call sites use it.",
+            "fix": "Keep only `requires_adjacent_water_source`. Remove the other two booleans, the Match enum and the switch, and check WaterDetection.isWaterSource over the adjacent positions directly. If a single StreamCodec.composite fits five fields, use it directly instead of the two helper records.",
             "id": "CR-006",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 未使用の保存 CE 表示メソッドと同期データを削除しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Kept only the used adjacent-water-source condition and simplified its matching and stream codec.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "storedEnergy() and the old data slots 8–11 were removed, and the remaining indices and count (14) are consistent.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not bring back storedEnergy() or the old data slots.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "Only requires_adjacent_water_source remains, with a single composite stream codec and direct loop.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/datagen/machine/AssemblyMachineModels.java:32-46",
+            "target": "src/main/java/net/claustra01/clayium/machine/environment/CobblestoneGeneratorBlockEntity.java:32,99-104,127-161",
             "acId": null,
-            "problem": "`machine(...)` is a copy of `MachineBlockStateProvider.machine(...)`.",
-            "reason": "The style rules ask for one direct path per behavior and no duplicate code.",
-            "fix": "Generate the assembly machine models through the existing `MachineBlockStateProvider.machine` logic (add the `AssemblyMachineRegistration.MACHINES` loop there). Keep only the hull models in a separate provider, or move them into the same provider.",
+            "problem": "OutputHandler re-implements IItemHandler just to block insertion. The `output` ItemStackHandler already returns false from isItemValid, so ItemStackHandler.insertItem already rejects every stack. `progress()` is unused and `hasHorizontalWaterAndLava` is public with no outside caller.",
+            "reason": "Code style: no unnecessary abstraction; remove unused code.",
+            "fix": "Register `output` itself as the Item capability and delete OutputHandler and extractionHandler. Remove progress() and make hasHorizontalWaterAndLava private.",
             "id": "CR-007",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 機械モデルの生成を既存 Provider に統合しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Exposed the existing output handler directly and removed unused code.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "The assembly machine models are now generated by MachineBlockStateProvider, and the duplicate machine() was removed from AssemblyMachineModels.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the datagen providers, so the earlier merge into MachineBlockStateProvider still holds.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "OutputHandler, progress() removed; output handler exposed directly (isItemValid false blocks insertion); hasHorizontalWaterAndLava private.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/registry/AssemblyMachineRegistration.java:32-34,83-89",
+            "target": "src/main/java/net/claustra01/clayium/datagen/environment/EnvironmentBlockStateProvider.java:29-46,62-73,92-100",
             "acId": null,
-            "problem": "`legacyName(series)` is a hand-written switch that maps each series to the catalog's legacy name. The catalog can already be matched by `namedIdStem().equals(series.recipeMethod().id())`, which is what the GameTest does.",
-            "reason": "This is an extra mapping that can drift from the catalog. The style asks for one direct path.",
-            "fix": "Look up the MachineFamily by `namedIdStem()` equal to `series.recipeMethod().id()` and delete `legacyName`.",
+            "problem": "machineModel duplicates MachineBlockStateProvider.machine() line for line, and the custom rotation() switch re-implements BlockStateProvider.horizontalBlock. The salt extractors are ClayMachineBlocks with series().frontTexture() = \"saltextractor\", yet their models are built here instead of in the existing machine provider.",
+            "reason": "Code style: one direct path per behavior, and check the existing generators before adding a duplicate.",
+            "fix": "Generate the salt extractor models in MachineBlockStateProvider alongside the other ClayMachineBlocks. For the cobblestone generators, use horizontalBlock(block, model) and delete rotation().",
             "id": "CR-008",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 台帳の namedIdStem で系列を検索し、重複した名前対応を削除しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Moved salt extractor models to the shared machine provider and used horizontalBlock for generators.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "legacyName was deleted, and the series is found by namedIdStem equal to recipeMethod().id().",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch AssemblyMachineRegistration, so legacyName stays removed.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "Salt extractor models moved to MachineBlockStateProvider; generators use horizontalBlock; rotation() deleted.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/gametest/assembly/AssemblyMachineGameTests.java:100-128",
-            "acId": "AC-F012-001",
-            "problem": "`hotfixTwoAssemblyBalancesAndCeValuesArePreserved` checks only tier, CE, ticks and outputs, not the input ingredients and counts, so the production balance is only half-checked. The final `require(ClayiumRecipeEnergy.e(1.0D,10) == 100_000_000L)` tests a math helper, not any recipe against the reduced 1.12.2 value. Hull recipes and Inscriber/Centrifuge construction recipes are not checked at all.",
-            "reason": "The criterion asks for the production balance of the main intermediate materials and original (non-reduced) CE values. The test should assert the recipe data against the original numbers.",
-            "fix": "Assert the inputs (item and count) of each listed recipe as well, include the hull and all 10 machine construction recipes with their original values, and remove the tautological `e(1,10)` check.",
+            "target": "AGENTS.md:120-122,199-204",
+            "acId": "AC-F018-001",
+            "problem": "The M03 section is not updated. Its RecipeType list lacks `clayium:salt_extractor`, and its `environment` description lists only dimension/minimum_y/maximum_y/requires_sky, not the new `requires_adjacent_water_source` key. The M15 section leaves out the cobblestone generator's per-tier intervals (40/20/10/5/2/1 ticks), the saved NBT keys (`inventory`, `progress`; `impure_silicon`, `heating_ticks`), the block entity IDs `cobblestone_generator` and `quartz_crucible`, and the six-direction check for the water source.",
+            "reason": "The common rules require AGENTS.md to record the IDs, numbers and data formats that define behavior whenever they change.",
+            "fix": "Add salt_extractor to the M03 RecipeType list and document the `requires_adjacent_water_source` environment key. In M15, add the interval table, block entity IDs, NBT keys and the adjacency directions used by the salt extractor.",
             "id": "CR-009",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 主要レシピの入力数と品目、筐体と全10機種の製作経路を GameTest で検証します。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: Recorded the recipe key, IDs, intervals, NBT keys, and adjacency directions in AGENTS.md.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "Input items and counts are now asserted. Hull and all machine construction recipes are covered by the new GameTest. The tautological e(1,10) check was removed.",
-                "at": "2026-11-17T11:22:51.866Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the assembly GameTest, so the input and recipe assertions still hold.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "AGENTS.md M03 and M15 updated with salt_extractor, environment key, intervals, BE IDs, NBT keys and six-direction adjacency.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           },
           {
-            "target": "tests/acceptance.json:350-356",
-            "acId": "AC-F012-002",
-            "problem": "The only automated check that the displayed CE matches the CE actually consumed is `centrifugemultioutputstopssavesandconsumesexactlyonce`, and it is mapped only to AC-F012-001. AC-F012-002 has only the screenshot scenario, which cannot check that the values match.",
-            "reason": "The expected result of AC-F012-002 says the displayed value and the consumed CE must match. That needs a mapped assertion.",
-            "fix": "Add a GameTest mapped to AC-F012-002 (or map an existing one) that runs each of the 3 series, compares the menu's synced `requiredEnergy()` with the CE actually consumed, and list it under AC-F012-002.",
+            "target": "tests/e2e/environment-machines.mjs:40-46",
+            "acId": "AC-F018-002",
+            "problem": "The crucible screenshot uses `setblock ... [stage=heating]` and `[stage=ready]` to force the block-state stages on empty crucibles. They show heating/ready models with no impure silicon held, so the E2E never runs the insert → wait → string steps.",
+            "reason": "The E2E for the silicon-making criterion should show the result of the real state machine, not block states the game cannot produce through play.",
+            "fix": "Place an empty crucible and give the client impure silicon and string. Use the client to insert ingots and take the heating screenshot, wait out the heating (or use a small batch), take the ready screenshot, then use string and take a screenshot of the dropped silicon ingots.",
             "id": "CR-010",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 3系列それぞれの GUI 同期 CE と実消費 CE を比較する GameTest を AC-F012-002 に登録しました。",
-                "at": "2026-11-17T11:22:37.012Z"
+                "note": "fixed: The E2E scenario now uses an impure ingot, waits for heating, and uses string before capturing the result.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "A new GameTest compares the menu's synced requiredEnergy() with the CE actually consumed for all three series, and it is mapped to AC-F012-002 in acceptance.json.",
-                "at": "2026-11-17T11:22:51.866Z"
+                "note": "E2E now inserts an impure ingot via interaction, waits for heating, then uses string and screenshots results.",
+                "at": "2026-11-17T15:46:41.847Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/environment-machines.mjs:17-38",
+            "acId": "AC-F018-001",
+            "problem": "Every generator and salt extractor is placed only in the satisfied environment (lava plus a waterlogged fence). There is no contrast case (air, lava only, flowing water) and no view of the produced cobblestone or salt, so the screenshot cannot show conditional output.",
+            "reason": "The criterion's expected result is that the machines tell the environments apart and output only when the condition matches. A screenshot without a contrast case or any output shows only the models.",
+            "fix": "Add a generator and an extractor in a non-matching environment (air or lava only) next to the matching ones. Give the extractors energy, then open a GUI or show the inventories so the output in the matching case and its absence in the other are visible.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Added lava-only controls, extractor GUI output views, and generator inventory views to the E2E scene.",
+                "at": "2026-11-17T15:46:15.887Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "The diff does not touch the AC-F012-002 GameTest or its mapping in acceptance.json, so the earlier fix still holds.",
-                "at": "2026-11-17T11:29:47.029Z"
+                "note": "Lava-only control generator/extractor added, with inventory and GUI output views for matching vs non-matching cases.",
+                "at": "2026-11-17T15:46:41.847Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "6656b56cb80ea3aa09a5c60bcdc9de5349b453bb",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-17T11-23-20-743Z-159-M13-e2e/scenarios/tests-e2e-assembly-machines.mjs/screenshots/AC-F012-002-centrifuge-four-output-progress-and-ce.png",
-            "acId": "AC-F012-002",
-            "problem": "The centrifuge's 2×2 output grid sits right against the face-mode button row. The top edge of the upper two output slots touches the bottoms of the W:I and E:I buttons, and the grid reaches up into the title band. The layout looks crowded and broken compared with the single-output machines.",
-            "reason": "ClayMachineMenu.outputY returns 18 + row*18 for multi-output machines, so the slot background is drawn at y=17. The face buttons in ClayMachineScreen.init cover y=4..18, so the two overlap by 1–2 GUI pixels with no gap.",
-            "fix": "Move the multi-output grid down so it starts below the button row and title, for example outputY = 26 + row*18 with the grid centred on the arrow row (y≈35 ± 9). Alternatively shrink or move the face buttons. Move the slot positions in ClayMachineMenu and the background blits in ClayMachineScreen together, and keep at least a 2px gap between the buttons and the slots.",
-            "id": "ER-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 遠心分離機の出力枠を下げ、面設定ボタンとの間隔を確保しました。スロットと背景は同じ座標を使用します。",
-                "at": "2026-11-17T11:29:34.482Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "In the centrifuge screenshot the 2×2 output grid now starts well below the face-mode button row. There is a clear gap, and the grid no longer reaches into the title band.",
-                "at": "2026-11-17T11:31:29.073Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T11-23-20-743Z-159-M13-e2e/scenarios/tests-e2e-assembly-machines.mjs/screenshots/AC-F012-002-assembler-two-input-progress-and-ce.png",
-            "acId": "AC-F012-002",
-            "problem": "The status reads 'Processing', but the progress arrow is completely empty and every machine slot (both inputs, the output and fuel) is empty. The screenshot does not show any processing progress or which material is being assembled. The inscriber screenshot has the same problem.",
-            "reason": "The scenario only runs `tick step 3` before opening the GUI. The fill width is computed as (int)(24*progress/required), which truncates to 0 for small progress. The inputs are also moved to the hidden pending slots, so nothing visible shows that work is happening.",
-            "fix": "Make the screenshot show progress: advance enough ticks before capture (for example step until progress is about 30–60%), and/or draw at least 1px of fill whenever progress > 0. Leave part of the input stack visible in the input slot (or show the in-process item next to the arrow) so the GUI shows which recipe is running.",
-            "id": "ER-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 組立機を約40%まで進めて撮影し、予約済みの入力素材を GUI に表示します。進捗がある場合は矢印を最低1px描画します。",
-                "at": "2026-11-17T11:29:34.482Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The assembler screenshot now shows progress. The arrow has a white fill, and the input slots show the in-process items (a pattern item and a 32-count stack). The status and CE value (187.500) are visible.",
-                "at": "2026-11-17T11:31:29.073Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T11-23-20-743Z-159-M13-e2e/scenarios/tests-e2e-assembly-machines.mjs/screenshots/AC-F012-002-inscriber-two-input-progress-and-ce.png",
-            "acId": "AC-F012-002",
-            "problem": "The inscriber also shows 'Processing' with an empty progress arrow and empty input and output slots, so its processing progress is not visible.",
-            "reason": "Same cause as the assembler: 3 ticks of progress truncate to a 0px fill, and the consumed inputs are stored in pending slots that the GUI does not show.",
-            "fix": "Use the same fix as the assembler screenshot: capture after more ticks or render a minimum 1px fill when progress > 0, and keep the in-process item visible.",
-            "id": "ER-003",
-            "status": "open",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 印刷機も個別に進めてから撮影し、処理中の素材と矢印の進捗を表示します。",
-                "at": "2026-11-17T11:29:34.482Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The inscriber screenshot now shows its input items, but the progress arrow is still fully gray with no fill. The assembler and centrifuge arrows both show a white fill. The 'Processing' status therefore still has no visible progress for the inscriber.",
-                "at": "2026-11-17T11:31:29.073Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 120 tickの印刷レシピを撮影前に45 tick進め、入力品を表示したまま矢印に十分な進捗幅が出るようにしました。",
-                "at": "2026-11-17T11:32:39.097Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T11-23-20-743Z-159-M13-e2e/scenarios/tests-e2e-assembly-machines.mjs/screenshots/AC-F012-002-assembler-two-input-progress-and-ce.png",
-            "acId": "AC-F012-002",
-            "problem": "The player-inventory label shows the Simplified Chinese '物品栏', while the machine title, state and CE text are in English. The GUI text is in mixed languages. The inscriber and centrifuge screenshots have the same label.",
-            "reason": "The E2E client is running with a zh_cn locale. The mod only ships en_us and ja_jp, so its strings fall back to English while the vanilla `container.inventory` resolves to Chinese.",
-            "fix": "Set the harness client language to en_us (or ja_jp) in the clayium-a instance options so that every label in the GUI uses one locale that the mod supports.",
-            "id": "ER-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 在庫ラベルを Mod の英日翻訳へ移し、撮影クライアントの言語が zh_cn でも他の Mod 表示と同じ英語にフォールバックさせました。",
-                "at": "2026-11-17T11:29:34.482Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The player-inventory label now reads 'Inventory' in English in all three GUI screenshots. The Chinese '物品栏' is gone and the GUI text is in one language.",
-                "at": "2026-11-17T11:31:29.073Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T11-23-20-743Z-159-M13-e2e/scenarios/tests-e2e-assembly-machines.mjs/screenshots/AC-F012-002-inscriber-two-input-progress-and-ce.png",
-            "acId": "AC-F012-002",
-            "problem": "The machine icon between the inputs and the progress arrow is only a small, partly transparent fragment (a dark band about 12×9 px for the inscriber and assembler). It does not look like the machine front, so it is hard to tell which machine it is.",
-            "reason": "ClayMachineScreen blits only `textures/block/<series front>.png`. That PNG is a transparent overlay that the block model draws on top of the hull, so drawing it alone leaves most of the 16×16 area empty.",
-            "fix": "Draw the tier's hull texture (machinehull-(tier-1)) first and the front overlay on top at the same 16×16 position, or render the machine's block item, so the icon matches the placed block front.",
-            "id": "ER-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 機械アイコンに Tier の筐体テクスチャを描き、その上へ正面テクスチャを重ねました。",
-                "at": "2026-11-17T11:29:34.482Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The machine icon is now a full 16×16 tile showing the tier hull with the front overlay on top. It is clearly recognisable as the machine front in the assembler, inscriber and centrifuge GUIs.",
-                "at": "2026-11-17T11:31:29.073Z"
-              }
-            ]
-          }
+      "codeReviewTree": "86e7d5dc0fefa2f60c5e585d006a1d894b782ce7",
+      "e2eReview": null,
+      "failure": {
+        "phase": "e2e",
+        "summary": "1 E2E scenario(s) failed",
+        "details": "tests/e2e/environment-machines.mjs: Error: Command failed: .harness-state/runtime/pilot/node_modules/.bin/mct --client clayium-a wait --ticks 610\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"TIMEOUT\",\n    \"message\": \"Timed out waiting for response from ws://127.0.0.1:62007\",\n    \"details\": {\n      \"url\": \"ws://127.0.0.1:62007\",\n      \"phase\": \"response\",\n      \"requestId\": \"cfc17339-8267-439d-a476-5c160ddef3ae\",\n      \"action\": \"wait.perform\",\n      \"requestSent\": true,\n      \"resultUnknown\": true,\n      \"elapsedMs\": 20005,\n      \"timeoutSeconds\": 20,\n      \"unmatchedResponses\": 0\n    }\n  }\n}\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at checkExecSyncError (node:child_process:943:11)\n    at execFileSync (node:child_process:979:15)\n    at mct (file://.harness/e2e/lib.mjs:14:18)\n    at file://.harness-state/runtime/worktrees/M15/tests/e2e/environment-machines.mjs:69:9\n    at async scenario (file://.harness/e2e/lib.mjs:59:5)\n    at async file://.harness-state/runtime/worktrees/M15/tests/e2e/environment-machines.mjs:9:1\nAC-F018-001 Expected Result: 水と溶岩の隣接、塩析出の水源条件を区別し、条件に一致する場合だけ出力する。水入りブロックの水を水存在判定から除外しない。\nAC-F018-002 Expected Result: 原作の段階条件を満たしたときだけシリコン製品を得られ、途中の材料が増殖しない。",
+        "logs": [
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/runtime/server.log",
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/runtime/client-clayium-a.log",
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/stdout.log",
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/stderr.log"
+        ],
+        "screenshots": [
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-waterlogged-machines-beside-lava-only-controls.png",
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-generator-output-and-lava-only-empty-inventory.png",
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-waterlogged-extractor-salt-output.png",
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-lava-only-extractor-empty-output.png",
+          ".harness-state/runs/2026-11-17T15-47-18-072Z-020-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-002-one-impure-ingot-heating.png"
         ]
       },
-      "failure": null,
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M15",
-      "phase": "implementation",
-      "baseCommit": "96e5edffe4b48d70089abe264ad258f2b95825a6",
+      "id": "M20",
+      "phase": "code_review",
+      "baseCommit": "be23128e2586e48c0a972866171eeac7c0ead737",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -470,8 +325,9 @@
     "M11",
     "M09",
     "M14",
-    "M12"
+    "M12",
+    "M13"
   ],
-  "lastCheckpoint": "96e5edffe4b48d70089abe264ad258f2b95825a6",
+  "lastCheckpoint": "be23128e2586e48c0a972866171eeac7c0ead737",
   "fatal": null
 }

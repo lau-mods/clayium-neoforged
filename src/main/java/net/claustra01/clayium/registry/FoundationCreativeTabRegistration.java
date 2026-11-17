@@ -20,6 +20,7 @@ public final class FoundationCreativeTabRegistration {
                                 MachineRegistration.ITEMS.forEach(output::accept);
                                 ClayProductionRegistration.ITEMS.forEach(output::accept);
                                 FormingMachineRegistration.ITEMS.forEach(output::accept);
+                                AssemblyMachineRegistration.ITEMS.forEach(output::accept);
                                 LogisticsRegistration.BLOCK_ITEMS.forEach(output::accept);
                                 LogisticsRegistration.ITEMS.forEach(output::accept);
                                 WaterWheelRegistration.ITEMS.forEach(output::accept);

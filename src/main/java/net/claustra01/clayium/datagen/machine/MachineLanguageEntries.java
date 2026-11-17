@@ -4,6 +4,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
+import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 
 public final class MachineLanguageEntries {
     public static void add(String locale, BiConsumer<String, String> add) {
@@ -15,11 +16,14 @@ public final class MachineLanguageEntries {
                 "", "粘土", "高密度粘土", "簡易", "基本", "発展", "精密",
                 "粘土鋼", "クレイウム", "究極", "反物質"
         };
-        Stream.concat(
+        Stream.of(
                 MachineRegistration.MACHINES.values().stream().map(definition ->
                         new MachineName(definition.id(), definition.tier(), definition.series().recipeMethod().id())),
                 FormingMachineRegistration.MACHINES.values().stream().map(definition ->
+                        new MachineName(definition.id(), definition.tier(), definition.series().recipeMethod().id())),
+                AssemblyMachineRegistration.MACHINES.values().stream().map(definition ->
                         new MachineName(definition.id(), definition.tier(), definition.series().recipeMethod().id())))
+                .flatMap(java.util.function.Function.identity())
                 .filter(definition -> !definition.id().equals("clay_bending_machine"))
                 .forEach(definition -> {
                     String name = switch (definition.method()) {
@@ -35,6 +39,9 @@ public final class MachineLanguageEntries {
                         case "smelter" -> smelterName(locale, definition.tier());
                         case "alloy_smelter" -> locale.equals("ja_jp") ? "合金精錬機" : "Alloy Smelter";
                         case "electrolysis_reactor" -> electrolysisName(locale, definition.tier());
+                        case "assembler" -> locale.equals("ja_jp") ? "組立機" : "Assembler";
+                        case "inscriber" -> locale.equals("ja_jp") ? "印刷機" : "Inscriber";
+                        case "centrifuge" -> locale.equals("ja_jp") ? "遠心分離機" : "Centrifuge";
                         case "chemical_reactor" -> chemicalReactorName(locale, definition.tier());
                         case "chemical_metal_separator" -> locale.equals("ja_jp")
                                 ? "精密化学金属分離装置" : "Precision Chemical Metal Separator";
@@ -54,11 +61,18 @@ public final class MachineLanguageEntries {
                     add.accept("block.clayium." + definition.id(),
                             prefix + (locale.equals("ja_jp") ? "" : " ") + name);
                 });
+        AssemblyMachineRegistration.MACHINE_HULLS.forEach((tier, block) -> {
+            String prefix = locale.equals("ja_jp") ? japanesePrefixes[tier] : englishPrefixes[tier];
+            add.accept("block.clayium." + block.getId().getPath(),
+                    prefix + (locale.equals("ja_jp") ? "機械筐体" : " Machine Hull"));
+        });
         add.accept("gui.clayium.machine.state.idle", locale.equals("ja_jp") ? "停止中" : "Idle");
         add.accept("gui.clayium.machine.state.running", locale.equals("ja_jp") ? "処理中" : "Processing");
         add.accept("gui.clayium.machine.state.output_full", locale.equals("ja_jp") ? "出力満杯" : "Output full");
         add.accept("gui.clayium.machine.state.waiting_for_energy", locale.equals("ja_jp") ? "CE不足" : "Waiting for CE");
         add.accept("gui.clayium.machine.state.recipe_changed", locale.equals("ja_jp") ? "レシピ更新待ち" : "Recipe changed");
+        add.accept("gui.clayium.machine.required_energy", locale.equals("ja_jp") ? "消費 %s" : "Use %s");
+        add.accept("gui.clayium.machine.inventory", locale.equals("ja_jp") ? "持ち物" : "Inventory");
         add.accept("gui.clayium.machine.empty", locale.equals("ja_jp") ? "空" : "Empty");
     }
 

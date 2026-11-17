@@ -131,6 +131,13 @@ Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:
 - ItemHandler は上面・水平面が入力、下面が出力。各面を入力・出力・無効に変更できる。`machine_face_mode` Payload はサーバーで開いている `processing_machine` メニュー、位置、距離、方向とモードの値域を検証する。
 - 凝縮・粉砕・分解のレシピ JSON は `CondenserGrinderDecomposerRecipes` から生成する。Raw Ore 追加は M17 の担当であり、この系列では粘土・素材の加工を対象とする。
 
+## M13 組立・印刷・遠心分離
+
+- `AssemblySeries` は `assembler_tier_{3,4,6,10}`、`inscriber_tier_{3,4}`、`centrifuge_tier_{3,4,5,6}` の10機種を定義する。すべて共通の `processing_machine` BlockEntity と Menu を使い、対応する加工方法は `assembler`、`inscriber`、`centrifuge` である。
+- 組立・印刷機は入力2、出力1、遠心分離機は入力1、出力4を使う。入力 `0..n-1`、出力 `n..n+outputSlots-1`、処理中退避 `n+outputSlots..2n+outputSlots-1`、燃料 `2n+outputSlots` の順に配置する。GUI は保存 CE ではなく、レシピと Tier 倍率からサーバーが計算した必要 CE を表示する。
+- 機械筐体は Tier 3 `simple_machine_hull`、4 `basic_machine_hull`、5 `advanced_machine_hull`、6 `precision_machine_hull`、10 `antimatter_machine_hull`。レシピ ID は `machine_hull/tier_*`、`assembly_machine/*`、`assembly_parts/*`、`assembler/*`、`inscriber/*`、`centrifuge/*`、`reactor/clay_core` に分ける。Tier 3・4の3系列は作業台で製作でき、高Tier機の組立は原作 hotfix2 の CE 値を使う。
+- GameTest は `allTenAssemblyMachinesMatchTheOriginalTierLedger`、`everyAssemblyTierProcessesItsRepresentativeRecipe`、`hotfixTwoAssemblyBalancesAndCeValuesArePreserved`、`centrifugeMultiOutputStopsSavesAndConsumesExactlyOnce` とし、外観 E2E は `tests/e2e/assembly-machines.mjs` を使用する。
+
 ## M14 化学反応・金属分離・物質変換
 
 `chemical_reactor_tier_{4,5,8}`、`transformer_tier_{7,8,9,10,11,12}`、Tier 6 の `chemical_metal_separator` は共通の `processing_machine` BlockEntity・Menu を使用する。化学反応機の Item スロットは入力 0～1、出力 2～3、退避 4～5、燃料 6。他の2系列は入力 0、出力 1、退避 2、燃料 3。流体は `fluid_input`、`reserved_fluid`、`fluid_output` の直接タンク各 16,000 mB を使う。
