@@ -25,6 +25,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
         MaterialRecipeProvider.buildRecipes(recipeOutput);
+        CondenserGrinderDecomposerRecipes.buildRecipes(recipeOutput);
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BENDING_MACHINE, 4)
                 .requires(Items.CLAY, 2)
                 .requiresFluid(new FluidStack(Fluids.WATER, 250))

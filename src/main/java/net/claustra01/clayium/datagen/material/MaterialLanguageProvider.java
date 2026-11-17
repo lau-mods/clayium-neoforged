@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.LegacyTranslations;
+import net.claustra01.clayium.datagen.machine.MachineLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
 import net.minecraft.data.PackOutput;
@@ -48,5 +49,6 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         }
         add("tooltip.clayium.ce_value", locale.equals("ja_jp") ? "燃料価値: %1$s CE" : "Fuel value: %1$s CE");
         add("tooltip.clayium.clay_units", locale.equals("ja_jp") ? "粘土換算: %1$s" : "Clay equivalent: %1$s");
+        MachineLanguageEntries.add(locale, this::add);
     }
 }

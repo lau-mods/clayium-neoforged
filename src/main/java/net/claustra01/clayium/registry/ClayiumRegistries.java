@@ -41,6 +41,7 @@ public final class ClayiumRegistries {
         FoundationBlockRegistration.ALL.size();
         FoundationItemRegistration.ALL.size();
         MaterialRegistration.CREATIVE_TAB_ITEMS.size();
+        MachineRegistration.MACHINES.size();
         GadgetRegistration.ALL.size();
         WeaponRegistration.ALL.size();
         WorldgenRegistration.BLOCKS.size();

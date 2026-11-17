@@ -2,782 +2,9 @@
   "status": "running",
   "active": [
     {
-      "id": "M06",
-      "phase": "e2e",
-      "baseCommit": "4654cc2c0b6dcfd21473fc2f61f27bf1ab279ce5",
-      "failures": {
-        "build": 0,
-        "gametest": 0,
-        "e2e": 0
-      },
-      "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
-        "issues": [
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:583-598 (MachineContainerData) / ClayMachineMenu.java:108-125",
-            "acId": "AC-F007-003",
-            "problem": "ContainerData carries progress, requiredProgress, a 64-bit CE value split into two 32-bit halves, and tier. Vanilla ClientboundContainerSetDataPacket sends each data slot as a short (16 bits), so the client receives truncated values. For example, 100,000 internal CE (1 CE) already exceeds 16 bits, so the GUI's CE readout and any progress above 32767 come out wrong.",
-            "reason": "The GUI has to show progress and CE accurately. Splitting a long into int halves does not survive the vanilla data-slot sync.",
-            "fix": "Split the CE value into 16-bit pieces (4 data slots for a long) and keep progress/required progress within 16 bits (or send them as a scaled ratio). Another option is to sync these values through a dedicated payload or the block-entity update tag. Then reassemble them in ClayMachineMenu.",
-            "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: CE と進捗を 16 bit 単位で同期し、メニュー側で再構成します。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "ContainerData は進捗・必要進捗・CE を 16bit 4 スロットずつで同期し、メニュー側で & 0xFFFF 付きで再構成している。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。16bit分割同期は維持されている。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it. The 16-bit split sync is unchanged.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff. The 16-bit split sync is unchanged.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/CondenserGrinderDecomposerRecipes.java:17-81",
-            "acId": "AC-F011-001",
-            "problem": "The recipe set is 14 hand-picked one-per-tier samples with the same 20/40 ticks and energy 1.0 throughout (4 clay balls→clay, silicon_dust→silicon_block, quartz/iron/aluminium/clay_steel/antimatter grinding, ...). It is not a transcription of the original JAR's Condenser/Grinder/Decomposer recipe tables. In particular, the original compression-chain condense/decompose recipes across the compressed-clay tiers are missing, and their inputs, outputs, times and CE are unverified.",
-            "reason": "The milestone requires generating the condensing/grinding/decomposing recipes from the original JAR, and AC-F011-001 requires processing results equivalent to the original.",
-            "fix": "Read the original recipe registrations for Condenser, Grinder and Decomposer (excluding Raw Ore recipes, which belong to M17) and generate every one through datagen with the original input/output counts, required tier, processing time and e(v,t) energy. Remove the invented recipes, then regenerate src/generated/resources.",
-            "id": "CR-002",
-            "status": "accepted",
-            "history": [
-              {
-                "status": "accepted",
-                "by": "codex",
-                "note": "accepted: 指摘は未解決です。原作 JAR の真正なレシピ値を確認できず、現行のサンプルレシピを原作同等とは認められません。JAR の提供が必要です。",
-                "at": "2026-11-17T06:03:11.105Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/machine/MachineBlockStateProvider.java:24-29",
-            "acId": "AC-F011-002",
-            "problem": "The model uses vanilla `orientable` with the series PNG (condenser/grinder/decomposer.png) as the whole front face. The original front PNGs are overlays drawn on top of the tier hull, so the hull does not show behind the front, and transparent pixels render as holes or black.",
-            "reason": "AC-F011-002 requires the original machine PNG to be applied over the tier-specific hull, as in the original look.",
-            "fix": "Generate a block model whose front face has two layers: the machinehull-(tier-1) base element plus an overlay element using the series PNG (cutout render type). Hull-only faces stay as they are. Keep it in datagen and regenerate the models.",
-            "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Tier 別 hull の上に元の正面 PNG を重ねる cutout モデルを datagen で生成しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "datagen が hull の立方体と、cutout の正面オーバーレイ要素（系列 PNG）を重ねたモデルを生成している。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。hull上に正面overlayを重ねるモデル生成は維持。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it. The datagen hull + cutout overlay model is unchanged.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff. The hull + cutout overlay model generation is unchanged.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/client/screen/ClayMachineScreen.java:64-75 / ClayMachineMenu.java:35-37",
-            "acId": "AC-F007-003",
-            "problem": "The progress bar is drawn at x=91..115, y=36. That overlaps the reserved-slot frame drawn at 79..97 and the slot at 80,35. The reservation slot also sits between input and output where the original processing GUI shows only the progress arrow, so the layout departs from the original.",
-            "reason": "The AC requires the original slot layout and no overlapping or overflowing drawing.",
-            "fix": "Use the original processing-GUI positions (input, arrow, output, energy-clay slot). Do not draw the reservation as a visible slot over the arrow; either hide it or place it where it does not overlap. Adjust the blit coordinates so the progress bar fits between the input and output slots.",
-            "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 退避スロットを画面外に移し、進捗バーを入出力スロット間に配置しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "退避スロットは画面外へ移し、進捗バーは x=88..112 で入出力スロットの間に収まる。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "退避スロットは(-1000,-1000)で画面外、進捗バーは x=88..112 で入力(43..61)と出力(115..133)の間に収まる。背景も全高で描画され、重なりはない。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it. The screen layout is unchanged.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff. The screen layout is unchanged.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:107-117,288-296,343-372",
-            "acId": "AC-F007-001",
-            "problem": "Recipe reload is detected by polling RecipeManager.byKey every tick and recomputing a hash (including ingredient.getItems()) of the active recipe on every tick for every machine. The existing ClayiumRecipesReloadedEvent is not used, even though AGENTS.md specifies it as the notification to machines.",
-            "reason": "This duplicates the established reload mechanism, adds per-tick cost, and adds an unnecessary abstraction (recipeRevision/addStackRevision/active_recipe_revision NBT).",
-            "fix": "Re-validate the active recipe once when ClayiumRecipesReloadedEvent fires (or on onLoad), aborting and returning the reserved input if it is gone or changed. Remove the per-tick revision hashing and the active_recipe_revision field.",
-            "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 毎 tick のレシピハッシュを削除し、リロード通知とロード時に有効性を確認します。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "毎 tick のハッシュ計算を削除し、ClayiumRecipesReloadedEvent とロード時にだけ検証している。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it. Recipe validation still happens only on reload and on load.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff. Recipe validation still runs only on reload and on load.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:114-129",
-            "acId": "AC-F007-001",
-            "problem": "While running, setState(RUNNING) plus setChangedAndSync() calls level.sendBlockUpdated with the full inventory and NBT on every tick of every machine, even though the menu already syncs progress.",
-            "reason": "Sending a block update every tick is unnecessary network and chunk-save load. Saving and sync should use setChanged, with client updates only when visible state changes.",
-            "fix": "During progress ticks call only setChanged(). Send block updates only when data the client renders outside the menu changes (face modes), and let the menu ContainerData carry progress, state and CE.",
-            "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 進捗と状態の変更は setChanged で保存し、ブロック更新は面設定変更時に限定しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "進捗と状態の変更は setChanged のみ。毎 tick のブロック更新は行わない。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:121-125, 371-377",
-            "acId": "AC-F007-002",
-            "problem": "Energy is consumed once per tick (energyPerProgress), but progress advances by completedProgress, which can exceed 1 when the overclock hook supplies progressPerTick>1. resonanceFactor() is defined but never read, so the resonance hook has no effect.",
-            "reason": "The common engine must apply the hooks that M33 will feed. As written, overclock under-charges CE and resonance is dead code.",
-            "fix": "Consume energyPerProgress × completedProgress per tick. Either apply resonanceFactor() in the TierManager.calculate call path or remove it until it is used.",
-            "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 進んだ進捗量に応じて CE を消費し、未使用の共鳴フックを削除しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "CE は energyPerProgress × completedProgress を消費する。未使用の resonanceFactor は削除済み。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/series/ProcessingSeries.java:13,27-37",
-            "acId": null,
-            "problem": "supportsTier() is unused. The `texture` field always equals recipeMethod().id(), so it duplicates existing data. The series definition has no GUI texture or special-condition entries even though the approach lists them.",
-            "reason": "Code style: remove unused code and abstractions that have only one value source.",
-            "fix": "Remove supportsTier and either derive the texture name from recipeMethod or keep only what differs. Add a GUI texture or special conditions only if a series actually needs them.",
-            "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 未使用の supportsTier と重複する texture フィールドを削除しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "supportsTier と texture フィールドは削除済みで、参照も残っていない。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/registry/MachineRegistration.java:74-85",
-            "acId": null,
-            "problem": "MachineDefinition.item is never read, and definition(String) is a one-line wrapper around MACHINES.get used only by tests.",
-            "reason": "Code style: no unused fields or single-use helpers.",
-            "fix": "Drop the item component from MachineDefinition (ITEMS already holds the items) and call MACHINES.get directly.",
-            "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 未使用の item フィールドと単一用途の definition メソッドを削除しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "MachineDefinition.item と definition() は削除済みで、呼び出しも MACHINES.get に置き換わっている。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/material/MaterialLanguageProvider.java:48-74",
-            "acId": "AC-F011-001",
-            "problem": "Machine names are assembled by hand inside the material language provider: an invented prefix plus \" (Tier N)\", and Japanese text with a space such as \"高密度粘土 凝縮機\". They do not come from the original lang (tile.blockDenseClayCondenser.name etc.). Machine lang entries are also mixed into the material-domain provider.",
-            "reason": "AGENTS.md requires the original English and Japanese display names and domain-specific providers.",
-            "fix": "Add a machine language provider (or a machine entry table) that uses the original .lang English/Japanese names for the 14 machines without appended tier text, and register it in ClayiumDataGenerators. Regenerate en_us/ja_jp.",
-            "id": "CR-010",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 機械名を機械用エントリ表へ移し、追加の Tier 表記と日本語名中の空白を除きました。原作との文字列単位の照合は JAR 待ちです。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "機械名は MachineLanguageEntries に分離され、Tier 表記や空白は除かれている。原作キーとの対応は original_varieties.tsv の名称（Dense Clay Condenser 等）と一致する。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/machine/ClayMachineGameTests.java:105-147",
-            "acId": "AC-F007-003",
-            "problem": "The GUI-operation test checks only menu.stillValid and direct setFaceMode calls. It never exercises the MachineFaceModePayload server handler (wrong position, closed or different menu, out-of-range direction/mode, remote player).",
-            "reason": "The Expected Result requires that value changes go through server validation and that remote players cannot operate arbitrary menus. The current test does not exercise the validation.",
-            "fix": "Make the handler's validation reachable (for example, a package-visible static apply(ServerPlayer, payload)). In the GameTest, open the menu on a mock ServerPlayer and assert that valid payloads change the face while mismatched-pos, out-of-range and out-of-range-distance payloads do not.",
-            "id": "CR-011",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Payload の検証処理を GameTest から呼び、位置、値域、距離、閉じたメニューを検査しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "MachineFaceModePayload.apply を GameTest から呼び、正常値、位置違い、方向・モードの範囲外、距離外、メニューを閉じた場合を検査している。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/machine/ClayMachineGameTests.java:66-102",
-            "acId": "AC-F007-002",
-            "problem": "The Tier 3/4/6 test does not compare slot input/output (sided handlers or slot counts per tier). It also does not show that the same common processing path serves two series with tier-specific values.",
-            "reason": "The Action explicitly lists comparing slot input/output, and the Expected Result requires that a fix to the common processing reaches both series.",
-            "fix": "Add assertions comparing the exposed item-handler slots and insert/extract behavior across the three tiers. Also run the same tier-parameter assertion on a second series (e.g. Condenser at two tiers) to show the shared path.",
-            "id": "CR-012",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Tier 3・4・6 の面別スロットと搬入出、および第二系列の Tier 別速度を検査しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Tier 3/4/6 の面別スロットと搬入出の検査、および第二系列（Condenser）の Tier 別速度比較を追加している。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/machine/ClayMachineGameTests.java:150-181",
-            "acId": "AC-F011-001",
-            "problem": "All 14 machines run only the tier-2 clay recipe. The test never runs tier-specific recipes, never compares input count, output count, time and CE per tier, and never checks that a lower-tier Condenser/Decomposer refuses a higher-tier recipe.",
-            "reason": "AC-F011-001 requires running tier-specific recipes, comparing input count, output count, time and CE, and confirming that low tiers do not execute high-tier recipes.",
-            "fix": "For each series, run the recipe of each machine's own tier and assert input consumed, output count, requiredProgress and CE consumed. Also assert that the next-lower registered tier does not start that recipe.",
-            "id": "CR-013",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 14 機種で各 Tier の現行レシピを実行し、入出力、時間、CE、下位 Tier の拒否を検査しました。レシピ自体の原作照合は CR-002 として残ります。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "14 機種で各 Tier のレシピについて入出力、所要時間、CE を検査し、下位 Tier が開始しないことも確認している。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "tests/e2e/processing-machines.mjs:32-36",
-            "acId": "AC-F011-002",
-            "problem": "Only one processing GUI (grinder tier 4) is captured, although the criterion asks for the processing GUI of the three series at different tiers.",
-            "reason": "The Action is to photograph the models and the processing GUIs of condenser, grinder and decomposer at different tiers.",
-            "fix": "Open and screenshot the GUI of at least one condenser, grinder and decomposer at two different tiers each, so the tier display and textures can be checked.",
-            "id": "CR-014",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 3 系列それぞれについて 2 Tier の GUI 撮影を追加しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "E2E が 3 系列それぞれ 2 Tier の GUI を撮影している。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "processing-machines.mjs は3系列×2 TierのGUI撮影を維持し、カメラ位置の変更のみ。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes the camera yaw and adds a block-placement check. The 3-series, 2-tier GUI captures (guiExamples) are not removed.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes block placement and camera positions. guiExamples still captures the GUI of 3 series at 2 tiers each (6 entries).",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          },
-          {
-            "target": "AGENTS.md",
-            "acId": null,
-            "problem": "AGENTS.md has no M06 section. The machine IDs (`<series>_tier_<N>`), the `processing_machine` block entity/menu IDs, the `machine_face_mode` payload and its validation, slot layout and face defaults, NBT keys, and the generated condenser/grinder/decomposer recipe rules are undocumented.",
-            "reason": "The project rules require updating AGENTS.md in the same change whenever IDs, registrations, behavior or data-generation rules change.",
-            "fix": "Add an M06 section documenting the registered IDs, the shared state machine and slots, face modes and the server-validated payload, and the source and scope of the generated recipes.",
-            "id": "CR-015",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: AGENTS.md に M06 の ID、共有スロット、保存項目、面設定、Payload 検証、レシピ生成範囲を記載しました。",
-                "at": "2026-11-17T06:03:11.105Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md に M06 の節が追加され、ID、スロット、NBT、面設定、Payload 検証、レシピ生成範囲が記載されている。",
-                "at": "2026-11-17T06:03:46.630Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "このdiffでは変更なし。AGENTS.md の M06 節は存在する。",
-                "at": "2026-11-17T06:17:21.308Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "This diff doesn't touch it. The M06 section in AGENTS.md is still there.",
-                "at": "2026-11-17T06:23:12.056Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by this diff. The M06 section in AGENTS.md is still there.",
-                "at": "2026-11-17T06:32:10.162Z"
-              }
-            ]
-          }
-        ]
-      },
-      "codeReviewTree": "4b06033ce21817e68622b6c470a4334e62d7d9e2",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-17T06-06-01-846Z-026-M06-e2e/scenarios/tests-e2e-processing-machine-gui.mjs/screenshots/AC-F007-003-idle-gui-and-validated-face-change.png",
-            "acId": "AC-F007-003",
-            "problem": "The drawn player-inventory grid is about 4 GUI px lower than the real slots. The hover highlight (x≈960–1036, y≈568–640) sits above the slot frame drawn at y≈588–665. Hotbar items such as the 64 cobblestone in the decomposer/grinder screenshots also sit above their frames and overlap the top border. The same offset appears in every processing-machine GUI screenshot.",
-            "reason": "ClayMachineScreen.renderBg blits gui_playerinventory.png at topPos + 77. That puts its first slot frame at about y=88, but the menu's player slots use the vanilla y=84 (frame at 83). The background and the Slot coordinates don't match, which breaks the original slot layout.",
-            "fix": "Line up the inventory texture with the menu slots. Blit gui_playerinventory.png at topPos + 72, or whatever offset puts its first frame at 83 given the texture's internal padding. The other option is to move the ClayMachineMenu player slots and inventoryLabelY to match the texture. Then check that hover highlights and item icons fill the drawn frames exactly.",
-            "id": "ER-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: インベントリ画像を5px上げ、描画枠をメニューのスロット座標に合わせました。",
-                "at": "2026-11-17T06:16:42.963Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "In the new GUI screenshots the inventory frames line up with the slots. The hover highlight on hotbar slot 5 fills its frame exactly (x≈960–1038, y≈533–612). The iron ingot in the decomposer screenshots fills the first hotbar frame, and the 64 output item in the output-full screenshot sits inside its slot frame.",
-                "at": "2026-11-17T06:21:01.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The inventory frames line up with the slots in every new GUI screenshot. The hover highlight on hotbar slot 5 fills its frame exactly. The iron ingot and the other hotbar items sit inside their frames. The 64-item output stack is inside the output slot.",
-                "at": "2026-11-17T06:27:18.972Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T06-06-01-846Z-026-M06-e2e/scenarios/tests-e2e-processing-machine-gui.mjs/screenshots/AC-F007-003-idle-gui-and-validated-face-change.png",
-            "acId": "AC-F007-003",
-            "problem": "The bottom of the GUI panel is cut off. The left and right bevelled borders stop at y≈875. Below that is a flat grey fill with no border, and the hotbar row is clipped at the panel's lower edge (y≈940), so its frames have no bottom border and the panel has no bottom edge or shadow. This happens in every processing-machine GUI screenshot.",
-            "reason": "renderBg blits only the top 150 px of back.png and fills the rest with a flat colour up to imageHeight - 2 (166). The player-inventory texture starts at topPos + 77 and is 90 px tall, so it runs past imageHeight (to 167+). The panel is too short for its contents and has no closing border.",
-            "fix": "Give the panel a full bordered background that is tall enough for the inventory. Raise imageHeight to cover the inventory texture plus the bottom border, or move the inventory up as in the slot-alignment fix. Draw back.png's bottom border/corners (a 9-slice or two-part blit) at the real panel height instead of the plain fill.",
-            "id": "ER-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 原作背景PNGを高さ180pxまで描画し、下端の枠とホットバーを収めました。",
-                "at": "2026-11-17T06:16:42.963Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The hotbar row is no longer clipped. Its frames are complete, and the panel extends below them to y≈985 with its left and right borders running the full height. The panel's bottom edge is closed.",
-                "at": "2026-11-17T06:21:01.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The hotbar row is complete and no longer clipped. The panel extends below it to y≈985 with left and right borders running the full height. The old flat-grey cut-off just under the hotbar is gone.",
-                "at": "2026-11-17T06:27:18.972Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T06-06-01-846Z-026-M06-e2e/scenarios/tests-e2e-processing-machines.mjs/screenshots/AC-F011-002-condenser_tier_2-gui.png",
-            "acId": "AC-F011-002",
-            "problem": "The machine title runs into the Tier label: \"Dense Clay Condenser\" and \"Tier 2\" draw on top of each other (\"CondenserTier 2\"). The same overlap shows in decomposer_tier_2-gui (\"Dense Clay DecomposeTier 2\"). In condenser_tier_10-gui, \"Antimatter Condenser\" butts straight into \"Tier 10\" with no gap.",
-            "reason": "renderLabels draws the title at x=7 and a fixed \"Tier N\" at x=116 on the same line (y=21). Neither has a width limit, so localized names wider than about 109 px overflow into the Tier text.",
-            "fix": "Lay out the header so the two labels can't collide. For example, right-align the Tier label at imageWidth - 7 - font.width(tier) and limit the title to the remaining width (trim with an ellipsis or scale it down). Alternatively, put the Tier label on its own line under the title. Then check the longest English and Japanese names.",
-            "id": "ER-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Tierを右寄せし、残りの幅を超える機械名を省略表示するようにしました。",
-                "at": "2026-11-17T06:16:42.963Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The Tier label is right-aligned and no longer collides with the title. \"Dense Clay Condenser\" and \"Tier 2\" are separate, \"Dense Clay Decomposer\" and \"Tier 2\" are separate, and \"Antimatter Condenser\" and \"Tier 10\" have a clear gap. In the grinder_tier_10 shot the Tier label is covered by an advancement toast, which is out of scope.",
-                "at": "2026-11-17T06:21:01.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The Tier label is right-aligned and no longer collides with the title. \"Dense Clay Condenser\" and \"Tier 2\" are separate, \"Dense Clay Decomposer\" and \"Tier 2\" are separate, and \"Antimatter Condenser\" and \"Tier 10\" have a clear gap. \"Antimatter Grinder\" and \"Tier 10\" also have a clear gap.",
-                "at": "2026-11-17T06:27:18.972Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T06-06-01-846Z-026-M06-e2e/scenarios/tests-e2e-processing-machine-gui.mjs/screenshots/AC-F007-003-processing-progress-and-ce.png",
-            "acId": "AC-F007-003",
-            "problem": "Nothing in the GUI shows progress. No progress arrow is drawn between the input slot and the output slot. This screenshot, meant to show processing, has the status \"Idle\", an empty input and output already produced, so the processing state is never actually captured.",
-            "reason": "renderBg blits progressbarfurnace.png only when the filled width is above 0, and never draws the empty arrow track. With no progress the area between input and output is blank, which loses the original machine GUI's visual cue. The scenario also takes this screenshot after the recipe has finished, not while it is running.",
-            "fix": "Always draw the empty progress-arrow background from the original progressbarfurnace.png (empty region) at (88, 36), and draw the filled region over it in proportion to progress/requiredProgress. In tests/e2e/processing-machine-gui.mjs, take this screenshot while state is RUNNING with 0 < progress < requiredProgress, for example by using a longer recipe or pausing the capture mid-run, so the partly filled arrow is visible.",
-            "id": "ER-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 空の進捗矢印を常時描画し、E2Eでは10tick進めた処理中の状態で撮影するようにしました。",
-                "at": "2026-11-17T06:16:42.963Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The empty progress arrow is always drawn between the input and output slots. The processing-progress-and-ce screenshot shows status \"Processing\" in green, a partly filled arrow at the left end, and CE at 0.991. It captures a run in progress, not a finished one.",
-                "at": "2026-11-17T06:21:01.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The empty progress arrow is drawn between the input and output slots in all GUI screenshots. The processing-progress-and-ce shot shows status \"Processing\" in green, a partly filled arrow at the left end, and CE at 0.991, so it captures a run in progress.",
-                "at": "2026-11-17T06:27:18.972Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T06-06-01-846Z-026-M06-e2e/scenarios/tests-e2e-processing-machines.mjs/screenshots/AC-F011-002-all-fourteen-original-fronts-and-tier-hulls.png",
-            "acId": "AC-F011-002",
-            "problem": "The screenshot shows only an empty grass plain and sky. None of the 14 condenser/grinder/decomposer machines are visible, so their front textures and tier hulls can't be checked.",
-            "reason": "The scenario either places the machines somewhere the camera isn't facing (the GUI screenshots show them on a dark platform elsewhere) or takes the photo before teleporting or turning the player toward the row. The required model check is missing.",
-            "fix": "In tests/e2e/processing-machines.mjs, teleport the player to a fixed spot in front of the placed row and set yaw/pitch so all 14 machine fronts are in frame. Wait for the chunk to render before taking the screenshot. Also check that the blocks were really placed at the coordinates being photographed.",
-            "id": "ER-005",
-            "status": "open",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 14機種の集合写真のカメラを配置列の正面へ向けました。",
-                "at": "2026-11-17T06:16:42.963Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The all-fourteen-fronts screenshot still shows only a grass plain, sky and the hotbar. None of the 14 machines are in frame, so their fronts and tier hulls can't be checked.",
-                "at": "2026-11-17T06:21:01.726Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: カメラのyawを180から0に変更し、撮影対象の14座標で期待するブロックIDを照合するようにしました。",
-                "at": "2026-11-17T06:22:59.535Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The all-fourteen-fronts screenshot still shows only a grass plain, sky, the crosshair and the hotbar. None of the 14 condenser, grinder or decomposer machines are in frame, so their fronts and tier hulls can't be checked. The yaw change did not fix it.",
-                "at": "2026-11-17T06:27:18.972Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 撮影地点での落下と前列による後列の遮蔽を防ぎ、列の中心へ視線を向けて描画を待つよう修正しました。",
-                "at": "2026-11-17T06:31:14.777Z"
-              }
-            ]
-          }
-        ]
-      },
-      "failure": null,
-      "conflicts": [],
-      "reviewConflicts": []
-    },
-    {
       "id": "M07",
       "phase": "implementation",
-      "baseCommit": "a895df5bee6fafe3346f21b96661b063af725ca1",
+      "baseCommit": "2c8620080b4b4765499748599b508948f4b99ae7",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -813,6 +40,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; previously verified fix stands.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Diff only resolves merge conflicts; the fix is untouched.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff; the fix stands.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Diff only resolves merge conflicts; no conflict markers remain; the fix stands.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -842,6 +87,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -871,6 +134,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -900,6 +181,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -929,6 +228,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -958,6 +275,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -987,6 +322,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1016,6 +369,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1045,6 +416,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1074,6 +463,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1103,6 +510,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1132,6 +557,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1161,6 +604,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1190,6 +651,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1219,6 +698,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1248,6 +745,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff. The conflict resolution in acceptance.json keeps the workbench gametest entries.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff; acceptance.json keeps the workbench entry.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1277,6 +792,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1306,6 +839,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1335,6 +886,24 @@
                 "by": "claude",
                 "note": "Not touched by the diff; still resolved.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "FoundationGameTests still builds the workbench expected IDs from the ledger keys. No conflict markers remain in the repo.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "FoundationGameTests keeps the ledger-derived workbench IDs and the workbench block-entity check; the weapon entries are merged in alongside them.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1364,6 +933,24 @@
                 "by": "claude",
                 "note": "The script still takes separate front (yaw 0) and side (yaw 90) screenshots. The diff only adds menu key presses at the start and doesn't change that.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E script still takes separate front (yaw 0) and side (yaw 90) screenshots.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The separate front (yaw 0) and side (yaw 90) captures remain in clay-workbench.mjs.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
           },
@@ -1393,12 +980,69 @@
                 "by": "claude",
                 "note": "Not touched by the diff; AGENTS.md still has the M07 section.",
                 "at": "2026-11-17T06:26:11.818Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md still has the M07 section and clay_work_table in the RecipeType list.",
+                "at": "2026-11-17T06:36:45.223Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md keeps the M07 section; the conflict markers are removed and the M19 section is kept.",
+                "at": "2026-11-17T06:50:33.333Z"
               }
             ]
+          },
+          {
+            "target": "tests/e2e/clay-workbench.mjs:10-11",
+            "acId": "AC-F008-002",
+            "problem": "The merge result deleted the language-selection key sequence from the M07 E2E scenario. This is the 12 lines after `const client = clients[0];`: escape, Options/Language navigation with tab and enter, up ×200, down ×27, enter, a 60-tick wait, and two escapes. `clay-workbench.mjs` was not a conflicted file, and M18 does not touch it.",
+            "reason": "The sequence is the same step as `selectLanguage(client, 27)` in `tests/e2e/material-catalog.mjs` and `foundation-assets.mjs`. It picks a fixed client language before the front, side and GUI screenshots are taken. Without it, the AC-F008-002 screenshots depend on whatever language the client already has. The labels can then differ from the reviewed 1.7.10 comparison. The deletion is also an unrelated change in a file the merge did not need to touch, so this milestone's E2E behavior was lost.",
+            "fix": "Restore the deleted block from the M07 side (`git show HEAD^1:tests/e2e/clay-workbench.mjs`, or the M07 pre-merge commit) right after `const client = clients[0];`. Keep the rest of the scenario unchanged.",
+            "id": "CR-022",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 撮影前に英語を選ぶキー操作と60 tickの待機を、指定位置に復元しました。",
+                "at": "2026-11-17T06:39:35.876Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The 12-line language-selection block is restored right after `const client = clients[0];` in clay-workbench.mjs:11-22. It matches selectLanguage(client, 27) in foundation-assets.mjs line for line. The rest of the scenario is unchanged.",
+                "at": "2026-11-17T06:39:50.191Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Untouched by the diff.",
+                "at": "2026-11-17T06:50:33.333Z"
+              }
+            ]
+          },
+          {
+            "target": "AGENTS.md:133-134",
+            "acId": null,
+            "problem": "When the conflict markers were removed, the blank line between the end of the M07 section (line 133, ending in `tests/e2e/clay-workbench.mjs`。) and the `## M19 粘土銃` heading (line 134) was dropped. The M19 heading now comes right after the M07 paragraph.",
+            "reason": "Every other section in AGENTS.md is separated by a blank line before its `##` heading. Without one, the merged spec is formatted inconsistently, and some Markdown renderers will not treat the line as a heading.",
+            "fix": "Add one empty line between line 133 and `## M19 粘土銃`.",
+            "id": "CR-023",
+            "status": "open",
+            "history": []
           }
         ]
       },
-      "codeReviewTree": "07f6387f63e4701054cb33bccc56f4ff1cd28255",
+      "codeReviewTree": "1722da728bb961a871555db4c51accdb76428d38",
       "e2eReview": {
         "kind": "e2e",
         "issues": [
@@ -1422,6 +1066,12 @@
                 "by": "claude",
                 "note": "In the new clay-work-table-gui screenshot, the title reads \"Clay Work Table\" and the player inventory label reads \"Inventory\". Both are in English, so the mixed zh_cn text is gone. The layout, the 6 operation buttons and the slots look intact.",
                 "at": "2026-11-17T06:33:00.947Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "In the new clay-work-table-gui screenshot, the title reads \"Clay Work Table\" and the player inventory label reads \"Inventory\". Both are English, and the Simplified Chinese \"物品栏\" is gone. The 6 operation buttons, the slots and the arrow are intact, with no missing textures or overlaps.",
+                "at": "2026-11-17T06:46:20.450Z"
               }
             ]
           },
@@ -1445,28 +1095,20 @@
                 "by": "claude",
                 "note": "In the new crafting-board-adjacent-chest-gui screenshot, \"Clay Crafting Board\", \"Adjacent inventory\" and \"Inventory\" are all English. The \"物品栏\" label is gone. The 3×3 grid, the output slot and the adjacent chest slots (32 clay balls, 16 planks) have no overlaps or missing textures.",
                 "at": "2026-11-17T06:33:00.947Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "In the new crafting-board-adjacent-chest-gui screenshot, \"Clay Crafting Board\", \"Adjacent inventory\" and \"Inventory\" are all English, so the \"物品栏\" label is gone. The 3×3 grid, the output slot and the adjacent chest slots (32 clay balls, 16 planks) have no overlaps or missing textures.",
+                "at": "2026-11-17T06:46:20.450Z"
               }
             ]
           }
         ]
       },
-      "failure": {
-        "phase": "integration",
-        "summary": "Merging the latest checkpoint into M07 left conflicts in 3 file(s)",
-        "details": "Milestones without mutual dependencies were implemented in parallel, and another one has been completed since this milestone started.\nResolve every conflict so that the completed milestones and this milestone both keep working: the \"HEAD\" side of each marker is this milestone, the other side is the latest checkpoint.\nRemove all conflict markers.\n\nsrc/main/java/net/claustra01/clayium/datagen/ClayiumDataGenerators.java\nsrc/main/java/net/claustra01/clayium/registry/FoundationCreativeTabRegistration.java\ntests/acceptance.json",
-        "logs": [],
-        "screenshots": []
-      },
-      "conflicts": [
-        "src/main/java/net/claustra01/clayium/datagen/ClayiumDataGenerators.java",
-        "src/main/java/net/claustra01/clayium/registry/FoundationCreativeTabRegistration.java",
-        "tests/acceptance.json"
-      ],
-      "reviewConflicts": [
-        "src/main/java/net/claustra01/clayium/datagen/ClayiumDataGenerators.java",
-        "src/main/java/net/claustra01/clayium/registry/FoundationCreativeTabRegistration.java",
-        "tests/acceptance.json"
-      ]
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
     }
   ],
   "completed": [
@@ -1476,8 +1118,9 @@
     "M03",
     "M05",
     "M18",
-    "M19"
+    "M19",
+    "M06"
   ],
-  "lastCheckpoint": "a895df5bee6fafe3346f21b96661b063af725ca1",
+  "lastCheckpoint": "2c8620080b4b4765499748599b508948f4b99ae7",
   "fatal": null
 }

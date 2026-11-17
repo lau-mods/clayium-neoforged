@@ -26,6 +26,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.claustra01.clayium.registry.OriginalClassInventory;
 import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.registry.WeaponRegistration;
 import net.minecraft.core.Registry;
@@ -69,12 +70,19 @@ public final class FoundationGameTests {
         for (String idPath : MaterialRegistration.COMPONENTS.keySet()) {
             expectedItems.add(ClayiumMod.id(idPath));
         }
+        for (String idPath : MachineRegistration.MACHINES.keySet()) {
+            ResourceLocation id = ClayiumMod.id(idPath);
+            expectedBlocks.add(id);
+            expectedItems.add(id);
+        }
         WorldgenRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         WorldgenRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         WeaponRegistration.ALL.forEach(item -> expectedItems.add(item.getId()));
         require(clayiumIds(BuiltInRegistries.BLOCK).equals(expectedBlocks), "Block registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
-        require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).isEmpty(), "Unexpected block entity");
+        require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE)
+                        .equals(Set.of(ClayiumMod.id("processing_machine"))),
+                "Processing machine block entity registration differs");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
                 "Entity registry differs from the weapon ledger");
@@ -171,6 +179,12 @@ public final class FoundationGameTests {
             expectedKeys.add("item.clayium.impure_osmium_ingot");
             expectedKeys.add("tooltip.clayium.ce_value");
             expectedKeys.add("tooltip.clayium.clay_units");
+            for (String id : MachineRegistration.MACHINES.keySet()) {
+                expectedKeys.add("block.clayium." + id);
+            }
+            for (String state : List.of("idle", "running", "output_full", "waiting_for_energy", "recipe_changed")) {
+                expectedKeys.add("gui.clayium.machine.state." + state);
+            }
             require(language.keySet().equals(expectedKeys),
                     "Generated language keys differ from the registered objects and tooltips");
         }

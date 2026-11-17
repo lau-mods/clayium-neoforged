@@ -115,6 +115,36 @@
       "name": "tiercalculationspreserveroundingandpreventfreework"
     },
     {
+      "acId": "AC-F007-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "sharedmachinestatesurvivesstopssavesandrecipechanges"
+    },
+    {
+      "acId": "AC-F007-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "grindertierthreefourandsixusesharedtierparameters"
+    },
+    {
+      "acId": "AC-F007-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "machinemenuandfacesenforceserverownedaccess"
+    },
+    {
+      "acId": "AC-F011-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfourteenprocessingmachinesregisterandprocess"
+    },
+    {
+      "acId": "AC-F011-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "grindertierthreefourandsixusesharedtierparameters"
+    },
+    {
       "acId": "AC-F038-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -191,6 +221,14 @@
     {
       "acId": "AC-F002-003",
       "scenario": "tests/e2e/material-catalog.mjs"
+    },
+    {
+      "acId": "AC-F007-003",
+      "scenario": "tests/e2e/processing-machine-gui.mjs"
+    },
+    {
+      "acId": "AC-F011-002",
+      "scenario": "tests/e2e/processing-machines.mjs"
     },
     {
       "acId": "AC-F038-003",

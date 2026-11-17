@@ -124,6 +124,13 @@ Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:
 
 サーバーのデータパック適用後、全プレイヤー向け `OnDatapackSyncEvent` でキャッシュを失効させ、新しい RecipeManager を持つ `ClayiumRecipesReloadedEvent` を機械・表示・PAN に通知する。クライアントの `RecipesUpdatedEvent` でも検索キャッシュを更新する。GameTest 用レシピ ID は `gametest/machine_recipe`、`gametest/conditional_missing_external_item`、`gametest/reload_changed`、`gametest/reload_removed`。テスト中の追加レシピは `gametest/reload_added`。
 
+## M06 共通加工機と加工レシピ
+
+- `condenser_tier_{2,3,4,5,10}`、`grinder_tier_{2,3,4,5,6,10}`、`decomposer_tier_{2,3,4}` は同じ `processing_machine` BlockEntity と Menu を使う。Block/Item は同名 ID とする。
+- 在庫は入力 0、出力 1、処理中退避 2、エネルギー粘土 3 の4スロット。退避スロットは GUI と Capability から操作できない。入力は処理開始時に退避し、処理完了時に消費する。出力満杯や CE 不足では進捗を止め、レシピ削除・変更時には退避分を入力へ戻す。保存 NBT は `inventory`、`energy`、`state`、`active_recipe`、`pending_output`、`progress`、`required_progress`、`energy_per_progress`、`progress_remainder`、`progress_per_tick`、`faces` を使用する。
+- ItemHandler は上面・水平面が入力、下面が出力。各面を入力・出力・無効に変更できる。`machine_face_mode` Payload はサーバーで開いている `processing_machine` メニュー、位置、距離、方向とモードの値域を検証する。
+- 凝縮・粉砕・分解のレシピ JSON は `CondenserGrinderDecomposerRecipes` から生成する。Raw Ore 追加は M17 の担当であり、この系列では粘土・素材の加工を対象とする。
+
 ## M19 粘土銃
 
 Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`advanced_clay_shooter`=`item.itemClayShooter1.name`、`sniper_clay_shooter`=`item.itemClayShooter2.name`、`sniper_clay_shooter_pro`=`item.itemClayShooter3.name`、`instant_teleporter`=`item.itemInstantTeleporter.name`。Entity ID は `clay_ball` と `teleport_ball`。
