@@ -13,6 +13,8 @@ import net.claustra01.clayium.datagen.energyconverter.EnergyConverterBlockLoot;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterBlockStateProvider;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionBlockLoot;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionBlockStateProvider;
+import net.claustra01.clayium.datagen.creative.CreativeSourceBlockLoot;
+import net.claustra01.clayium.datagen.creative.CreativeSourceBlockStateProvider;
 import net.claustra01.clayium.datagen.material.MaterialBlockLoot;
 import net.claustra01.clayium.datagen.material.MaterialBlockStateProvider;
 import net.claustra01.clayium.datagen.material.MaterialItemModelProvider;
@@ -57,6 +59,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new AssemblyMachineModels(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new ClayProductionBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new CreativeSourceBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MultitrackBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WaterWheelBlockStateProvider(output, event.getExistingFileHelper()));
@@ -102,6 +105,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(FluidBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(ClayProductionBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(LogisticsBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(CreativeSourceBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MultitrackBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WaterWheelBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(EnvironmentBlockLoot::new, LootContextParamSets.BLOCK),

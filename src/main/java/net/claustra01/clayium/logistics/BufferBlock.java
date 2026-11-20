@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-public final class BufferBlock extends BaseEntityBlock {
+public class BufferBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FILTERED = BooleanProperty.create("filtered");
     public static final EnumProperty<BufferBlockEntity.FaceMode> DOWN = EnumProperty.create("down", BufferBlockEntity.FaceMode.class);

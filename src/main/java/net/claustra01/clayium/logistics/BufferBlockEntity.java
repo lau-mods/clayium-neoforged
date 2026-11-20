@@ -32,13 +32,14 @@ import java.util.function.Consumer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class BufferBlockEntity extends BlockEntity implements MenuProvider {
+public class BufferBlockEntity extends BlockEntity implements MenuProvider {
     public static final int STORAGE_SLOTS = 100;
 
     private final ItemStackHandler inventory = new ItemStackHandler(STORAGE_SLOTS) {
@@ -49,7 +50,7 @@ public final class BufferBlockEntity extends BlockEntity implements MenuProvider
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return ItemFilter.accepts(filterInventory.getStackInSlot(0), stack);
+            return acceptsInput() && ItemFilter.accepts(filterInventory.getStackInSlot(0), stack);
         }
     };
     private final ItemStackHandler filterInventory = new ItemStackHandler(1) {
@@ -95,7 +96,11 @@ public final class BufferBlockEntity extends BlockEntity implements MenuProvider
     };
 
     public BufferBlockEntity(BlockPos pos, BlockState state) {
-        super(LogisticsRegistration.BUFFER_BLOCK_ENTITY.get(), pos, state);
+        this(LogisticsRegistration.BUFFER_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    protected BufferBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         for (Direction direction : Direction.values()) {
             faceModes.put(direction, direction == Direction.DOWN ? FaceMode.OUTPUT : FaceMode.INPUT);
             sidedHandlers.put(direction, new BufferItemHandler(direction));
@@ -106,7 +111,7 @@ public final class BufferBlockEntity extends BlockEntity implements MenuProvider
         buffer.tickServer();
     }
 
-    private void tickServer() {
+    protected final void tickServer() {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -123,7 +128,13 @@ public final class BufferBlockEntity extends BlockEntity implements MenuProvider
         int maximum = transferLimit == 0
                 ? parameters.maximumItems() : Math.min(transferLimit, parameters.maximumItems());
         pushItems(maximum);
-        pullItems(maximum);
+        if (acceptsInput()) {
+            pullItems(maximum);
+        }
+    }
+
+    protected boolean acceptsInput() {
+        return true;
     }
 
     private void ensureCaches(ServerLevel serverLevel) {
@@ -583,7 +594,7 @@ public final class BufferBlockEntity extends BlockEntity implements MenuProvider
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return direction == null || faceModes.get(direction) == FaceMode.INPUT
+            return acceptsInput() && (direction == null || faceModes.get(direction) == FaceMode.INPUT)
                     ? inventory.insertItem(slot, stack, simulate) : stack;
         }
 

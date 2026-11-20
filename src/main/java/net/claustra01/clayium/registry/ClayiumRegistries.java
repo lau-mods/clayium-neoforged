@@ -48,6 +48,7 @@ public final class ClayiumRegistries {
         ClayProductionRegistration.BLOCKS.size();
         FormingMachineRegistration.MACHINES.size();
         LogisticsRegistration.BUFFERS.size();
+        CreativeSourceRegistration.CREATIVE_ENERGY_SOURCE.getId();
         MultitrackRegistration.MULTITRACK_BUFFERS.size();
         MultitrackRegistration.DISTRIBUTORS.size();
         WaterWheelRegistration.DEFINITIONS.size();

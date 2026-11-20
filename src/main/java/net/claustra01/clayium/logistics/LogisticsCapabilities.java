@@ -1,7 +1,9 @@
 package net.claustra01.clayium.logistics;
 
+import net.claustra01.clayium.logistics.creative.CreativeEnergySourceBlockEntity;
 import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
+import net.claustra01.clayium.registry.CreativeSourceRegistration;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
@@ -11,6 +13,10 @@ public final class LogisticsCapabilities {
                 Capabilities.ItemHandler.BLOCK,
                 LogisticsRegistration.BUFFER_BLOCK_ENTITY.get(),
                 BufferBlockEntity::itemHandler);
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                CreativeSourceRegistration.CREATIVE_ENERGY_SOURCE_BLOCK_ENTITY.get(),
+                CreativeEnergySourceBlockEntity::itemHandler);
         event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,
                 MultitrackRegistration.MULTITRACK_BUFFER_BLOCK_ENTITY.get(),

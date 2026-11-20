@@ -24,6 +24,7 @@ import net.claustra01.clayium.registry.FluidRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.environment.EnvironmentLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
+import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.claustra01.clayium.datagen.fluid.FluidLanguageEntries;
@@ -37,6 +38,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.claustra01.clayium.registry.OriginalClassInventory;
 import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.ClayProductionRegistration;
+import net.claustra01.clayium.registry.CreativeSourceRegistration;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
@@ -107,6 +109,8 @@ public final class FoundationGameTests {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
         });
+        expectedBlocks.add(CreativeSourceRegistration.CREATIVE_ENERGY_SOURCE.getId());
+        expectedItems.add(CreativeSourceRegistration.CREATIVE_ENERGY_SOURCE_ITEM.getId());
         EnvironmentMachineRegistration.COBBLESTONE_GENERATORS.forEach(definition -> {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
@@ -157,7 +161,8 @@ public final class FoundationGameTests {
                         ClayiumMod.id("buffer"), ClayiumMod.id("cobblestone_generator"),
                         ClayiumMod.id("quartz_crucible"), ClayiumMod.id("multitrack_buffer"),
                         ClayiumMod.id("distributor"), ClayiumMod.id("clay_production_machine"),
-                        ClayiumMod.id("energy_converter"), ClayiumMod.id("fluid_transport"))),
+                        ClayiumMod.id("energy_converter"), ClayiumMod.id("fluid_transport"),
+                        ClayiumMod.id("creative_ce_source"))),
                 "Block entity registrations differ from registered blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
@@ -243,6 +248,9 @@ public final class FoundationGameTests {
             var logistics = new HashMap<String, String>();
             LogisticsLanguageEntries.add(locale, logistics::put);
             expectedKeys.addAll(logistics.keySet());
+            var creativeSource = new HashMap<String, String>();
+            CreativeSourceLanguageEntries.add(locale, creativeSource::put);
+            expectedKeys.addAll(creativeSource.keySet());
             EnvironmentLanguageEntries.forLocale(locale).keySet().forEach(
                     id -> expectedKeys.add("block.clayium." + id));
             var multitrack = new HashMap<String, String>();

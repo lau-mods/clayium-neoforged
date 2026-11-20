@@ -491,6 +491,18 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "capsulesstayremovedandalldirectfluidmachinesareregistered"
+    },
+    {
+      "acId": "AC-F041-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "replenishessixtyfourfuelandtransferseverytick"
+    },
+    {
+      "acId": "AC-F041-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "supplieditemsarecefuelwithoutfeorsurvivalrecipe"
     }
   ],
   "e2e": [

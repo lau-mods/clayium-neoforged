@@ -3,7 +3,7 @@
   "active": [
     {
       "id": "M21",
-      "phase": "implementation",
+      "phase": "e2e",
       "baseCommit": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
       "failures": {
         "build": 0,
@@ -40,6 +40,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the slot or handler code. The fix still holds.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the slot or handler code, so the earlier fix still holds.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -69,6 +75,12 @@
                 "by": "claude",
                 "note": "The diff does not change the 16-bit ContainerData sync. The screen change only moves how the amount is drawn.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the 16-bit ContainerData sync.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -98,6 +110,12 @@
                 "by": "claude",
                 "note": "Not affected by the diff. The loot table and component retention are unchanged.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The loot table and component retention are not affected by the diff.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -127,6 +145,12 @@
                 "by": "claude",
                 "note": "Not affected by the diff. syncState still only calls setChanged.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the block entity's syncState.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -156,6 +180,12 @@
                 "by": "claude",
                 "note": "The diff adds noOcclusion and a getShape override to MetalChestBlock. This is consistent with the invisible render shape and the entity-renderer items. The builtin/entity item path is unchanged.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the item models or the renderer.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -185,6 +215,12 @@
                 "by": "claude",
                 "note": "The GameTests are not touched by the diff. The menu slot positions changed, but the test works through slots and handler indexes.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -214,6 +250,12 @@
                 "by": "claude",
                 "note": "The GameTests are not touched by the diff.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -243,6 +285,12 @@
                 "by": "claude",
                 "note": "The GameTests are not touched by the diff.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -272,6 +320,12 @@
                 "by": "claude",
                 "note": "The E2E scenario still loops over all 57 chests and every page. The diff adds awaits and a settled camera. The page button position now follows the new layout, and the fallback offset was updated to match.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E scenario still loops over all 57 chests and every page. The diff only adds a look-at target and waits to the camera settling.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -301,6 +355,12 @@
                 "by": "claude",
                 "note": "AGENTS.md is not touched by the diff. The M21 section is still in place.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           },
@@ -330,12 +390,18 @@
                 "by": "claude",
                 "note": "The diff adds no new unreachable-state checks or null fallbacks. The earlier removals still stand.",
                 "at": "2026-11-20T21:26:49.797Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds no unreachable-state checks.",
+                "at": "2026-11-20T21:50:03.094Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "32530619f09b09869ed7c4166cbb6ffc5a1e16ca",
+      "codeReviewTree": "ee7f776d04ccc30269896b1c46c40a4a65b0573e",
       "e2eReview": {
         "kind": "e2e",
         "issues": [
@@ -359,6 +425,12 @@
                 "by": "claude",
                 "note": "The overview shot still shows only the flat grass field and sky. No platform and none of the 57 chests are in frame, so the capture still happens before the camera move and world edits take effect.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 57種のチェストの外観撮影前に視点をチェスト群へ向け、描画更新を待つよう変更しました。再撮影による確認は残っています。",
+                "at": "2026-11-20T21:49:55.358Z"
               }
             ]
           },
@@ -382,6 +454,12 @@
                 "by": "claude",
                 "note": "The exterior shot is still an empty grass view. Only two tiny specks sit on the horizon, so the storage container, expanded container and void container cannot be inspected. The closer camera position did not take effect.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 3種のコンテナの外観撮影前にも近距離の視点を明示し、描画更新を待つよう変更しました。再撮影による確認は残っています。",
+                "at": "2026-11-20T21:49:55.358Z"
               }
             ]
           },
@@ -585,6 +663,12 @@
                 "by": "claude",
                 "note": "AGENTS.md now has an M23 section covering IDs, BlockEntity/Menu/Data Component, NBT keys, states, access checks, GameTest and E2E.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md, and the M23 section is still there.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -608,6 +692,12 @@
                 "by": "claude",
                 "note": "InterfaceScreen now uses the scaling blit overload: 32×32 on screen from a 16×16 UV region.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "InterfaceScreen.java:29-30 still draws 32×32 from a 16×16 UV region with the scaling blit overload. The background now comes from LogisticsBackground.draw, which exists.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -631,6 +721,12 @@
                 "by": "claude",
                 "note": "Position slots are removed from ContainerData (count is 2). The screen reads both dimension and position from the synced blockEntity.target().",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The screen reads dimension and position from blockEntity.target(). The diff does not change this.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -654,6 +750,12 @@
                 "by": "claude",
                 "note": "getUpdateTag now contains only target_dimension and target_pos.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the update tag.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -677,6 +779,12 @@
                 "by": "claude",
                 "note": "The remote redstone flag is no longer saved. It is a last-relay game-tick value that is valid for the current or previous tick only.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the remote redstone handling.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -700,6 +808,12 @@
                 "by": "claude",
                 "note": "The getSignal and isSignalSource overrides and targetRedstonePowered are removed.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch InterfaceBlock.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -723,6 +837,12 @@
                 "by": "claude",
                 "note": "Redstone and laser receivers are now BlockCapabilities. The laser counters and their NBT are removed from ClayMachineBlockEntity. The GameTest registers a test-only laser receiver capability.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the receiver capabilities.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -746,6 +866,12 @@
                 "by": "claude",
                 "note": "resolveItemHandler now calls resolveTarget() once and uses the returned BlockEntity's level and position.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch resolveItemHandler.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -769,6 +895,12 @@
                 "by": "claude",
                 "note": "The client returns PASS when the clicked position has no BlockEntity.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch Synchronizer.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -792,6 +924,12 @@
                 "by": "claude",
                 "note": "The Tier label uses the translatable key gui.clayium.interface.tier, which is added to the language entries.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "InterfaceScreen.java:37 still uses the translatable key gui.clayium.interface.tier.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -815,6 +953,12 @@
                 "by": "claude",
                 "note": "The GameTest now checks registered block and item tiers, a second untouched machine and laser receiver, progress halting under redstone, an in-bounds unloaded chunk that stays unloaded, and reconnection after reload.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTest.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           },
@@ -838,13 +982,74 @@
                 "by": "claude",
                 "note": "The E2E links through the synchronizer and removes the target block before capturing the disconnected state.",
                 "at": "2026-11-20T21:34:46.700Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the E2E script.",
+                "at": "2026-11-20T21:51:11.567Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "be7242d87d1faac04888fdd2b1e3f381243702ad",
-      "e2eReview": null,
+      "codeReviewTree": "2252f061da24cc932e0898dc783e617dc17e1531",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-20T21-47-44-338Z-042-M23-e2e/scenarios/tests-e2e-interfaces.mjs/screenshots/AC-F024-002-unlinked-target-always-visible.png",
+            "acId": "AC-F024-002",
+            "problem": "The Advanced Item Interface (Tier 5, Unlinked) GUI panel is cut off at the bottom. The left and right borders just stop, with no bottom border, bottom corners or shadow. The gray fill ends in a hard straight line over the world, so the frame looks clipped. The text itself (title, Tier, Status, 'Synchronized target', '-', '-') is complete.",
+            "reason": "InterfaceScreen.renderBg (InterfaceScreen.java:23) draws only the top-left 176×112 area of the original back.png in one blit: `graphics.blit(BACKGROUND, leftPos, topPos, 0, 0, 176, 112)`. In back.png the bottom border and corners are in rows v=176..179, so a 112-px crop never includes them. The result does not look like the original GUI frame.",
+            "fix": "Draw the background as a 9-slice that keeps the original back.png corners and edges, the same way LogisticsBackground.draw does. Top edge at v=0..3, bottom edge at v=176..179, sides and fill stretched to height-8. Calling LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight) works, or move it into a shared helper. Keep imageHeight=112 so all text stays inside the frame.",
+            "id": "ER-001",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 未接続画面の背景に元画像の下枠と角を描画するよう変更しました。",
+                "at": "2026-11-20T21:50:59.408Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-47-44-338Z-042-M23-e2e/scenarios/tests-e2e-interfaces.mjs/screenshots/AC-F024-002-connected-dimension-coordinates-and-status.png",
+            "acId": "AC-F024-002",
+            "problem": "The Ultimate Redstone Interface (Tier 9, Connected) GUI panel has the same problem: no bottom border, bottom corners or shadow. The panel ends in a flat cut just below the '0, 100, 2' coordinate line, so the original GUI frame looks incomplete.",
+            "reason": "Same cause: InterfaceScreen.renderBg (InterfaceScreen.java:23) draws back.png only from v=0 to v=112, which leaves out the bottom border rows (v=176..179).",
+            "fix": "Use the same 9-slice background (top v=0..3, bottom v=176..179 of back.png) for the 176×112 interface screen so a closed frame is drawn under the connected-status, dimension and coordinate text.",
+            "id": "ER-002",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 接続済み画面も同じ描画処理を使い、下枠まで表示します。",
+                "at": "2026-11-20T21:50:59.408Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-47-44-338Z-042-M23-e2e/scenarios/tests-e2e-interfaces.mjs/screenshots/AC-F024-002-removed-target-shows-disconnected-status.png",
+            "acId": "AC-F024-002",
+            "problem": "The OPA Clay Laser Interface (Tier 13, Disconnected) GUI panel is also cut off at the bottom. It has no bottom border or bottom corners, and the gray fill ends abruptly below the '4, 100, 2' line, so the original GUI frame is incomplete.",
+            "reason": "Same cause: the single cropped blit in InterfaceScreen.renderBg (InterfaceScreen.java:23) uses only the top 112 px of back.png and never draws the bottom edge at v=176..179.",
+            "fix": "Replace the cropped blit with a 9-slice draw of back.png's corners and edges (like LogisticsBackground.draw) so the disconnected-state GUI has a complete original frame on all four sides.",
+            "id": "ER-003",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 切断済み画面も同じ描画処理を使い、下枠まで表示します。",
+                "at": "2026-11-20T21:50:59.408Z"
+              }
+            ]
+          }
+        ]
+      },
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
@@ -871,8 +1076,9 @@
     "M20",
     "M17",
     "M15",
-    "M22"
+    "M22",
+    "M24"
   ],
-  "lastCheckpoint": "bce081fd5b159d7de114e132e4a0049d9415ac50",
+  "lastCheckpoint": "4ed8aa9952d4315dfd4eb3a716ccdb206cc9f6c3",
   "fatal": null
 }

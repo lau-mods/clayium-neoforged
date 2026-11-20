@@ -257,6 +257,12 @@ GameTest は `rawOresPreserveMetalBalanceAndVanillaDrops` と `modernWoodsUseTag
 
 GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` と `distributorsShareFairlyAcrossThreeTiersAndSkipFullOutputs`。外観 E2E は `tests/e2e/multitrack-logistics.mjs`。
 
+## M24 クリエイティブ用エネルギー源
+
+`CreativeSourceRegistration` は原作キー `tile.blockCreativeCESource.name` を同名 Block/Item `creative_ce_source` と BlockEntity `clayium:creative_ce_source` に登録する。Tier は13。毎 tick、搬出前に内部在庫の `octuple_compressed_energetic_clay` を最大64個へ補充し、通常バッファの面設定と Tier 13 の `TierManager.bufferTransport` に従って搬出する。INPUT 面は搬入せず、外部からの ItemHandler 挿入も受け付けない。面設定と在庫などの NBT は通常バッファから継承する。FE Capability とサバイバル製作レシピは持たず、クリエイティブタブからのみ入手できる。
+
+GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsAreCeFuelWithoutFeOrSurvivalRecipe`。
+
 ## M22 直接流体輸送
 
 `FluidRegistration` は `fluid_translator_tier_4`～`13` と `fluid_transfer_machine_tier_5` を同名 Block/Item で登録し、共通の `clayium:fluid_transport` BlockEntity と Menu を使う。単一タンク容量と全方向合計の毎 tick 転送上限は GR-06 の値を使用する。外部接続は `Capabilities.FluidHandler.BLOCK` のみとし、1 mB 単位で直接搬送する。
