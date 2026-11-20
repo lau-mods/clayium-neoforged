@@ -473,6 +473,24 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "modernwoodsusetagsandbambooisnotasapling"
+    },
+    {
+      "acId": "AC-F022-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfluidtierstransferdirectlyandconservependingfluid"
+    },
+    {
+      "acId": "AC-F022-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fluidfiltersfacesandrestartpreserveexactamounts"
+    },
+    {
+      "acId": "AC-F022-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "capsulesstayremovedandalldirectfluidmachinesareregistered"
     }
   ],
   "e2e": [
@@ -567,6 +585,10 @@
     {
       "acId": "AC-F020-002",
       "scenario": "tests/e2e/multitrack-logistics.mjs"
+    },
+    {
+      "acId": "AC-F022-003",
+      "scenario": "tests/e2e/fluid-transport.mjs"
     }
   ]
 }

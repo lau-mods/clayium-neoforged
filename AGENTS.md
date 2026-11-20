@@ -256,3 +256,11 @@ GameTest は `rawOresPreserveMetalBalanceAndVanillaDrops` と `modernWoodsUseTag
 分配機は9スロット在庫を持ち、初期面状態は下面が出力、他面が入力。原作 `TileClayDistributor` は Tier 7/8/9 の転送周期を各1 tick、最大数量を64/128/512とし、搬出開始面を成功時に進める。受入可能な出力面へ1個ずつ順送りし、満杯先は飛ばす。`distributor_control` の action 0～5 は面状態を変更する。保存 NBT は `inventory`、`faces`、`next_output_direction`、`next_input_direction`。複線バッファの Tier 別転送周期・数量は `TierManager.bufferTransport` を共通利用する。
 
 GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` と `distributorsShareFairlyAcrossThreeTiersAndSkipFullOutputs`。外観 E2E は `tests/e2e/multitrack-logistics.mjs`。
+
+## M22 直接流体輸送
+
+`FluidRegistration` は `fluid_translator_tier_4`～`13` と `fluid_transfer_machine_tier_5` を同名 Block/Item で登録し、共通の `clayium:fluid_transport` BlockEntity と Menu を使う。単一タンク容量と全方向合計の毎 tick 転送上限は GR-06 の値を使用する。外部接続は `Capabilities.FluidHandler.BLOCK` のみとし、1 mB 単位で直接搬送する。
+
+面状態は `INPUT`、`OUTPUT`、`BOTH`、`DISABLED`。初期状態は下面が出力、上面と水平4面が入力。赤石条件は `IGNORE`、`POWERED`、`UNPOWERED`。`clayium:fluid_filter` Data Component を持つ流体フィルターは許可／禁止と流体 Registry ID を保存する。保存 NBT は `tank`、`pending`、`filter`、`faces`、`redstone_condition`、`next_output_direction`、`next_input_direction`。
+
+搬送は SIMULATE 後に実行し、実行時に受入量が減った差分は永続保留タンクへ格納して次 tick 以降に先に再送する。差分全量を保留できない搬送は開始しない。Capability 経由で同 tick に受け渡された装置はその tick の自動搬送を行わず、面が `BOTH` の場合も同じ面へ同 tick に往復させない。5容量のカプセル Item・レシピ・設定・流体 ID 表は追加しない。GameTest は `FluidTransportGameTests`、外観 E2E は `tests/e2e/fluid-transport.mjs`。

@@ -21,8 +21,27 @@
             "reason": "The criterion says inserting into the container must not lose items, and the void container must discard what the player inserts. Through the GUI, both containers crash, lose items or duplicate them.",
             "fix": "Use a dedicated Slot subclass for the storage and void slots. It should send all changes through the handler: `insertItem` in `safeInsert`/`set`, and `extractItem` in `remove`. Alternatively, give the storage and void containers no item slot and handle insertion and extraction in `quickMoveStack` and `clicked` through `insertItem`/`extractItem`. Either way the stored `amount` must be the only source of truth.",
             "id": "CR-001",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GUI slots now insert and extract through the handlers, keeping the stored amount authoritative.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ContainerInputSlot sends set, remove and safeInsert through the handler's insertItem and extractItem. The menus' quickMoveStack insert and extract through the handler too, so the stored amount stays authoritative.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the slot or handler code. The fix still holds.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerBlockEntity.java:179-200, StorageContainerMenu.java:69-75",
@@ -31,8 +50,27 @@
             "reason": "The player cannot see the 65,536 and 2,147,483,647 capacity boundaries the criterion requires. Other menus in this mod (`ClayMachineBlockEntity`, `ClayProductionBlockEntity`/`ClayProductionMenu.readLong`) already split longs into 16-bit parts.",
             "fix": "Split `amount` and `capacity` into four 16-bit data slots each (`(int)(value >>> (i*16)) & 0xFFFF`). Rebuild them on the client the same way `ClayProductionMenu.readLong` does, and resize the `SimpleContainerData`.",
             "id": "CR-002",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Amount and capacity sync as four 16-bit parts each.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Amount and capacity are each split into four 16-bit data slots, rebuilt on the client by readLong, and the ContainerData size is 9.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not change the 16-bit ContainerData sync. The screen change only moves how the amount is drawn.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/datagen/storage/StorageBlockLoot.java:17 and src/main/java/net/claustra01/clayium/storage/StorageContainerBlock.java",
@@ -41,8 +79,27 @@
             "reason": "The criterion forbids item loss in the storage container.",
             "fix": "Keep the contents when the block is mined. Store the item, amount and expansion in a Data Component on the dropped item: use `copy_components` in the generated loot table together with the block entity's `collectImplicitComponents`/`applyImplicitComponents`, and restore the `expanded` block state on placement. Add a GameTest for breaking and placing it again.",
             "id": "CR-003",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The storage container drop retains its contents and expansion data, which placement restores.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The loot table copies custom_data from the block entity. collectImplicitComponents and applyImplicitComponents save and restore the contents, and getStateForPlacement restores the EXPANDED block state. A GameTest covers break and replace.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff. The loot table and component retention are unchanged.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerBlockEntity.java:97-108",
@@ -51,8 +108,27 @@
             "reason": "The code style asks to remove code the current behavior does not use and to rely on the vanilla mechanisms (`setChanged` plus menu data sync).",
             "fix": "Call only `setChanged()` on content changes. Change the `EXPANDED` block state only in `applyClayCore`, and remove the `sendBlockUpdated` branch.",
             "id": "CR-004",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Content changes now use setChanged without redundant block updates.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Content changes call only setChanged, and the block state is updated only in applyClayCore.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not affected by the diff. syncState still only calls setChanged.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/generated/resources/assets/clayium/models/item/*_chest.json (StorageItemModelProvider.java:22-27) and blockstates/*_chest.json (StorageBlockStateProvider.java:46-47)",
@@ -61,8 +137,27 @@
             "reason": "The criterion requires each material's own appearance based on the original PNGs, and the items are part of that appearance.",
             "fix": "Render the items through the chest model: use a `builtin/entity` parent with an `IClientItemExtensions` `BlockEntityWithoutLevelRenderer` that reuses `MetalChestRenderer` and the material tint. Give the block model a particle texture taken from the existing original PNG. Remove the item-color registration in `MaterialColors` if it is no longer used.",
             "id": "CR-005",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Metal chest items use the chest renderer, and block models have a particle texture copied from an original PNG.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Metal chest items use a builtin/entity parent with a BlockEntityWithoutLevelRenderer, and the block models use a particle texture. The item-color registration was removed.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds noOcclusion and a getShape override to MetalChestBlock. This is consistent with the invisible render shape and the entity-renderer items. The builtin/entity item path is unchanged.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:79-117",
@@ -71,8 +166,27 @@
             "reason": "The criterion's precondition is a ledger of each material's page and slot counts, and its action is operating every page of every chest.",
             "fix": "Put an independent table of the 57 (id, columns, rows, pages) values from the original GR-08 data in the test and compare `MetalChestType`/the registry against it. On each page, insert and take items through the active `menu.slots` (`quickMoveStack` from the player inventory and `slot.safeInsert`/`safeTake`), then check that the items reach the expected handler indexes and survive save and load.",
             "id": "CR-006",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GameTests compare all 57 types with an independent GR-08 ledger and operate slots on every page.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The test compares all 57 types with an independent GR-08 ledger, then inserts, takes and shift-moves items through the menu slots on every page.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are not touched by the diff. The menu slot positions changed, but the test works through slots and handler indexes.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:25-78",
@@ -81,8 +195,27 @@
             "reason": "The criterion's action is to apply a Clay Core and to insert again; this test bypasses both.",
             "fix": "Place the block in the level, give a mock player a Clay Core and use it on the block through the block's `useItemOn`. Assert that the core stack shrank and `EXPANDED` is true. Insert and take items through `StorageContainerMenu`/`VoidContainerMenu` slots and `quickMoveStack`, and check that the totals are conserved. Save and reload at the basic 65,536 boundary as well.",
             "id": "CR-007",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GameTests apply and consume a Clay Core through block interaction and exercise GUI insertion, extraction, and basic-state saving.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The test uses a Clay Core through useItemOn and checks the consumed stack and the EXPANDED state. It operates the storage and void menus through slots, clicks and quickMoveStack, and saves and reloads the basic state.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are not touched by the diff.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:121-143",
@@ -91,8 +224,27 @@
             "reason": "A GameTest has to perform the action and assert the expected result. Here the assertion is trivially true.",
             "fix": "Insert an item through `first.slots` on page 1 and another through `second.slots` on page 7, for example with `quickMoveStack` from each player's inventory. Assert that each item lands in the correct handler index and that the other menu's matching slot shows it.",
             "id": "CR-008",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The concurrent-menu test inserts through each menu and verifies that both menus see the shared inventory.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The concurrent-menu test inserts through each menu's slots and checks that the other menu sees the item on its own page.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are not touched by the diff.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "tests/e2e/storage-containers.mjs:21-64",
@@ -101,8 +253,27 @@
             "reason": "The criterion requires operating every page of every chest and capturing the opened GUIs.",
             "fix": "Loop over all 57 chests. Open each one, capture every page while switching with the page button, and verify the page and slot contents each time with `gui layout`, using the button's position from the layout rather than a fixed offset. Add a storage container GUI capture that shows the 65,536 and 2,147,483,647 amounts.",
             "id": "CR-009",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The E2E scenario opens all 57 chests, captures every page, derives page-button coordinates from the GUI layout, and captures storage GUI capacity boundaries.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E loops over all 57 chests and every page, takes the page button from the layout where it is available, and captures the storage and void GUIs at the capacity boundaries.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E scenario still loops over all 57 chests and every page. The diff adds awaits and a settled camera. The page button position now follows the new layout, and the fallback offset was updated to match.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "AGENTS.md",
@@ -111,8 +282,27 @@
             "reason": "The project rules require AGENTS.md to be updated together with changes to IDs, registrations, behavior and verification steps, and AGENTS.md is in this milestone's scope.",
             "fix": "Add an M21 section like the existing milestone sections, with the IDs, capacities, save keys, the GR-08 capacity table, the Capability exposure rules and the test names.",
             "id": "CR-010",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md now records M21 IDs, capacities, persistence, capability rules, chest dimensions, and verification names.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has an M21 section covering the IDs, capacities, NBT keys, the GR-08 table, the page protocol and the test names.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md is not touched by the diff. The M21 section is still in place.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/storage/MetalChestType.java:67-71,82-88; StorageContainerMenu.java:28-31; VoidContainerMenu.java:24-25; MetalChestMenu.java:26-27; StorageContainerBlockEntity.java:89; StorageContainerBlockEntity.java:170-174",
@@ -121,29 +311,539 @@
             "reason": "The code style says to validate only states the game can produce and to rely on Minecraft and NeoForge guarantees.",
             "fix": "Remove the dimension and material checks, the null fallbacks (resolve the block entity directly), the amount clamp and the `checkSlot` helpers.",
             "id": "CR-011",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Removed the listed unreachable-state checks and fallbacks.",
+                "at": "2026-11-20T21:08:11.205Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The dimension and material checks, the null fallbacks, the amount clamp and the checkSlot helpers were removed.",
+                "at": "2026-11-20T21:08:36.266Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds no new unreachable-state checks or null fallbacks. The earlier removals still stand.",
+                "at": "2026-11-20T21:26:49.797Z"
+              }
+            ]
           }
         ]
       },
-      "codeReviewTree": "9652418e272f1a6221ad23c11ba993332cf61b18",
-      "e2eReview": null,
+      "codeReviewTree": "32530619f09b09869ed7c4166cbb6ffc5a1e16ca",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-all-57-original-layered-metal-chests.png",
+            "acId": "AC-F021-002",
+            "problem": "The overview shot shows only the default flat grass world, seen from the player's normal eye height in daytime. None of the 57 metal chests appear, and neither does the smooth-stone platform at y=99, so no per-material exterior can be checked.",
+            "reason": "The screenshot is taken before the scenario's camera move and world edits are visible on the client. `command()` and `screenshot()` are not awaited, and nothing waits after `camera()` to confirm the view is at x=0.5, y=104.5, z=-31.5. Later shots of the same run show the platform and chests, so the blocks do exist; the capture simply happened too early.",
+            "fix": "In `tests/e2e/storage-containers.mjs`, await every `command()` and `camera()` call. After `camera()`, wait for the client position to match, plus a few ticks for chunks to re-render, before calling `await screenshot(...)`. Keep the camera inside the 45×17 platform view so all 57 chests are in frame.",
+            "id": "ER-001",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Awaited world edits and screenshots, then verified camera position and allowed rendering time before the overview capture.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The overview shot still shows only the flat grass field and sky. No platform and none of the 57 chests are in frame, so the capture still happens before the camera move and world edits take effect.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-basic-expanded-and-void-container-exteriors.png",
+            "acId": "AC-F021-001",
+            "problem": "The exterior shot is the same empty grass view as the 57-chest overview. The unexpanded storage container, the expanded one and the void container at (-2/0/2, 100, -5) do not appear.",
+            "reason": "Same cause as the overview shot: the screenshot fires before the camera move and the `setblock` commands are applied and rendered, because those calls are not awaited and nothing waits for the view to settle.",
+            "fix": "Await the setblock commands and the camera move, wait for the render to settle, then capture. Better still, give the containers their own camera position near (0.5, 101.5, -9.5) facing south so all three blocks fill the frame.",
+            "id": "ER-002",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Added a settled camera view close to the three containers before their exterior capture.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The exterior shot is still an empty grass view. Only two tiny specks sit on the horizon, so the storage container, expanded container and void container cannot be inspected. The closer camera position did not take effect.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-silicon_chest-page-1-of-1.png",
+            "acId": "AC-F021-002",
+            "problem": "The metal chests visible in the world behind every chest GUI (silicon, vanadium, cobalt, tantalum, palladium and others) are drawn as solid black chest shapes. None of the base/dark/light material tints are visible, while the stone floor next to them is still lit.",
+            "reason": "`MetalChestBlock` uses `RenderShape.INVISIBLE` with a block entity renderer, but `StorageRegistration.containerProperties()` does not call `noOcclusion()`. The block therefore counts as an opaque full cube, so the light value passed to `MetalChestRenderer` for its own position is 0 and the model renders black. Neighbouring faces are also culled.",
+            "fix": "Give metal chests their own properties, `containerProperties().noOcclusion()`, and return a chest-shaped `VoxelShape` such as `Block.box(1,0,1,15,14,15)` from `getShape`, as vanilla `ChestBlock` does. The renderer then receives real light and shows the tinted layers.",
+            "id": "ER-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Made metal chests non-occluding and gave them a chest-shaped voxel shape so the renderer receives light.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The world chests behind the GUIs now show shading and material tints. These include the blue vanadium chest, the dark-red cobalt chest and the green, red and blue ones behind the silicon GUI. They are no longer solid black.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-americium_chest-page-2-of-5.png",
+            "acId": "AC-F021-002",
+            "problem": "The page counter between the ◀ and ▶ buttons cannot be read on any chest page: \"2/5\", \"8/8\" and \"3/3\" show up as smeared double glyphs whose edges run into both buttons.",
+            "reason": "`MetalChestScreen.renderLabels` uses `drawCenteredString`, which always adds a drop shadow, with dark text colour 0x404040. The label is also centred at `imageWidth-30` inside a gap only 20px wide (between `imageWidth-40` and `imageWidth-20`), so the shadowed text touches both buttons.",
+            "fix": "Draw the label without a shadow: `graphics.drawString(font, page, imageWidth - 30 - font.width(page) / 2, y, 0x404040, false)`. Widen the gap so labels up to \"8/8\" fit with padding, for example ◀ at `imageWidth-66` and ▶ at `imageWidth-24` with the label centred between them.",
+            "id": "ER-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Widened the page-control gap and drew its counter without a shadow.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The page counters read cleanly as \"1/1\", \"2/5\" and \"8/8\" in the silicon, americium, cobalt and neodymium GUIs. There is no doubled shadow and a clear gap on both sides of the counter.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-europium_chest-page-8-of-8.png",
+            "acId": "AC-F021-002",
+            "problem": "In every metal chest GUI the ◀/▶ page buttons cover the panel's top and right border: the ▶ button runs over the right frame edge and both buttons sit flush with the top edge. The title band is also only 13px tall, so the buttons touch the first slot row.",
+            "reason": "The buttons are placed at `topPos + 1`, 12px tall, and the ▶ button ends at `imageWidth - 2`. That is inside the 3–4px frame drawn by `LogisticsBackground.draw`, and the slot grid starts at y=13–14 directly below.",
+            "fix": "Keep the buttons inside the frame (for example `bounds(leftPos + imageWidth - 24, topPos + 4, 18, 12)` and the matching ◀ position). Make the title band taller by moving storage slots to y≈18 in both `MetalChestMenu` and `MetalChestScreen.renderBg`, and update `imageHeight()` to match.",
+            "id": "ER-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Moved page buttons inside the frame and increased the title-band height.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "In silicon, americium, cobalt and neodymium the ◀/▶ buttons sit inside the frame with a margin on the top and right edges. The title band is taller and the first slot row starts below the buttons. The large chests (europium, invar and others) are cut off at the top of the screen, but the button placement itself is fixed.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-invar_chest-page-1-of-1.png",
+            "acId": "AC-F021-002",
+            "problem": "The chest grid runs straight into the player inventory with no gap and no \"Inventory\" label. The hotbar is not separated from the main inventory, and the bottom slot row sits on the panel's bottom edge with no bottom border. In the 9-wide chests (invar, silicon, hafnium and others) chest rows and player rows look identical, so the user cannot tell where the chest's capacity ends. This applies to all 57 chest GUIs (europium, vanadium, tantalum, palladium and others).",
+            "reason": "`MetalChestMenu` and `MetalChestScreen` put the player inventory at `14 + rows*18`, right after the last chest row, and the hotbar at `+54` with no 4px gap. `imageHeight()` is `14 + rows*18 + 72`, which leaves no bottom padding, and `playerInventoryTitle` is never drawn.",
+            "fix": "Use a vanilla-style layout:\n- Storage starts at y=18.\n- `playerY = 18 + rows*18 + 14`.\n- Draw `playerInventoryTitle` at `playerY - 11`.\n- Put the hotbar at `playerY + 58`.\n- `imageHeight = playerY + 76 + 7`.\n\nApply the same offsets in the Menu slot positions and in `renderBg`.",
+            "id": "ER-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Separated chest and player slots, added the inventory label and hotbar gap, and increased bottom padding.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The player inventory is now separated from the chest grid. The 物品栏 label is drawn, the hotbar has its own gap, and the panel has bottom padding. This holds in the silicon, americium, cobalt and neodymium GUIs.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-basic-65536-gui.png",
+            "acId": "AC-F021-001",
+            "problem": "The amount line \"65,536 / 65,536\" is drawn as bold, smeared double text with a heavy dark shadow and is hard to read. The same happens to \"2,147,483,646 / 2,147,483,647\" in the expanded GUI.",
+            "reason": "`StorageContainerScreen.renderLabels` uses `drawCenteredString`, which forces a drop shadow, with dark grey 0x404040. A dark shadow under dark text produces the doubled glyphs.",
+            "fix": "Draw the amount without a shadow, centred by hand: `graphics.drawString(font, amount, (imageWidth - font.width(amount)) / 2, 58, 0x404040, false)`.",
+            "id": "ER-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Drew the storage amount centered without a shadow.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no shadow.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-expanded-2147483647-gui.png",
+            "acId": "AC-F021-001",
+            "problem": "The \"Clay Core expanded\" label overlaps the player inventory title (物品栏) below it, so the two lines of text are drawn on top of each other.",
+            "reason": "In `StorageContainerScreen` the expanded label is drawn at y=70 and `inventoryLabelY` is 75. Both are 9px-tall text lines only 5px apart.",
+            "fix": "Move the expanded label clear of the inventory title. For example, draw it at y=20 under the container title, or move the amount to y=50 and the label to y=62. Alternatively, grow `imageHeight` and push the player inventory and its label down by at least 10px.",
+            "id": "ER-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Moved the expanded label below the container title, clear of the inventory label.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"Clay Core expanded\" now sits directly under the title and is clear of the 物品栏 label.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-void-gui.png",
+            "acId": "AC-F021-001",
+            "problem": "The red notice \"Inserted items are discarded\" has the same smeared, doubled look and is hard to read.",
+            "reason": "`VoidContainerScreen` draws the centred notice with `drawCenteredString`, which adds a forced drop shadow, in a dark red colour, just like the storage container amount line.",
+            "fix": "Draw the notice with `drawString(..., false)` and centre it manually. If a shadow is wanted, use a lighter colour that works with it.",
+            "id": "ER-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Drew the void notice centered without a shadow.",
+                "at": "2026-11-20T21:26:26.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
+                "at": "2026-11-20T21:47:38.948Z"
+              }
+            ]
+          }
+        ]
+      },
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M22",
-      "phase": "implementation",
-      "baseCommit": "7b71476a7318e1cfeb3c48eba0a9a7929a0bb659",
+      "id": "M23",
+      "phase": "e2e",
+      "baseCommit": "bce081fd5b159d7de114e132e4a0049d9415ac50",
       "failures": {
         "build": 0,
         "gametest": 0,
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": null,
-      "codeReviewTree": null,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "AGENTS.md",
+            "acId": null,
+            "problem": "AGENTS.md has no M23 section. It does not record the 25 interface IDs and Tiers, the `interface` BlockEntity/Menu IDs, the `synchronizer` item, the `clayium:synchronized_target` Data Component, the NBT keys (`target_dimension`, `target_pos`, `owner`, and the keys added to `processing_machine`), the connection states, the access validation rules, the GameTest name or `tests/e2e/interfaces.mjs`.",
+            "reason": "The shared rules require updating AGENTS.md in the same change whenever IDs, registrations, user-visible behavior or verification steps change. AGENTS.md is also in the milestone scope.",
+            "fix": "Add an M23 section to AGENTS.md. It should list the three series and their Tiers, the ID rule `<stem>_tier_<Tier>`, the BlockEntity/Menu/Data Component IDs, the saved NBT keys, the synchronizer behavior, the per-access checks (dimension, isLoaded, BlockEntity, permission), the meaning of UNLINKED/CONNECTED/DISCONNECTED, the GameTest and the E2E scenario.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に M23 の ID、保存形式、検証規則、テストを記録しました。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has an M23 section covering IDs, BlockEntity/Menu/Data Component, NBT keys, states, access checks, GameTest and E2E.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/client/screen/iface/InterfaceScreen.java:30",
+            "acId": "AC-F024-002",
+            "problem": "`blit(tex, x, y, 0, 0, 32, 32, 16, 16)` asks for a 32×32 UV region of a 16×16 texture. The hull and front textures are tiled 2×2 instead of scaled up to 32 px.",
+            "reason": "This overload treats width/height as both the screen size and the UV size, so the original machine image is not shown correctly in the GUI.",
+            "fix": "Use the scaling overload `graphics.blit(tex, x, y, 32, 32, 0, 0, 16, 16, 16, 16)`, or draw at 16×16 like ClayMachineScreen does.",
+            "id": "CR-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GUI 画像を16×16のUV範囲から32×32へ拡大描画します。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "InterfaceScreen now uses the scaling blit overload: 32×32 on screen from a 16×16 UV region.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:236",
+            "acId": "AC-F024-002",
+            "problem": "The target X/Y/Z coordinates are sent to the client through ContainerData. Vanilla `ClientboundContainerSetDataPacket` sends these values as shorts, so any coordinate outside -32768..32767 is shown wrong. The screen also reads the dimension from the client BlockEntity but the position from ContainerData, so the two values come from different sources.",
+            "reason": "The GUI must always show the correct synchronized target, and a short cannot hold most world coordinates.",
+            "fix": "Remove the position slots (2–5) from ContainerData. Draw both dimension and position from the synced `blockEntity.target()`, which already reaches the client through getUpdateTag. Keep only the tier and status in ContainerData, or move the status to the update tag as well.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 座標を短整数の ContainerData から除き、次元と座標を同期済み BlockEntity から読みます。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Position slots are removed from ContainerData (count is 2). The screen reads both dimension and position from the synced blockEntity.target().",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:205",
+            "acId": null,
+            "problem": "`getUpdateTag` returns the full `saveWithoutMetadata`, so the owner UUID is sent to every client tracking the chunk.",
+            "reason": "The client only needs the target to draw the GUI. Sending the owner's UUID is unneeded synchronization of player data.",
+            "fix": "Build the update tag with only `target_dimension` and `target_pos`.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 更新タグを次元と座標だけに限定しました。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "getUpdateTag now contains only target_dimension and target_pos.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:809",
+            "acId": "AC-F024-001",
+            "problem": "`remote_redstone_powered` is saved on the target machine. It is only cleared if the interface reaches the target while the target is loaded. If the interface is broken or re-synchronized while the target chunk is unloaded, or the interface's own chunk unloads while its input is powered, the machine stays stopped permanently.",
+            "reason": "The AC requires redstone control to act only while it is relayed to the current target. A stale saved flag keeps acting after the link is gone.",
+            "fix": "Do not save the remote flag. Treat it as valid only for the tick the interface relays it, for example by storing the game time of the last powered relay and treating the machine as powered only when that time equals the current or previous tick. Remove the `remote_redstone_powered` NBT key.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 赤石状態の保存を廃止し、中継 tick のみ有効にしました。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The remote redstone flag is no longer saved. It is a last-relay game-tick value that is valid for the current or previous tick only.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlock.java:84",
+            "acId": "AC-F024-001",
+            "problem": "The redstone interface overrides `getSignal`/`isSignalSource` and outputs 15 whenever the target's remote flag is set. That flag is just this interface's own input echoed back. No neighbor update is sent when the value changes, so the output signal is stale. `getSignal` also runs player-list and permission lookups every time a neighbor evaluates redstone.",
+            "reason": "The AC asks for the interface to relay redstone control to the target machine, not to emit a signal. This is extra, unrequested behavior and it updates incorrectly.",
+            "fix": "Remove the `getSignal` and `isSignalSource` overrides and `targetRedstonePowered()`.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 要求外の赤石出力とその参照処理を削除しました。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The getSignal and isSignalSource overrides and targetRedstonePowered are removed.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:822",
+            "acId": "AC-F024-001",
+            "problem": "ClayMachineBlockEntity implements `LaserReceiver` by adding values into `received_laser_blue/green/red` counters. Nothing uses these counters, they are saved permanently, and they exist only so the GameTest has something to check. Laser reception belongs to M29. `LaserReceiver` and `RedstoneControlReceiver` are also plain Java interfaces checked with instanceof, not NeoForge capabilities.",
+            "reason": "The code style forbids implementing another milestone's behavior and keeping unused code and data. NeoForge BlockCapabilities are the mechanism for cross-block APIs that M29/M33/M35 will use, and they let a test register a test-only receiver.",
+            "fix": "Turn the laser receiver (and the redstone control receiver) into `BlockCapability` instances (`clayium:laser_receiver`, ...), and look up the target through `level.getCapability`. Remove the laser counters, their NBT keys and getters from ClayMachineBlockEntity. In the GameTest, register a test-only receiver capability, following `LogisticsGameTests::registerTestCapability`.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 赤石・レーザー受信を BlockCapability 経由にし、未使用のレーザー蓄積を削除しました。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Redstone and laser receivers are now BlockCapabilities. The laser counters and their NBT are removed from ClayMachineBlockEntity. The GameTest registers a test-only laser receiver capability.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:135",
+            "acId": null,
+            "problem": "`resolveItemHandler` repeats the level lookup and `isLoaded` check that `resolveTarget()` already does, then calls `resolveTarget()` anyway.",
+            "reason": "Keep one direct path per behavior and do not duplicate validation.",
+            "fix": "Have resolveItemHandler call `resolveTarget()` once and use the returned BlockEntity's level/pos for the capability lookup, for example `resolveTarget().map(be -> be.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction))`.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: ItemHandler の取得を resolveTarget 一回に統一しました。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "resolveItemHandler now calls resolveTarget() once and uses the returned BlockEntity's level and position.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/tool/Synchronizer.java:25",
+            "acId": "AC-F024-001",
+            "problem": "On the client, `useOn`/`onItemUseFirst` always returns SUCCESS. On the server, clicking a block without a BlockEntity returns PASS and the normal block interaction then runs. The client has already consumed the click, so client prediction and server behavior diverge (for example when using a lever or door).",
+            "reason": "Client and server must agree on the interaction result.",
+            "fix": "On the client, return PASS when the clicked position has no BlockEntity, matching the server branch.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: BlockEntity のないブロックではクライアントも PASS を返します。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The client returns PASS when the clicked position has no BlockEntity.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/client/screen/iface/InterfaceScreen.java:38",
+            "acId": "AC-F024-002",
+            "problem": "The Tier label is the hard-coded English literal `\"Tier \" + tier`, so Japanese clients see English text.",
+            "reason": "All user-visible GUI text should come from the generated en_us/ja_jp lang files.",
+            "fix": "Add a `gui.clayium.interface.tier` key with a `%s` argument to InterfaceLanguageEntries and use `Component.translatable`.",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Tier 表示を英日言語データの翻訳キーへ移しました。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The Tier label uses the translatable key gui.clayium.interface.tier, which is added to the language entries.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/iface/InterfaceGameTests.java:37",
+            "acId": "AC-F024-001",
+            "problem": "The GameTest only checks the Tier sets of `InterfaceDefinition` records. It never checks the registered block's `tier()` or the item's `clayium:tier` component. Redstone control and laser relay are only checked on the target, never shown to leave a second machine untouched. The redstone check reads a flag instead of showing that the machine stops processing. The 'unloaded' case uses x=30,000,000 at the world-border edge rather than an in-bounds unloaded chunk, and does not assert that the chunk stays unloaded. Restart is checked only with a fresh BE object, not by rejoining a reloaded target.",
+            "reason": "Each GameTest must assert the criterion's Expected Result: correct Tiers, functions performed only on the connected target, no access to unloaded chunks, and saved synchronization.",
+            "fix": "Assert `definition.block().get().tier()` and the item TIER component for all 25 blocks. Add a second machine and assert it receives no redstone or laser effect. Run a recipe and assert progress halts while the input is powered. Use an in-bounds unloaded position and assert `!level.hasChunk(...)` after the access. After load, assert the loaded interface reaches the chest through its capability again.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 実登録 Tier、別対象への非中継、加工停止、未ロード維持、再接続を GameTest で検証します。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTest now checks registered block and item tiers, a second untouched machine and laser receiver, progress halting under redstone, an in-bounds unloaded chunk that stays unloaded, and reconnection after reload.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/interfaces.mjs:36",
+            "acId": "AC-F024-002",
+            "problem": "The 'removed-target' disconnected screenshot points the laser interface at a position where nothing was ever placed. No target is removed. Both linked states are set with raw `data merge` NBT instead of the synchronizer.",
+            "reason": "The precondition is a disconnected interface, meaning one whose synchronized target was removed. The scenario should create that state through the real flow.",
+            "fix": "Place a machine at 4 100 2, link the interface to it, then `setblock 4 100 2 air` before capturing. Keep the label consistent with this state.",
+            "id": "CR-012",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2E でシンクロナイザーを使って接続し、対象を撤去して切断状態を撮影します。",
+                "at": "2026-11-20T21:34:32.206Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E links through the synchronizer and removes the target block before capturing the disconnected state.",
+                "at": "2026-11-20T21:34:46.700Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "be7242d87d1faac04888fdd2b1e3f381243702ad",
       "e2eReview": null,
       "failure": null,
       "conflicts": [],
@@ -170,8 +870,9 @@
     "M16",
     "M20",
     "M17",
-    "M15"
+    "M15",
+    "M22"
   ],
-  "lastCheckpoint": "7b71476a7318e1cfeb3c48eba0a9a7929a0bb659",
+  "lastCheckpoint": "bce081fd5b159d7de114e132e4a0049d9415ac50",
   "fatal": null
 }

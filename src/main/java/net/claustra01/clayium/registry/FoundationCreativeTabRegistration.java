@@ -22,6 +22,8 @@ public final class FoundationCreativeTabRegistration {
                                 FormingMachineRegistration.ITEMS.forEach(output::accept);
                                 AssemblyMachineRegistration.ITEMS.forEach(output::accept);
                                 EnergyConverterRegistration.ITEMS.forEach(output::accept);
+                                FluidRegistration.ITEMS.forEach(output::accept);
+                                output.accept(FluidRegistration.FLUID_FILTER);
                                 LogisticsRegistration.BLOCK_ITEMS.forEach(output::accept);
                                 MultitrackRegistration.BLOCK_ITEMS.forEach(output::accept);
                                 LogisticsRegistration.ITEMS.forEach(output::accept);
