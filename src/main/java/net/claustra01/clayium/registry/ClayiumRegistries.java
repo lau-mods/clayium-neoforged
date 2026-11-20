@@ -50,6 +50,9 @@ public final class ClayiumRegistries {
         MultitrackRegistration.MULTITRACK_BUFFERS.size();
         MultitrackRegistration.DISTRIBUTORS.size();
         WaterWheelRegistration.DEFINITIONS.size();
+        EnvironmentMachineRegistration.COBBLESTONE_GENERATORS.size();
+        EnvironmentMachineRegistration.SALT_EXTRACTORS.size();
+        EnvironmentMachineRegistration.QUARTZ_CRUCIBLE.getId();
         GadgetRegistration.ALL.size();
         WeaponRegistration.ALL.size();
         WorldgenRegistration.BLOCKS.size();

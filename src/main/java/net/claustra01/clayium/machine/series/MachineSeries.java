@@ -22,6 +22,10 @@ public interface MachineSeries {
         return 1;
     }
 
+    default boolean canStartWithoutItemInput() {
+        return false;
+    }
+
     default String registrationId(int tier) {
         return recipeMethod().id() + "_tier_" + tier;
     }

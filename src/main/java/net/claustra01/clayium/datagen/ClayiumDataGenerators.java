@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.gadget.GadgetItemModelProvider;
+import net.claustra01.clayium.datagen.environment.EnvironmentBlockLoot;
+import net.claustra01.clayium.datagen.environment.EnvironmentBlockStateProvider;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterBlockLoot;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterBlockStateProvider;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionBlockLoot;
@@ -54,6 +56,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new MultitrackBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WaterWheelBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new EnvironmentBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorkbenchBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorkbenchItemModelProvider(output, event.getExistingFileHelper()));
@@ -95,6 +98,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(LogisticsBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MultitrackBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WaterWheelBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(EnvironmentBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WorkbenchBlockLoot::new, LootContextParamSets.BLOCK)),
                         event.getLookupProvider()));
         generator.addProvider(event.includeServer(), WorldgenDataProvider.create(event));

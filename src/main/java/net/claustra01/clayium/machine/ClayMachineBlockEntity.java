@@ -179,6 +179,10 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
             }
             activeRecipeValue = recipe;
         }
+        if (activeRecipeValue != null && !activeRecipeValue.environment().matches(serverLevel, worldPosition)) {
+            setState(MachineState.IDLE);
+            return;
+        }
         if (!canAcceptOutputs(pendingOutputs)
                 || !allRandomOutputsFit(pendingOutputs, activeRecipeValue.randomOutputs())
                 || !canAcceptFluid(pendingFluidOutput)) {
@@ -204,7 +208,8 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
 
     private void tryStart(ServerLevel serverLevel) {
         List<ItemStack> inputs = inputStacks();
-        if (inputs.stream().allMatch(ItemStack::isEmpty) || hasReservedInput()) {
+        if ((!series().canStartWithoutItemInput() && inputs.stream().allMatch(ItemStack::isEmpty))
+                || hasReservedInput()) {
             setState(MachineState.IDLE);
             return;
         }

@@ -26,6 +26,7 @@ public enum ClayiumRecipeMethod {
     CENTRIFUGE("centrifuge"),
     SMELTER("smelter"),
     CHEMICAL_REACTOR("chemical_reactor"),
+    SALT_EXTRACTOR("salt_extractor"),
     CHEMICAL_METAL_SEPARATOR("chemical_metal_separator"),
     ALLOY_SMELTER("alloy_smelter"),
     BLAST_FURNACE("blast_furnace"),

@@ -421,6 +421,24 @@
       "name": "chemicalandmattermachinesuseoriginaltiersrecipesanddirectfluids"
     },
     {
+      "acId": "AC-F018-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "environmentmachinesdistinguishwaterlavasourcesandair"
+    },
+    {
+      "acId": "AC-F018-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "waterloggedfluidstatesdriveenvironmentmachines"
+    },
+    {
+      "acId": "AC-F018-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "quartzcruciblerequiresheatingandonestringwithoutduplication"
+    },
+    {
       "acId": "AC-F020-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -537,6 +555,14 @@
     {
       "acId": "AC-F014-002",
       "scenario": "tests/e2e/chemical-machines.mjs"
+    },
+    {
+      "acId": "AC-F018-001",
+      "scenario": "tests/e2e/environment-machines.mjs"
+    },
+    {
+      "acId": "AC-F018-002",
+      "scenario": "tests/e2e/environment-machines.mjs"
     },
     {
       "acId": "AC-F020-002",

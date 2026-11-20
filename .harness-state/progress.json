@@ -2,8 +2,8 @@
   "status": "running",
   "active": [
     {
-      "id": "M15",
-      "phase": "code_review",
+      "id": "M21",
+      "phase": "implementation",
       "baseCommit": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
       "failures": {
         "build": 0,
@@ -15,1218 +15,127 @@
         "kind": "code",
         "issues": [
           {
-            "target": "src/main/java/net/claustra01/clayium/gametest/environment/QuartzCrucibleGameTests.java:24-70",
-            "acId": "AC-F018-002",
-            "problem": "The test calls insertImpureSilicon/useString on the block entity directly instead of doing the insert and string steps through the block interaction. It never checks how much of the held impure-silicon stack (12 offered → 4 left) or of the string stack is consumed. Its `strings == 0` assertion is trivially true because no string item ever exists. It does not break the crucible mid-heating to check that exactly the held impure silicon drops and no silicon does, which AGENTS.md M15 specifies.",
-            "reason": "The test must carry out the criterion's Action (the original insert → wait → string steps) and assert that no intermediate material is duplicated. Calling the block entity's methods skips QuartzCrucibleBlock.useItemOn/onRemove, which is where stacks are consumed and contents are dropped.",
-            "fix": "Run the steps through the block: use helper.makeMockPlayer with a held stack plus helper.useBlock, or call useItemOn. Insert 12 impure silicon and assert 4 stay in hand. Use a string before heating finishes and assert it is not consumed. Use a string when ready and assert exactly 1 is consumed and 8 silicon ingots appear. In a second crucible, insert ingots, destroy the block mid-heating and assert that exactly the inserted impure silicon drops and no silicon does. Remove the vacuous string-entity count.",
+            "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerMenu.java:31 (also VoidContainerMenu.java:25, StorageContainerBlockEntity.java:110-176, VoidContainerBlockEntity.java:17-33)",
+            "acId": "AC-F021-001",
+            "problem": "The GUI slot is a NeoForge `SlotItemHandler` wrapped around handlers that do not implement `IItemHandlerModifiable`. When you drop a stack into the slot, `SlotItemHandler.set` casts the handler to `IItemHandlerModifiable` and throws a ClassCastException. That happens on click, on shift-click into an empty slot, and on `quickMoveStack` from slot 0 (`slot.set(EMPTY)`). The storage handler's `getStackInSlot` also returns a copy. `moveItemStackTo` grows that copy instead of the stored amount, so items the player shift-clicks into a partly filled container disappear. Shift-clicking out of the container moves items from the copy without lowering `amount`, so items are duplicated or the game crashes.",
+            "reason": "The criterion says inserting into the container must not lose items, and the void container must discard what the player inserts. Through the GUI, both containers crash, lose items or duplicate them.",
+            "fix": "Use a dedicated Slot subclass for the storage and void slots. It should send all changes through the handler: `insertItem` in `safeInsert`/`set`, and `extractItem` in `remove`. Alternatively, give the storage and void containers no item slot and handle insertion and extraction in `quickMoveStack` and `clicked` through `insertItem`/`extractItem`. Either way the stored `amount` must be the only source of truth.",
             "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: The GameTest now inserts and draws through block interaction, checks both held stacks, and verifies drops after breaking a heating crucible.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest now uses helper.useBlock with a mock player, checks held stack counts (12→4, string unconsumed early, 1 consumed when ready), 8 silicon output, and breaks a heating crucible to check only impure drops.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff; the GameTest still goes through block interaction.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest still runs through helper.useBlock. The diff only adds block-state stage assertions.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; the GameTest still runs through block interaction.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; GameTest still runs through block interaction.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest is not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest not touched by the diff; it still runs through block interaction.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest not touched by the diff; it still runs through block interaction.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest not touched by the diff; it still runs through block interaction.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest is not touched by the diff and still runs through block interaction.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "GameTest not touched by the diff; it still runs through block interaction.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "QuartzCrucibleGameTests is not touched by the diff and still runs through block interaction.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/gametest/environment/EnvironmentMachineGameTests.java:54-80",
-            "acId": "AC-F018-001",
-            "problem": "The salt extractor is tested with air, flowing water, a water source and a waterlogged block, but never with adjacent lava. The precondition requires each machine to be placed in the water, lava, waterlogged and air environments.",
-            "reason": "The criterion requires both machines to be checked in every listed environment. Without a lava case, nothing shows that lava does not satisfy the water-source condition or consume CE.",
-            "fix": "Before the source-water step, add a step that places lava next to the extractor, ticks it, and asserts no salt is produced and stored CE is unchanged.",
+            "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerBlockEntity.java:179-200, StorageContainerMenu.java:69-75",
+            "acId": "AC-F021-001",
+            "problem": "`StorageData` sends `amount` and `capacity` as 32-bit halves through `ContainerData`. The vanilla `ClientboundContainerSetDataPacket` only carries a short per data slot, so values such as 65,536 or 2,147,483,647 reach the client truncated. The GUI then shows the wrong amount and capacity.",
+            "reason": "The player cannot see the 65,536 and 2,147,483,647 capacity boundaries the criterion requires. Other menus in this mod (`ClayMachineBlockEntity`, `ClayProductionBlockEntity`/`ClayProductionMenu.readLong`) already split longs into 16-bit parts.",
+            "fix": "Split `amount` and `capacity` into four 16-bit data slots each (`(int)(value >>> (i*16)) & 0xFFFF`). Rebuild them on the client the same way `ClayProductionMenu.readLong` does, and resize the `SimpleContainerData`.",
             "id": "CR-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Added adjacent lava to the extractor GameTest and checked that salt and CE remain unchanged.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Adjacent lava step added, asserting no salt and unchanged CE.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff; the lava step is still in place.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff. The lava step remains.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; the lava step remains.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; lava step remains.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; the lava step remains.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; the lava step remains.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; the lava step remains.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; the lava step remains.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; the lava step remains.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The extractor GameTest is not touched by the diff, so the lava step remains. The diff only changes the cobblestone generator test.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/crucible/QuartzCrucibleBlock.java:101-120",
-            "acId": "AC-F018-002",
-            "problem": "entityInside automatically takes in impure silicon and string from thrown ItemEntities and can complete the batch. Neither the criteria nor AGENTS.md describe this.",
-            "reason": "Code style: implement exactly what the target criteria require. The criterion only asks for the player's insert → wait → string steps; dropped-item input is an extra, untested way to take in and output material.",
-            "fix": "Remove the entityInside override and the imports it alone uses.",
+            "target": "src/main/java/net/claustra01/clayium/datagen/storage/StorageBlockLoot.java:17 and src/main/java/net/claustra01/clayium/storage/StorageContainerBlock.java",
+            "acId": "AC-F021-001",
+            "problem": "Breaking a storage container drops a bare `storage_container` item. The loot table uses `dropSelf`, and neither `onRemove` nor a data component keeps the stored item, the amount or the Clay Core expansion. Up to 2,147,483,647 items and the consumed Clay Core are deleted.",
+            "reason": "The criterion forbids item loss in the storage container.",
+            "fix": "Keep the contents when the block is mined. Store the item, amount and expansion in a Data Component on the dropped item: use `copy_components` in the generated loot table together with the block entity's `collectImplicitComponents`/`applyImplicitComponents`, and restore the `expanded` block state on placement. Add a GameTest for breaking and placing it again.",
             "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Removed dropped-item interaction from the crucible.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "entityInside override and its imports removed.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff; entityInside stays removed.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff. entityInside stays removed.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; entityInside stays removed.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; entityInside stays removed.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; entityInside stays removed.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; entityInside stays removed.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; entityInside stays removed.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff; entityInside stays removed.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "QuartzCrucibleBlock is not touched by the diff, so entityInside stays removed.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/crucible/QuartzCrucibleBlockEntity.java:41,56,108-117",
+            "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerBlockEntity.java:97-108",
             "acId": null,
-            "problem": "insertImpureSilicon and useString check `level.isClientSide`, but they are only called from server-side paths. loadAdditional clamps the saved values to 0..CAPACITY and to impureSilicon*600 ticks. It also calls updateStage, which runs level.setBlock while NBT is loading, even though the stage is already stored in the block state.",
-            "reason": "Code style: validate only states the game can produce. Changing the world from loadAdditional is also an unsafe lifecycle side effect.",
-            "fix": "Drop the isClientSide guards and the clamping, and read impure_silicon and heating_ticks directly. Remove the updateStage call from loadAdditional, because the persisted block state already holds the stage.",
+            "problem": "`syncState` calls `level.sendBlockUpdated(...,3)` on every insertion and extraction. The block entity has no `getUpdateTag`/`getUpdatePacket`, and no client code reads its data, so each hopper or pipe transfer sends a useless block update.",
+            "reason": "The code style asks to remove code the current behavior does not use and to rely on the vanilla mechanisms (`setChanged` plus menu data sync).",
+            "fix": "Call only `setChanged()` on content changes. Change the `EXPANDED` block state only in `applyClayCore`, and remove the `sendBlockUpdated` branch.",
             "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Removed redundant client guards, NBT clamping, and the block-state update during loading.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Client guards, clamping and updateStage in loadAdditional removed.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff. The updateStage call in the block entity is only the tick-time stage setter.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "QuartzCrucibleBlockEntity is not touched by the diff.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/crucible/QuartzCrucibleBlock.java:80-87",
-            "acId": "AC-F018-002",
-            "problem": "On the client, the check returns SUCCESS for any impure silicon whenever the stage is not READY, even when the crucible already holds 8. The server then inserts nothing and passes. This mismatch causes a false hand swing and an incorrect interaction result.",
-            "reason": "The client and server results for the same interaction should agree.",
-            "fix": "Return SUCCESS on both sides and let only the server change state, or base the client check on a condition the client knows. Otherwise remove the client prediction branch and return SUCCESS once the stack type matches.",
+            "target": "src/generated/resources/assets/clayium/models/item/*_chest.json (StorageItemModelProvider.java:22-27) and blockstates/*_chest.json (StorageBlockStateProvider.java:46-47)",
+            "acId": "AC-F021-002",
+            "problem": "The 57 metal chest item models use `item/generated` with textures from `clayium:entity/metalchest/*`. That directory is not in the block/item atlas, and the mod adds no atlas source, so every metal chest item shows the missing texture. Even if the textures were stitched, you would see the flat, unwrapped chest entity texture instead of a chest. The blockstates point to `minecraft:block/air`, so breaking particles show the missing texture too.",
+            "reason": "The criterion requires each material's own appearance based on the original PNGs, and the items are part of that appearance.",
+            "fix": "Render the items through the chest model: use a `builtin/entity` parent with an `IClientItemExtensions` `BlockEntityWithoutLevelRenderer` that reuses `MetalChestRenderer` and the material tint. Give the block model a particle texture taken from the existing original PNG. Remove the item-color registration in `MaterialColors` if it is no longer used.",
             "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Matching item interactions now return SUCCESS on both sides, including when the crucible cannot accept more.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Client returns SUCCESS for matching stacks and the server now also returns SUCCESS for matching stacks even if nothing is accepted.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "QuartzCrucibleBlock is not touched by the diff.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/recipe/ClayiumMachineRecipe.java:221-223,244-249,262-331",
-            "acId": null,
-            "problem": "The new `requires_adjacent_water` and `requires_adjacent_lava` fields, their Match enum cases, and the split LocationCondition/NeighborCondition stream codecs are unused. Only `requires_adjacent_water_source` appears in any recipe, and the cobblestone generator uses its own block entity.",
-            "reason": "Code style: remove unused code; add an abstraction only when two call sites use it.",
-            "fix": "Keep only `requires_adjacent_water_source`. Remove the other two booleans, the Match enum and the switch, and check WaterDetection.isWaterSource over the adjacent positions directly. If a single StreamCodec.composite fits five fields, use it directly instead of the two helper records.",
+            "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:79-117",
+            "acId": "AC-F021-002",
+            "problem": "`allFiftySevenMetalChestsMatchTheCapacityLedger` compares `MetalChestType.ALL` with itself: the handler size is built from the same `type.slots()` the test checks. There is no independent GR-08 ledger, so a wrong width, height or page count in `MetalChestType` would still pass. All pages are also filled with `inventory().setStackInSlot` instead of the menu slots, so operating each page through the menu is never tested.",
+            "reason": "The criterion's precondition is a ledger of each material's page and slot counts, and its action is operating every page of every chest.",
+            "fix": "Put an independent table of the 57 (id, columns, rows, pages) values from the original GR-08 data in the test and compare `MetalChestType`/the registry against it. On each page, insert and take items through the active `menu.slots` (`quickMoveStack` from the player inventory and `slot.safeInsert`/`safeTake`), then check that the items reach the expected handler indexes and survive save and load.",
             "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Kept only the used adjacent-water-source condition and simplified its matching and stream codec.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Only requires_adjacent_water_source remains, with a single composite stream codec and direct loop.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "ClayiumMachineRecipe is not touched by the diff.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/environment/CobblestoneGeneratorBlockEntity.java:32,99-104,127-161",
-            "acId": null,
-            "problem": "OutputHandler re-implements IItemHandler just to block insertion. The `output` ItemStackHandler already returns false from isItemValid, so ItemStackHandler.insertItem already rejects every stack. `progress()` is unused and `hasHorizontalWaterAndLava` is public with no outside caller.",
-            "reason": "Code style: no unnecessary abstraction; remove unused code.",
-            "fix": "Register `output` itself as the Item capability and delete OutputHandler and extractionHandler. Remove progress() and make hasHorizontalWaterAndLava private.",
+            "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:25-78",
+            "acId": "AC-F021-001",
+            "problem": "The storage test calls `applyClayCore()` directly instead of using a Clay Core on the block (`useItemOn`). It does not check that the Clay Core is consumed or that the `expanded` block state is set. It never inserts or extracts through the container menu, which is the path that crashes, loses or duplicates items. It saves and reloads only the expanded state, never the basic 65,536 state.",
+            "reason": "The criterion's action is to apply a Clay Core and to insert again; this test bypasses both.",
+            "fix": "Place the block in the level, give a mock player a Clay Core and use it on the block through the block's `useItemOn`. Assert that the core stack shrank and `EXPANDED` is true. Insert and take items through `StorageContainerMenu`/`VoidContainerMenu` slots and `quickMoveStack`, and check that the totals are conserved. Save and reload at the basic 65,536 boundary as well.",
             "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Exposed the existing output handler directly and removed unused code.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "OutputHandler, progress() removed; output handler exposed directly (isItemValid false blocks insertion); hasHorizontalWaterAndLava private.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only removes the `progress = 0` reset in CobblestoneGeneratorBlockEntity.tickServer. OutputHandler stays removed and the output handler is still exposed directly.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/datagen/environment/EnvironmentBlockStateProvider.java:29-46,62-73,92-100",
-            "acId": null,
-            "problem": "machineModel duplicates MachineBlockStateProvider.machine() line for line, and the custom rotation() switch re-implements BlockStateProvider.horizontalBlock. The salt extractors are ClayMachineBlocks with series().frontTexture() = \"saltextractor\", yet their models are built here instead of in the existing machine provider.",
-            "reason": "Code style: one direct path per behavior, and check the existing generators before adding a duplicate.",
-            "fix": "Generate the salt extractor models in MachineBlockStateProvider alongside the other ClayMachineBlocks. For the cobblestone generators, use horizontalBlock(block, model) and delete rotation().",
+            "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:121-143",
+            "acId": "AC-F021-002",
+            "problem": "`metalChestMenusKeepIndependentServerAuthoritativePages` writes directly to the shared handler and reads the value back. It never moves an item through either menu's slots on its selected page, and never checks that the other menu sees the change. Writing to the handler and reading it back proves nothing about concurrent menus.",
+            "reason": "A GameTest has to perform the action and assert the expected result. Here the assertion is trivially true.",
+            "fix": "Insert an item through `first.slots` on page 1 and another through `second.slots` on page 7, for example with `quickMoveStack` from each player's inventory. Assert that each item lands in the correct handler index and that the other menu's matching slot shows it.",
             "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Moved salt extractor models to the shared machine provider and used horizontalBlock for generators.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Salt extractor models moved to MachineBlockStateProvider; generators use horizontalBlock; rotation() deleted.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes the contents element in the crucible model. The salt extractor models and horizontalBlock use remain.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes the contents element height in the crucible model; the salt extractor models and horizontalBlock use remain.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes the contents element of the crucible model. The salt extractor models and horizontalBlock use remain.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only enlarges the crucible contents element in the model; the machine provider and horizontalBlock use remain.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only enlarges the crucible contents element; the machine provider and horizontalBlock use remain.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only enlarges the crucible contents element; the machine provider and horizontalBlock use remain.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The merge keeps the salt extractor models in MachineBlockStateProvider. The diff only resolves conflict markers there.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The merge keeps the salt extractor models in MachineBlockStateProvider. A grep finds no conflict markers left anywhere in the worktree.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "AGENTS.md:120-122,199-204",
-            "acId": "AC-F018-001",
-            "problem": "The M03 section is not updated. Its RecipeType list lacks `clayium:salt_extractor`, and its `environment` description lists only dimension/minimum_y/maximum_y/requires_sky, not the new `requires_adjacent_water_source` key. The M15 section leaves out the cobblestone generator's per-tier intervals (40/20/10/5/2/1 ticks), the saved NBT keys (`inventory`, `progress`; `impure_silicon`, `heating_ticks`), the block entity IDs `cobblestone_generator` and `quartz_crucible`, and the six-direction check for the water source.",
-            "reason": "The common rules require AGENTS.md to record the IDs, numbers and data formats that define behavior whenever they change.",
-            "fix": "Add salt_extractor to the M03 RecipeType list and document the `requires_adjacent_water_source` environment key. In M15, add the interval table, block entity IDs, NBT keys and the adjacency directions used by the salt extractor.",
+            "target": "tests/e2e/storage-containers.mjs:21-64",
+            "acId": "AC-F021-002",
+            "problem": "The E2E scenario opens only the Europium chest and screenshots only page 1 and page 8. It turns pages by clicking at a hard-coded pixel offset (`centerX + 223`) and never checks that the page indicator or slot contents changed. The other 56 chests are never opened, and their pages are never operated or captured. For AC-F021-001 it captures only exteriors: no GUI with the amount or capacity, and no insertion.",
+            "reason": "The criterion requires operating every page of every chest and capturing the opened GUIs.",
+            "fix": "Loop over all 57 chests. Open each one, capture every page while switching with the page button, and verify the page and slot contents each time with `gui layout`, using the button's position from the layout rather than a fixed offset. Add a storage container GUI capture that shows the 65,536 and 2,147,483,647 amounts.",
             "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Recorded the recipe key, IDs, intervals, NBT keys, and adjacency directions in AGENTS.md.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md M03 and M15 updated with salt_extractor, environment key, intervals, BE IDs, NBT keys and six-direction adjacency.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the new diff.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not touched by the diff.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Conflict markers are gone. The M15 section still has the intervals, block entity IDs, NBT keys and six-direction adjacency. The M03 lines still mention salt_extractor and requires_adjacent_water_source.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The conflict markers are gone. AGENTS.md keeps the full M15 section and still mentions salt_extractor and requires_adjacent_water_source.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "tests/e2e/environment-machines.mjs:40-46",
-            "acId": "AC-F018-002",
-            "problem": "The crucible screenshot uses `setblock ... [stage=heating]` and `[stage=ready]` to force the block-state stages on empty crucibles. They show heating/ready models with no impure silicon held, so the E2E never runs the insert → wait → string steps.",
-            "reason": "The E2E for the silicon-making criterion should show the result of the real state machine, not block states the game cannot produce through play.",
-            "fix": "Place an empty crucible and give the client impure silicon and string. Use the client to insert ingots and take the heating screenshot, wait out the heating (or use a small batch), take the ready screenshot, then use string and take a screenshot of the dropped silicon ingots.",
+            "target": "AGENTS.md",
+            "acId": null,
+            "problem": "AGENTS.md has no M21 section. It does not record the storage container capacities, the Clay Core expansion, the NBT keys (`stored`, `amount`, `expanded`, `inventory`), the block entity and menu IDs (`storage_container`, `void_container`, `metal_chest`), the 57-chest columns×rows×pages table, the page-button protocol, or the GameTest and E2E names.",
+            "reason": "The project rules require AGENTS.md to be updated together with changes to IDs, registrations, behavior and verification steps, and AGENTS.md is in this milestone's scope.",
+            "fix": "Add an M21 section like the existing milestone sections, with the IDs, capacities, save keys, the GR-08 capacity table, the Capability exposure rules and the test names.",
             "id": "CR-010",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: The E2E scenario now uses an impure ingot, waits for heating, and uses string before capturing the result.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "E2E now inserts an impure ingot via interaction, waits for heating, then uses string and screenshots results.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only splits the 610-tick wait into 100-tick batches plus a final 10-tick wait. The scenario still inserts an ingot, waits for heating, then uses string.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E still inserts an impure ingot through interaction. It now waits for the heating and ready stages through waitFor, then uses string.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E still inserts an impure ingot through interaction. The diff only makes the stage checks use block properties and adds a short wait before the screenshot.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E still inserts impure silicon and uses string through block interaction. The diff only moves the crucible, inserts 8 ingots, and shortens the heating wait by merging heating_ticks. The stage transitions still come from the real state machine.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The diff brings the problem back. The E2E now uses `setblock ... [stage=heating]` plus `data merge heating_ticks`, then `setblock [stage=ready]`. It no longer inserts impure silicon or uses string through block interaction. The screenshots show forced block states, not the real state machine.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 強制した BlockState と NBT を使わず、不純シリコンの投入、加熱待機、糸での取出しを実操作で行うよう変更した。",
-                "at": "2026-11-17T16:17:54.804Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E no longer forces stage via setblock or merges NBT. It places an empty crucible, gives impure silicon, inserts it via block interact, waits through real heating ticks until stage=ready, then continues to the string step.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E still inserts impure silicon and uses string through mct block interact, and the stages come from the real state machine. The diff only freezes ticks around the heating screenshot, switches gamemode and moves the camera. It adds no forced setblock stages or NBT merges.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The diff brings the problem back. After the heating screenshot, environment-machines.mjs:85 runs `data merge block -3 100 -12 {heating_ticks:1}` to force the ready transition. This skips the real 600-tick wait. Insertion and the string step still go through block interaction, but the heating-to-ready stage is now driven by forced NBT, not by real ticks.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: NBT による加熱時間の書換えを削除し、不純シリコン1個の投入後、実際の600 tickを待ってから糸を使用するよう変更しました。",
-                "at": "2026-11-17T16:33:35.651Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The NBT merge is gone. The E2E inserts 1 impure silicon through block interaction, freezes ticks only for the screenshot, then unfreezes and waits for the real heating to reach stage=ready (45s timeout). It then uses string through block interaction. No forced block state or NBT remains.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E is not touched by the diff.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E is not touched by the diff.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "tests/e2e/environment-machines.mjs:17-38",
-            "acId": "AC-F018-001",
-            "problem": "Every generator and salt extractor is placed only in the satisfied environment (lava plus a waterlogged fence). There is no contrast case (air, lava only, flowing water) and no view of the produced cobblestone or salt, so the screenshot cannot show conditional output.",
-            "reason": "The criterion's expected result is that the machines tell the environments apart and output only when the condition matches. A screenshot without a contrast case or any output shows only the models.",
-            "fix": "Add a generator and an extractor in a non-matching environment (air or lava only) next to the matching ones. Give the extractors energy, then open a GUI or show the inventories so the output in the matching case and its absence in the other are visible.",
+            "target": "src/main/java/net/claustra01/clayium/storage/MetalChestType.java:67-71,82-88; StorageContainerMenu.java:28-31; VoidContainerMenu.java:24-25; MetalChestMenu.java:26-27; StorageContainerBlockEntity.java:89; StorageContainerBlockEntity.java:170-174",
+            "acId": null,
+            "problem": "Several places check for states the game cannot produce:\n- A compact-constructor check that the dimensions are positive, for constant data.\n- A null check in `material()`.\n- `chest == null` / `storage == null` fallbacks in the menus. They change the slot count (StorageContainerMenu, VoidContainerMenu) or crash anyway (MetalChestMenu dereferences `chest.inventory()`).\n- Clamping of the saved amount.\n- `checkSlot` throws.",
+            "reason": "The code style says to validate only states the game can produce and to rely on Minecraft and NeoForge guarantees.",
+            "fix": "Remove the dimension and material checks, the null fallbacks (resolve the block entity directly), the amount clamp and the `checkSlot` helpers.",
             "id": "CR-011",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Added lava-only controls, extractor GUI output views, and generator inventory views to the E2E scene.",
-                "at": "2026-11-17T15:46:15.887Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Lava-only control generator/extractor added, with inventory and GUI output views for matching vs non-matching cases.",
-                "at": "2026-11-17T15:46:41.847Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only removes a redundant look-at command. The lava-only controls and output views remain.",
-                "at": "2026-11-17T15:50:07.491Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lava-only controls and output views remain. The diff only adds a load wait and adjusts the camera.",
-                "at": "2026-11-17T15:56:47.513Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lava-only controls and output views remain. The diff only enlarges the floor and moves the camera.",
-                "at": "2026-11-17T16:02:35.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lava-only controls and output views remain. The diff only moves the camera.",
-                "at": "2026-11-17T16:08:23.528Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lava-only controls and output views are not touched by the diff.",
-                "at": "2026-11-17T16:13:55.387Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Lava-only controls and output views remain; the diff only moves the camera.",
-                "at": "2026-11-17T16:18:04.279Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lava-only controls and output views remain. The diff only changes camera positions and the gamemode in the crucible scene.",
-                "at": "2026-11-17T16:24:10.277Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lava-only controls and output views remain; the diff only changes the camera and the crucible scene.",
-                "at": "2026-11-17T16:29:56.823Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The lava-only controls and output views remain; the diff only changes the crucible scene and camera.",
-                "at": "2026-11-17T16:33:52.247Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E is not touched by the diff.",
-                "at": "2026-11-17T16:40:14.018Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E is not touched by the diff.",
-                "at": "2026-11-20T19:57:35.378Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           }
         ]
       },
-      "codeReviewTree": "ed267159e627ad1a219f97b0d7a1a6bb297cd4cc",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-17T15-50-35-928Z-033-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-waterlogged-machines-beside-lava-only-controls.png",
-            "acId": "AC-F018-001",
-            "problem": "The screenshot shows only the empty flat grass world. None of the M15 setup is visible: no smooth stone floor, no cobblestone generators, no salt extractors, no lava or waterlogged fences.",
-            "reason": "The scenario fills y=99 with smooth stone and places 7 generators and 5 extractors at y=100, then calls camera(x=0.5, y=102.2, z=-10.5, yaw 0, pitch 13). Later screenshots show this same layout rendered, so this frame was taken before the blocks were placed or drawn, or the camera was not at the setup. The Expected Result (water/lava/waterlogged machines side by side) cannot be checked from this image.",
-            "fix": "In tests/e2e/environment-machines.mjs, wait until the setblock/fill commands have been applied and the chunk section has re-rendered before taking this screenshot. For example, wait more ticks after the camera move, or check with `mct block` that clayium:clay_cobblestone_generator exists at -6 100 2. Confirm the camera actually faces the setup (yaw 0 = +Z, toward z=-2..5) so the generators, extractors, lava and waterlogged fences are all in frame.",
-            "id": "ER-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 設置ブロックの読み込みを確認してからカメラを再設定し、撮影角度を調整しました。",
-                "at": "2026-11-17T15:56:37.882Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 撮影位置の足元まで床を延長し、設備全体が入る位置と角度へカメラを移しました。",
-                "at": "2026-11-17T16:02:27.689Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The new frame no longer shows an empty grass world. The smooth stone floor is visible, and so are the water, lava, cobblestone and machine blocks along the horizon. The low camera angle is poor, but the setup is rendered and in frame.",
-                "at": "2026-11-17T16:05:10.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The frame shows the M15 setup rendered: the water surface, smooth stone floor, cobblestone, lava and machine blocks along the horizon. It is a low, distant camera angle, but it matches the framing accepted earlier and is no longer an empty grass world.",
-                "at": "2026-11-17T16:10:16.084Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The frame no longer shows an empty grass world. The M15 setup is rendered along the horizon: machine blocks, cobblestone, lava and waterlogged fences, with the smooth stone floor visible at the right edge. The camera is low and looks over a water surface, but the setup is in frame, as in the earlier accepted framing.",
-                "at": "2026-11-17T16:20:30.175Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The frame shows the M15 setup rendered along the horizon: machine blocks, cobblestone, lava and waterlogged fences, with the smooth stone floor at the right edge. The camera is low and looks over a water surface, but the setup is in frame and it is not an empty grass field.",
-                "at": "2026-11-17T16:26:50.735Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The frame shows the M15 setup rendered along the horizon: machine blocks in water (waterlogged), cobblestone, lava at the edge and fences. The smooth stone floor is visible at the right edge. It is not an empty grass field.",
-                "at": "2026-11-17T16:36:19.610Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T15-50-35-928Z-033-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-generator-output-and-lava-only-empty-inventory.png",
-            "acId": "AC-F018-001",
-            "problem": "The world view still shows only the flat grass field. The generator beside water and lava, and the lava-only control generator, are not rendered or not in view.",
-            "reason": "This frame is taken from the same camera as the previous one and has the same problem: the M15 blocks are missing from the scene, so the cobblestone generators cannot be seen in the image.",
-            "fix": "Use the same fix as for the previous screenshot. Make sure the setup blocks are loaded and rendered and the camera faces the generators at z=2/5 (including the lava-only control at 9 100 2) before capturing.",
-            "id": "ER-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 同じ撮影位置を修正し、発電機と対照装置を撮影する前に配置を確認します。",
-                "at": "2026-11-17T15:56:37.882Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 発電機と対照装置を撮るカメラも同じ位置へ修正しました。",
-                "at": "2026-11-17T16:02:27.689Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The generator frames now show the same M15 setup, and the generators sit in the horizon strip. The chat overlay with the container NBT is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2.",
-                "at": "2026-11-17T16:05:10.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The generator frame shows the same rendered setup. The chat overlay with container NBT is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2.",
-                "at": "2026-11-17T16:10:16.084Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The generator frame shows the same rendered setup: generators, lava and cobblestone along the horizon. The chat overlay is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2, so the lava-only control stays empty.",
-                "at": "2026-11-17T16:20:30.175Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The generator frame shows the same rendered setup, with generators, lava and cobblestone along the horizon. The chat overlay is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2, so the lava-only control stays empty.",
-                "at": "2026-11-17T16:26:50.735Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The generator frame shows the same rendered setup, with generators, cobblestone and lava along the horizon. The chat overlay is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2, so the lava-only control stays empty.",
-                "at": "2026-11-17T16:36:19.610Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-17T15-50-35-928Z-033-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-002-one-impure-ingot-heating.png",
-            "acId": "AC-F018-002",
-            "problem": "After the impure silicon ingot is inserted (the hotbar is empty), the quartz crucible still renders the empty model: the inside is plain white quartz. The purple impure-silicon contents layer from quartz_crucible_heating is not visible. The same empty look appears in AC-F018-002-heated-silicon-ready.png, where the dark silicon layer from quartz_crucible_ready should show, so the heating and ready stages look the same as the empty crucible.",
-            "reason": "The blockstate maps stage=heating/ready to models with a #contents face at y=5 (clayium:block/impuresilicon or clayium:block/silicon). The interior seen through the opening has neither texture, so either the client never receives the stage blockstate change after insertion or heating completes, or the 0.25-px contents face is hidden or culled. Without it the screenshots cannot show the original stage progression.",
-            "fix": "Make QuartzCrucible set the `stage` property with Block.UPDATE_ALL (or level.sendBlockUpdated) whenever impure_silicon or heating_ticks change: empty → heating on insert, heating → ready when heating_ticks reaches 0, back to empty on extraction. Also check that the contents element is visible from above (for example raise it to y=4–5 as a full 1-px slab with an up face on top of the y=4 floor). Re-capture both the heating and the ready screenshots.",
-            "id": "ER-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 内容物を厚さ1ピクセルのモデル要素に変更し、加熱中・完成・空の blockstate 遷移を GameTest で確認しました。",
-                "at": "2026-11-17T15:56:37.882Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: MC Pilot が返す大文字の stage を正しく判定し、加熱中の描画を待って撮影するよう修正しました。BlockState の遷移は GameTest で合格しています。",
-                "at": "2026-11-17T16:02:27.689Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The crucible is not identifiable in either the heating or the ready frame. The camera is low and far away, over a water surface. No contents layer (purple impure silicon, dark silicon) can be seen in either frame. The two frames also look identical, so the stage progression is still not shown.",
-                "at": "2026-11-17T16:05:10.206Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 加熱・完成モデルの内容物を高くし、E2E で8個投入して加熱状態を保ったまま近距離から撮影するよう修正しました。完成状態も待機して撮影します。新しい画像の確認は次の E2E 実行で必要です。",
-                "at": "2026-11-17T16:08:07.567Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The camera is now close and the crucible is clearly visible. In both the heating and the ready frames the interior is the same plain pale quartz, with no purple impure-silicon layer or dark silicon layer. The two frames are pixel-identical apart from the recipe toast, and they also look the same as the final frame after the string is used, so the stage progression is still not visible.",
-                "at": "2026-11-17T16:10:16.084Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 内容物の上面から cullface を除き、開口部が画面内に収まるようカメラを調整しました。E2E は加熱中と完成後の状態を固定して撮影するため、待機中に READY へ進む失敗も解消します。修正後の見た目は次回の E2E 撮影で確認が必要です。",
-                "at": "2026-11-17T16:13:47.693Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 内容物モデルの上面を高くし、側面も描画するよう変更した。カメラもるつぼの開口部へ向けた。描画結果は次回の E2E 撮影で確認が必要。",
-                "at": "2026-11-17T16:17:54.804Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The crucible contents are still not visible. The heating and ready frames show the camera looking down at a smooth stone floor. A pale pillar-like shape at the top is the only candidate for the crucible. No opening or interior can be seen, and neither frame shows a purple impure-silicon layer or a dark silicon layer. The heating and ready frames are pixel-identical apart from the chat line, so the stage progression is not shown. The final string frame looks the same, apart from the recipe toast and the string in the hand.",
-                "at": "2026-11-17T16:20:30.175Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 加熱完了前に tick を固定して撮影し、開口部を見下ろす固定視点に変更しました。既存の BlockState 遷移は GameTest で確認済みです。",
-                "at": "2026-11-17T16:24:02.366Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The camera is now close, looking down at the crucible. In the heating frame the visible interior is plain pale quartz, with no purple impure-silicon layer. The ready frame looks the same, with no dark silicon layer, and it is identical to the heating frame apart from the chat line. The camera only shows the near rim of the opening, so the contents surface is not in view and the stage progression is still not visible. The string frame differs only by a small dark shape at the top rim, the recipe toast and the string in the hand.",
-                "at": "2026-11-17T16:26:50.735Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 内容物モデルの上面を縁に近づけ、8個投入で加熱状態を撮影できる時間を確保しました。撮影位置を開口部が画面に入る角度へ変更し、撮影後に残り加熱時間を1 tickへ進めて完成状態を撮影するようにしました。修正後の見た目は次回の E2E 実行で確認が必要です。",
-                "at": "2026-11-17T16:29:47.339Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 内容物の上面を縁の近くまで上げ、開口部に向けて撮影角度を調整しました。描画結果の確認には E2E の再撮影が必要です。",
-                "at": "2026-11-17T16:33:35.651Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The crucible is now close-up and its opening is in view. In the heating frame the interior shows a pale purple impure-silicon layer. In the ready frame the interior is a dark silicon layer. In the final frame, after the string is used, the interior is plain pale quartz again. The three stages are visibly different, and the contents layer is no longer hidden.",
-                "at": "2026-11-17T16:36:19.610Z"
-              }
-            ]
-          }
-        ]
-      },
+      "codeReviewTree": "9652418e272f1a6221ad23c11ba993332cf61b18",
+      "e2eReview": null,
       "failure": null,
       "conflicts": [],
-      "reviewConflicts": [
-        "AGENTS.md",
-        "src/generated/resources/assets/clayium/lang/en_us.json",
-        "src/generated/resources/assets/clayium/lang/ja_jp.json",
-        "src/main/java/net/claustra01/clayium/datagen/ClayiumDataGenerators.java",
-        "src/main/java/net/claustra01/clayium/datagen/machine/MachineBlockStateProvider.java",
-        "src/main/java/net/claustra01/clayium/datagen/material/MaterialLanguageProvider.java",
-        "src/main/java/net/claustra01/clayium/datagen/recipe/MachineRecipeProvider.java",
-        "src/main/java/net/claustra01/clayium/gametest/FoundationGameTests.java",
-        "src/main/java/net/claustra01/clayium/registry/MachineRegistration.java",
-        "tests/acceptance.json"
-      ]
+      "reviewConflicts": []
     },
     {
-      "id": "M21",
+      "id": "M22",
       "phase": "implementation",
-      "baseCommit": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
+      "baseCommit": "7b71476a7318e1cfeb3c48eba0a9a7929a0bb659",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -1260,8 +169,9 @@
     "M13",
     "M16",
     "M20",
-    "M17"
+    "M17",
+    "M15"
   ],
-  "lastCheckpoint": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
+  "lastCheckpoint": "7b71476a7318e1cfeb3c48eba0a9a7929a0bb659",
   "fatal": null
 }

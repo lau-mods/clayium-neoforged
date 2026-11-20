@@ -26,6 +26,7 @@ public final class FoundationCreativeTabRegistration {
                                 MultitrackRegistration.BLOCK_ITEMS.forEach(output::accept);
                                 LogisticsRegistration.ITEMS.forEach(output::accept);
                                 WaterWheelRegistration.ITEMS.forEach(output::accept);
+                                EnvironmentMachineRegistration.allItems().forEach(output::accept);
                                 GadgetRegistration.ALL.forEach(output::accept);
                                 WeaponRegistration.ALL.forEach(output::accept);
                             })

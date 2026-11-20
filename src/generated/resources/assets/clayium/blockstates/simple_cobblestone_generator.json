@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/simple_cobblestone_generator",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/simple_cobblestone_generator"
+    },
+    "facing=south": {
+      "model": "clayium:block/simple_cobblestone_generator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/simple_cobblestone_generator",
+      "y": 270
+    }
+  }
+}

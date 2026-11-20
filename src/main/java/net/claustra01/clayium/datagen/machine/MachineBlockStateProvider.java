@@ -2,9 +2,11 @@ package net.claustra01.clayium.datagen.machine;
 
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.MachineRegistration;
+import net.claustra01.clayium.registry.EnvironmentMachineRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.machine.ClayMachineBlock;
+import net.claustra01.clayium.machine.environment.EnvironmentSeries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction;
@@ -28,6 +30,9 @@ public final class MachineBlockStateProvider extends BlockStateProvider {
                 machine(definition.id(), definition.tier(), definition.series().frontTexture(), definition.block().get()));
         FormingMachineRegistration.MACHINES.values().forEach(definition ->
                 machine(definition.id(), definition.tier(), definition.series().frontTexture(), definition.block().get()));
+        EnvironmentMachineRegistration.SALT_EXTRACTORS.values().forEach(definition ->
+                machine(definition.id(), definition.tier(),
+                        EnvironmentSeries.SALT_EXTRACTOR.frontTexture(), definition.block().get()));
         AssemblyMachineRegistration.MACHINES.values().forEach(definition ->
                 machine(definition.id(), definition.tier(), definition.series().frontTexture(), definition.block().get()));
     }

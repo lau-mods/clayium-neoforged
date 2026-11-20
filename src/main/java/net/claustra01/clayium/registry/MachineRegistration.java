@@ -72,6 +72,7 @@ public final class MachineRegistration {
                                     java.util.stream.Stream.of(
                                                     BLOCKS.stream(),
                                                     FormingMachineRegistration.BLOCKS.stream(),
+                                                    EnvironmentMachineRegistration.SALT_EXTRACTOR_BLOCKS.stream(),
                                                     AssemblyMachineRegistration.MACHINES.values().stream()
                                                             .map(AssemblyMachineRegistration.MachineDefinition::block))
                                             .flatMap(java.util.function.Function.identity())

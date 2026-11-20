@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.material.MaterialRecipeProvider;
+import net.claustra01.clayium.datagen.environment.EnvironmentRecipes;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionRecipes;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterRecipes;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
@@ -36,6 +37,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
         SmeltingRecipes.buildRecipes(recipeOutput);
         AssemblyRecipes.buildRecipes(recipeOutput);
         ChemicalRecipes.buildRecipes(recipeOutput);
+        EnvironmentRecipes.buildRecipes(recipeOutput);
         EnergyConverterRecipes.buildRecipes(recipeOutput);
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BENDING_MACHINE, 4)
                 .requires(Items.TERRACOTTA, 2)

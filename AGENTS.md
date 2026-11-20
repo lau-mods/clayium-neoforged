@@ -118,9 +118,9 @@ M04 の CE は `ClayEnergy` の非負 `long` 内部値で保持し、1 CE を 10
 
 ## M03 機械レシピ
 
-Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`chemical_metal_separator`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`fluid_transfer_machine`、`clay_work_table`（すべて `clayium:` 名前空間）を登録する。
+Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`chemical_metal_separator`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`fluid_transfer_machine`、`salt_extractor`、`clay_work_table`（すべて `clayium:` 名前空間）を登録する。
 
-レシピ JSON は `type: clayium:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
+レシピ JSON は `type: clayium:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky`、`requires_adjacent_water_source` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
 
 サーバーのデータパック適用後、全プレイヤー向け `OnDatapackSyncEvent` でキャッシュを失効させ、新しい RecipeManager を持つ `ClayiumRecipesReloadedEvent` を機械・表示・PAN に通知する。クライアントの `RecipesUpdatedEvent` でも検索キャッシュを更新する。GameTest 用レシピ ID は `gametest/machine_recipe`、`gametest/conditional_missing_external_item`、`gametest/reload_changed`、`gametest/reload_removed`、`gametest/chemical_fluid_input`。テスト中の追加レシピは `gametest/reload_added`。
 
@@ -223,6 +223,13 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 - `clayium:buffer_control` の action 0～5 は Direction の面設定、6 は赤石、7 は白黒、8 は条件種別、9 は条件追加、10 は最後の条件削除、11 は数量制限、12 は次のタグ。`clayium:filter_control` の action 0～4 は白黒、条件種別、次のタグ、追加、削除。サーバーは開いた Menu と距離を確認する。
 - 条件種別は `FUZZY`、`TAG`、`DISPLAY_NAME`、`INTERNAL_ID`、`MOD_ID`、`DURABILITY`、`COMPONENTS`、`NESTED`。タグは見本のタグを順送りできる。入れ子は最大16段まで評価する。
 - バッファにフィルターを持って右クリックすると空きフィルタースロットに1個装着する。既存フィルターを上書きしない。`direction_memory_card` はしゃがんで使用するとコピー、通常使用で貼り付ける。
+
+## M15 環境機械とクォーツるつぼ
+
+- 丸石製造機は `clay_cobblestone_generator` から `clay_steel_cobblestone_generator` までの Tier 1～7を登録し、水と溶岩を水平4方向の `FluidState` で判定する。生成間隔は Tier 1～7 で順に40/20/10/5/2/1/1 tick。BlockEntity ID は `cobblestone_generator`、保存NBTは `inventory` と `progress`。水入りブロックも水として扱い、内部出力枠は Item Capability から搬出できる。
+- `salt_extractor_tier_{4,5,6,7}` は共通 `processing_machine` を使う。`salt_extractor/salt` は入力品なし、上下・水平の6方向に水源隣接、Tier 4、20 tick、1進捗あたり100内部CEで塩1個を生成し、環境不成立中はCEを消費しない。
+- `quartz_crucible` は不純シリコンインゴットを最大8個保持し、1個あたり600 tickの待機後、糸1個で同数のシリコンインゴットを取り出す。BlockEntity ID は `quartz_crucible`、個数と残り待機時間を `impure_silicon` と `heating_ticks` のNBTに保存し、途中破壊では保持中の不純シリコンを返す。
+- GameTest は `environmentMachinesDistinguishWaterLavaSourcesAndAir`、`waterloggedFluidStatesDriveEnvironmentMachines`、`quartzCrucibleRequiresHeatingAndOneStringWithoutDuplication`。外観E2Eは `tests/e2e/environment-machines.mjs`。
 
 ## M12 粘土生産装置
 

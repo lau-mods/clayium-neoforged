@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.LegacyTranslations;
+import net.claustra01.clayium.datagen.environment.EnvironmentLanguageEntries;
 import net.claustra01.clayium.datagen.machine.MachineLanguageEntries;
 import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
@@ -34,6 +35,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         GadgetTranslations.forLocale(locale).forEach(this::add);
         WeaponTranslations.forLocale(locale).forEach(this::add);
         WaterWheelLanguageEntries.add(locale, this::add);
+        EnvironmentLanguageEntries.forLocale(locale).forEach((id, name) -> add("block.clayium." + id, name));
         ClayProductionLanguageEntries.add(locale, this::add);
         EnergyConverterLanguageEntries.add(locale, this::add);
         try (var stream = MaterialLanguageProvider.class.getClassLoader()

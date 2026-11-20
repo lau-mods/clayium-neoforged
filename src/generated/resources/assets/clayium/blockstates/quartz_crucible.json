@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "stage=empty": {
+      "model": "clayium:block/quartz_crucible"
+    },
+    "stage=heating": {
+      "model": "clayium:block/quartz_crucible_heating"
+    },
+    "stage=ready": {
+      "model": "clayium:block/quartz_crucible_ready"
+    }
+  }
+}

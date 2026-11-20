@@ -16,10 +16,12 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.registry.EnvironmentMachineRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.claustra01.clayium.registry.EnergyConverterRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
+import net.claustra01.clayium.datagen.environment.EnvironmentLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
@@ -100,6 +102,16 @@ public final class FoundationGameTests {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
         });
+        EnvironmentMachineRegistration.COBBLESTONE_GENERATORS.forEach(definition -> {
+            expectedBlocks.add(definition.block().getId());
+            expectedItems.add(definition.item().getId());
+        });
+        EnvironmentMachineRegistration.SALT_EXTRACTORS.values().forEach(definition -> {
+            expectedBlocks.add(definition.block().getId());
+            expectedItems.add(definition.item().getId());
+        });
+        expectedBlocks.add(EnvironmentMachineRegistration.QUARTZ_CRUCIBLE.getId());
+        expectedItems.add(EnvironmentMachineRegistration.QUARTZ_CRUCIBLE_ITEM.getId());
         MultitrackRegistration.MULTITRACK_BUFFERS.values().forEach(definition -> {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
@@ -137,7 +149,8 @@ public final class FoundationGameTests {
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).equals(Set.of(
                         ClayiumMod.id("clay_work_table"), ClayiumMod.id("clay_crafting_board"),
                         ClayiumMod.id("processing_machine"), ClayiumMod.id("water_wheel"),
-                        ClayiumMod.id("buffer"), ClayiumMod.id("multitrack_buffer"),
+                        ClayiumMod.id("buffer"), ClayiumMod.id("cobblestone_generator"),
+                        ClayiumMod.id("quartz_crucible"), ClayiumMod.id("multitrack_buffer"),
                         ClayiumMod.id("distributor"), ClayiumMod.id("clay_production_machine"),
                         ClayiumMod.id("energy_converter"))),
                 "Block entity registrations differ from registered blocks");
@@ -225,6 +238,8 @@ public final class FoundationGameTests {
             var logistics = new HashMap<String, String>();
             LogisticsLanguageEntries.add(locale, logistics::put);
             expectedKeys.addAll(logistics.keySet());
+            EnvironmentLanguageEntries.forLocale(locale).keySet().forEach(
+                    id -> expectedKeys.add("block.clayium." + id));
             var multitrack = new HashMap<String, String>();
             MultitrackLanguageEntries.add(locale, multitrack::put);
             expectedKeys.addAll(multitrack.keySet());

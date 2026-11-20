@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import net.claustra01.clayium.registry.RecipeRegistration;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -23,6 +24,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.minecraft.world.level.Level;
+import net.claustra01.clayium.util.WaterDetection;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public record ClayiumMachineRecipe(
@@ -214,20 +216,30 @@ public record ClayiumMachineRecipe(
             Optional<ResourceLocation> dimension,
             Optional<Integer> minimumY,
             Optional<Integer> maximumY,
-            boolean requiresSky) {
+            boolean requiresSky,
+            boolean requiresAdjacentWaterSource) {
         public static final EnvironmentCondition ANY = new EnvironmentCondition(
-                Optional.empty(), Optional.empty(), Optional.empty(), false);
+                Optional.empty(), Optional.empty(), Optional.empty(), false, false);
+
+        public EnvironmentCondition(
+                Optional<ResourceLocation> dimension,
+                Optional<Integer> minimumY,
+                Optional<Integer> maximumY,
+                boolean requiresSky) {
+            this(dimension, minimumY, maximumY, requiresSky, false);
+        }
+
         public static final MapCodec<EnvironmentCondition> CODEC = environmentCodec().validate(EnvironmentCondition::validate);
 
         private static MapCodec<EnvironmentCondition> environmentCodec() {
             return RecordCodecBuilder.mapCodec(instance -> instance.group(
-                            ResourceLocation.CODEC.optionalFieldOf("dimension")
-                                    .forGetter(EnvironmentCondition::dimension),
-                            Codec.INT.optionalFieldOf("minimum_y").forGetter(EnvironmentCondition::minimumY),
-                            Codec.INT.optionalFieldOf("maximum_y").forGetter(EnvironmentCondition::maximumY),
-                            Codec.BOOL.optionalFieldOf("requires_sky", false)
-                                    .forGetter(EnvironmentCondition::requiresSky))
-                    .apply(instance, EnvironmentCondition::new));
+                        ResourceLocation.CODEC.optionalFieldOf("dimension").forGetter(EnvironmentCondition::dimension),
+                        Codec.INT.optionalFieldOf("minimum_y").forGetter(EnvironmentCondition::minimumY),
+                        Codec.INT.optionalFieldOf("maximum_y").forGetter(EnvironmentCondition::maximumY),
+                        Codec.BOOL.optionalFieldOf("requires_sky", false).forGetter(EnvironmentCondition::requiresSky),
+                        Codec.BOOL.optionalFieldOf("requires_adjacent_water_source", false)
+                                .forGetter(EnvironmentCondition::requiresAdjacentWaterSource))
+                .apply(instance, EnvironmentCondition::new));
         }
 
         private static DataResult<EnvironmentCondition> validate(EnvironmentCondition condition) {
@@ -238,18 +250,31 @@ public record ClayiumMachineRecipe(
                         : DataResult.success(condition);
         }
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, EnvironmentCondition> STREAM_CODEC = StreamCodec.composite(
-                ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs::optional), EnvironmentCondition::dimension,
-                ByteBufCodecs.INT.apply(ByteBufCodecs::optional), EnvironmentCondition::minimumY,
-                ByteBufCodecs.INT.apply(ByteBufCodecs::optional), EnvironmentCondition::maximumY,
-                ByteBufCodecs.BOOL, EnvironmentCondition::requiresSky,
-                EnvironmentCondition::new);
+        public static final StreamCodec<RegistryFriendlyByteBuf, EnvironmentCondition> STREAM_CODEC =
+                StreamCodec.composite(
+                        ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs::optional), EnvironmentCondition::dimension,
+                        ByteBufCodecs.INT.apply(ByteBufCodecs::optional), EnvironmentCondition::minimumY,
+                        ByteBufCodecs.INT.apply(ByteBufCodecs::optional), EnvironmentCondition::maximumY,
+                        ByteBufCodecs.BOOL, EnvironmentCondition::requiresSky,
+                        ByteBufCodecs.BOOL, EnvironmentCondition::requiresAdjacentWaterSource,
+                        EnvironmentCondition::new);
 
         public boolean matches(Level level, net.minecraft.core.BlockPos position) {
-            return dimension.map(id -> id.equals(level.dimension().location())).orElse(true)
-                    && minimumY.map(y -> position.getY() >= y).orElse(true)
-                    && maximumY.map(y -> position.getY() <= y).orElse(true)
-                    && (!requiresSky || level.canSeeSky(position));
+            if (!dimension.map(id -> id.equals(level.dimension().location())).orElse(true)
+                    || !minimumY.map(y -> position.getY() >= y).orElse(true)
+                    || !maximumY.map(y -> position.getY() <= y).orElse(true)
+                    || requiresSky && !level.canSeeSky(position)) {
+                return false;
+            }
+            if (!requiresAdjacentWaterSource) {
+                return true;
+            }
+            for (Direction direction : Direction.values()) {
+                if (WaterDetection.isWaterSource(level, position.relative(direction))) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
