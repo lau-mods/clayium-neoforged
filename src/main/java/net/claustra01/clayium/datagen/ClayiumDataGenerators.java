@@ -27,6 +27,7 @@ import net.claustra01.clayium.datagen.worldgen.WorldgenDataProvider;
 import net.claustra01.clayium.datagen.waterwheel.WaterWheelBlockLoot;
 import net.claustra01.clayium.datagen.waterwheel.WaterWheelBlockStateProvider;
 import net.claustra01.clayium.datagen.recipe.MachineRecipeProvider;
+import net.claustra01.clayium.datagen.tag.VanillaCompatTags;
 import net.claustra01.clayium.datagen.workbench.WorkbenchBlockLoot;
 import net.claustra01.clayium.datagen.workbench.WorkbenchBlockStateProvider;
 import net.claustra01.clayium.datagen.workbench.WorkbenchItemModelProvider;
@@ -68,6 +69,13 @@ public final class ClayiumDataGenerators {
         generator.addProvider(
                 event.includeServer(),
                 new MaterialItemTagProvider(
+                        output,
+                        event.getLookupProvider(),
+                        blockTags.contentsGetter(),
+                        event.getExistingFileHelper()));
+        generator.addProvider(
+                event.includeServer(),
+                new VanillaCompatTags(
                         output,
                         event.getLookupProvider(),
                         blockTags.contentsGetter(),

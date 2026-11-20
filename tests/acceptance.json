@@ -443,6 +443,18 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "allconvertertierspreserveratesrecipesredstoneandstoredfe"
+    },
+    {
+      "acId": "AC-F004-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "raworespreservemetalbalanceandvanilladrops"
+    },
+    {
+      "acId": "AC-F004-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "modernwoodsusetagsandbambooisnotasapling"
     }
   ],
   "e2e": [

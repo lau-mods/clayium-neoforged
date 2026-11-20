@@ -159,6 +159,7 @@ public final class ClayProductionGameTests {
                 ClayProductionType.LITHIUM_SOLAR_CLAY_FABRICATOR, new BlockPos(7, 2, 1));
         lithium.inventory().setStackInSlot(ClayProductionBlockEntity.INPUT_SLOT,
                 new ItemStack(MaterialRegistration.MATERIAL_ITEMS.get("lithium_ingot").get()));
+        long[] pausedProgress = new long[1];
         helper.runAfterDelay(3, () -> {
             require(outdoor.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT)
                     .is(ClayProductionRules.itemForLevel(1)), "Outdoor machine did not manufacture clay");
@@ -169,16 +170,18 @@ public final class ClayProductionGameTests {
                     "Solar Mk II exceeded its compression cap");
             require(lithium.activeInputLevel() == 8 && lithium.requiredProgress() == 16699,
                     "Lithium route did not start at its original stage");
+            pausedProgress[0] = lithium.progress();
             helper.getLevel().setDayTime(18000);
         });
         helper.runAfterDelay(5, () -> {
-            require(lithium.progress() <= 3, "Solar machine ran at night");
+            require(lithium.progress() == pausedProgress[0], "Solar machine ran at night");
             helper.getLevel().setDayTime(6000);
             helper.getLevel().setWeatherParameters(0, 200, true, false);
             helper.getLevel().setRainLevel(1.0F);
+            pausedProgress[0] = lithium.progress();
         });
         helper.runAfterDelay(8, () -> {
-            require(lithium.progress() <= 4, "Solar machine ran in rain");
+            require(lithium.progress() == pausedProgress[0], "Solar machine ran in rain");
             helper.getLevel().setWeatherParameters(0, 0, false, false);
             helper.getLevel().setRainLevel(0.0F);
         });

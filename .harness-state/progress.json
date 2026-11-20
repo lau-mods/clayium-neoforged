@@ -3,8 +3,8 @@
   "active": [
     {
       "id": "M15",
-      "phase": "implementation",
-      "baseCommit": "96e5edffe4b48d70089abe264ad258f2b95825a6",
+      "phase": "code_review",
+      "baseCommit": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -76,6 +76,30 @@
                 "by": "claude",
                 "note": "GameTest not touched by the diff; it still runs through block interaction.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "GameTest not touched by the diff; it still runs through block interaction.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "GameTest is not touched by the diff and still runs through block interaction.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "GameTest not touched by the diff; it still runs through block interaction.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "QuartzCrucibleGameTests is not touched by the diff and still runs through block interaction.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -141,6 +165,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff; the lava step remains.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the lava step remains.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the lava step remains.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; the lava step remains.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The extractor GameTest is not touched by the diff, so the lava step remains. The diff only changes the cobblestone generator test.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -206,6 +254,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff; entityInside stays removed.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; entityInside stays removed.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff; entityInside stays removed.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "QuartzCrucibleBlock is not touched by the diff, so entityInside stays removed.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -271,6 +343,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "QuartzCrucibleBlockEntity is not touched by the diff.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -336,6 +432,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "QuartzCrucibleBlock is not touched by the diff.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -401,6 +521,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ClayiumMachineRecipe is not touched by the diff.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -466,6 +610,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only removes the `progress = 0` reset in CobblestoneGeneratorBlockEntity.tickServer. OutputHandler stays removed and the output handler is still exposed directly.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -531,6 +699,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only enlarges the crucible contents element; the machine provider and horizontalBlock use remain.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only enlarges the crucible contents element; the machine provider and horizontalBlock use remain.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The merge keeps the salt extractor models in MachineBlockStateProvider. The diff only resolves conflict markers there.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The merge keeps the salt extractor models in MachineBlockStateProvider. A grep finds no conflict markers left anywhere in the worktree.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -596,6 +788,30 @@
                 "by": "claude",
                 "note": "Not touched by the diff.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Not touched by the diff.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Conflict markers are gone. The M15 section still has the intervals, block entity IDs, NBT keys and six-direction adjacency. The M03 lines still mention salt_extractor and requires_adjacent_water_source.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The conflict markers are gone. AGENTS.md keeps the full M15 section and still mentions salt_extractor and requires_adjacent_water_source.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -667,6 +883,36 @@
                 "by": "claude",
                 "note": "The E2E still inserts impure silicon and uses string through mct block interact, and the stages come from the real state machine. The diff only freezes ticks around the heating screenshot, switches gamemode and moves the camera. It adds no forced setblock stages or NBT merges.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The diff brings the problem back. After the heating screenshot, environment-machines.mjs:85 runs `data merge block -3 100 -12 {heating_ticks:1}` to force the ready transition. This skips the real 600-tick wait. Insertion and the string step still go through block interaction, but the heating-to-ready stage is now driven by forced NBT, not by real ticks.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: NBT による加熱時間の書換えを削除し、不純シリコン1個の投入後、実際の600 tickを待ってから糸を使用するよう変更しました。",
+                "at": "2026-11-17T16:33:35.651Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The NBT merge is gone. The E2E inserts 1 impure silicon through block interaction, freezes ticks only for the screenshot, then unfreezes and waits for the real heating to reach stage=ready (45s timeout). It then uses string through block interaction. No forced block state or NBT remains.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E is not touched by the diff.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E is not touched by the diff.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           },
@@ -732,12 +978,36 @@
                 "by": "claude",
                 "note": "The lava-only controls and output views remain. The diff only changes camera positions and the gamemode in the crucible scene.",
                 "at": "2026-11-17T16:24:10.277Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The lava-only controls and output views remain; the diff only changes the camera and the crucible scene.",
+                "at": "2026-11-17T16:29:56.823Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The lava-only controls and output views remain; the diff only changes the crucible scene and camera.",
+                "at": "2026-11-17T16:33:52.247Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E is not touched by the diff.",
+                "at": "2026-11-17T16:40:14.018Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E is not touched by the diff.",
+                "at": "2026-11-20T19:57:35.378Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "c53fdfa79c5b0c175ac2498c50c0e8e299653c07",
+      "codeReviewTree": "ed267159e627ad1a219f97b0d7a1a6bb297cd4cc",
       "e2eReview": {
         "kind": "e2e",
         "issues": [
@@ -785,6 +1055,12 @@
                 "by": "claude",
                 "note": "The frame shows the M15 setup rendered along the horizon: machine blocks, cobblestone, lava and waterlogged fences, with the smooth stone floor at the right edge. The camera is low and looks over a water surface, but the setup is in frame and it is not an empty grass field.",
                 "at": "2026-11-17T16:26:50.735Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The frame shows the M15 setup rendered along the horizon: machine blocks in water (waterlogged), cobblestone, lava at the edge and fences. The smooth stone floor is visible at the right edge. It is not an empty grass field.",
+                "at": "2026-11-17T16:36:19.610Z"
               }
             ]
           },
@@ -832,6 +1108,12 @@
                 "by": "claude",
                 "note": "The generator frame shows the same rendered setup, with generators, lava and cobblestone along the horizon. The chat overlay is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2, so the lava-only control stays empty.",
                 "at": "2026-11-17T16:26:50.735Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The generator frame shows the same rendered setup, with generators, cobblestone and lava along the horizon. The chat overlay is out of scope. It reports 10 cobblestone in the generator at -6,100,2 and an empty inventory at 9,100,2, so the lava-only control stays empty.",
+                "at": "2026-11-17T16:36:19.610Z"
               }
             ]
           },
@@ -842,7 +1124,7 @@
             "reason": "The blockstate maps stage=heating/ready to models with a #contents face at y=5 (clayium:block/impuresilicon or clayium:block/silicon). The interior seen through the opening has neither texture, so either the client never receives the stage blockstate change after insertion or heating completes, or the 0.25-px contents face is hidden or culled. Without it the screenshots cannot show the original stage progression.",
             "fix": "Make QuartzCrucible set the `stage` property with Block.UPDATE_ALL (or level.sendBlockUpdated) whenever impure_silicon or heating_ticks change: empty → heating on insert, heating → ready when heating_ticks reaches 0, back to empty on extraction. Also check that the contents element is visible from above (for example raise it to y=4–5 as a full 1-px slab with an up face on top of the y=4 floor). Re-capture both the heating and the ready screenshots.",
             "id": "ER-003",
-            "status": "open",
+            "status": "resolved",
             "history": [
               {
                 "status": "open",
@@ -903,35 +1185,48 @@
                 "by": "claude",
                 "note": "The camera is now close, looking down at the crucible. In the heating frame the visible interior is plain pale quartz, with no purple impure-silicon layer. The ready frame looks the same, with no dark silicon layer, and it is identical to the heating frame apart from the chat line. The camera only shows the near rim of the opening, so the contents surface is not in view and the stage progression is still not visible. The string frame differs only by a small dark shape at the top rim, the recipe toast and the string in the hand.",
                 "at": "2026-11-17T16:26:50.735Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 内容物モデルの上面を縁に近づけ、8個投入で加熱状態を撮影できる時間を確保しました。撮影位置を開口部が画面に入る角度へ変更し、撮影後に残り加熱時間を1 tickへ進めて完成状態を撮影するようにしました。修正後の見た目は次回の E2E 実行で確認が必要です。",
+                "at": "2026-11-17T16:29:47.339Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 内容物の上面を縁の近くまで上げ、開口部に向けて撮影角度を調整しました。描画結果の確認には E2E の再撮影が必要です。",
+                "at": "2026-11-17T16:33:35.651Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The crucible is now close-up and its opening is in view. In the heating frame the interior shows a pale purple impure-silicon layer. In the ready frame the interior is a dark silicon layer. In the final frame, after the string is used, the interior is plain pale quartz again. The three stages are visibly different, and the contents layer is no longer hidden.",
+                "at": "2026-11-17T16:36:19.610Z"
               }
             ]
           }
         ]
       },
-      "failure": {
-        "phase": "e2e",
-        "summary": "1 E2E scenario(s) failed",
-        "details": "tests/e2e/environment-machines.mjs: Error: The crucible did not enter the heating stage: {\"type\":\"clayium:quartz_crucible\",\"properties\":{\"stage\":\"READY\"},\"lightLevel\":15}\n    at file://.harness-state/runtime/worktrees/M15/tests/e2e/environment-machines.mjs:78:11\n    at async scenario (file://.harness/e2e/lib.mjs:59:5)\n    at async file://.harness-state/runtime/worktrees/M15/tests/e2e/environment-machines.mjs:9:1\nAC-F018-001 Expected Result: 水と溶岩の隣接、塩析出の水源条件を区別し、条件に一致する場合だけ出力する。水入りブロックの水を水存在判定から除外しない。\nAC-F018-002 Expected Result: 原作の段階条件を満たしたときだけシリコン製品を得られ、途中の材料が増殖しない。",
-        "logs": [
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/runtime/server.log",
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/runtime/client-clayium-a.log",
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/stdout.log",
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/stderr.log"
-        ],
-        "screenshots": [
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-waterlogged-machines-beside-lava-only-controls.png",
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-generator-output-and-lava-only-empty-inventory.png",
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-waterlogged-extractor-salt-output.png",
-          ".harness-state/runs/2026-11-17T15-57-16-711Z-040-M15-e2e/scenarios/tests-e2e-environment-machines.mjs/screenshots/AC-F018-001-lava-only-extractor-empty-output.png"
-        ]
-      },
+      "failure": null,
       "conflicts": [],
-      "reviewConflicts": []
+      "reviewConflicts": [
+        "AGENTS.md",
+        "src/generated/resources/assets/clayium/lang/en_us.json",
+        "src/generated/resources/assets/clayium/lang/ja_jp.json",
+        "src/main/java/net/claustra01/clayium/datagen/ClayiumDataGenerators.java",
+        "src/main/java/net/claustra01/clayium/datagen/machine/MachineBlockStateProvider.java",
+        "src/main/java/net/claustra01/clayium/datagen/material/MaterialLanguageProvider.java",
+        "src/main/java/net/claustra01/clayium/datagen/recipe/MachineRecipeProvider.java",
+        "src/main/java/net/claustra01/clayium/gametest/FoundationGameTests.java",
+        "src/main/java/net/claustra01/clayium/registry/MachineRegistration.java",
+        "tests/acceptance.json"
+      ]
     },
     {
-      "id": "M17",
-      "phase": "code_review",
-      "baseCommit": "81f376202aab5236d1525745999385c0062de56b",
+      "id": "M21",
+      "phase": "implementation",
+      "baseCommit": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -964,8 +1259,9 @@
     "M12",
     "M13",
     "M16",
-    "M20"
+    "M20",
+    "M17"
   ],
-  "lastCheckpoint": "81f376202aab5236d1525745999385c0062de56b",
+  "lastCheckpoint": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
   "fatal": null
 }

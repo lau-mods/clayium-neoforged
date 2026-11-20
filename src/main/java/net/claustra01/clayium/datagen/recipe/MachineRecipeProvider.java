@@ -30,6 +30,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
         MaterialRecipeProvider.buildRecipes(recipeOutput);
         WorkbenchRecipeProvider.buildWorkbenchRecipes(recipeOutput);
         CondenserGrinderDecomposerRecipes.buildRecipes(recipeOutput);
+        VanillaCompatRecipes.buildRecipes(recipeOutput);
         ClayProductionRecipes.buildRecipes(recipeOutput);
         FormingRecipes.buildRecipes(recipeOutput);
         SmeltingRecipes.buildRecipes(recipeOutput);

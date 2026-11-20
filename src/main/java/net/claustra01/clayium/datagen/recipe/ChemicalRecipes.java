@@ -179,16 +179,18 @@ public final class ChemicalRecipes {
                 new int[]{0, 7, 8, 9});
         chain(output, "log", 80,
                 new ItemLike[]{Blocks.OAK_LOG, Blocks.SPRUCE_LOG, Blocks.BIRCH_LOG, Blocks.JUNGLE_LOG,
-                        Blocks.ACACIA_LOG, Blocks.DARK_OAK_LOG},
-                new int[]{0, 7, 7, 8, 8, 8});
+                        Blocks.ACACIA_LOG, Blocks.DARK_OAK_LOG, Blocks.CHERRY_LOG, Blocks.MANGROVE_LOG},
+                new int[]{0, 7, 7, 8, 8, 8, 8, 8});
         chain(output, "leaves", 20,
                 new ItemLike[]{Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES, Blocks.JUNGLE_LEAVES,
-                        Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES},
-                new int[]{0, 7, 7, 8, 8, 8});
+                        Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.CHERRY_LEAVES, Blocks.MANGROVE_LEAVES,
+                        Blocks.AZALEA_LEAVES, Blocks.FLOWERING_AZALEA_LEAVES},
+                new int[]{0, 7, 7, 8, 8, 8, 8, 8, 8, 8});
         chain(output, "sapling", 20,
                 new ItemLike[]{Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING,
-                        Blocks.JUNGLE_SAPLING, Blocks.ACACIA_SAPLING, Blocks.DARK_OAK_SAPLING},
-                new int[]{0, 7, 7, 8, 8, 8});
+                        Blocks.JUNGLE_SAPLING, Blocks.ACACIA_SAPLING, Blocks.DARK_OAK_SAPLING,
+                        Blocks.CHERRY_SAPLING, Blocks.MANGROVE_PROPAGULE, Blocks.AZALEA, Blocks.FLOWERING_AZALEA},
+                new int[]{0, 7, 7, 8, 8, 8, 8, 8, 8, 8});
         chain(output, "seed", 20,
                 new ItemLike[]{Items.WHEAT_SEEDS, Items.PUMPKIN_SEEDS, Items.MELON_SEEDS, Items.COCOA_BEANS,
                         Items.NETHER_WART},

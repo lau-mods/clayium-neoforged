@@ -232,6 +232,14 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 
 ソーラーは上面の空が見え、昼で雨が降っていない間だけ進む。Mk I/II の入力段階上限は4/6、リチウム型は9で `lithium_ingot` を段階8として段階9へ変換する。ソーラー所要tickは `floor(base^入力段階 × 初期倍率)`、初期倍率は `ClayProductionRules.solarTicks` に定義し、表示CE/tは `(出力CE内部値−入力CE内部値)/所要tick`。粘土製造機は見本を保持し、そのスタック数を複製する。Mk I は段階11（6重）まで、Mk II/III は段階13（8重）まで。Mk I/II の時間は `max(1, floor(base^段階 × 個数^指数 × 初期倍率))`、Mk III は1 tick。GameTest は `ClayProductionGameTests` の凝縮・ソーラー・複製テスト、外観 E2E は `tests/e2e/clay-production.mjs`。
 
+## M17 現行バニラ素材
+
+`VanillaCompatRecipes` は `grinder/raw_{iron,gold,copper}`（Raw Ore 1個→対応粉1個）、`grinder/raw_{iron,gold,copper}_block`（原鉱石ブロック1個→対応粉9個）、`grinder/{iron,gold,copper}_ore`（石・深層岩鉱石1個→対応粉2個）を生成する。いずれも Tier 4、40 tick、`ClayiumRecipeEnergy.e(1.0, 4)`。入力は NeoForge の `Tags.Items.RAW_MATERIALS_*`、`STORAGE_BLOCKS_RAW_*`、`ORES_*` を使用し、バニラの鉱石 LootTable は変更しない。Raw Ore と粉の精錬はそれぞれ1個のインゴットを作る。
+
+原木・葉・苗木の物質変換系列にサクラ、マングローブ、ツツジ、開花ツツジを追加し、既存系列と同じ Tier 8 の段階で処理する。粘土作業台・作業板の製作は `minecraft:planks` を使い、竹板材を受け付ける。竹は苗木として扱わない。`clayium:laser_tree_sources` は `#minecraft:saplings` で、サクラ苗木、マングローブの芽、ツツジ、開花ツツジを含む。レーザーによる利用は M32 が担当する。
+
+GameTest は `rawOresPreserveMetalBalanceAndVanillaDrops` と `modernWoodsUseTagsAndBambooIsNotASapling`。
+
 ## M20 複線バッファと分配機
 
 `MultitrackRegistration` は `multitrack_buffer_tier_4`～`13` の10種、`distributor_tier_7`～`9` の3種を登録する。BlockEntity と Menu の ID は `multitrack_buffer` と `distributor`。原作 JAR の `TileMultitrackBuffer.initParamsByTier` に従い、トラック数は Tier 4～8 が順に2、3、4、5、6、Tier 9～13 が6である。色は `DyeColor` の先頭から順に使う。7トラック固定ではない。
