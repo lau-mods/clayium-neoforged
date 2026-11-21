@@ -10,6 +10,7 @@ import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.machine.series.MachineSeries;
 import net.claustra01.clayium.machine.series.SmeltingSeries;
+import net.claustra01.clayium.machine.iface.RedstoneControlReceiver;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeCache;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
@@ -57,7 +58,8 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
-public final class ClayMachineBlockEntity extends BlockEntity implements MenuProvider {
+public final class ClayMachineBlockEntity extends BlockEntity
+        implements MenuProvider, RedstoneControlReceiver {
 
     private static final List<WeakReference<ClayMachineBlockEntity>> LOADED_MACHINES = new ArrayList<>();
 
@@ -104,6 +106,7 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
     private double progressRemainder;
     private double progressPerTick = 1.0D;
     private boolean validateRecipeOnLoad;
+    private long lastRemoteRedstoneTick = Long.MIN_VALUE;
 
     public ClayMachineBlockEntity(BlockPos pos, BlockState state) {
         super(MachineRegistration.MACHINE_BLOCK_ENTITY.get(), pos, state);
@@ -148,6 +151,10 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
 
     public void tickServer(RandomSource random) {
         if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (isRemoteRedstonePowered()) {
+            setState(MachineState.IDLE);
             return;
         }
         if (activeRecipe == null && hasReservedInput()) {
@@ -793,6 +800,20 @@ public final class ClayMachineBlockEntity extends BlockEntity implements MenuPro
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
         return direction == null ? unsidedHandler : sidedHandlers.get(direction);
+    }
+
+    @Override
+    public void setRemoteRedstonePowered(boolean powered) {
+        if (powered && level != null) {
+            lastRemoteRedstoneTick = level.getGameTime();
+        } else if (!powered) {
+            lastRemoteRedstoneTick = Long.MIN_VALUE;
+        }
+    }
+
+    @Override
+    public boolean isRemoteRedstonePowered() {
+        return level != null && lastRemoteRedstoneTick >= level.getGameTime() - 1;
     }
 
     public Container dropInventory() {

@@ -27,6 +27,7 @@ import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntri
 import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
+import net.claustra01.clayium.datagen.iface.InterfaceLanguageEntries;
 import net.claustra01.clayium.datagen.fluid.FluidLanguageEntries;
 import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
 import net.claustra01.clayium.datagen.multitrack.MultitrackLanguageEntries;
@@ -40,6 +41,7 @@ import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.ClayProductionRegistration;
 import net.claustra01.clayium.registry.CreativeSourceRegistration;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
+import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.LogisticsRegistration;
@@ -102,6 +104,11 @@ public final class FoundationGameTests {
         AssemblyMachineRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         EnergyConverterRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         EnergyConverterRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
+        InterfaceRegistration.INTERFACES.values().forEach(definition -> {
+            expectedBlocks.add(definition.block().getId());
+            expectedItems.add(definition.item().getId());
+        });
+        expectedItems.add(InterfaceRegistration.SYNCHRONIZER.getId());
         FluidRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         FluidRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         expectedItems.add(FluidRegistration.FLUID_FILTER.getId());
@@ -161,8 +168,8 @@ public final class FoundationGameTests {
                         ClayiumMod.id("buffer"), ClayiumMod.id("cobblestone_generator"),
                         ClayiumMod.id("quartz_crucible"), ClayiumMod.id("multitrack_buffer"),
                         ClayiumMod.id("distributor"), ClayiumMod.id("clay_production_machine"),
-                        ClayiumMod.id("energy_converter"), ClayiumMod.id("fluid_transport"),
-                        ClayiumMod.id("creative_ce_source"))),
+                        ClayiumMod.id("energy_converter"), ClayiumMod.id("interface"),
+                        ClayiumMod.id("fluid_transport"), ClayiumMod.id("creative_ce_source"))),
                 "Block entity registrations differ from registered blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
@@ -174,6 +181,10 @@ public final class FoundationGameTests {
         }
         require(BuiltInRegistries.DATA_COMPONENT_TYPE.containsKey(ClayiumMod.id("tier")), "Tier component is missing");
         require(FoundationDataComponentRegistration.TIER.isBound(), "Tier component holder is unbound");
+        require(BuiltInRegistries.DATA_COMPONENT_TYPE.containsKey(ClayiumMod.id("synchronized_target")),
+                "Synchronized target component is missing");
+        require(InterfaceRegistration.SYNCHRONIZED_TARGET.isBound(),
+                "Synchronized target component holder is unbound");
         helper.succeed();
     }
 
@@ -262,6 +273,9 @@ public final class FoundationGameTests {
             var energyConverters = new HashMap<String, String>();
             EnergyConverterLanguageEntries.add(locale, energyConverters::put);
             expectedKeys.addAll(energyConverters.keySet());
+            var interfaces = new HashMap<String, String>();
+            InterfaceLanguageEntries.add(locale, interfaces::put);
+            expectedKeys.addAll(interfaces.keySet());
             var fluidTransport = new HashMap<String, String>();
             FluidLanguageEntries.add(locale, fluidTransport::put);
             expectedKeys.addAll(fluidTransport.keySet());

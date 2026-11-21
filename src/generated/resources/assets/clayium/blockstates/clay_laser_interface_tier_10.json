@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/clay_laser_interface_tier_10",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/clay_laser_interface_tier_10"
+    },
+    "facing=south": {
+      "model": "clayium:block/clay_laser_interface_tier_10",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/clay_laser_interface_tier_10",
+      "y": 270
+    }
+  }
+}

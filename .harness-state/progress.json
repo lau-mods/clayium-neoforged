@@ -46,6 +46,24 @@
                 "by": "claude",
                 "note": "The diff does not touch the slot or handler code, so the earlier fix still holds.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only changes E2E camera code. The slot and handler code is untouched, so the fix still holds.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. The slot and handler code is unchanged, so the fix still holds.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the slot or handler code, so the earlier fix still holds.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -81,6 +99,24 @@
                 "by": "claude",
                 "note": "The diff does not touch the 16-bit ContainerData sync.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the 16-bit ContainerData sync.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. The 16-bit ContainerData sync is unchanged.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the 16-bit ContainerData sync.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -116,6 +152,24 @@
                 "by": "claude",
                 "note": "The loot table and component retention are not affected by the diff.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The loot table and component retention are not affected by the diff.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. The loot table and component retention are unchanged.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The loot table and component retention are not affected by the diff.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -151,6 +205,24 @@
                 "by": "claude",
                 "note": "The diff does not touch the block entity's syncState.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the block entity's syncState.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. syncState is unchanged.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the block entity's syncState.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -186,6 +258,24 @@
                 "by": "claude",
                 "note": "The diff does not touch the item models or the renderer.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the item models or the renderer.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. The item models and renderer are unchanged.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the item models or the renderer.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -221,6 +311,24 @@
                 "by": "claude",
                 "note": "The diff does not touch the GameTests.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. The GameTests are unchanged.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -256,6 +364,24 @@
                 "by": "claude",
                 "note": "The diff does not touch the GameTests.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. The GameTests are unchanged.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -291,6 +417,24 @@
                 "by": "claude",
                 "note": "The diff does not touch the GameTests.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script. The GameTests are unchanged.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the GameTests.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -326,6 +470,24 @@
                 "by": "claude",
                 "note": "The E2E scenario still loops over all 57 chests and every page. The diff only adds a look-at target and waits to the camera settling.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E scenario still loops over all 57 chests and every page. It checks the layout for the active slots, takes the page button from the layout, and captures the storage and void GUIs. The diff only changes how the camera is set and checked: it now sets the yaw and pitch directly and verifies them.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E scenario still loops over all 57 chests and every page, and still captures the storage and void GUIs. The diff only changes camera handling: it drops the look-set call, switches to spectator for the exterior shots, and adjusts heights and pitch.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only changes the camera pitch in the E2E script. The loop over all 57 chests and every page is unchanged.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -361,6 +523,24 @@
                 "by": "claude",
                 "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           },
@@ -396,12 +576,30 @@
                 "by": "claude",
                 "note": "The diff adds no unreachable-state checks.",
                 "at": "2026-11-20T21:50:03.094Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds no unreachable-state checks to the production code.",
+                "at": "2026-11-20T22:14:26.511Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E script and adds no unreachable-state checks to production code.",
+                "at": "2026-11-20T22:19:21.726Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds no unreachable-state checks to the M21 code. The solar fabricator change is outside M21.",
+                "at": "2026-11-21T01:05:27.514Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "ee7f776d04ccc30269896b1c46c40a4a65b0573e",
+      "codeReviewTree": "628a60aa7c69a02b00548d87e5cf67a0d5409360",
       "e2eReview": {
         "kind": "e2e",
         "issues": [
@@ -431,6 +629,30 @@
                 "by": "codex",
                 "note": "fixed: 57種のチェストの外観撮影前に視点をチェスト群へ向け、描画更新を待つよう変更しました。再撮影による確認は残っています。",
                 "at": "2026-11-20T21:49:55.358Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The overview shot shows only sky, clouds and the sun, with the hand at the bottom right. The camera points straight up. No platform and none of the 57 chests are in frame, so nothing can be checked. The capture is still wrong.",
+                "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 57チェストの撮影前にカメラ位置と yaw/pitch の到達を確認し、描画を待つよう変更しました。再撮影による画面確認は残っています。",
+                "at": "2026-11-20T22:14:06.376Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 57種の撮影中に落下しないよう観戦モードへ切り替え、位置と向きを確認してから撮影するようにしました。",
+                "at": "2026-11-20T22:19:12.796Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: チェスト群の撮影前に観戦モードへ切り替え、カメラの位置と向きの到達を確認して描画を待つようにしました。再撮影による画面確認は残っています。",
+                "at": "2026-11-21T01:05:19.245Z"
               }
             ]
           },
@@ -460,6 +682,30 @@
                 "by": "codex",
                 "note": "fixed: 3種のコンテナの外観撮影前にも近距離の視点を明示し、描画更新を待つよう変更しました。再撮影による確認は残っています。",
                 "at": "2026-11-20T21:49:55.358Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The exterior shot is also only sky and clouds. The storage, expanded and void containers do not appear. The close camera framing still has no effect, and the view even points skyward.",
+                "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 3コンテナの近距離撮影にも同じ位置・向きの確認と描画待ちを適用しました。再撮影による画面確認は残っています。",
+                "at": "2026-11-20T22:14:06.376Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 3種のコンテナを近距離で捉える位置と角度に調整し、位置確認と描画待ちの後に撮影するようにしました。",
+                "at": "2026-11-20T22:19:12.796Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 3種のコンテナを近距離で捉える位置と角度に調整し、視点の到達と描画待ちの後に撮影するようにしました。再撮影による画面確認は残っています。",
+                "at": "2026-11-21T01:05:19.245Z"
               }
             ]
           },
@@ -483,6 +729,12 @@
                 "by": "claude",
                 "note": "The world chests behind the GUIs now show shading and material tints. These include the blue vanadium chest, the dark-red cobalt chest and the green, red and blue ones behind the silicon GUI. They are no longer solid black.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The world chests behind the GUIs show shaded models with material tints, such as the dark blue vanadium chest and the dark red cobalt chest. The silicon shot shows light and dark faces, and the container shots show the tinted layers. They are no longer flat black. Dark tantalum is a dark material, not an unlit one.",
+                "at": "2026-11-20T22:11:18.459Z"
               }
             ]
           },
@@ -506,6 +758,12 @@
                 "by": "claude",
                 "note": "The page counters read cleanly as \"1/1\", \"2/5\" and \"8/8\" in the silicon, americium, cobalt and neodymium GUIs. There is no doubled shadow and a clear gap on both sides of the counter.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Page counters \"1/1\", \"2/5\", \"1/8\" and \"1/1\" are drawn crisp, with no shadow and a clear gap on both sides, in the silicon, americium, cobalt and neodymium GUIs.",
+                "at": "2026-11-20T22:11:18.459Z"
               }
             ]
           },
@@ -529,6 +787,12 @@
                 "by": "claude",
                 "note": "In silicon, americium, cobalt and neodymium the ◀/▶ buttons sit inside the frame with a margin on the top and right edges. The title band is taller and the first slot row starts below the buttons. The large chests (europium, invar and others) are cut off at the top of the screen, but the button placement itself is fixed.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Where the title band is visible (silicon, americium, cobalt, neodymium), the ◀/▶ buttons sit inside the frame with a margin at the top and right. The first slot row starts below them. In the tallest panels (europium, invar, vanadium, tantalum, palladium) the title row is cut off by the screen top. That is a separate cause from the button placement, which is fixed.",
+                "at": "2026-11-20T22:11:18.459Z"
               }
             ]
           },
@@ -552,6 +816,12 @@
                 "by": "claude",
                 "note": "The player inventory is now separated from the chest grid. The 物品栏 label is drawn, the hotbar has its own gap, and the panel has bottom padding. This holds in the silicon, americium, cobalt and neodymium GUIs.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The 物品栏 label is drawn. The player inventory is separated from the chest grid, the hotbar has its own gap, and the panel has bottom padding. This holds in the silicon, americium, cobalt and neodymium GUIs. In the tall panels the bottom is cut off by the screen, but the layout spacing is correct.",
+                "at": "2026-11-20T22:11:18.459Z"
               }
             ]
           },
@@ -575,6 +845,12 @@
                 "by": "claude",
                 "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no shadow.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no doubled shadow.",
+                "at": "2026-11-20T22:11:18.459Z"
               }
             ]
           },
@@ -598,6 +874,12 @@
                 "by": "claude",
                 "note": "\"Clay Core expanded\" now sits directly under the title and is clear of the 物品栏 label.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"Clay Core expanded\" sits directly under the title. It is well clear of the 物品栏 label.",
+                "at": "2026-11-20T22:11:18.459Z"
               }
             ]
           },
@@ -621,19 +903,34 @@
                 "by": "claude",
                 "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
                 "at": "2026-11-20T21:47:38.948Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
+                "at": "2026-11-20T22:11:18.459Z"
               }
             ]
           }
         ]
       },
-      "failure": null,
+      "failure": {
+        "phase": "gametest",
+        "summary": "GameTest task failed",
+        "details": "GameTest task output:\nt]: test-mock-player[embedded] logged in with entity id 3652 at (-8.5, -60.0, -2.5)\n[07:19:57] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player joined the game\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++  +++                 ]\n[07:19:58] [Server thread/INFO] [minecraft/PlayerList]: test-mock-player[embedded] logged in with entity id 3654 at (3.5, -60.0, 6.5)\n[07:19:58] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player joined the game\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++  ++++++              ]\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++  ++++++  +++         ]\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 8 11\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 1 0\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 12 2\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 8 15\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 9 0\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 11 5\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 11 9\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++++++++++ ++++         ]\n[07:19:58] [Server thread/INFO] [minecraft/PlayerList]: test-mock-player[embedded] logged in with entity id 6888 at (1.5, -60.0, 0.5)\n[07:19:58] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player joined the game\n[07:19:59] [Server thread/INFO] [minecraft/RecipeManager]: Loaded 1694 recipes\n[07:19:59] [Server thread/INFO] [minecraft/AdvancementTree]: Loaded 1507 advancements\n[07:20:00] [Server thread/INFO] [minecraft/RecipeManager]: Loaded 1694 recipes\n[07:20:01] [Server thread/INFO] [minecraft/AdvancementTree]: Loaded 1507 advancements\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++++++++]\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++++++++]\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: ========= 77 GAME TESTS COMPLETE IN 11.56 s ======================\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]:    - solarmachinesrequireopenskyrespectcapsanduselithium\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether\n[07:20:03] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save Test Level\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved\n[07:20:03] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER\n[07:20:03] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down\n\n> Task :runGameTestServer FAILED\n8 actionable tasks: 1 executed, 7 up-to-date\nConfiguration cache entry reused.\n\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':runGameTestServer'.\n> Process 'command '/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/bin/java'' finished with non-zero exit value 1\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to generate a Build Scan (powered by Develocity).\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 41s\n",
+        "logs": [
+          ".harness-state/runs/2026-11-20T22-19-21-729Z-083-M21-gametest/stdout.log",
+          ".harness-state/runs/2026-11-20T22-19-21-729Z-083-M21-gametest/stderr.log"
+        ],
+        "screenshots": []
+      },
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M23",
+      "id": "M25",
       "phase": "e2e",
-      "baseCommit": "bce081fd5b159d7de114e132e4a0049d9415ac50",
+      "baseCommit": "e91426828329ed94fe5f10f0210316d08fedae1d",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -644,412 +941,124 @@
         "kind": "code",
         "issues": [
           {
-            "target": "AGENTS.md",
-            "acId": null,
-            "problem": "AGENTS.md has no M23 section. It does not record the 25 interface IDs and Tiers, the `interface` BlockEntity/Menu IDs, the `synchronizer` item, the `clayium:synchronized_target` Data Component, the NBT keys (`target_dimension`, `target_pos`, `owner`, and the keys added to `processing_machine`), the connection states, the access validation rules, the GameTest name or `tests/e2e/interfaces.mjs`.",
-            "reason": "The shared rules require updating AGENTS.md in the same change whenever IDs, registrations, user-visible behavior or verification steps change. AGENTS.md is also in the milestone scope.",
-            "fix": "Add an M23 section to AGENTS.md. It should list the three series and their Tiers, the ID rule `<stem>_tier_<Tier>`, the BlockEntity/Menu/Data Component IDs, the saved NBT keys, the synchronizer behavior, the per-access checks (dimension, isLoaded, BlockEntity, permission), the meaning of UNLINKED/CONNECTED/DISCONNECTED, the GameTest and the E2E scenario.",
+            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:108-168",
+            "acId": "AC-F025-001",
+            "problem": "`craftOne` calls `planCraft` once per craft, and every call runs `RecipeManager.getRecipeFor(RecipeType.CRAFTING, ...)` with no last-recipe hint. A Tier 9 machine runs up to 256 full crafting-recipe searches every tick, Tier 8 runs 64, and Tier 7 runs 16.",
+            "reason": "Every search walks all loaded crafting recipes. With the original cycles of 1 tick and up to 256 crafts per cycle, one machine can cost hundreds of thousands of recipe matches per tick. Vanilla's crafter and the crafting menu avoid this by reusing the last matched recipe.",
+            "fix": "Find the recipe once per cycle, or cache the last `RecipeHolder<CraftingRecipe>` and pass it to `getRecipeFor(type, input, level, lastRecipe)`. Recheck `matches` against the actual `CraftingInput` before each commit, so data-component differences are still validated.",
             "id": "CR-001",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: AGENTS.md に M23 の ID、保存形式、検証規則、テストを記録しました。",
-                "at": "2026-11-20T21:34:32.206Z"
+                "note": "fixed: 周期内で直前の RecipeHolder を検索ヒントとして再利用し、各製作前に実際の CraftingInput との一致を再確認します。",
+                "at": "2026-11-21T01:14:53.817Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "AGENTS.md now has an M23 section covering IDs, BlockEntity/Menu/Data Component, NBT keys, states, access checks, GameTest and E2E.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch AGENTS.md, and the M23 section is still there.",
-                "at": "2026-11-20T21:51:11.567Z"
+                "note": "The last RecipeHolder is passed as a hint to getRecipeFor within a cycle, and matches() is rechecked against the actual input before each craft.",
+                "at": "2026-11-21T01:15:04.788Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/client/screen/iface/InterfaceScreen.java:30",
-            "acId": "AC-F024-002",
-            "problem": "`blit(tex, x, y, 0, 0, 32, 32, 16, 16)` asks for a 32×32 UV region of a 16×16 texture. The hull and front textures are tiled 2×2 instead of scaled up to 32 px.",
-            "reason": "This overload treats width/height as both the screen size and the UV size, so the original machine image is not shown correctly in the GUI.",
-            "fix": "Use the scaling overload `graphics.blit(tex, x, y, 32, 32, 0, 0, 16, 16, 16, 16)`, or draw at 16×16 like ClayMachineScreen does.",
+            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:57-60,250-264",
+            "acId": "AC-F025-002",
+            "problem": "The result preview is recomputed only when the pattern changes or the block entity loads (`previewDirty`). After `/reload` or any datapack change, the preview keeps the old result even though crafting now uses the new RecipeManager.",
+            "reason": "The criterion requires an accurate result display. AGENTS.md M03 says recipe reloads notify machines and displays through `ClayiumRecipesReloadedEvent`, as `ClayMachineBlockEntity` does. This block entity does not subscribe, so a removed or changed recipe still shows the old output.",
+            "fix": "Set `previewDirty = true` when `ClayiumRecipesReloadedEvent` fires, using the same listener pattern as `ClayMachineBlockEntity`. Alternatively, recompute the preview from the per-cycle recipe lookup, so the shown result always matches the recipe used for crafting.",
             "id": "CR-002",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: GUI 画像を16×16のUV範囲から32×32へ拡大描画します。",
-                "at": "2026-11-20T21:34:32.206Z"
+                "note": "fixed: ClayiumRecipesReloadedEvent で結果プレビューを再計算対象にしました。",
+                "at": "2026-11-21T01:14:53.817Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "InterfaceScreen now uses the scaling blit overload: 32×32 on screen from a 16×16 UV region.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "InterfaceScreen.java:29-30 still draws 32×32 from a 16×16 UV region with the scaling blit overload. The background now comes from LogisticsBackground.draw, which exists.",
-                "at": "2026-11-20T21:51:11.567Z"
+                "note": "A ClayiumRecipesReloadedEvent listener sets previewDirty on loaded crafters whose level uses the reloaded RecipeManager. The event exposes recipeManager().",
+                "at": "2026-11-21T01:15:04.788Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:236",
-            "acId": "AC-F024-002",
-            "problem": "The target X/Y/Z coordinates are sent to the client through ContainerData. Vanilla `ClientboundContainerSetDataPacket` sends these values as shorts, so any coordinate outside -32768..32767 is shown wrong. The screen also reads the dimension from the client BlockEntity but the position from ContainerData, so the two values come from different sources.",
-            "reason": "The GUI must always show the correct synchronized target, and a short cannot hold most world coordinates.",
-            "fix": "Remove the position slots (2–5) from ContainerData. Draw both dimension and position from the synced `blockEntity.target()`, which already reaches the client through getUpdateTag. Keep only the tier and status in ContainerData, or move the status to the update tag as well.",
+            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:105-111,327-343",
+            "acId": null,
+            "problem": "`tickServer` calls `setChangedAndSync()` at the end of every cycle, even when nothing was crafted. For Tier 6 to 9 that is every tick. Each call runs `sendBlockUpdated`, which sends the full `saveWithoutMetadata` tag (16-slot inventory, pattern and energy) to every tracking client. The non-cycle ticks also call `setChanged()` with no state change except `craftTick`.",
+            "reason": "No client-side renderer reads this block entity's data. The menu already syncs slots and `ContainerData`. Sending block updates every tick for idle machines wastes network bandwidth and triggers neighbour/render updates for no use.",
+            "fix": "Call `setChanged()` (and a sync only if a client consumer actually needs it) only when a craft committed or stored state changed. Remove `getUpdateTag`/`getUpdatePacket` and the `sendBlockUpdated` path unless a client feature reads the block entity data.",
             "id": "CR-003",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 座標を短整数の ContainerData から除き、次元と座標を同期済み BlockEntity から読みます。",
-                "at": "2026-11-20T21:34:32.206Z"
+                "note": "fixed: 毎周期のブロック更新送信と未使用の更新パケットを削除し、保存状態が変わったときだけ setChanged を呼びます。",
+                "at": "2026-11-21T01:14:53.817Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "Position slots are removed from ContainerData (count is 2). The screen reads both dimension and position from the synced blockEntity.target().",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The screen reads dimension and position from blockEntity.target(). The diff does not change this.",
-                "at": "2026-11-20T21:51:11.567Z"
+                "note": "setChangedAndSync, getUpdateTag and getUpdatePacket are gone. Only setChanged remains, and it is skipped on every-tick cycles where nothing was crafted.",
+                "at": "2026-11-21T01:15:04.788Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:205",
+            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:415-436",
             "acId": null,
-            "problem": "`getUpdateTag` returns the full `saveWithoutMetadata`, so the owner UUID is sent to every client tracking the chunk.",
-            "reason": "The client only needs the target to draw the GUI. Sending the owner's UUID is unneeded synchronization of player data.",
-            "fix": "Build the update tag with only `target_dimension` and `target_pos`.",
+            "problem": "`ContainerData` index 1 (`craftTick`) and the `set` override that writes `craftTick` are never read. `AutoCrafterMenu` and `AutoCrafterScreen` use only indices 0, 2, 3 and 4–7, and `set` is never called on the server-side data.",
+            "reason": "The code style requires removing code that the current behavior does not use.",
+            "fix": "Remove the `craftTick` data slot and the `set` body, reduce the data count to the slots that are used, and update `AutoCrafterMenu`'s `SimpleContainerData` size and indices to match.",
             "id": "CR-004",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 更新タグを次元と座標だけに限定しました。",
-                "at": "2026-11-20T21:34:32.206Z"
+                "note": "fixed: 未使用の craftTick 同期スロットと書き込み処理を削除し、Menu のデータ数と参照位置を更新しました。",
+                "at": "2026-11-21T01:14:53.817Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "getUpdateTag now contains only target_dimension and target_pos.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the update tag.",
-                "at": "2026-11-20T21:51:11.567Z"
+                "note": "The craftTick ContainerData slot and the set body are removed. The data count is 7, and the Menu indices are updated to match.",
+                "at": "2026-11-21T01:15:04.788Z"
               }
             ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:809",
-            "acId": "AC-F024-001",
-            "problem": "`remote_redstone_powered` is saved on the target machine. It is only cleared if the interface reaches the target while the target is loaded. If the interface is broken or re-synchronized while the target chunk is unloaded, or the interface's own chunk unloads while its input is powered, the machine stays stopped permanently.",
-            "reason": "The AC requires redstone control to act only while it is relayed to the current target. A stale saved flag keeps acting after the link is gone.",
-            "fix": "Do not save the remote flag. Treat it as valid only for the tick the interface relays it, for example by storing the game time of the last powered relay and treating the machine as powered only when that time equals the current or previous tick. Remove the `remote_redstone_powered` NBT key.",
+            "target": "AGENTS.md:266-272",
+            "acId": null,
+            "problem": "The M25 section does not record the block entity's saved NBT keys (`inventory`, `pattern`, `energy`, `craft_tick`). The other machine sections in this file (M06, M10, M15, M16, M20, M22) document theirs.",
+            "reason": "The repository guide says AGENTS.md keeps IDs and save formats as the current specification and must be updated with the change.",
+            "fix": "Add the save keys `inventory`, `pattern`, `energy`, `craft_tick` to the M25 section. Also state that the ghost pattern does not drop and that the result preview is not saved.",
             "id": "CR-005",
             "status": "resolved",
             "history": [
               {
                 "status": "open",
                 "by": "codex",
-                "note": "fixed: 赤石状態の保存を廃止し、中継 tick のみ有効にしました。",
-                "at": "2026-11-20T21:34:32.206Z"
+                "note": "fixed: AGENTS.md に保存 NBT キー、ゴーストパターンのドロップ有無、プレビューの非保存を記録しました。",
+                "at": "2026-11-21T01:14:53.817Z"
               },
               {
                 "status": "resolved",
                 "by": "claude",
-                "note": "The remote redstone flag is no longer saved. It is a last-relay game-tick value that is valid for the current or previous tick only.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the remote redstone handling.",
-                "at": "2026-11-20T21:51:11.567Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlock.java:84",
-            "acId": "AC-F024-001",
-            "problem": "The redstone interface overrides `getSignal`/`isSignalSource` and outputs 15 whenever the target's remote flag is set. That flag is just this interface's own input echoed back. No neighbor update is sent when the value changes, so the output signal is stale. `getSignal` also runs player-list and permission lookups every time a neighbor evaluates redstone.",
-            "reason": "The AC asks for the interface to relay redstone control to the target machine, not to emit a signal. This is extra, unrequested behavior and it updates incorrectly.",
-            "fix": "Remove the `getSignal` and `isSignalSource` overrides and `targetRedstonePowered()`.",
-            "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 要求外の赤石出力とその参照処理を削除しました。",
-                "at": "2026-11-20T21:34:32.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The getSignal and isSignalSource overrides and targetRedstonePowered are removed.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch InterfaceBlock.",
-                "at": "2026-11-20T21:51:11.567Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:822",
-            "acId": "AC-F024-001",
-            "problem": "ClayMachineBlockEntity implements `LaserReceiver` by adding values into `received_laser_blue/green/red` counters. Nothing uses these counters, they are saved permanently, and they exist only so the GameTest has something to check. Laser reception belongs to M29. `LaserReceiver` and `RedstoneControlReceiver` are also plain Java interfaces checked with instanceof, not NeoForge capabilities.",
-            "reason": "The code style forbids implementing another milestone's behavior and keeping unused code and data. NeoForge BlockCapabilities are the mechanism for cross-block APIs that M29/M33/M35 will use, and they let a test register a test-only receiver.",
-            "fix": "Turn the laser receiver (and the redstone control receiver) into `BlockCapability` instances (`clayium:laser_receiver`, ...), and look up the target through `level.getCapability`. Remove the laser counters, their NBT keys and getters from ClayMachineBlockEntity. In the GameTest, register a test-only receiver capability, following `LogisticsGameTests::registerTestCapability`.",
-            "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 赤石・レーザー受信を BlockCapability 経由にし、未使用のレーザー蓄積を削除しました。",
-                "at": "2026-11-20T21:34:32.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Redstone and laser receivers are now BlockCapabilities. The laser counters and their NBT are removed from ClayMachineBlockEntity. The GameTest registers a test-only laser receiver capability.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the receiver capabilities.",
-                "at": "2026-11-20T21:51:11.567Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:135",
-            "acId": null,
-            "problem": "`resolveItemHandler` repeats the level lookup and `isLoaded` check that `resolveTarget()` already does, then calls `resolveTarget()` anyway.",
-            "reason": "Keep one direct path per behavior and do not duplicate validation.",
-            "fix": "Have resolveItemHandler call `resolveTarget()` once and use the returned BlockEntity's level/pos for the capability lookup, for example `resolveTarget().map(be -> be.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction))`.",
-            "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: ItemHandler の取得を resolveTarget 一回に統一しました。",
-                "at": "2026-11-20T21:34:32.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "resolveItemHandler now calls resolveTarget() once and uses the returned BlockEntity's level and position.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch resolveItemHandler.",
-                "at": "2026-11-20T21:51:11.567Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/tool/Synchronizer.java:25",
-            "acId": "AC-F024-001",
-            "problem": "On the client, `useOn`/`onItemUseFirst` always returns SUCCESS. On the server, clicking a block without a BlockEntity returns PASS and the normal block interaction then runs. The client has already consumed the click, so client prediction and server behavior diverge (for example when using a lever or door).",
-            "reason": "Client and server must agree on the interaction result.",
-            "fix": "On the client, return PASS when the clicked position has no BlockEntity, matching the server branch.",
-            "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: BlockEntity のないブロックではクライアントも PASS を返します。",
-                "at": "2026-11-20T21:34:32.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The client returns PASS when the clicked position has no BlockEntity.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch Synchronizer.",
-                "at": "2026-11-20T21:51:11.567Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/client/screen/iface/InterfaceScreen.java:38",
-            "acId": "AC-F024-002",
-            "problem": "The Tier label is the hard-coded English literal `\"Tier \" + tier`, so Japanese clients see English text.",
-            "reason": "All user-visible GUI text should come from the generated en_us/ja_jp lang files.",
-            "fix": "Add a `gui.clayium.interface.tier` key with a `%s` argument to InterfaceLanguageEntries and use `Component.translatable`.",
-            "id": "CR-010",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Tier 表示を英日言語データの翻訳キーへ移しました。",
-                "at": "2026-11-20T21:34:32.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The Tier label uses the translatable key gui.clayium.interface.tier, which is added to the language entries.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "InterfaceScreen.java:37 still uses the translatable key gui.clayium.interface.tier.",
-                "at": "2026-11-20T21:51:11.567Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/iface/InterfaceGameTests.java:37",
-            "acId": "AC-F024-001",
-            "problem": "The GameTest only checks the Tier sets of `InterfaceDefinition` records. It never checks the registered block's `tier()` or the item's `clayium:tier` component. Redstone control and laser relay are only checked on the target, never shown to leave a second machine untouched. The redstone check reads a flag instead of showing that the machine stops processing. The 'unloaded' case uses x=30,000,000 at the world-border edge rather than an in-bounds unloaded chunk, and does not assert that the chunk stays unloaded. Restart is checked only with a fresh BE object, not by rejoining a reloaded target.",
-            "reason": "Each GameTest must assert the criterion's Expected Result: correct Tiers, functions performed only on the connected target, no access to unloaded chunks, and saved synchronization.",
-            "fix": "Assert `definition.block().get().tier()` and the item TIER component for all 25 blocks. Add a second machine and assert it receives no redstone or laser effect. Run a recipe and assert progress halts while the input is powered. Use an in-bounds unloaded position and assert `!level.hasChunk(...)` after the access. After load, assert the loaded interface reaches the chest through its capability again.",
-            "id": "CR-011",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 実登録 Tier、別対象への非中継、加工停止、未ロード維持、再接続を GameTest で検証します。",
-                "at": "2026-11-20T21:34:32.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTest now checks registered block and item tiers, a second untouched machine and laser receiver, progress halting under redstone, an in-bounds unloaded chunk that stays unloaded, and reconnection after reload.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTest.",
-                "at": "2026-11-20T21:51:11.567Z"
-              }
-            ]
-          },
-          {
-            "target": "tests/e2e/interfaces.mjs:36",
-            "acId": "AC-F024-002",
-            "problem": "The 'removed-target' disconnected screenshot points the laser interface at a position where nothing was ever placed. No target is removed. Both linked states are set with raw `data merge` NBT instead of the synchronizer.",
-            "reason": "The precondition is a disconnected interface, meaning one whose synchronized target was removed. The scenario should create that state through the real flow.",
-            "fix": "Place a machine at 4 100 2, link the interface to it, then `setblock 4 100 2 air` before capturing. Keep the label consistent with this state.",
-            "id": "CR-012",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: E2E でシンクロナイザーを使って接続し、対象を撤去して切断状態を撮影します。",
-                "at": "2026-11-20T21:34:32.206Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E links through the synchronizer and removes the target block before capturing the disconnected state.",
-                "at": "2026-11-20T21:34:46.700Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the E2E script.",
-                "at": "2026-11-20T21:51:11.567Z"
+                "note": "AGENTS.md M25 now lists the NBT keys inventory, pattern, energy and craft_tick. It also states that the pattern does not drop and that the preview is not saved.",
+                "at": "2026-11-21T01:15:04.788Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "2252f061da24cc932e0898dc783e617dc17e1531",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-20T21-47-44-338Z-042-M23-e2e/scenarios/tests-e2e-interfaces.mjs/screenshots/AC-F024-002-unlinked-target-always-visible.png",
-            "acId": "AC-F024-002",
-            "problem": "The Advanced Item Interface (Tier 5, Unlinked) GUI panel is cut off at the bottom. The left and right borders just stop, with no bottom border, bottom corners or shadow. The gray fill ends in a hard straight line over the world, so the frame looks clipped. The text itself (title, Tier, Status, 'Synchronized target', '-', '-') is complete.",
-            "reason": "InterfaceScreen.renderBg (InterfaceScreen.java:23) draws only the top-left 176×112 area of the original back.png in one blit: `graphics.blit(BACKGROUND, leftPos, topPos, 0, 0, 176, 112)`. In back.png the bottom border and corners are in rows v=176..179, so a 112-px crop never includes them. The result does not look like the original GUI frame.",
-            "fix": "Draw the background as a 9-slice that keeps the original back.png corners and edges, the same way LogisticsBackground.draw does. Top edge at v=0..3, bottom edge at v=176..179, sides and fill stretched to height-8. Calling LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight) works, or move it into a shared helper. Keep imageHeight=112 so all text stays inside the frame.",
-            "id": "ER-001",
-            "status": "open",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 未接続画面の背景に元画像の下枠と角を描画するよう変更しました。",
-                "at": "2026-11-20T21:50:59.408Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-47-44-338Z-042-M23-e2e/scenarios/tests-e2e-interfaces.mjs/screenshots/AC-F024-002-connected-dimension-coordinates-and-status.png",
-            "acId": "AC-F024-002",
-            "problem": "The Ultimate Redstone Interface (Tier 9, Connected) GUI panel has the same problem: no bottom border, bottom corners or shadow. The panel ends in a flat cut just below the '0, 100, 2' coordinate line, so the original GUI frame looks incomplete.",
-            "reason": "Same cause: InterfaceScreen.renderBg (InterfaceScreen.java:23) draws back.png only from v=0 to v=112, which leaves out the bottom border rows (v=176..179).",
-            "fix": "Use the same 9-slice background (top v=0..3, bottom v=176..179 of back.png) for the 176×112 interface screen so a closed frame is drawn under the connected-status, dimension and coordinate text.",
-            "id": "ER-002",
-            "status": "open",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 接続済み画面も同じ描画処理を使い、下枠まで表示します。",
-                "at": "2026-11-20T21:50:59.408Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-47-44-338Z-042-M23-e2e/scenarios/tests-e2e-interfaces.mjs/screenshots/AC-F024-002-removed-target-shows-disconnected-status.png",
-            "acId": "AC-F024-002",
-            "problem": "The OPA Clay Laser Interface (Tier 13, Disconnected) GUI panel is also cut off at the bottom. It has no bottom border or bottom corners, and the gray fill ends abruptly below the '4, 100, 2' line, so the original GUI frame is incomplete.",
-            "reason": "Same cause: the single cropped blit in InterfaceScreen.renderBg (InterfaceScreen.java:23) uses only the top 112 px of back.png and never draws the bottom edge at v=176..179.",
-            "fix": "Replace the cropped blit with a 9-slice draw of back.png's corners and edges (like LogisticsBackground.draw) so the disconnected-state GUI has a complete original frame on all four sides.",
-            "id": "ER-003",
-            "status": "open",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 切断済み画面も同じ描画処理を使い、下枠まで表示します。",
-                "at": "2026-11-20T21:50:59.408Z"
-              }
-            ]
-          }
-        ]
-      },
+      "codeReviewTree": "7c0819323b26c5291b06bc9638effad405164e2e",
+      "e2eReview": null,
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
@@ -1077,8 +1086,9 @@
     "M17",
     "M15",
     "M22",
-    "M24"
+    "M24",
+    "M23"
   ],
-  "lastCheckpoint": "4ed8aa9952d4315dfd4eb3a716ccdb206cc9f6c3",
+  "lastCheckpoint": "e91426828329ed94fe5f10f0210316d08fedae1d",
   "fatal": null
 }

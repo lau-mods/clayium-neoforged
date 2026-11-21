@@ -6,6 +6,7 @@ import net.claustra01.clayium.fluid.FluidCapabilities;
 import net.claustra01.clayium.fluid.FluidTransportControlPayload;
 import net.claustra01.clayium.machine.MachineCapabilities;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionCapabilities;
+import net.claustra01.clayium.machine.iface.InterfaceCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.logistics.BufferControlPayload;
 import net.claustra01.clayium.logistics.LogisticsCapabilities;
@@ -26,7 +27,9 @@ public final class ClayiumMod {
         modEventBus.addListener(EnergyConverterCapabilities::register);
         modEventBus.addListener(FluidCapabilities::register);
         modEventBus.addListener(LogisticsCapabilities::register);
+        modEventBus.addListener(InterfaceCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
+            modEventBus.addListener(net.claustra01.clayium.gametest.iface.InterfaceGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.logistics.LogisticsGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.energyconverter.EnergyConverterGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.fluid.FluidTransportGameTests::registerTestCapability);

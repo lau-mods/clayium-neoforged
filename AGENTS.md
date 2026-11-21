@@ -257,6 +257,13 @@ GameTest は `rawOresPreserveMetalBalanceAndVanillaDrops` と `modernWoodsUseTag
 
 GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` と `distributorsShareFairlyAcrossThreeTiersAndSkipFullOutputs`。外観 E2E は `tests/e2e/multitrack-logistics.mjs`。
 
+## M23 座標同期インターフェース
+
+- `InterfaceRegistration` は `clay_interface_tier_5`～`13`、`redstone_interface_tier_5`～`13`、`clay_laser_interface_tier_7`～`13` の25種を同名 Block/Item に登録する。ID は `<stem>_tier_<Tier>`、共通 BlockEntity/Menu は `clayium:interface`。同期工具は `clayium:synchronizer`、記録先の Data Component は `clayium:synchronized_target`。
+- インターフェースの保存 NBT は `target_dimension`、`target_pos`、`owner`。シンクロナイザーは BlockEntity を右クリックして次元と座標を記録し、インターフェースを右クリックして接続する。対象の次元、ロード済みチャンク、BlockEntity、操作権限を接続時と機能アクセス時にサーバーで確認し、未ロードチャンクをロードしない。
+- 状態は `UNLINKED` が登録先なし、`CONNECTED` がアクセス可能な対象、`DISCONNECTED` が記録先にアクセスできない状態。GUI は原作 PNG とともに状態、次元、座標を常時表示する。ItemHandler は対象の Capability を代理公開し、赤石制御は当該 tick の中継だけ有効とする。レーザー受信と赤石制御は BlockCapability を介して接続し、レーザー本体とマルチブロック処理は後続マイルストーンが利用する。
+- GameTest は `allInterfacesSynchronizeOnlyToValidatedPersistentTargets`、外観 E2E は `tests/e2e/interfaces.mjs`。
+
 ## M24 クリエイティブ用エネルギー源
 
 `CreativeSourceRegistration` は原作キー `tile.blockCreativeCESource.name` を同名 Block/Item `creative_ce_source` と BlockEntity `clayium:creative_ce_source` に登録する。Tier は13。毎 tick、搬出前に内部在庫の `octuple_compressed_energetic_clay` を最大64個へ補充し、通常バッファの面設定と Tier 13 の `TierManager.bufferTransport` に従って搬出する。INPUT 面は搬入せず、外部からの ItemHandler 挿入も受け付けない。面設定と在庫などの NBT は通常バッファから継承する。FE Capability とサバイバル製作レシピは持たず、クリエイティブタブからのみ入手できる。

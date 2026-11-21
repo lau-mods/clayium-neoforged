@@ -26,6 +26,9 @@ import net.claustra01.clayium.datagen.machine.AssemblyMachineModels;
 import net.claustra01.clayium.datagen.logistics.LogisticsBlockLoot;
 import net.claustra01.clayium.datagen.logistics.LogisticsBlockStateProvider;
 import net.claustra01.clayium.datagen.logistics.LogisticsItemModelProvider;
+import net.claustra01.clayium.datagen.iface.InterfaceBlockLoot;
+import net.claustra01.clayium.datagen.iface.InterfaceBlockStateProvider;
+import net.claustra01.clayium.datagen.iface.InterfaceItemModelProvider;
 import net.claustra01.clayium.datagen.multitrack.MultitrackBlockLoot;
 import net.claustra01.clayium.datagen.multitrack.MultitrackBlockStateProvider;
 import net.claustra01.clayium.datagen.worldgen.WorldgenBlockLoot;
@@ -59,6 +62,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new AssemblyMachineModels(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new ClayProductionBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new InterfaceBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new CreativeSourceBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MultitrackBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
@@ -70,6 +74,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new GadgetItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WeaponItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsItemModelProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new InterfaceItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new FluidItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "en_us"));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "ja_jp"));
@@ -105,6 +110,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(FluidBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(ClayProductionBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(LogisticsBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(InterfaceBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(CreativeSourceBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MultitrackBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WaterWheelBlockLoot::new, LootContextParamSets.BLOCK),

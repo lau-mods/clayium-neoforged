@@ -475,6 +475,12 @@
       "name": "modernwoodsusetagsandbambooisnotasapling"
     },
     {
+      "acId": "AC-F024-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allinterfacessynchronizeonlytovalidatedpersistenttargets"
+    },
+    {
       "acId": "AC-F022-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -597,6 +603,10 @@
     {
       "acId": "AC-F020-002",
       "scenario": "tests/e2e/multitrack-logistics.mjs"
+    },
+    {
+      "acId": "AC-F024-002",
+      "scenario": "tests/e2e/interfaces.mjs"
     },
     {
       "acId": "AC-F022-003",

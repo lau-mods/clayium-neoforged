@@ -14,9 +14,14 @@ public final class LogisticsBackground {
         graphics.blit(TEXTURE, x, y + 4, 4, height - 8, 0, 4, 4, 172, 256, 256);
         graphics.blit(TEXTURE, x + 4, y + 4, width - 8, height - 8, 4, 4, 168, 172, 256, 256);
         graphics.blit(TEXTURE, x + width - 4, y + 4, 4, height - 8, 172, 4, 4, 172, 256, 256);
-        graphics.blit(TEXTURE, x, y + height - 4, 4, 4, 0, 176, 4, 4, 256, 256);
-        graphics.blit(TEXTURE, x + 4, y + height - 4, width - 8, 4, 4, 176, 168, 4, 256, 256);
-        graphics.blit(TEXTURE, x + width - 4, y + height - 4, 4, 4, 172, 176, 4, 4, 256, 256);
+        // The original image has no bottom edge, so draw its top rows in reverse order.
+        for (int row = 0; row < 4; row++) {
+            int bottomY = y + height - 4 + row;
+            int sourceY = 3 - row;
+            graphics.blit(TEXTURE, x, bottomY, 4, 1, 0, sourceY, 4, 1, 256, 256);
+            graphics.blit(TEXTURE, x + 4, bottomY, width - 8, 1, 4, sourceY, 168, 1, 256, 256);
+            graphics.blit(TEXTURE, x + width - 4, bottomY, 4, 1, 172, sourceY, 4, 1, 256, 256);
+        }
     }
 
     private LogisticsBackground() {
