@@ -43,6 +43,7 @@ public final class FoundationCreativeTabRegistration {
                                 output.accept(TradeRegistration.AUTO_TRADER_ITEM);
                                 GadgetRegistration.ALL.forEach(output::accept);
                                 WeaponRegistration.ALL.forEach(output::accept);
+                                AdvancedToolRegistration.ALL.forEach(output::accept);
                             })
                             .build());
 

@@ -23,7 +23,7 @@ final class FoundationTooltip {
                 tooltip.add(Component.translatable("tooltip.clayium.ce_value", compressionTier.clayEnergy()));
             }
         });
-        int lines = path.equals("gadget_holder") || path.equals("clay_pickaxe")
+        int lines = path.equals("gadget_holder")
                 || path.equals("clay_3x3_chunk_loader") ? 2 :
                 path.equals("clay_bending_machine") || path.equals("clay_wrench") ? 1 : 0;
         for (int line = 1; line <= lines; line++) {

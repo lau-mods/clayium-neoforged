@@ -17,7 +17,6 @@ public final class FoundationItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         generated(FoundationItemRegistration.INDUSTRIAL_CLAY_DUST.getId().getPath(), "indclaydust");
         generated(FoundationItemRegistration.CLAY_WRENCH.getId().getPath(), "claywrench");
-        generated(FoundationItemRegistration.CLAY_PICKAXE.getId().getPath(), "claypickaxe");
         generated(GadgetRegistration.GADGET_HOLDER.getId().getPath(), "gadgetholder");
     }
 

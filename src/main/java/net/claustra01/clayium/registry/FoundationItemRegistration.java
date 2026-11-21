@@ -17,15 +17,12 @@ public final class FoundationItemRegistration {
             "industrial_clay_dust", () -> new FoundationItem(tier(3)));
     public static final DeferredItem<Item> CLAY_WRENCH = ClayiumRegistries.ITEMS.register(
             "clay_wrench", () -> new FoundationItem(tier(1).stacksTo(1)));
-    public static final DeferredItem<Item> CLAY_PICKAXE = ClayiumRegistries.ITEMS.register(
-            "clay_pickaxe", () -> new FoundationItem(tier(1).stacksTo(1)));
     public static final List<DeferredItem<? extends Item>> ALL = List.of(
             DENSE_CLAY,
             COMPRESSED_CLAY,
             CLAYIUM_BLOCK,
             INDUSTRIAL_CLAY_DUST,
-            CLAY_WRENCH,
-            CLAY_PICKAXE);
+            CLAY_WRENCH);
 
     private static DeferredItem<BlockItem> registerBlockItem(
             String id, net.neoforged.neoforge.registries.DeferredBlock<? extends net.minecraft.world.level.block.Block> block) {

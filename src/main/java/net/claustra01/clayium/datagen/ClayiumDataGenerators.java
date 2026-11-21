@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.gadget.GadgetItemModelProvider;
+import net.claustra01.clayium.datagen.advancedtool.AdvancedToolItemModelProvider;
 import net.claustra01.clayium.datagen.area.AreaBlockLoot;
 import net.claustra01.clayium.datagen.area.AreaBlockStateProvider;
 import net.claustra01.clayium.datagen.autocrafter.AutoCrafterBlockLoot;
@@ -101,6 +102,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new WorkbenchItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new GadgetItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WeaponItemModelProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new AdvancedToolItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new StorageItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new InterfaceItemModelProvider(output, event.getExistingFileHelper()));

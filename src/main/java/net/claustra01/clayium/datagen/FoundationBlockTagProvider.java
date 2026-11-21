@@ -13,6 +13,7 @@ import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.claustra01.clayium.registry.MultiblockRegistration;
 import net.claustra01.clayium.registry.ClayTreeRegistration;
 import net.claustra01.clayium.world.claytree.ClayTreeLaserConversion;
+import net.claustra01.clayium.tool.advanced.ClayToolProperties;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -44,6 +45,10 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
                 .forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WorldgenRegistration.BLOCKS.stream()
                 .map(block -> block.get()).toArray(Block[]::new));
+        tag(ClayToolProperties.CLAY_ORES).add(WorldgenRegistration.BLOCKS.stream()
+                .map(block -> block.get()).toArray(Block[]::new));
+        tag(ClayToolProperties.ORDINARY_CLAY_ORES).add(
+                WorldgenRegistration.CLAY_ORE.get(), WorldgenRegistration.DEEPSLATE_CLAY_ORE.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WaterWheelRegistration.BLOCKS.stream()
                 .map(block -> block.get()).toArray(Block[]::new));
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(AutoCrafterRegistration.BLOCKS.stream()

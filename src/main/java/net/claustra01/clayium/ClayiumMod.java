@@ -34,6 +34,7 @@ public final class ClayiumMod {
     public ClayiumMod(IEventBus modEventBus, ModContainer modContainer) {
         ClayiumRegistries.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.COMMON, ClayiumConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, ClayiumConfig.SERVER_SPEC);
         modEventBus.addListener(ChunkLoaderTicketService::register);
         modEventBus.addListener(ClayiumDataGenerators::gatherData);
         modEventBus.addListener(MachineCapabilities::register);

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.AutoCrafterRegistration;
+import net.claustra01.clayium.registry.AdvancedToolRegistration;
 import net.claustra01.clayium.registry.EnvironmentMachineRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
@@ -28,6 +29,7 @@ import net.claustra01.clayium.datagen.environment.EnvironmentLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
 import net.claustra01.clayium.datagen.chunkloader.ChunkLoaderLanguageEntries;
 import net.claustra01.clayium.datagen.area.AreaLanguageEntries;
+import net.claustra01.clayium.datagen.advancedtool.AdvancedToolLanguageEntries;
 import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
@@ -197,6 +199,7 @@ public final class FoundationGameTests {
             }
         }
         WeaponRegistration.ALL.forEach(item -> expectedItems.add(item.getId()));
+        AdvancedToolRegistration.ALL.forEach(item -> expectedItems.add(item.getId()));
         require(clayiumIds(BuiltInRegistries.BLOCK).equals(expectedBlocks), "Block registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.ITEM).equals(expectedItems), "Item registry differs from original ledger");
         require(clayiumIds(BuiltInRegistries.BLOCK_ENTITY_TYPE).equals(Set.of(
@@ -341,6 +344,9 @@ public final class FoundationGameTests {
             var area = new HashMap<String, String>();
             AreaLanguageEntries.add(locale, area::put);
             expectedKeys.addAll(area.keySet());
+            var advancedTools = new HashMap<String, String>();
+            AdvancedToolLanguageEntries.add(locale, advancedTools::put);
+            expectedKeys.addAll(advancedTools.keySet());
             var chunkLoader = new HashMap<String, String>();
             ChunkLoaderLanguageEntries.add(locale, chunkLoader::put);
             expectedKeys.addAll(chunkLoader.keySet());

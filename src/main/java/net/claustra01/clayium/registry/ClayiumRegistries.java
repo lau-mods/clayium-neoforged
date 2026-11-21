@@ -69,6 +69,7 @@ public final class ClayiumRegistries {
         TradeRegistration.AUTO_TRADER.getId();
         GadgetRegistration.ALL.size();
         WeaponRegistration.ALL.size();
+        AdvancedToolRegistration.ALL.size();
         WorldgenRegistration.BLOCKS.size();
         WorkbenchRegistration.ALL_ITEMS.size();
         FoundationDataComponentRegistration.TIER.getId();

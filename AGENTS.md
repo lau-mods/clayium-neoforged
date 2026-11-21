@@ -354,3 +354,11 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 `machine_hull/tier_7..9` は原作 `CRecipes` の大板、回路または Clay Core/Brain、Clay Energy Excitor の格子で生成する。`multiblock/clay_blast_furnace` は必要組立機 Tier 4、120 tick、`e(1,6)`。`multiblock/clay_reactor` は必要組立機 Tier 6、1,200 tick、`e(1,7)`。反応炉のレーザー加速は原作 `mods.clayium.block.tile.TileClayReactor.proceedCraft` に従い、照射された `ClayLaser.getEnergy()` を `long` へ切り捨て、その tick の通常進捗1に加算する。任意の倍率上限を設けない。
 
 GameTest は `blastFurnaceRejectsMissingLowTierAndMisplacedInterfaces`、`blastFurnaceProcessesOnlyThroughItsSynchronizedInterface`、`blastFurnaceStartsAdvancedClaySteelRecipe`、`blastFurnaceStartsOriginalDustSmeltingRecipe`、`everyShellChangeInvalidatesTheCachedStructure`、`reactorLaserAcceleratesAndStructureDamageStopsProcessing`。外観 E2E は `tests/e2e/clay-multiblocks.mjs`。
+
+## M31 高度な粘土工具
+
+`clay_pickaxe`、`clay_shovel`、`clay_steel_pickaxe`、`clay_steel_shovel` は原作の `item.itemClayPickaxe.name`、`item.itemClayShovel.name`、`item.itemClaySteelPickaxe.name`、`item.itemClaySteelShovel.name` に対応する。耐久は粘土工具500、粘土鋼工具10,000。粘土ツルハシの粘土鉱石速度は32、粘土シャベルの粘土鉱石速度は12、粘土・テラコッタ速度は32。粘土鋼工具の有効ブロック速度は基礎速度の6倍。通常粘土鉱石のドロップ補正はツルハシ4倍、シャベル3倍の幸運係数を使い、シルクタッチでは補正しない。
+
+粘土鋼工具の操作モードは `clayium:advanced_tool_mode`、記憶形状は `clayium:advanced_tool_pattern` Data Component に保存する。モード0は単体、1～最大値未満は `(2m+1)×(2m+1)` の面内採掘、最大値は記憶形状。サーバー設定 `ClaySteelPickaxeRange` は初期2、範囲0～64で、形状登録時の半径にも使う。粘土ブロックへの使用で周囲の粘土形状を記録する。追加採掘は M27 の `BlockOperationService` を通し、有効な工具対象、保護、権限とドロップを確認する。
+
+GameTest は `threeByThreeMiningStaysInPlaneAndRespectsBreakProtection`、`rememberedClayShapeRotatesMinesAndSurvivesItemSerialization`、`fourClayToolsKeepOriginalDurabilitySpeedOreHarvestAndConfig`。外観 E2E は `tests/e2e/advanced-clay-tools.mjs`。

@@ -11,9 +11,491 @@
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": null,
-      "codeReviewTree": null,
-      "e2eReview": null,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "AGENTS.md (no M34 section; line 196)",
+            "acId": null,
+            "problem": "M34 changes no part of AGENTS.md. There is no section covering the 8 CA machines, the resonating collector, the 12 augment blocks and their IDs, the factors (1.08/1.10/2.0/20.0, 1.5/2.3/3.5/5.0, +1/+3/+7/+63, cap 64), the 5×5×5 inclusive range, the formula 1+ln(resonance), the per-tier injector progress exponents, the collector NBT keys (inventory, progress, progress_remainder), the recipe IDs or the GameTest/E2E names. Line 196 still says the overclocker supply to the FE converter is connected in M33, but it is now connected here.",
+            "reason": "The project rules say any change to user-visible behavior, IDs, registrations or verification must update AGENTS.md in the same change. AGENTS.md is in the milestone scope.",
+            "fix": "Add an M34 section with the IDs, numbers, formulas, slot and NBT keys, recipe IDs and test names listed above. Update the M16 sentence to say M34's AugmentScanner now supplies the adjacent overclock factor.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に M34 の ID、倍率、式、保存キー、レシピ、検証名を追加し、M16 の接続時期を訂正しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に M34 の ID、倍率、式、保存キー、レシピと検証名を記載し、M16 の接続先を訂正しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has an M34 section and the M16 sentence points to M34's AugmentScanner.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/ca/CaMachineGameTests.java:35-87",
+            "acId": "AC-F033-001",
+            "problem": "Only the Tier 9 CA condenser is run, and only with one resonance value. No CA injector of any tier is ever run, so `injectorProgressMultiplier` and its exponents are never checked. Tiers 10 and 11 of the condenser are never run either. The 'change of resonance' in the Action is never done. The expected output count comes from `CaMachineRules.condenserOutput(1, 20.0D)`, the same production function, so the test checks itself rather than a value. The 'correct Tier' check reads the `CaSeries` arrays and the map size, not the registered blocks or the Tier data component on their items.",
+            "reason": "The AC needs all 3 condenser tiers and all 5 injector tiers to run representative recipes, and resonance changes compared against original values. A test that compares the implementation with itself cannot catch a wrong formula.",
+            "fix": "For every CA machine block, check its registered tier and its item's TIER component. Run each condenser tier with at least two resonance values (e.g. none and opa_resonator) and assert literal output counts (1 and 3). Run each injector tier with and without resonance and assert literal progress-per-tick and CE values.",
+            "id": "CR-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 8機種の登録 Tier と Item の Tier を確認し、各機種を共鳴あり・なしで処理する GameTest に拡張しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 8 機種の登録 Tier と Item Tier を確認し、各機種を共鳴あり・なしで実行して出力、進捗、CE を検証します。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The test checks the registered tier and item TIER of every CA machine. It runs each condenser and injector tier with and without resonance and asserts literal times, CE, progress factors and output counts.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/ca/CaMachineGameTests.java:124-160",
+            "acId": "AC-F034-001",
+            "problem": "Time, CE and progress are never measured on a running machine. The test only feeds `machine.overclockFactor()` into `TierManager.calculate`. Only the single four-overclocker combination is tried, so the G=1 case (F≤10, e.g. a single overclocker) is not compared. The FE converter check calls `EnergyConverterSpecification` directly, so the new link in `EnergyConverterBlockEntity` that reads adjacent overclockers is never exercised.",
+            "reason": "The AC asks to compare processing time, CE and progress on a processing machine with overclockers attached, and to confirm the CE converter keeps its own exponent in real use.",
+            "fix": "Start a real recipe on the grinder with overclockers attached. Assert its saved `required_progress`, `energy_per_progress` and `progress_per_tick`, and the CE consumed per tick, for at least one F≤10 and one F>10 combination. Place overclockers next to a real `EnergyConverterBlockEntity`, tick it, and assert the CE consumed and FE generated use the linear factor.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 稼働中の粉砕機の時間・CE・進捗と、実際の FE 変換器の線形倍率を検証します。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 稼働中の粉砕機で F≤10 と F>10 の時間、CE、進捗を確認し、実際の FE 変換器で線形倍率を確認します。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "A running grinder is checked for F≤10 and F>10, and a real EnergyConverterBlockEntity is checked for the linear CE and FE factor (85,000 CE left, 135 FE).",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/ca/CaMachineGameTests.java:164-192",
+            "acId": "AC-F034-002",
+            "problem": "Each upgrade is placed alone, so the 64 cap is never checked independently. OPA alone gives exactly 1+63=64, and no combination that would go over 64 (e.g. OPA plus antimatter, or several upgrades on several faces) is tested.",
+            "reason": "The Expected Result requires the 64-item maximum to hold. As written, the test would pass even if the clamp were removed.",
+            "fix": "Put several upgrades on different faces whose total exceeds 64 (e.g. OPA + OEC), assert the limit is 64, and also assert an additive combination below the cap (e.g. antimatter + pure antimatter = 5).",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 拡張の加算結果5個と、上限を超える組合せでの64個制限を検証します。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 拡張の加算結果 5 個と、上限を超える組合せでの 64 個制限を検証します。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The test now covers an additive case (5) and an over-cap case (64).",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:187-203",
+            "acId": "AC-F034-001",
+            "problem": "When a world reloads, the active recipe is re-checked by recomputing `TierManager.calculate(..., overclockFactor())` and `fixedOutputs(recipe)` from the current neighbours. If an overclocker or resonator was added or removed after the process started, `required_progress`, `energy_per_progress` or `pending_outputs` no longer match. The process is then aborted after the reload and its progress is lost.",
+            "reason": "The start-time values are already saved. Comparing them with values from neighbours that may have changed turns an allowed in-game action (placing an augment) into lost work after a save and reload.",
+            "fix": "Re-check only that the recipe still exists and matches the saved recipe data, not the augment-dependent multipliers. Alternatively, save the overclock factor and resonance used at start and compare against those.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 再読込時に現在の拡張配置から開始時の倍率・出力を再計算しないようにし、変更後の継続を GameTest で確認しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 再読込時に現在の拡張配置で開始時の値を再計算せず、配置変更後の処理継続を検証します。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Reload no longer recomputes the augment-dependent multipliers or outputs. A reload test was added.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:737-741",
+            "acId": "AC-F033-001",
+            "problem": "`processingProgressMultiplier()` calls `AugmentScanner.resonance` on every tick of every CA injector. That reads 125 block states per tick per machine. The resonating collector does the same in `CaCollectorBlockEntity.tickServer`.",
+            "reason": "Resonance only changes when nearby blocks change. Rescanning a 5×5×5 volume every tick is a needless server cost, and the original caches the value instead of polling.",
+            "fix": "Compute resonance once when the process starts, store it with the other start-time parameters, and recompute only on neighbour or block changes (e.g. a dirty flag set from `neighborChanged`), not every tick.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 注入機の共鳴倍率を処理開始時に保存し、収集機は共鳴ブロックの設置・撤去時にキャッシュを失効させます。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 注入機は処理開始時の共鳴倍率を保存し、収集機は共鳴ブロックの設置・撤去時にキャッシュを失効させます。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The injector progress multiplier is saved at process start. The collector caches resonance and invalidates it from the resonator's onPlace/onRemove.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/ca/CaRecipes.java:35-41",
+            "acId": "AC-F033-001",
+            "problem": "`ca_injector/sand_to_red_sand` (sand + antimatter → red sand, Tier 10, 60 ticks) has no source in the original CRecipes, and no test or AC refers to it.",
+            "reason": "The AC requires the original's representative recipes. Made-up content is outside the milestone, and the generated JSON ships it to players.",
+            "fix": "Remove the recipe and its generated `ca_injector/sand_to_red_sand.json`, unless the hotfix2 `CRecipes` CA injector table actually contains it. If it does, record the source in AGENTS.md.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 根拠のない砂から赤い砂へのレシピを Datagen と生成物から削除しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 根拠のない砂から赤い砂へのレシピを Datagen と生成物から削除しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The sand_to_red_sand recipe was removed from Datagen and from the generated resources.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/ca/CaRecipes.java:108-127",
+            "acId": null,
+            "problem": "All four `reactor/*_overclocker` recipes use `processingTicks(Integer.MAX_VALUE)` (2,147,483,647 ticks). This looks like a clamp, not the original reactor time, and none of the input counts or tiers are checked against the original.",
+            "reason": "A clamped value hides the original balance. Without laser acceleration the recipes can never finish in practice, so the overclockers cannot be obtained in survival.",
+            "fix": "Use the exact time from hotfix2 `CRecipes.recipeReactor` for each overclocker and record it in AGENTS.md. If the original value does not fit the `int` field, say so and choose a documented representation instead of silently clamping.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 原作 JAR の4件の処理時間を long で保持し、Tier・入力数・時間を GameTest で照合します。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 反応炉レシピの原作処理時間を long で保持し、Tier、入力数、時間を GameTest で照合します。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "processingTicks is now long through the record, codec, stream codec and builder. The four reactor recipes use the original times, and a GameTest checks them.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/CaRegistration.java:28",
+            "acId": null,
+            "problem": "`OVERCLOCK = {1.5, 2.3, 3.5, 5.0}` repeats `TierManager.OVERCLOCKER_FACTORS`, which already exists and is tested through `TierManager.overclockerFactor(rank)`.",
+            "reason": "The same table now lives in two places, and the two can drift apart. The code style asks for one direct path per behavior.",
+            "fix": "Register overclockers with `TierManager.overclockerFactor(rank)` and delete the `OVERCLOCK` array.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: オーバークロック倍率を TierManager の表から取得するよう統一しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: オーバークロック倍率の取得元を TierManager に統一しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The OVERCLOCK array is gone. CaRegistration uses TierManager.overclockerFactor(rank).",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/CaRegistration.java:149-158; src/main/java/net/claustra01/clayium/machine/augment/MachineAugmentBlock.java:7,29-31",
+            "acId": null,
+            "problem": "The record fields `AugmentDefinition.kind`, `rank`, `tier`, `factor` and `additionalFuel` are never read; only `id`, `texture` and `block` are used. `MachineAugmentBlock.rank` and `rank()` are never read either.",
+            "reason": "Unused code should be removed.",
+            "fix": "Reduce `AugmentDefinition` to `id`, `texture` and `block`. Remove the `rank` field, constructor parameter and accessor from `MachineAugmentBlock`.",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 未使用の登録定義フィールドと augment の rank を削除しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 使われない登録定義フィールドと augment の rank を削除しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AugmentDefinition is reduced to id, texture and block. The rank field and accessor are removed from MachineAugmentBlock.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ca/CaCollectorBlockEntity.java:36,52-56,118-120",
+            "acId": null,
+            "problem": "The `active` field and the `active()` accessor are set but never read. They are not saved, not synced and not used by any block state.",
+            "reason": "Unused code should be removed.",
+            "fix": "Delete the `active` field, the assignments to it and `active()`.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 未使用の収集機 active 状態とアクセサを削除しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 参照されない収集機の active 状態とアクセサを削除しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The active field and accessor are removed from CaCollectorBlockEntity.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/energy/fe/EnergyConverterBlockEntity.java:162-164",
+            "acId": null,
+            "problem": "`tickServer` now overwrites `overclockFactor` from `AugmentScanner` every tick, and `setOverclockFactor` has no callers. It is dead code, and any value it set would be overwritten on the next tick.",
+            "reason": "The code style says to remove code the current behavior no longer uses.",
+            "fix": "Remove `setOverclockFactor`.",
+            "id": "CR-012",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 毎 tick 上書きされる未使用の setOverclockFactor を削除しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 毎 tick 上書きされる未使用の setOverclockFactor を削除しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "setOverclockFactor is removed.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/augment/AugmentScanner.java:16-18; src/main/java/net/claustra01/clayium/machine/ca/CaMachineRules.java:4-7,18",
+            "acId": null,
+            "problem": "The code guards against infinite or overflowing resonance and multipliers (`Double.MAX_VALUE`, `Integer.MAX_VALUE`). The largest resonance the game can produce is 20^124 ≈ 1e161, which is finite, and outputs are clamped to the stack size anyway.",
+            "reason": "The code style says to check only states the game can actually produce.",
+            "fix": "Remove the infinity and overflow branches. Keep only the plain product and `(int)` conversion, with the existing `max(baseCount, …)`.",
+            "id": "CR-013",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: ゲーム内で到達しない非有限値・オーバーフロー分岐を削除しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: ゲーム内で到達しない非有限値・オーバーフロー用の分岐を削除しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The infinity and overflow branches are removed from AugmentScanner and CaMachineRules.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/ca/CaBlockStateProvider.java:44-48",
+            "acId": null,
+            "problem": "`machine()` branches with `instanceof ClayMachineBlock` and casts to `CaCollectorBlock` only to call `horizontalBlock`. `horizontalBlock(Block, ModelFile)` accepts any block with a horizontal `FACING` property.",
+            "reason": "The branch and cast add complexity without adding any behavior.",
+            "fix": "Call `horizontalBlock(block, model)` directly and drop the branch and cast.",
+            "id": "CR-014",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: block 型による分岐を除き、horizontalBlock を直接呼びます。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 型による分岐を除き、horizontalBlock を直接呼ぶようにしました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "CaBlockStateProvider now calls horizontalBlock(block, model) directly.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/ClayMachineBlockEntity.java:747-760; src/main/java/net/claustra01/clayium/energy/fe/EnergyConverterBlockEntity.java:170-183",
+            "acId": "AC-F034-002",
+            "problem": "Excess fuel is always dropped at `y+1`, the block above the machine. That is where an energy storage upgrade or another solid block is often placed, so the dropped ItemEntity can spawn inside a solid block.",
+            "reason": "An item inside a solid block gets pushed out in an unpredictable direction or is hard to recover. This weakens the 'no item loss on removal' requirement.",
+            "fix": "Use `Containers.dropItemStack` at the machine's own position (as block-break drops do), or pick a free neighbouring face.",
+            "id": "CR-015",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 余剰燃料を機械自身の位置から落とすよう変更しました。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 余剰燃料を機械自身の位置からドロップするよう変更しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Excess fuel is dropped at y+0.5, the machine's own position, in both ClayMachineBlockEntity and EnergyConverterBlockEntity.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/ca-machines.mjs:48-58",
+            "acId": "AC-F034-002",
+            "problem": "The AC-F034-001 and AC-F034-002 screenshots are taken from the same camera position of free-standing augment blocks. No augment is placed next to a machine, and nothing shows a 5×5×5 arrangement or a fuel slot.",
+            "reason": "The E2E entries for these ACs show only the block textures, not the setup the criteria describe.",
+            "fix": "Place overclockers and energy storage upgrades next to a processing machine, and resonators inside and outside the 5×5×5 range around a CA machine. Take a separate screenshot for each AC, e.g. open the machine GUI to show the fuel slot holding more than one energetic clay.",
+            "id": "CR-016",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2E で機械に隣接する拡張と共鳴の範囲境界を配置し、燃料64個の GUI を別途撮影します。",
+                "at": "2026-11-21T15:38:13.669Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2E に隣接拡張と共鳴の範囲境界を配置し、燃料 64 個の GUI を別に撮影する場面を追加しました。",
+                "at": "2026-11-21T19:13:08.781Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E places augments next to real machines, covers the 5×5×5 boundary, and adds a separate fuel-slot GUI screenshot for AC-F034-002.",
+                "at": "2026-11-21T19:13:37.993Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "0673197c872dfda5caa5b2bffad8851ca8919363",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-21T19-14-22-833Z-006-M34-e2e/scenarios/tests-e2e-ca-machines.mjs/screenshots/AC-F034-002-opa-upgrade-fuel-slot-sixty-four.png",
+            "acId": "AC-F034-002",
+            "problem": "In the processing machine GUI, the energy clay fuel slot (64 energetic clay) sits on top of the player \"Inventory\" label. The stack count \"64\" is drawn over the letters \"ry\", and the bottom of the slot frame is cut off by the player-inventory background. Because of this, the screenshot cannot cleanly show the 64-item fuel count this criterion is meant to verify.",
+            "reason": "ClayMachineMenu places the fuel slot at (44,57), so the item is drawn at y 57–73 and the slot frame at y 56–74 (ClayMachineScreen.renderBg blits SLOT at leftPos+43, topPos+56). ClayMachineScreen also draws the \"Inventory\" label at inventoryLabelX=8, inventoryLabelY=72, and blits gui_playerinventory.png from topPos+72. The label (x≈8–58, y 72–80) and the inventory background therefore overlap the fuel slot (x 43–61, y 56–74).",
+            "fix": "Move the fuel slot and its label out of the player-inventory area. One option: keep imageHeight=166 and move the fuel slot up next to the \"Tier N\" text. Move the slot in ClayMachineMenu to e.g. (44,52) and the SLOT blit in ClayMachineScreen.renderBg to (43,51). Draw \"Tier N\" at y≈56 to the left of the slot (x 7–40). Then make sure nothing reaches past y=71. Another option: raise imageHeight and move the player inventory background, inventoryLabelY and the player slots down by the same amount, so the label starts at least 2 px below the slot frame (e.g. inventoryLabelY ≥ 76, inventory blit at ≥ topPos+76). After either change, the \"64\" count and the full slot frame should show with no text under them.",
+            "id": "ER-001",
+            "status": "open",
+            "history": []
+          }
+        ]
+      },
       "failure": null,
       "conflicts": [],
       "reviewConflicts": []
@@ -51,8 +533,9 @@
     "M29",
     "M32",
     "M33",
-    "M30"
+    "M30",
+    "M31"
   ],
-  "lastCheckpoint": "ab10d037ab102d197c9118f3552c71c5f97df77a",
+  "lastCheckpoint": "c153e8c33601eba7ad9e1c4089c8a7f7037d8a8f",
   "fatal": null
 }
