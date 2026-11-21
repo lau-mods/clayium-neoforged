@@ -308,3 +308,9 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 `MinerRegistration` は原作キー `tile.blockMiner.name` と `tile.blockActivator.name` を Tier 6 の同名 Block/Item `block_breaker` と `activator` に登録する。両方が `clayium:basic_block_operation` BlockEntity を使用する。入力はスロット0、出力は1～9で、20 tick ごとに正面の対象を操作する。保存 NBT は `inventory`、`owner`、`operation_tick`。
 
 `BlockOperationService` は所有者 UUID の FakePlayer でサーバー側の破壊・使用イベントと権限を確認する。採掘機は LootTable と工具の幸運・シルクタッチを使い、出力容量を確認してから破壊する。右クリック代行機は機械側から対象面をクリックし、消費・耐久・返却物を在庫に反映する。保護対象と未ロードチャンクは操作せず、チャンクを強制ロードしない。GameTest は `blockBreakerUsesLootProtectionAndLoadedChunks` と `activatorMatchesPlayerUseAndDeniedActionsHaveNoSideEffects`。
+
+## M28 3×3チャンクローダー
+
+`clay_3x3_chunk_loader` は Tier 6 の同名 Block/Item と `clayium:chunk_loader` BlockEntity/Menu を使う。NeoForge `TicketController` の所有者は装置の BlockPos で、中心チャンクから X/Z 各±1の ticking ticket 9件だけを取得する。9件の途中で拒否された場合は取得済み分を戻し、`ticket_status=unavailable` を保存してGUIへ稼働不可を表示する。
+
+撤去時は9件を明示解放する。次元アンロード時の実行中 ticket は NeoForge の dimension lifecycle に委ね、永続 ticket はサーバー再起動時の `LoadingValidationCallback` で検証する。正しい位置に装置があり、ticking 9件が正確な3×3で、non-ticking ticket がない所有者だけを復元する。不正な範囲、不正な種別、装置がない所有者、Entity所有 ticket は孤児として削除する。GameTest は `loadsExactlyNineTickingChunks` と `ticketsReleaseAndRestartValidationRemovesOrphans`、外観 E2E は `tests/e2e/chunk-loader.mjs`。GameTest は level の live ticket を解放して次元アンロードを模擬し、保存済み ticket だけから再取得することで再起動時の検証を行う。実際の次元アンロードでは NeoForge がその ServerLevel の live ticket を破棄する。NeoForge 21.1 の TicketController は上限での拒否を返さず、false は同一所有者の重複 ticket を示すため、拒否表示は E2E で保存状態を用いて確認する。

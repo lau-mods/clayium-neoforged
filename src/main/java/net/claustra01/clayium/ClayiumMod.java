@@ -17,6 +17,7 @@ import net.claustra01.clayium.logistics.BufferControlPayload;
 import net.claustra01.clayium.logistics.LogisticsCapabilities;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.storage.StorageCapabilities;
+import net.claustra01.clayium.world.chunkloading.ChunkLoaderTicketService;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -27,6 +28,7 @@ public final class ClayiumMod {
 
     public ClayiumMod(IEventBus modEventBus) {
         ClayiumRegistries.register(modEventBus);
+        modEventBus.addListener(ChunkLoaderTicketService::register);
         modEventBus.addListener(ClayiumDataGenerators::gatherData);
         modEventBus.addListener(MachineCapabilities::register);
         modEventBus.addListener(AutoCrafterCapabilities::register);

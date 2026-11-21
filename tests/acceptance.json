@@ -575,6 +575,18 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "vanillaremainingitemsanddamagedrecipescommitexactlyonce"
+    },
+    {
+      "acId": "AC-F029-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "loadsexactlyninetickingchunks"
+    },
+    {
+      "acId": "AC-F029-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "ticketsreleaseandrestartvalidationremovesorphans"
     }
   ],
   "e2e": [
@@ -693,6 +705,10 @@
     {
       "acId": "AC-F025-002",
       "scenario": "tests/e2e/auto-crafters.mjs"
+    },
+    {
+      "acId": "AC-F029-001",
+      "scenario": "tests/e2e/chunk-loader.mjs"
     }
   ]
 }

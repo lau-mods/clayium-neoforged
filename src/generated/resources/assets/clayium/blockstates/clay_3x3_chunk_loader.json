@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/clay_3x3_chunk_loader",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/clay_3x3_chunk_loader"
+    },
+    "facing=south": {
+      "model": "clayium:block/clay_3x3_chunk_loader",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/clay_3x3_chunk_loader",
+      "y": 270
+    }
+  }
+}

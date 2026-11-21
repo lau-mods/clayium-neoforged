@@ -44,6 +44,7 @@ public final class ClayiumRegistries {
         AssemblyMachineRegistration.MACHINES.size();
         AutoCrafterRegistration.AUTO_CRAFTERS.size();
         MinerRegistration.BLOCKS.size();
+        ChunkLoaderRegistration.CHUNK_LOADER.getId();
         EnergyConverterRegistration.CONVERTERS.size();
         InterfaceRegistration.INTERFACES.size();
         InterfaceRegistration.SYNCHRONIZER.getId();

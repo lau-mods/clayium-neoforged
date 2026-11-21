@@ -3,8 +3,8 @@
   "active": [
     {
       "id": "M29",
-      "phase": "e2e",
-      "baseCommit": "63e9658102b7c4fcd17c1524b6684eeb506a339f",
+      "phase": "implementation",
+      "baseCommit": "414844f8ad24d72197bf4985880195eac5b07f6c",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -40,6 +40,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the laser ID registration, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Laser ID registration is untouched by the diff, so the earlier fix stands.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -69,6 +75,12 @@
                 "by": "claude",
                 "note": "The diff does not touch AGENTS.md, so the M29 section stays in place.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md is untouched by the diff, so the M29 section stays in place.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -98,6 +110,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the reflector or the interface relay, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The reflector now merges beams per tick in pendingBeam and delivers once from serverTick, so there is no recursion. The interface relay is unchanged.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -127,6 +145,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the blockstate rotations, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The blockstate rotations are still UP=270 and DOWN=90. The reflector model is now drawn by the BER, but the variant rotations are unchanged.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -156,6 +180,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the renderer UVs, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The beam and reflector faces use getU0/U1/V0/V1.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -185,6 +215,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the render bounding box, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "getRenderBoundingBox is still overridden and expands along the beam.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -214,6 +250,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the beam widths, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The per-axis half-width offset is still in place.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -243,6 +285,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the reflector beam start, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The reflector's outgoing beam starts at distance 0 (the block center).",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -272,6 +320,12 @@
                 "by": "claude",
                 "note": "The diff does not bring back receiveClayEnergy, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "receiveClayEnergy has not come back.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -301,6 +355,12 @@
                 "by": "claude",
                 "note": "The diff changes only the batch name of an unrelated ClayProduction GameTest, so the laser GameTests are unchanged.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The existing laser GameTests remain and a reflection-order test was added.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -330,6 +390,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the laser block entity persistence, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The reflector no longer overrides saveAdditional. The runtime state goes only through the update tag, and there are no clamps.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           },
@@ -359,126 +425,111 @@
                 "by": "claude",
                 "note": "The diff does not touch the LaserReceiver API, so the earlier fix stands.",
                 "at": "2026-11-21T12:44:07.957Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "receiveLaser(LaserBeam) is the single path, with no incomingSide parameter.",
+                "at": "2026-11-21T12:57:17.851Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "5778832eeb808f7d887b8470aa4cfcd91432bad8",
-      "e2eReview": null,
-      "failure": {
-        "phase": "gametest",
-        "summary": "GameTest task failed",
-        "details": "GameTest task output:\n[++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: ========= 92 GAME TESTS COMPLETE IN 31.60 s ======================\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]:    - condensersrequirenineitemsandpreserveoriginaltiersandtimes\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================\n[15:38:19] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server\n[15:38:19] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end\n[15:38:21] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save Test Level\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved\n[15:38:21] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER\n[15:38:21] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down\n\n> Task :runGameTestServer FAILED\n8 actionable tasks: 1 executed, 7 up-to-date\nConfiguration cache entry reused.\n\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':runGameTestServer'.\n> Process 'command '/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/bin/java'' finished with non-zero exit value 1\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to generate a Build Scan (powered by Develocity).\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 1m 9s\n",
-        "logs": [
-          ".harness-state/runs/2026-11-21T06-37-11-791Z-006-M29-gametest/stdout.log",
-          ".harness-state/runs/2026-11-21T06-37-11-791Z-006-M29-gametest/stderr.log"
-        ],
-        "screenshots": []
-      },
-      "conflicts": [],
-      "reviewConflicts": []
-    },
-    {
-      "id": "M28",
-      "phase": "implementation",
-      "baseCommit": "66d2e0872c6ec8c61289a0eb962c5037cda3f93a",
-      "failures": {
-        "build": 0,
-        "gametest": 0,
-        "e2e": 0
-      },
-      "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
+      "codeReviewTree": "90343f25a763a6e69d307e4cb141e920980b03c5",
+      "e2eReview": {
+        "kind": "e2e",
         "issues": [
           {
-            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderBlockEntity.java:35-37,78-86",
-            "acId": "AC-F029-002",
-            "problem": "`ticket_status=active` is saved, and serverTick returns early while the status is ACTIVE. After a restart, the restart validation can remove a real loader's saved tickets. This happens when the forced-chunk data and the chunk data were saved at different times (for example after a crash), or when the ticket set was incomplete. The block entity then loads as ACTIVE and never asks for tickets again. It shows 'active' but keeps no chunks loaded.",
-            "reason": "AC-F029-002 requires a legitimate loader to get back the tickets it needs after a restart. The GameTest only passes because it overwrites the status with `waiting` through loadWithComponents. A real restart never does that.",
-            "fix": "After a load, re-check the tickets once on the first server tick whatever status was saved. For example, keep ACTIVE only for the running session: do not restore ACTIVE from NBT, or reset it to WAITING in loadAdditional. Persist only the `unavailable` result the GUI needs. Remove the GameTest's manual `ticket_status` overwrite so the test runs the real reload path.",
-            "id": "CR-001",
-            "status": "open",
-            "history": []
+            "target": ".harness-state/runs/2026-11-21T12-44-44-505Z-011-M29-e2e/scenarios/tests-e2e-clay-lasers.mjs/screenshots/AC-F030-002-four-colors-side-and-reflection.png",
+            "acId": "AC-F030-002",
+            "problem": "The blue beam reflected by `laser_reflector` (10,100,0 facing west) goes through the polished_deepslate target at (4,100,0) without stopping. It continues to the 32-block maximum, past the other test blocks, and ends almost at the camera (from about 840,480 down to the hotbar at the bottom right). The same overshoot shows in four-emitter-directions-front: the horizontal blue line at z=0 keeps going left of the deepslate block at about 1430–1650 px and crosses the whole frame. It also shows in red-green-crossing-and-reflector: the blue line runs past the deepslate to about 655,270 px.",
+            "reason": "The reflector draws its beam with the default `LaserPath(MAX_LENGTH=32)` and never uses the real path. The Tier 7 laser at (10,-5) is placed before the reflector, so its BlockEntity ticks first. Each tick `receiveLaser` sets `receivedGameTime` to the current game time and calls `sync()`. When `LaserReflectorBlockEntity.serverTick` runs later in that same tick, the check `receivedGameTime < gameTime` is false every time. As a result `LaserPath.find` never runs, the beam is never forwarded, and the client always gets `laser_length=32` with `irradiating=true`. The reflected beam is shown but stops nowhere, and its target never receives it.",
+            "fix": "Separate the beam received this tick from the beam sent out. In `receiveLaser`, merge into a pending beam keyed by game time. In `serverTick`, send out the pending beam from earlier ticks no matter how the BlockEntities are ordered. For example, keep `pendingBeam`/`pendingTime` and `outgoingBeam`: at tick start, when `pendingTime < gameTime`, promote pending to outgoing. Or compare against the last processed time rather than the last received time. Always run `LaserPath.find` before the first `sync()` that sets `irradiating=true`, and make the initial client `laser_length` 0 instead of `MAX_LENGTH`. Then the beam ends at the first non-air block (length 6 here) and reaches the target.",
+            "id": "ER-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 受信ビームを次のtickまで保持し、反射経路の計算後に照射状態を同期するよう変更しました。対象で長さ6に止まり、連続して届くことをGameTestで確認しました。",
+                "at": "2026-11-21T12:56:56.411Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "In blue-reflector-turn the blue beam from the laser to the reflector and from the reflector to the deepslate target both end at the first block. In the other screenshots, the red-green-crossing blue lines end at their deepslate targets, and four-colors-side-and-reflection no longer has a blue beam running toward the camera. In four-emitter-directions-front the right-hand blue line runs to the frame edge, but it is the beam from the right laser and gives no clear sign of overshoot.",
+                "at": "2026-11-21T12:59:21.089Z"
+              }
+            ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderTicketService.java:23,29-43,79-89",
-            "acId": "AC-F029-002",
-            "problem": "Restored owners are tracked in a static, JVM-wide `RESTORED_OWNERS` set. The set is never cleared when the server stops. Entries for loaders that are already ACTIVE are never consumed, because acquire is never called for them. In single-player, these entries carry over to the next world loaded in the same JVM. There, a loader at the same position skips the rejection check. The set also needs extra hooks (`forgetRestoredOwner`, `onChunkUnloaded`) only to keep itself consistent.",
-            "reason": "Static mutable state that outlives the server breaks lifecycle correctness. It is also an extra abstraction that NeoForge does not need: once the callback has validated the tickets, they are already held in ForcedChunksSavedData.",
-            "fix": "Remove `RESTORED_OWNERS`, `Owner`, `forgetRestoredOwner` and the `onChunkUnloaded` override. In acquire, count a chunk whose ticket the owner already holds as acquired. The ticket is already held when forceChunk returns false because it already exists, so check the controller's held tickets directly. Treat only a ticket that is missing after the request as a rejection.",
-            "id": "CR-002",
-            "status": "open",
-            "history": []
+            "target": ".harness-state/runs/2026-11-21T12-44-44-505Z-011-M29-e2e/scenarios/tests-e2e-clay-lasers.mjs/screenshots/AC-F030-002-red-green-crossing-and-reflector.png",
+            "acId": "AC-F030-002",
+            "problem": "The only place the laser reflector is visible is a small opaque white vertical sliver (about 1840–1860 x 300–355 px) in front of the Tier 7 laser. It reads as a stray white beam or z-artifact, not as a reflector. The original translucent pale-blue reflector look is lost.",
+            "reason": "The `laser_reflector` model is a thin plate, 12×12×2 px (from [2,2,1] to [14,14,3]), with `render_type` `minecraft:cutout`. The original texture `laserreflector.png` is a pale, semi-transparent light-blue image. Cutout makes every pixel either fully opaque or fully discarded, so the plate renders flat white and solid. Its 2 px edge, auto-UV'd, is all you see from most angles. The cullface entries on faces that are not on the block boundary are also wrong, because those faces disappear next to solid neighbours.",
+            "fix": "Change the reflector model's render type to `minecraft:translucent` so the texture keeps its alpha. Make the shape match the original reflector renderer in the hotfix2 JAR (check `RenderLaserReflector` or the block's render bounds) rather than a 2 px plate, so it is visible from the side and the front. Remove `cullface` from faces that are not on the block boundary. Then regenerate with `runData`.",
+            "id": "ER-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 原作の底面と傾斜した4面をBlockEntityRendererで描画し、原作PNGの透過を維持しました。内部面のcullfaceも除去しました。",
+                "at": "2026-11-21T12:56:56.411Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "In blue-reflector-turn the reflector is now a translucent pale-blue, white-tinted slanted shape that you can see through and that clearly reads as a reflector. It no longer looks like an opaque white sliver.",
+                "at": "2026-11-21T12:59:21.089Z"
+              }
+            ]
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderTicketService.java:33-38",
-            "acId": "AC-F029-001",
-            "problem": "In NeoForge 21.1, `TicketController.forceChunk` returns false only when the same owner already holds that ticket. The code treats that result as a 'server rejection' and then releases every ticket the owner holds, including the valid ones it already had. The GameTest creates the 'rejection' the same way, by adding a duplicate ticket for the same owner beforehand. So the rejection path being tested is a duplicate ticket, not a server constraint.",
-            "reason": "AC-F029-001's 'tickets rejected because of a server constraint' must mean the requested ticket was not granted. Losing tickets the loader already held because of a duplicate is wrong behavior.",
-            "fix": "Count rejection only when, after the request, the owner still does not hold the ticking ticket for that chunk. Give an already-held ticket the success result. In the GameTest, create the rejection precondition through a real non-granted request rather than a pre-added duplicate for the same owner.",
-            "id": "CR-003",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/chunkloader/ChunkLoaderGameTests.java:35-83",
-            "acId": "AC-F029-001",
-            "problem": "The test does not set up the precondition or observe the result the criterion requires. The loader is not placed on a chunk boundary (it sits at relative 1,2,1 with no boundary check). No ticks pass after the tickets are acquired. 'Running' is only checked as `getChunkNow != null` (loaded), not as ticking. The test never checks that chunks outside the 3×3 area are not loaded by the loader.",
-            "reason": "AC-F029-001 Preconditions/Action/Expected: place the loader on a chunk boundary, advance ticks, observe the center and its 8 neighbours running, and confirm no extra surrounding chunks are loaded.",
-            "fix": "Place the loader on a block whose coordinates are on a chunk boundary (for example x%16==15 or 0), confirmed with a require. Advance ticks with runAfterDelay/succeedWhen. Assert the 9 chunks are ticking (for example `level.shouldTickBlocksAt` or `isNaturalSpawningAllowed` for each chunk). Assert that the ring of chunks at distance 2 has no ticket or ticking state from this loader.",
-            "id": "CR-004",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/chunkloader/ChunkLoaderGameTests.java:96-130",
-            "acId": "AC-F029-002",
-            "problem": "The 'restart' is simulated by calling `ForcedChunkManager.reinstatePersistentChunks` while the tickets are still live in the DistanceManager. The test checks only the serialized ForcedChunksSavedData. The validation callback removes the orphan tickets from saved data, but the orphan's live tickets stay in the level, so its 9 chunks remain force-loaded after the test. Dimension unload, an Action listed in the criterion, is not exercised at all.",
-            "reason": "AC-F029-002 expects that no orphan tickets remain and that ticket release is checked for removal, dimension unload and restart. Checking only saved data does not prove that no orphan tickets remain, and the test leaves chunks loaded for later GameTests.",
-            "fix": "Check the live ticket state (the level's DistanceManager / ticking state of the chunks) as well as the saved data. Make sure the orphan's live tickets are gone, for example by clearing them before the simulated reinstate so the saved data is the only source, as on a real startup. Clean up every ticket the test creates. Cover dimension unload, or state in AGENTS.md and the acceptance mapping how it is verified.",
-            "id": "CR-005",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderBlockEntity.java:88-98,114-116",
-            "acId": null,
-            "problem": "`getUpdatePacket`, `getUpdateTag` and `sendBlockUpdated` send the ticket status to the client block entity, but nothing on the client reads it. The screen reads the status from the menu's ContainerData.",
-            "reason": "Code style: remove code the current behavior does not use.",
-            "fix": "Remove `getUpdatePacket`, `getUpdateTag` and the `sendBlockUpdated` call. Keep `setChanged`.",
-            "id": "CR-006",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/chunkloader/ChunkLoaderLanguageEntries.java:9",
-            "acId": null,
-            "problem": "The lang key `container.clayium.chunk_loader` is generated into en_us/ja_jp, but nothing uses it. `getDisplayName` returns the block name.",
-            "reason": "Code style: remove resources the current behavior does not use.",
-            "fix": "Delete the entry and regenerate `en_us.json` and `ja_jp.json` with runData.",
-            "id": "CR-007",
-            "status": "open",
-            "history": []
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderMenu.java:37-41",
-            "acId": null,
-            "problem": "`ticketStatus()` guards against ordinals outside the enum range and maps them to UNAVAILABLE. The server only ever sends `TicketStatus.ordinal()`, so that state cannot happen.",
-            "reason": "Code style: validate only states the game can produce.",
-            "fix": "Return `TicketStatus.values()[data.get(0)]` directly.",
-            "id": "CR-008",
-            "status": "open",
-            "history": []
+            "target": ".harness-state/runs/2026-11-21T12-44-44-505Z-011-M29-e2e/scenarios/tests-e2e-clay-lasers.mjs/screenshots/AC-F030-002-red-green-crossing-and-reflector.png",
+            "acId": "AC-F030-002",
+            "problem": "None of the three screenshots shows the reflection itself: the incoming beam meeting the reflector and the outgoing beam turning 90°. In four-colors-side-and-reflection the reflector at (10,100,0) is hidden behind the deepslate at (4,100,0). In four-emitter-directions-front it is outside the frame. In this screenshot (the one named for the reflector) the Tier 7 laser at (10,-5), the reflector, and the incoming beam are almost on the line of sight, so the incoming beam is foreshortened to nothing and the reflector is only a sliver at the right edge. So the screenshots do not show the Expected Result 'reflection display'.",
+            "reason": "The camera poses in `tests/e2e/clay-lasers.mjs` look along the z axis at the reflector setup. No shot frames the L-shaped path (south from (10,-5) into the reflector, then west to (4,0)) from the side or from above.",
+            "fix": "Point the reflector shot (or add a separate reflector shot) diagonally at the L-shaped path. For example, use `camera(client, { x: 13.5, y: 103.5, z: 4.5, yaw: 140, pitch: 20 })`. Alternatively, frame the reflector from above and the south-east so that the laser at (10,100,-5), the reflector at (10,100,0), and the target at (4,100,0) are all in view and not hidden. Keep the red/green crossing in its own shot if it no longer fits.",
+            "id": "ER-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 入射光、反射器、反射先を斜めから同時に捉える撮影位置をE2Eシナリオに追加しました。",
+                "at": "2026-11-21T12:56:56.411Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The new blue-reflector-turn shot looks at the path diagonally from above. The laser at the right, the incoming blue beam, the reflector, the outgoing beam turning about 90°, and the deepslate target are all visible and not hidden by other blocks.",
+                "at": "2026-11-21T12:59:21.089Z"
+              }
+            ]
           }
         ]
       },
-      "codeReviewTree": "0f0cac94d7614a5a4e38e1c569abd218b6a47a19",
-      "e2eReview": null,
-      "failure": null,
-      "conflicts": [],
-      "reviewConflicts": []
+      "failure": {
+        "phase": "integration",
+        "summary": "Merging the latest checkpoint into M29 left conflicts in 4 file(s)",
+        "details": "Milestones without mutual dependencies were implemented in parallel, and another one has been completed since this milestone started.\nResolve every conflict so that the completed milestones and this milestone both keep working: the \"HEAD\" side of each marker is this milestone, the other side is the latest checkpoint.\nRemove all conflict markers.\n\nAGENTS.md\nsrc/main/java/net/claustra01/clayium/ClayiumMod.java\nsrc/main/java/net/claustra01/clayium/datagen/material/MaterialLanguageProvider.java\nsrc/main/java/net/claustra01/clayium/gametest/FoundationGameTests.java",
+        "logs": [],
+        "screenshots": []
+      },
+      "conflicts": [
+        "AGENTS.md",
+        "src/main/java/net/claustra01/clayium/ClayiumMod.java",
+        "src/main/java/net/claustra01/clayium/datagen/material/MaterialLanguageProvider.java",
+        "src/main/java/net/claustra01/clayium/gametest/FoundationGameTests.java"
+      ],
+      "reviewConflicts": [
+        "AGENTS.md",
+        "src/main/java/net/claustra01/clayium/ClayiumMod.java",
+        "src/main/java/net/claustra01/clayium/datagen/material/MaterialLanguageProvider.java",
+        "src/main/java/net/claustra01/clayium/gametest/FoundationGameTests.java"
+      ]
     }
   ],
   "completed": [
@@ -508,8 +559,9 @@
     "M25",
     "M21",
     "M27",
-    "M26"
+    "M26",
+    "M28"
   ],
-  "lastCheckpoint": "66d2e0872c6ec8c61289a0eb962c5037cda3f93a",
+  "lastCheckpoint": "414844f8ad24d72197bf4985880195eac5b07f6c",
   "fatal": null
 }
