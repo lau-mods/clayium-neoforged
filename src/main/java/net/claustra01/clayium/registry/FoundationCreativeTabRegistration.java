@@ -22,6 +22,7 @@ public final class FoundationCreativeTabRegistration {
                                 FormingMachineRegistration.ITEMS.forEach(output::accept);
                                 AssemblyMachineRegistration.ITEMS.forEach(output::accept);
                                 AutoCrafterRegistration.ITEMS.forEach(output::accept);
+                                MinerRegistration.ITEMS.forEach(output::accept);
                                 EnergyConverterRegistration.ITEMS.forEach(output::accept);
                                 InterfaceRegistration.ITEMS.forEach(output::accept);
                                 output.accept(InterfaceRegistration.SYNCHRONIZER);

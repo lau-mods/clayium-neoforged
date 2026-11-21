@@ -1,5 +1,6 @@
 {
   "block.clayium.actinium_chest": "アクチニウムチェスト",
+  "block.clayium.activator": "右クリック代行機",
   "block.clayium.advanced_ce_rf_converter": "発展CE-FE変換器",
   "block.clayium.advanced_cobblestone_generator": "発展丸石製造機",
   "block.clayium.advanced_industrial_clay": "発展工業用粘土",
@@ -36,6 +37,7 @@
   "block.clayium.bending_machine_tier_9": "究極プレート作成機",
   "block.clayium.beryllium_chest": "ベリリウムチェスト",
   "block.clayium.bismuth_chest": "ビスマスチェスト",
+  "block.clayium.block_breaker": "採掘機",
   "block.clayium.brass_chest": "ブラスチェスト",
   "block.clayium.buffer_tier_10": "反物質アイテムバッファ",
   "block.clayium.buffer_tier_11": "純反物質アイテムバッファ",

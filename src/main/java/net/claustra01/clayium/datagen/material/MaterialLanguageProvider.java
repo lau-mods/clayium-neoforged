@@ -21,6 +21,7 @@ import net.claustra01.clayium.datagen.waterwheel.WaterWheelLanguageEntries;
 import net.claustra01.clayium.datagen.multitrack.MultitrackLanguageEntries;
 import net.claustra01.clayium.datagen.storage.StorageLanguageEntries;
 import net.claustra01.clayium.datagen.iface.InterfaceLanguageEntries;
+import net.claustra01.clayium.datagen.miner.MinerLanguageEntries;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
@@ -67,6 +68,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         add("tooltip.clayium.clay_units", locale.equals("ja_jp") ? "粘土換算: %1$s" : "Clay equivalent: %1$s");
         MachineLanguageEntries.add(locale, this::add);
         AutoCrafterLanguageEntries.add(locale, this::add);
+        MinerLanguageEntries.add(locale, this::add);
         LogisticsLanguageEntries.add(locale, this::add);
         CreativeSourceLanguageEntries.add(locale, this::add);
         MultitrackLanguageEntries.add(locale, this::add);

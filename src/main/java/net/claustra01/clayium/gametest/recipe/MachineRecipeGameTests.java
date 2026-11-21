@@ -142,7 +142,7 @@ public final class MachineRecipeGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID, timeoutTicks = 600)
+    @GameTest(template = "empty", batch = "clayium_reload", timeoutTicks = 600)
     public static void datapackReloadReplacesCacheAndSkipsMissingExternalItem(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
         Path pack = server.getWorldPath(LevelResource.DATAPACK_DIR).resolve("clayium-reload-gametest");

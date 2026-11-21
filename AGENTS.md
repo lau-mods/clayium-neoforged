@@ -294,3 +294,9 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 面状態は `INPUT`、`OUTPUT`、`BOTH`、`DISABLED`。初期状態は下面が出力、上面と水平4面が入力。赤石条件は `IGNORE`、`POWERED`、`UNPOWERED`。`clayium:fluid_filter` Data Component を持つ流体フィルターは許可／禁止と流体 Registry ID を保存する。保存 NBT は `tank`、`pending`、`filter`、`faces`、`redstone_condition`、`next_output_direction`、`next_input_direction`。
 
 搬送は SIMULATE 後に実行し、実行時に受入量が減った差分は永続保留タンクへ格納して次 tick 以降に先に再送する。差分全量を保留できない搬送は開始しない。Capability 経由で同 tick に受け渡された装置はその tick の自動搬送を行わず、面が `BOTH` の場合も同じ面へ同 tick に往復させない。5容量のカプセル Item・レシピ・設定・流体 ID 表は追加しない。GameTest は `FluidTransportGameTests`、外観 E2E は `tests/e2e/fluid-transport.mjs`。
+
+## M27 基本採掘機・右クリック代行機
+
+`MinerRegistration` は原作キー `tile.blockMiner.name` と `tile.blockActivator.name` を Tier 6 の同名 Block/Item `block_breaker` と `activator` に登録する。両方が `clayium:basic_block_operation` BlockEntity を使用する。入力はスロット0、出力は1～9で、20 tick ごとに正面の対象を操作する。保存 NBT は `inventory`、`owner`、`operation_tick`。
+
+`BlockOperationService` は所有者 UUID の FakePlayer でサーバー側の破壊・使用イベントと権限を確認する。採掘機は LootTable と工具の幸運・シルクタッチを使い、出力容量を確認してから破壊する。右クリック代行機は機械側から対象面をクリックし、消費・耐久・返却物を在庫に反映する。保護対象と未ロードチャンクは操作せず、チャンクを強制ロードしない。GameTest は `blockBreakerUsesLootProtectionAndLoadedChunks` と `activatorMatchesPlayerUseAndDeniedActionsHaveNoSideEffects`。

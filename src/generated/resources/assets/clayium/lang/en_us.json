@@ -1,5 +1,6 @@
 {
   "block.clayium.actinium_chest": "Actinium Chest",
+  "block.clayium.activator": "Activator",
   "block.clayium.advanced_ce_rf_converter": "Advanced CE-FE Converter",
   "block.clayium.advanced_cobblestone_generator": "Advanced Cobblestone Generator",
   "block.clayium.advanced_industrial_clay": "Advanced Industrial Clay",
@@ -36,6 +37,7 @@
   "block.clayium.bending_machine_tier_9": "Ultimate Bending Machine",
   "block.clayium.beryllium_chest": "Beryllium Chest",
   "block.clayium.bismuth_chest": "Bismuth Chest",
+  "block.clayium.block_breaker": "Block Breaker",
   "block.clayium.brass_chest": "Brass Chest",
   "block.clayium.buffer_tier_10": "Antimatter Item Buffer",
   "block.clayium.buffer_tier_11": "Pure Antimatter Item Buffer",

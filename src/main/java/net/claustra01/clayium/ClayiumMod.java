@@ -8,6 +8,7 @@ import net.claustra01.clayium.machine.MachineCapabilities;
 import net.claustra01.clayium.machine.autocrafter.AutoCrafterCapabilities;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionCapabilities;
 import net.claustra01.clayium.machine.iface.InterfaceCapabilities;
+import net.claustra01.clayium.machine.miner.MinerCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.logistics.BufferControlPayload;
 import net.claustra01.clayium.logistics.LogisticsCapabilities;
@@ -32,6 +33,7 @@ public final class ClayiumMod {
         modEventBus.addListener(LogisticsCapabilities::register);
         modEventBus.addListener(StorageCapabilities::register);
         modEventBus.addListener(InterfaceCapabilities::register);
+        modEventBus.addListener(MinerCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
             modEventBus.addListener(net.claustra01.clayium.gametest.iface.InterfaceGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.logistics.LogisticsGameTests::registerTestCapability);

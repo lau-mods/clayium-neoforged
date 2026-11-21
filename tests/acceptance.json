@@ -1,6 +1,18 @@
 {
   "gameTests": [
     {
+      "acId": "AC-F027-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blockbreakeruseslootprotectionandloadedchunks"
+    },
+    {
+      "acId": "AC-F027-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "activatormatchesplayeruseanddeniedactionshavenosideeffects"
+    },
+    {
       "acId": "AC-F001-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",

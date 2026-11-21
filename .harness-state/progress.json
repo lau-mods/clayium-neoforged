@@ -3,11 +3,11 @@
   "active": [
     {
       "id": "M26",
-      "phase": "e2e",
-      "baseCommit": "1669c16b0cf4e4423ecc2fc117dd0f4c6ab6bba2",
+      "phase": "implementation",
+      "baseCommit": "63e9658102b7c4fcd17c1524b6684eeb506a339f",
       "failures": {
         "build": 0,
-        "gametest": 0,
+        "gametest": 1,
         "e2e": 0
       },
       "recoveries": 0,
@@ -34,6 +34,24 @@
                 "by": "claude",
                 "note": "AGENTS.md now has an M26 section covering IDs, Tier, CE cost, search area, validation order, slots, NBT keys, payloads and test names.",
                 "at": "2026-11-21T01:44:32.582Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md still has the M26 section with IDs, Tier, CE cost, search area, validation order, slots, NBT keys, payloads and test names. The diff does not touch it.",
+                "at": "2026-11-21T01:58:03.099Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The AGENTS.md M26 section is still there. The diff doesn't touch it.",
+                "at": "2026-11-21T02:00:31.427Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md still has the M26 section. No conflict markers remain.",
+                "at": "2026-11-21T02:06:23.301Z"
               }
             ]
           },
@@ -57,6 +75,24 @@
                 "by": "claude",
                 "note": "ContainerData is replaced by a TradeSnapshotPayload using MerchantOffers.STREAM_CODEC and VAR_LONG values, sent when the content hash changes. The merchant is cached once per tick. The GameTest round-trips the codec and checks components, discounted costs and the long CE value.",
                 "at": "2026-11-21T01:44:32.582Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only moves the layout. The payload-based sync from the earlier review is unchanged. Slot and widget positions were moved consistently between the Menu and the Screen.",
+                "at": "2026-11-21T01:58:03.099Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only changes the E2E script. The payload-based snapshot sync is unchanged.",
+                "at": "2026-11-21T02:00:31.427Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The trade package has no ContainerData. The snapshot payload sync is unchanged. The diff only resolves merge conflicts.",
+                "at": "2026-11-21T02:06:23.301Z"
               }
             ]
           },
@@ -80,6 +116,30 @@
                 "by": "claude",
                 "note": "The E2E fills the block entity via NBT merge, spawns two offers, and clicks the second one in the GUI. With no fuel the device stops for lack of CE, so nothing is consumed. The click at (700,291) lands on the second offer button at GUI scale 1, assuming MC Pilot runs at that scale; I did not confirm the scale.",
                 "at": "2026-11-21T01:44:32.582Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The new E2E click assumes a 2560x1440 framebuffer at GUI scale 6, so it computes x ≈ 1712 and y ≈ 800. Other E2Es such as gadget-holder.mjs click the centre of the 1280x720 window at (640,360), and AGENTS.md sets the client screen to 1280×720. These coordinates therefore fall outside the window, the second offer is never selected, and the screenshot does not show the intended selection.",
+                "at": "2026-11-21T01:58:03.099Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2EはNBTで材料を配置し、CE不足のまま複数オファーの2件目を選択して撮影します。クリック位置をGUIスロットの実座標から求めるよう修正しました。",
+                "at": "2026-11-21T02:00:16.757Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E now gets slot positions from `mct gui layout`. It takes the GUI scale from the 22-pixel spacing between input A and B. It then clicks at output centre X + 72×scale and input A centre Y + 7.5×scale. The menu puts slots at (44,27), (44,49) and (116,38), and the screen's offer buttons span x 151–241 and y 29+9i. By those coordinates the click lands in the middle of the second offer button (x≈197, y≈43.5). So the click no longer depends on a hard-coded framebuffer size or scale. The NBT fill, two offers and no-fuel stop state were already accepted. I did not run the E2E, so the assumption that `layout.slots[].slot` is the menu slot index is unchecked.",
+                "at": "2026-11-21T02:00:31.427Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E script is unchanged and still uses layout-based click coordinates. The diff only resolves merge conflicts in other files. Not run.",
+                "at": "2026-11-21T02:06:23.301Z"
               }
             ]
           },
@@ -103,21 +163,197 @@
                 "by": "claude",
                 "note": "setChangedAndSync and sendBlockUpdated are gone from the trade package; state changes call setChanged().",
                 "at": "2026-11-21T01:44:32.582Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back sendBlockUpdated or setChangedAndSync. The earlier fix stands.",
+                "at": "2026-11-21T01:58:03.099Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back `sendBlockUpdated`. The earlier fix stands.",
+                "at": "2026-11-21T02:00:31.427Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "No sendBlockUpdated or setChangedAndSync in the trade package.",
+                "at": "2026-11-21T02:06:23.301Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "13b484eaadfdb83f376b9e6f76f0ea54656f7407",
-      "e2eReview": null,
-      "failure": null,
+      "codeReviewTree": "eaade28284e8231501bc8d66dd80fe8dd1c7d017",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
+            "acId": "AC-F026-002",
+            "problem": "The selected trade in the GUI is the first offer (2 emeralds → bread, 0/12 uses), not the discounted two-material trade (5 emeralds with specialPrice -2, so 3 emeralds, plus 1 book → diamond). There is no second required material at the cost B position, and no discounted price is shown. The GUI does not show the selected trade and its required materials as the criterion expects.",
+            "reason": "tests/e2e/auto-trader.mjs clicks at (700, 291). In the 2560×1440 capture at GUI scale 6 that point is inside the left half of the machine panel. The offer buttons are at leftPos+151 (about x≥1440 in the capture), so the click misses them, no trade_select payload is sent, and selectedOffer stays 0. AutoTraderScreen draws costB only for the selected offer, so the book never appears.",
+            "fix": "Select the second offer by clicking its real button. Compute the position from the screen (leftPos+151+45, topPos+14+1*9+4, times the GUI scale) or use an MC Pilot GUI widget/button click by label. Then wait for the trade_snapshot and confirm the screen shows emerald×3 at cost A, book×1 at cost B, the diamond result and the '▶' marker on the diamond entry before taking the screenshot.",
+            "id": "ER-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2E のクリック位置を2件目の取引ボタンの実座標から計算し、同期を待って撮影するよう変更しました。",
+                "at": "2026-11-21T01:57:46.368Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 2件目のボタン中央をGUIスロットの実座標から計算してクリックします。",
+                "at": "2026-11-21T02:00:16.757Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The selected offer is now the diamond trade (▶ 钻石). Cost A shows emerald×3 (discounted), cost B shows a book, and the diamond result is shown.",
+                "at": "2026-11-21T02:02:30.068Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
+            "acId": "AC-F026-002",
+            "problem": "The panel background ends above the hotbar row. The bottom player-inventory row (hotbar slots) hangs below the panel's bottom edge over the world.",
+            "reason": "AutoTraderScreen.renderBg blits back.png at imageWidth 248 × imageHeight 192 with the default 256×256 UV size. The drawn area of back.png is only about 176×179 px, so the frame stops at about y=179. gui_playerinventory.png is blitted at topPos+100 with height 90, and its hotbar slots at y=170–188 extend past the frame.",
+            "fix": "Draw a panel frame that covers the full 248×192 GUI. For example, use a nine-slice/stretched blit of back.png (as other Clayium machine screens do) or draw the frame borders explicitly to imageWidth×imageHeight. Make sure the hotbar row (menu slot y=170) sits inside the panel with a bottom border.",
+            "id": "ER-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 背景枠を GUI 全体に描画し、プレイヤー在庫とホットバーが枠内に収まるよう配置しました。",
+                "at": "2026-11-21T01:57:46.368Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 背景枠を248×220に広げ、ホットバーを枠内に収めました。",
+                "at": "2026-11-21T02:00:16.757Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The panel frame now extends below the hotbar row. All inventory slots and the hotbar are inside the frame, with a bottom border.",
+                "at": "2026-11-21T02:02:30.068Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
+            "acId": "AC-F026-002",
+            "problem": "The offer list buttons sit outside the panel. They start inside the top-right corner of the frame, at the title row, and stick out past the panel's right edge over the world (only a fragment of the list is visible, e.g. '钻石'). There is no panel area that holds the list.",
+            "reason": "The offer buttons are placed at leftPos+151, topPos+14+index*9 with width 90 (x=151–241). The visible background is only about 176 px wide, so most of each button is drawn outside the frame. The list also starts right under the title, 'Tier 8' and 'Offers' labels at y=5–6, so it crowds the title row.",
+            "fix": "Widen the drawn background to 248 px, or move the list inside the frame. Give the offers list its own inset area below the title row (for example, x=151–241 starting at y≥16) with a label above it. Make sure no button overlaps the title, 'Tier' or 'Offers' text, or the panel border.",
+            "id": "ER-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 取引一覧の見出しと10件のボタンを、タイトルと在庫の間に収めました。",
+                "at": "2026-11-21T01:57:46.368Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 取引一覧を広げた背景枠内の見出し下に配置しました。",
+                "at": "2026-11-21T02:00:16.757Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The offer list sits inside the frame under its own 'Trades' heading. It no longer overlaps the title, 'Tier 8' or the right border.",
+                "at": "2026-11-21T02:02:30.068Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
+            "acId": "AC-F026-002",
+            "problem": "The fuel slot frame is drawn on top of the 'Trade cost: 10 CE' label, so the CE value and unit are hidden behind it ('10 CE' is partly covered).",
+            "reason": "renderLabels draws the energy label at (7, 77), and the text runs to about x=97. The fuel slot is drawn at (79, 69) with size 18×18 (slot 80,70), which covers y=69–87 and x=79–97 on the same row.",
+            "fix": "Move the fuel slot away from the text rows (for example, to the right of the arrows or below the output slot). Or move the Stored, Trade cost and state labels to a column/rows that don't intersect any slot. Make sure the full 'Trade cost: <value> CE' string stays visible.",
+            "id": "ER-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 燃料スロットを CE 表示の右側へ移し、取引コストの文字と重ならないようにしました。",
+                "at": "2026-11-21T01:57:46.368Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 燃料スロットをCE表示の右側へ移し、文字との重なりを解消しました。",
+                "at": "2026-11-21T02:00:16.757Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The fuel slot is now to the right of the text rows. 'Trade cost: 10 CE' is fully visible.",
+                "at": "2026-11-21T02:02:30.068Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
+            "acId": "AC-F026-002",
+            "problem": "The arrows from autotrader.png don't line up with the trade layout. The upper arrow starts at the ghost cost A item and points past the output slot. The lower arrow (y≈58–66) has nothing at its tail, because the cost B ghost row is at y=49, and its head runs into the '0 / 12 uses' text.",
+            "reason": "The arrow texture is blitted at (0,0) with the original 176×96 layout, but the slots and ghost items are placed at different coordinates (inputs 43,26/43,48, ghost costs 73,27/73,49, output 115,37, result ghost 134,38). The uses label is drawn at (105, 59), right where the lower arrow's head is.",
+            "fix": "Set the arrow blit offsets (or the slot and ghost-item coordinates) so that each arrow runs from the cost A and cost B ghost rows to the output slot. Move the uses label (for example, below the output slot at y≥58 and x≥115) so it doesn't overlap any arrow.",
+            "id": "ER-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 原作テクスチャから矢印だけを切り出して材料行に合わせ、取引回数表示を矢印の下へ移しました。",
+                "at": "2026-11-21T01:57:46.368Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 原作テクスチャから矢印部分を材料行に合わせて描画し、取引回数表示を矢印の下へ移しました。",
+                "at": "2026-11-21T02:00:16.757Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Both arrows start at the cost A and cost B ghost items and run toward the output slot. The uses label is below the arrows and overlaps nothing. The lower arrow's head ends slightly below the slot's bottom edge, a minor offset, not the original defect.",
+                "at": "2026-11-21T02:02:30.068Z"
+              }
+            ]
+          }
+        ]
+      },
+      "failure": {
+        "phase": "gametest",
+        "summary": "GameTest task failed",
+        "details": "GameTest task output:\n+++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: ========= 93 GAME TESTS COMPLETE IN 17.12 s ======================\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]:    - condensersrequirenineitemsandpreserveoriginaltiersandtimes\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end\n[11:07:16] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save Test Level\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved\n[11:07:16] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER\n[11:07:16] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down\n\n> Task :runGameTestServer FAILED\n8 actionable tasks: 1 executed, 7 up-to-date\nConfiguration cache entry reused.\n\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':runGameTestServer'.\n> Process 'command '/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/bin/java'' finished with non-zero exit value 1\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to generate a Build Scan (powered by Develocity).\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 37s\n",
+        "logs": [
+          ".harness-state/runs/2026-11-21T02-06-39-505Z-088-M26-gametest/stdout.log",
+          ".harness-state/runs/2026-11-21T02-06-39-505Z-088-M26-gametest/stderr.log"
+        ],
+        "screenshots": []
+      },
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M27",
+      "id": "M29",
       "phase": "implementation",
-      "baseCommit": "45ebc7fe9bd4a4fc215a37f96b79da22fc449687",
+      "baseCommit": "63e9658102b7c4fcd17c1524b6684eeb506a339f",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -157,8 +393,9 @@
     "M24",
     "M23",
     "M25",
-    "M21"
+    "M21",
+    "M27"
   ],
-  "lastCheckpoint": "45ebc7fe9bd4a4fc215a37f96b79da22fc449687",
+  "lastCheckpoint": "63e9658102b7c4fcd17c1524b6684eeb506a339f",
   "fatal": null
 }
