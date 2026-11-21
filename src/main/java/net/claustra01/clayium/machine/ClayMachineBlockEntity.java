@@ -8,6 +8,9 @@ import java.util.Optional;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.energy.TierManager;
+import net.claustra01.clayium.machine.augment.AugmentScanner;
+import net.claustra01.clayium.machine.ca.CaMachineRules;
+import net.claustra01.clayium.machine.ca.CaSeries;
 import net.claustra01.clayium.machine.series.MachineSeries;
 import net.claustra01.clayium.machine.series.SmeltingSeries;
 import net.claustra01.clayium.machine.iface.RedstoneControlReceiver;
@@ -32,6 +35,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -105,6 +109,7 @@ public class ClayMachineBlockEntity extends BlockEntity
     private long energyPerProgress;
     private double progressRemainder;
     private double progressPerTick = 1.0D;
+    private double activeProgressMultiplier = 1.0D;
     private boolean validateRecipeOnLoad;
     private long lastRemoteRedstoneTick = Long.MIN_VALUE;
 
@@ -134,6 +139,11 @@ public class ClayMachineBlockEntity extends BlockEntity
                 return slot < inputSlots
                         || slot == fuelSlot && ClayEnergyStorage.fuelValue(stack).internalValue() > 0L;
             }
+
+            @Override
+            public int getSlotLimit(int slot) {
+                return slot == fuelSlot ? fuelLimit() : super.getSlotLimit(slot);
+            }
         };
         unsidedHandler = new SidedItemHandler(null);
         LOADED_MACHINES.add(new WeakReference<>(this));
@@ -160,6 +170,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+        enforceFuelLimit();
         if (isRemoteRedstonePowered()) {
             setState(MachineState.IDLE);
             return;
@@ -181,13 +192,7 @@ public class ClayMachineBlockEntity extends BlockEntity
                 return;
             }
             ClayiumMachineRecipe recipe = currentRecipe(serverLevel.getRecipeManager()).orElseThrow();
-            TierManager.ProcessingParameters parameters = TierManager.calculate(
-                    series().parameters(tier()), recipe.processingTicks(), recipe.clayEnergy(), overclockFactor());
-            List<ItemStack> fixedOutputs = fixedOutputs(recipe);
-            if (requiredProgress != parameters.requiredProgress()
-                    || energyPerProgress != parameters.energyPerProgress().internalValue()
-                    || !containsOutputs(pendingOutputs, fixedOutputs)
-                    || !pendingFluidContains(recipe.fluidOutputs())) {
+            if (!pendingFluidContains(recipe.fluidOutputs())) {
                 abortProcess();
                 return;
             }
@@ -273,6 +278,9 @@ public class ClayMachineBlockEntity extends BlockEntity
         energyPerProgress = parameters.energyPerProgress().internalValue();
         progressRemainder = 0.0D;
         progressPerTick = parameters.progressPerTick();
+        activeProgressMultiplier = series == CaSeries.INJECTOR
+                ? CaMachineRules.injectorProgressMultiplier(tier(),
+                        AugmentScanner.resonance(level, worldPosition)) : 1.0D;
         setState(MachineState.RUNNING);
         setChanged();
     }
@@ -314,8 +322,13 @@ public class ClayMachineBlockEntity extends BlockEntity
                 List.of());
     }
 
-    private static List<ItemStack> fixedOutputs(ClayiumMachineRecipe recipe) {
-        return combineStacks(recipe.itemOutputs());
+    private List<ItemStack> fixedOutputs(ClayiumMachineRecipe recipe) {
+        if (series() != CaSeries.CONDENSER || level == null) {
+            return combineStacks(recipe.itemOutputs());
+        }
+        double resonance = AugmentScanner.resonance(level, worldPosition);
+        return combineStacks(recipe.itemOutputs().stream().map(stack -> stack.copyWithCount(Math.min(
+                stack.getMaxStackSize(), CaMachineRules.condenserOutput(stack.getCount(), resonance)))).toList());
     }
 
     private List<ItemStack> selectedOutputs(ClayiumMachineRecipe recipe, List<ItemStack> fixedOutputs,
@@ -535,12 +548,6 @@ public class ClayMachineBlockEntity extends BlockEntity
                 || fluidOutput.fill(result, IFluidHandler.FluidAction.SIMULATE) == result.getAmount();
     }
 
-    private static boolean containsOutputs(List<ItemStack> actual, List<ItemStack> expected) {
-        return expected.stream().allMatch(required -> actual.stream().anyMatch(candidate ->
-                ItemStack.isSameItemSameComponents(candidate, required)
-                        && candidate.getCount() >= required.getCount()));
-    }
-
     private boolean pendingFluidContains(List<FluidStack> expected) {
         FluidStack combined = combinedFluidOutput(expected);
         return expected.isEmpty() ? pendingFluidOutput.isEmpty()
@@ -568,6 +575,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         energyPerProgress = 0L;
         progressRemainder = 0.0D;
         progressPerTick = 1.0D;
+        activeProgressMultiplier = 1.0D;
 
         setChanged();
     }
@@ -639,6 +647,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         energyPerProgress = 0L;
         progressRemainder = 0.0D;
         progressPerTick = 1.0D;
+        activeProgressMultiplier = 1.0D;
 
         if (recoverReservedInput()) {
             setState(MachineState.IDLE);
@@ -716,11 +725,30 @@ public class ClayMachineBlockEntity extends BlockEntity
     }
 
     public double overclockFactor() {
-        return 1.0D;
+        return level == null ? 1.0D : AugmentScanner.overclockFactor(level, worldPosition);
     }
 
     protected double processingProgressMultiplier() {
-        return 1.0D;
+        return activeProgressMultiplier;
+    }
+
+    public int fuelLimit() {
+        return level == null ? 1 : AugmentScanner.fuelLimit(level, worldPosition);
+    }
+
+    private void enforceFuelLimit() {
+        ItemStack fuel = inventory.getStackInSlot(fuelSlot);
+        int excessCount = fuel.getCount() - fuelLimit();
+        if (excessCount <= 0 || level == null) {
+            return;
+        }
+        ItemStack excess = inventory.extractItem(fuelSlot, excessCount, false);
+        Containers.dropItemStack(
+                level,
+                worldPosition.getX() + 0.5D,
+                worldPosition.getY() + 0.5D,
+                worldPosition.getZ() + 0.5D,
+                excess);
     }
 
     public MachineSeries series() {
@@ -873,6 +901,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         tag.putLong("energy_per_progress", energyPerProgress);
         tag.putDouble("progress_remainder", progressRemainder);
         tag.putDouble("progress_per_tick", progressPerTick);
+        tag.putDouble("active_progress_multiplier", activeProgressMultiplier);
         CompoundTag faces = new CompoundTag();
         faceModes.forEach((direction, mode) -> faces.putString(direction.getName(), mode.name()));
         tag.put("faces", faces);
@@ -908,6 +937,8 @@ public class ClayMachineBlockEntity extends BlockEntity
         energyPerProgress = tag.getLong("energy_per_progress");
         progressRemainder = tag.getDouble("progress_remainder");
         progressPerTick = tag.contains("progress_per_tick") ? tag.getDouble("progress_per_tick") : 1.0D;
+        activeProgressMultiplier = tag.contains("active_progress_multiplier")
+                ? tag.getDouble("active_progress_multiplier") : 1.0D;
         validateRecipeOnLoad = activeRecipe != null;
         CompoundTag faces = tag.getCompound("faces");
         for (Direction direction : Direction.values()) {
@@ -931,6 +962,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         energyPerProgress = 0L;
         progressRemainder = 0.0D;
         progressPerTick = 1.0D;
+        activeProgressMultiplier = 1.0D;
 
         state = MachineState.IDLE;
     }

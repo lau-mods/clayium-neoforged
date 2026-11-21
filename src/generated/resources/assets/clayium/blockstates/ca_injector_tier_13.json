@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/ca_injector_tier_13",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/ca_injector_tier_13"
+    },
+    "facing=south": {
+      "model": "clayium:block/ca_injector_tier_13",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/ca_injector_tier_13",
+      "y": 270
+    }
+  }
+}

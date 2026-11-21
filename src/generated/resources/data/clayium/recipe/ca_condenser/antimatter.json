@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 25000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:antimatter_seed"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:antimatter"
+    }
+  ],
+  "processing_method": "clayium:ca_condenser",
+  "processing_ticks": 2000,
+  "required_tier": 9
+}

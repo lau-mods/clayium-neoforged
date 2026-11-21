@@ -35,7 +35,7 @@ public record ClayiumMachineRecipe(
         List<ItemStack> itemOutputs,
         List<FluidStack> fluidOutputs,
         long clayEnergy,
-        int processingTicks,
+        long processingTicks,
         EnvironmentCondition environment,
         List<RandomOutput> randomOutputs) implements Recipe<ClayiumRecipeInput> {
     public static final MapCodec<ClayiumMachineRecipe> CODEC = recipeCodec().validate(ClayiumMachineRecipe::validate);
@@ -59,7 +59,10 @@ public record ClayiumMachineRecipe(
                                         : DataResult.error(() -> "clay_energy must be non-negative"))
                                 .fieldOf("clay_energy")
                                 .forGetter(ClayiumMachineRecipe::clayEnergy),
-                        ExtraCodecs.POSITIVE_INT.fieldOf("processing_ticks")
+                        Codec.LONG.validate(value -> value > 0L
+                                        ? DataResult.success(value)
+                                        : DataResult.error(() -> "processing_ticks must be positive"))
+                                .fieldOf("processing_ticks")
                                 .forGetter(ClayiumMachineRecipe::processingTicks),
                         EnvironmentCondition.CODEC.codec()
                                 .optionalFieldOf("environment", EnvironmentCondition.ANY)
@@ -73,7 +76,7 @@ public record ClayiumMachineRecipe(
                               List<FluidStack> fluids, List<ItemStack> outputs, List<FluidStack> fluidOutputs) {
     }
 
-    private record RecipeSettings(long energy, int ticks, EnvironmentCondition environment,
+    private record RecipeSettings(long energy, long ticks, EnvironmentCondition environment,
                                   List<RandomOutput> randomOutputs) {
     }
 
@@ -88,7 +91,7 @@ public record ClayiumMachineRecipe(
                     new RecipeData(method, tier, items, fluids, outputs, fluidOutputs));
     private static final StreamCodec<RegistryFriendlyByteBuf, RecipeSettings> SETTINGS_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_LONG, RecipeSettings::energy,
-            ByteBufCodecs.VAR_INT, RecipeSettings::ticks,
+            ByteBufCodecs.VAR_LONG, RecipeSettings::ticks,
             EnvironmentCondition.STREAM_CODEC, RecipeSettings::environment,
             RandomOutput.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeSettings::randomOutputs,
             RecipeSettings::new);

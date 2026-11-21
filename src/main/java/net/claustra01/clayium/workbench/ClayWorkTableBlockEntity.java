@@ -53,7 +53,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
     private final ContainerData menuData = new ContainerData() {
         @Override
         public int get(int index) {
-            return index == 0 ? progress : activeRecipeTicks();
+            return index == 0 ? progress : (int)Math.min(activeRecipeTicks(), Integer.MAX_VALUE);
         }
 
         @Override
@@ -173,7 +173,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
                 RecipeRegistration.type(ClayiumRecipeMethod.CLAY_WORK_TABLE));
     }
 
-    private int activeRecipeTicks() {
+    private long activeRecipeTicks() {
         if (level == null || activeRecipe == null) {
             return 0;
         }
@@ -182,7 +182,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
                 .map(holder -> (ClayiumMachineRecipe) holder.value())
                 .map(ClayiumMachineRecipe::processingTicks)
                 .findFirst()
-                .orElse(0);
+                .orElse(0L);
     }
 
     private boolean hasRequiredTool(int action) {

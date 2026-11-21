@@ -18,6 +18,7 @@ public final class FoundationCreativeTabRegistration {
                                 MaterialRegistration.CREATIVE_TAB_ITEMS.forEach(output::accept);
                                 WorkbenchRegistration.ALL_ITEMS.forEach(output::accept);
                                 MachineRegistration.ITEMS.forEach(output::accept);
+                                CaRegistration.ITEMS.forEach(output::accept);
                                 ClayProductionRegistration.ITEMS.forEach(output::accept);
                                 FormingMachineRegistration.ITEMS.forEach(output::accept);
                                 AssemblyMachineRegistration.ITEMS.forEach(output::accept);

@@ -30,8 +30,8 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
 
     public ClayMachineScreen(ClayMachineMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageHeight = 166;
-        inventoryLabelY = 72;
+        imageHeight = 172;
+        inventoryLabelY = 78;
     }
 
     @Override
@@ -69,7 +69,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         graphics.blit(BACKGROUND, leftPos, topPos + imageHeight - 1, 0, 0, imageWidth, 1, 256, 256);
-        graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 90);
+        graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 78, 0, 0, 176, 90);
         graphics.pose().pushPose();
         graphics.pose().translate(leftPos, topPos + imageHeight, 0);
         graphics.pose().scale(1.0F, -1.0F, 1.0F);

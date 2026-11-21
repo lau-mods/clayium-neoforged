@@ -71,6 +71,8 @@ public final class MachineRegistration {
                                     ClayMachineBlockEntity::new,
                                     java.util.stream.Stream.of(
                                                     BLOCKS.stream(),
+                                                    CaRegistration.MACHINES.values().stream()
+                                                            .map(CaRegistration.MachineDefinition::block),
                                                     FormingMachineRegistration.BLOCKS.stream(),
                                                     EnvironmentMachineRegistration.SALT_EXTRACTOR_BLOCKS.stream(),
                                                     AssemblyMachineRegistration.MACHINES.values().stream()

@@ -677,6 +677,36 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "reactorlaseracceleratesandstructuredamagestopsprocessing"
+    },
+    {
+      "acId": "AC-F033-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alleightcamachinespreserveoriginaltiersrecipesandresonance"
+    },
+    {
+      "acId": "AC-F033-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "resonatingcollectorstopswithoutresonanceandneverconsumeswhenfull"
+    },
+    {
+      "acId": "AC-F034-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "overclockandresonanceuseoriginalproductsandboundaries"
+    },
+    {
+      "acId": "AC-F034-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "activecarecipekeepsitsstartvalueswhenaugmentschangeacrossreload"
+    },
+    {
+      "acId": "AC-F034-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "energystorageupgradescapatsixtyfouranddroponlytheexcess"
     }
   ],
   "e2e": [
@@ -819,6 +849,22 @@
     {
       "acId": "AC-F032-002",
       "scenario": "tests/e2e/clay-multiblocks.mjs"
+    },
+    {
+      "acId": "AC-F033-001",
+      "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F033-002",
+      "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F034-001",
+      "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F034-002",
+      "scenario": "tests/e2e/ca-machines.mjs"
     }
   ]
 }

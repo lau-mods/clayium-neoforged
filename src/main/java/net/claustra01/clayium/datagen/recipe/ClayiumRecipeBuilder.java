@@ -23,7 +23,7 @@ public final class ClayiumRecipeBuilder {
     private final List<ClayiumMachineRecipe.RandomOutput> randomOutputs = new ArrayList<>();
     private final List<ICondition> conditions = new ArrayList<>();
     private long clayEnergy;
-    private int processingTicks = 1;
+    private long processingTicks = 1L;
     private ClayiumMachineRecipe.EnvironmentCondition environment = ClayiumMachineRecipe.EnvironmentCondition.ANY;
 
     private ClayiumRecipeBuilder(ClayiumRecipeMethod processingMethod, int requiredTier) {
@@ -73,7 +73,7 @@ public final class ClayiumRecipeBuilder {
         return this;
     }
 
-    public ClayiumRecipeBuilder processingTicks(int processingTicks) {
+    public ClayiumRecipeBuilder processingTicks(long processingTicks) {
         this.processingTicks = processingTicks;
         return this;
     }

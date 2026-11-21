@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.AutoCrafterRegistration;
+import net.claustra01.clayium.registry.CaRegistration;
 import net.claustra01.clayium.registry.AdvancedToolRegistration;
 import net.claustra01.clayium.registry.EnvironmentMachineRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
@@ -25,6 +26,7 @@ import net.claustra01.clayium.registry.EnergyConverterRegistration;
 import net.claustra01.clayium.registry.FluidRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
 import net.claustra01.clayium.datagen.autocrafter.AutoCrafterLanguageEntries;
+import net.claustra01.clayium.datagen.ca.CaLanguageEntries;
 import net.claustra01.clayium.datagen.environment.EnvironmentLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
 import net.claustra01.clayium.datagen.chunkloader.ChunkLoaderLanguageEntries;
@@ -181,6 +183,14 @@ public final class FoundationGameTests {
         MultiblockRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         ClayTreeRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         ClayTreeRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
+        CaRegistration.MACHINES.values().forEach(definition -> {
+            expectedBlocks.add(definition.block().getId());
+        });
+        expectedBlocks.add(CaRegistration.RESONATING_COLLECTOR.getId());
+        CaRegistration.AUGMENTS.values().forEach(definition -> {
+            expectedBlocks.add(definition.block().getId());
+        });
+        CaRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         Set<String> workbenchOriginalKeys = Set.of(
                 "tile.blockClayWorkTable.name", "tile.blockClayCraftingTable.name",
                 "tile.blockRawClayMachineHull.0.name", "tile.blockMachineHull.0.name",
@@ -216,6 +226,7 @@ public final class FoundationGameTests {
                         ClayiumMod.id("area_marker"), ClayiumMod.id("area_machine"),
                         ClayiumMod.id("clay_energy_laser"), ClayiumMod.id("laser_reflector"),
                         ClayiumMod.id("chunk_loader"), ClayiumMod.id("multiblock_controller"),
+                        ClayiumMod.id("ca_resonating_collector"),
                         TradeRegistration.BLOCK_ENTITY.getId())),
                 "Block entity registrations differ from registered blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
@@ -338,6 +349,9 @@ public final class FoundationGameTests {
             var lasers = new HashMap<String, String>();
             LaserLanguageEntries.add(locale, lasers::put);
             expectedKeys.addAll(lasers.keySet());
+            var ca = new HashMap<String, String>();
+            CaLanguageEntries.add(locale, ca::put);
+            expectedKeys.addAll(ca.keySet());
             var miners = new HashMap<String, String>();
             MinerLanguageEntries.add(locale, miners::put);
             expectedKeys.addAll(miners.keySet());

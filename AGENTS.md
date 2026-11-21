@@ -193,7 +193,7 @@ Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`
 | 12 | `oec_ce_rf_converter` | OEC | 10,000,000,000 | 65,610 | 65,610 | 65,610,000 |
 | 13 | `opa_ce_rf_converter` | OPA | 100,000,000,000 | 196,830 | 196,830 | 196,830,000 |
 
-NeoForge `Capabilities.EnergyStorage.BLOCK` の `IEnergyStorage` は `canReceive=false`、`receiveEnergy=0` とし、隣接先への push と外部からの引出だけを許す。両経路は1 tick の出力上限を共有する。赤石入力中は変換と出力を停止し、満杯時はCEを消費しない。保存NBTは `inventory`、`energy`、`fe_energy`。`OVERCLOCK_ENERGY_EXPONENT=1.0` は真正な原作 hotfix2 JAR の `mods.clayium.block.tile.TileClayRFGenerator` コンストラクタの `overclockExponent=1` と同クラスの tick 処理での `Math.pow(overclockTotalFactor, overclockExponent)` に基づく。CE消費・FE生成・FE出力上限に線形に適用し、隣接オーバークロッカーからの倍率供給は M33 で接続する。
+NeoForge `Capabilities.EnergyStorage.BLOCK` の `IEnergyStorage` は `canReceive=false`、`receiveEnergy=0` とし、隣接先への push と外部からの引出だけを許す。両経路は1 tick の出力上限を共有する。赤石入力中は変換と出力を停止し、満杯時はCEを消費しない。保存NBTは `inventory`、`energy`、`fe_energy`。`OVERCLOCK_ENERGY_EXPONENT=1.0` は真正な原作 hotfix2 JAR の `mods.clayium.block.tile.TileClayRFGenerator` コンストラクタの `overclockExponent=1` と同クラスの tick 処理での `Math.pow(overclockTotalFactor, overclockExponent)` に基づく。CE消費・FE生成・FE出力上限に線形に適用し、隣接オーバークロッカーからの倍率供給は M34 の `AugmentScanner` で接続する。
 
 組立レシピは `energy_converter/<id>` に10件を初期有効で生成し、全て40 tick、CEは `ClayiumRecipeEnergy.e(1.0, Tier)` とする。Tier 4 は `basic_machine_hull` と `clay_energy_excitor`、Tier 5～13 は一段下の変換器と順に `advanced_circuit`、`precision_circuit`、`integrated_circuit`、`clayium_plate`、`ultimate_alloy_plate`、`antimatter_plate`、`pure_antimatter_plate`、`octuple_energetic_clay_plate`、`octuple_pure_antimatter_plate` を使う。必要組立機Tierは変換器Tier 4～5が4、6～9が6、10～13が10。データパックの NeoForge 条件で無効化できる。GameTest は `convertersOnlyTurnClayEnergyIntoExternalFe` と `allConverterTiersPreserveRatesRecipesRedstoneAndStoredFe`。
 
@@ -355,6 +355,15 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 GameTest は `blastFurnaceRejectsMissingLowTierAndMisplacedInterfaces`、`blastFurnaceProcessesOnlyThroughItsSynchronizedInterface`、`blastFurnaceStartsAdvancedClaySteelRecipe`、`blastFurnaceStartsOriginalDustSmeltingRecipe`、`everyShellChangeInvalidatesTheCachedStructure`、`reactorLaserAcceleratesAndStructureDamageStopsProcessing`。外観 E2E は `tests/e2e/clay-multiblocks.mjs`。
 
+## M34 CA機械・共鳴と拡張
+
+`CaRegistration` は `ca_condenser_tier_{9,10,11}`、`ca_injector_tier_{9,10,11,12,13}` を同名 Block/Item と共通 `processing_machine` BlockEntity/Menu で登録する。`ca_resonating_collector` は Tier 10、専用 BlockEntity で、出力9スロットと保存 NBT `inventory`、`progress`、`progress_remainder` を持つ。共鳴が1以下では停止し、出力満杯時には進捗を消費しない。
+
+拡張 Block/Item は素材名 `antimatter`、`pure_antimatter`、`oec`、`opa` に `_resonator`、`_overclocker`、`_energy_storage_upgrade` を付けた12 ID。共鳴倍率は順に1.08/1.10/2.0/20.0、中心を含む各軸±2の5×5×5で積を取る。オーバークロッカーは6面隣接だけを対象に1.5/2.3/3.5/5.0を乗算する。一般機械の積をF、GをF>10ならF/10、それ以外は1として、時間は基本値/G、CEは基本値×G^1.5、進捗はF/G。FE変換器は専用指数1.0で線形に計算する。ストレージ拡張は6面隣接で燃料枠に+1/+3/+7/+63、合計上限64。撤去後の余剰はアイテムとして落とす。
+
+CA凝縮出力は基礎個数×(1+ln(共鳴倍率))の整数切り捨て。CA注入の共鳴進捗指数はTier 9が0.2、10が0.9、11が3.0、12～13が1.0。開始時の倍率と出力は処理完了まで保持する。レシピ ID は `ca_condenser/antimatter`、`ca_injector/{antimatter_resonator,resonating_collector,pure_antimatter_resonator,oec_resonator,opa_resonator}` と各素材の `_energy_storage_upgrade`、`reactor/{antimatter,pure_antimatter,oec,opa}_overclocker`。原作反応炉の後者4件の時間は順に10^13、10^14、10^15、10^15 tick で、レシピの `processing_ticks` は long 値として保存する。
+
+GameTest は `allEightCaMachinesPreserveOriginalTiersRecipesAndResonance`、`resonatingCollectorStopsWithoutResonanceAndNeverConsumesWhenFull`、`overclockAndResonanceUseOriginalProductsAndBoundaries`、`activeCaRecipeKeepsItsStartValuesWhenAugmentsChangeAcrossReload`、`energyStorageUpgradesCapAtSixtyFourAndDropOnlyTheExcess`。外観 E2E は `tests/e2e/ca-machines.mjs`。
 ## M31 高度な粘土工具
 
 `clay_pickaxe`、`clay_shovel`、`clay_steel_pickaxe`、`clay_steel_shovel` は原作の `item.itemClayPickaxe.name`、`item.itemClayShovel.name`、`item.itemClaySteelPickaxe.name`、`item.itemClaySteelShovel.name` に対応する。耐久は粘土工具500、粘土鋼工具10,000。粘土ツルハシの粘土鉱石速度は32、粘土シャベルの粘土鉱石速度は12、粘土・テラコッタ速度は32。粘土鋼工具の有効ブロック速度は基礎速度の6倍。通常粘土鉱石のドロップ補正はツルハシ4倍、シャベル3倍の幸運係数を使い、シルクタッチでは補正しない。

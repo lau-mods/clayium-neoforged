@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
+import net.claustra01.clayium.machine.augment.AugmentScanner;
 import net.claustra01.clayium.registry.EnergyConverterRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,6 +12,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -34,6 +36,11 @@ public final class EnergyConverterBlockEntity extends BlockEntity {
         public boolean isItemValid(int slot, ItemStack stack) {
             return ClayEnergyStorage.fuelValue(stack).internalValue() > 0L;
         }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return fuelLimit();
+        }
     };
     private final IEnergyStorage energyStorage = new OutputEnergyStorage();
     private EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> neighborCaches;
@@ -55,6 +62,8 @@ public final class EnergyConverterBlockEntity extends BlockEntity {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+        overclockFactor = AugmentScanner.overclockFactor(serverLevel, worldPosition);
+        enforceFuelLimit();
         beginOutputTick(serverLevel.getGameTime());
         if (serverLevel.hasNeighborSignal(worldPosition)) {
             return;
@@ -150,8 +159,23 @@ public final class EnergyConverterBlockEntity extends BlockEntity {
         return overclockFactor;
     }
 
-    public void setOverclockFactor(double factor) {
-        overclockFactor = Double.isFinite(factor) ? Math.max(1.0D, factor) : 1.0D;
+    public int fuelLimit() {
+        return level == null ? 1 : AugmentScanner.fuelLimit(level, worldPosition);
+    }
+
+    private void enforceFuelLimit() {
+        ItemStack stack = fuel.getStackInSlot(0);
+        int excessCount = stack.getCount() - fuelLimit();
+        if (excessCount <= 0 || level == null) {
+            return;
+        }
+        ItemStack excess = fuel.extractItem(0, excessCount, false);
+        Containers.dropItemStack(
+                level,
+                worldPosition.getX() + 0.5D,
+                worldPosition.getY() + 0.5D,
+                worldPosition.getZ() + 0.5D,
+                excess);
     }
 
     public Container dropInventory() {
