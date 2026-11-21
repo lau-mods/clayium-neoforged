@@ -2,357 +2,8 @@
   "status": "running",
   "active": [
     {
-      "id": "M26",
-      "phase": "implementation",
-      "baseCommit": "63e9658102b7c4fcd17c1524b6684eeb506a339f",
-      "failures": {
-        "build": 0,
-        "gametest": 1,
-        "e2e": 0
-      },
-      "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
-        "issues": [
-          {
-            "target": "AGENTS.md (no M26 section)",
-            "acId": null,
-            "problem": "The milestone adds a registered Block/Item/BlockEntity/Menu `auto_trader`, a payload `clayium:trade_select`, Tier 8, a CE cost per trade of `ClayiumRecipeEnergy.e(1.0, 8)`, the merchant search box (x/z ±1, y+1..y+4 above the device), the slot layout (input A 0, input B 1, output 2, fuel 3), the item-handler face mapping, saved NBT keys (`inventory`, `energy`, `selected_offer`, `state`), the stop states and the GameTest/E2E names. None of this is in AGENTS.md.",
-            "reason": "The project rules say that changes to user-visible behaviour, IDs, registrations, conditions and verification steps must update AGENTS.md in the same change. Every earlier milestone has a section, and M26's scope lists AGENTS.md.",
-            "fix": "Add an `## M26 自動取引装置` section that records the IDs, original key `tile.blockAutoTrader.name`, Tier and its source, CE per trade, the search area and merchant-busy rule, the validation order (merchant, lock, offer, out of stock, output space, materials, CE), the use of current `getCostA`/`getCostB` and `notifyTrade`, the slot and face layout, the NBT keys, the payload validation, and the GameTest and E2E names.",
-            "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Added the M26 IDs, Tier, trade rules, storage, payloads and verification names to AGENTS.md.",
-                "at": "2026-11-21T01:44:09.663Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md now has an M26 section covering IDs, Tier, CE cost, search area, validation order, slots, NBT keys, payloads and test names.",
-                "at": "2026-11-21T01:44:32.582Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md still has the M26 section with IDs, Tier, CE cost, search area, validation order, slots, NBT keys, payloads and test names. The diff does not touch it.",
-                "at": "2026-11-21T01:58:03.099Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The AGENTS.md M26 section is still there. The diff doesn't touch it.",
-                "at": "2026-11-21T02:00:31.427Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md still has the M26 section. No conflict markers remain.",
-                "at": "2026-11-21T02:06:23.301Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/trade/AutoTraderBlockEntity.java:291-346 (TradeContainerData) / AutoTraderMenu.java:83-126",
-            "acId": "AC-F026-002",
-            "problem": "The selected trade and the offer list reach the client through `ContainerData`, which vanilla sends as 16-bit shorts (`ClientboundContainerSetDataPacket`). Index 16 holds `ENERGY_PER_TRADE` = 1,000,000 internal units, which gets truncated, so the GUI shows the wrong trade CE. Items are sent as raw registry int IDs plus a count, so data components are lost. For example, a librarian's enchanted book or an armorer's enchanted armour shows as a plain item, and costs with components are shown wrongly. Also, every `get(index)` call runs `offer()`/`offerCount()`, each doing a new entity AABB search, so each open menu does about 37 entity searches every tick. The menu GameTest reads the server-side ContainerData directly, so none of this is caught.",
-            "reason": "AC-F026-002 requires the GUI to show the selected trade and its required materials correctly. ContainerData is meant only for small int values; full ItemStacks and long values need proper stream codecs.",
-            "fix": "Send the merchant's offers (e.g. `MerchantOffers.STREAM_CODEC` or ItemStack/ItemCost stream codecs for the visible offers) plus the selected index, state and long CE values with a clientbound payload or the menu's extra data when they change. Keep ContainerData only for values that fit in 16 bits. Look up the merchant once per server tick instead of once per data index. Make the GameTest check the values the client screen actually receives.",
-            "id": "CR-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Replaced offer data encoded as short values and item IDs with a MerchantOffers client payload carrying full stacks and long CE values. The GameTest checks a codec round trip.",
-                "at": "2026-11-21T01:44:09.663Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "ContainerData is replaced by a TradeSnapshotPayload using MerchantOffers.STREAM_CODEC and VAR_LONG values, sent when the content hash changes. The merchant is cached once per tick. The GameTest round-trips the codec and checks components, discounted costs and the long CE value.",
-                "at": "2026-11-21T01:44:32.582Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only moves the layout. The payload-based sync from the earlier review is unchanged. Slot and widget positions were moved consistently between the Menu and the Screen.",
-                "at": "2026-11-21T01:58:03.099Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes the E2E script. The payload-based snapshot sync is unchanged.",
-                "at": "2026-11-21T02:00:31.427Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The trade package has no ContainerData. The snapshot payload sync is unchanged. The diff only resolves merge conflicts.",
-                "at": "2026-11-21T02:06:23.301Z"
-              }
-            ]
-          },
-          {
-            "target": "tests/e2e/auto-trader.mjs:18-28",
-            "acId": "AC-F026-002",
-            "problem": "`/item replace block 0 100 0 container.N` needs the block entity to be a vanilla `Container`. `AutoTraderBlockEntity` only has an `ItemStackHandler`, so these commands fail and the materials and fuel are never placed. If they did work, the device ticks `tryTrade` every tick, so during the 10-tick wait it would complete the trade (the compressed energetic clay gives exactly 1,000,000 internal CE) and use up the inputs before the screenshot. Either way, the screenshot does not show the intended selected trade with its required materials. It also shows no stop condition, and with only one offer it does not show a trade list or a selection.",
-            "reason": "The E2E is the only evidence for the screen part of AC-F026-002, which asks for a capture of the trade list with the selected trade and its required materials shown correctly.",
-            "fix": "Fill the device in a way that works for an ItemHandler-only block entity, for example from a vanilla chest or hopper next to it, or through player inventory clicks in the GUI. Give the villager several offers, select a non-first offer through the GUI, and set up a stop condition (e.g. missing material or no CE) so the screenshot shows the list, the highlighted selection, the current discounted required materials and the stop state without the trade consuming them.",
-            "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: The E2E now fills the block entity through NBT, presents two offers, selects the discounted second offer and leaves trading stopped for the screenshot.",
-                "at": "2026-11-21T01:44:09.663Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E fills the block entity via NBT merge, spawns two offers, and clicks the second one in the GUI. With no fuel the device stops for lack of CE, so nothing is consumed. The click at (700,291) lands on the second offer button at GUI scale 1, assuming MC Pilot runs at that scale; I did not confirm the scale.",
-                "at": "2026-11-21T01:44:32.582Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The new E2E click assumes a 2560x1440 framebuffer at GUI scale 6, so it computes x ≈ 1712 and y ≈ 800. Other E2Es such as gadget-holder.mjs click the centre of the 1280x720 window at (640,360), and AGENTS.md sets the client screen to 1280×720. These coordinates therefore fall outside the window, the second offer is never selected, and the screenshot does not show the intended selection.",
-                "at": "2026-11-21T01:58:03.099Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: E2EはNBTで材料を配置し、CE不足のまま複数オファーの2件目を選択して撮影します。クリック位置をGUIスロットの実座標から求めるよう修正しました。",
-                "at": "2026-11-21T02:00:16.757Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E now gets slot positions from `mct gui layout`. It takes the GUI scale from the 22-pixel spacing between input A and B. It then clicks at output centre X + 72×scale and input A centre Y + 7.5×scale. The menu puts slots at (44,27), (44,49) and (116,38), and the screen's offer buttons span x 151–241 and y 29+9i. By those coordinates the click lands in the middle of the second offer button (x≈197, y≈43.5). So the click no longer depends on a hard-coded framebuffer size or scale. The NBT fill, two offers and no-fuel stop state were already accepted. I did not run the E2E, so the assumption that `layout.slots[].slot` is the menu slot index is unchecked.",
-                "at": "2026-11-21T02:00:31.427Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E script is unchanged and still uses layout-based click coordinates. The diff only resolves merge conflicts in other files. Not run.",
-                "at": "2026-11-21T02:06:23.301Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/machine/trade/AutoTraderBlockEntity.java:200-205 (setChangedAndSync)",
-            "acId": null,
-            "problem": "`level.sendBlockUpdated(...)` is called on every state change, but the block entity does not override `getUpdatePacket`/`getUpdateTag`, so nothing is synced. The call only forces useless block updates and re-renders, up to once per tick while the state changes.",
-            "reason": "The code style says to remove code the current behaviour does not use. The client gets its data only through the menu.",
-            "fix": "Replace `setChangedAndSync()` with a plain `setChanged()` (or sync through the menu as described above) and remove the `sendBlockUpdated` call.",
-            "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Removed the block update call; state changes use setChanged(), and the open menu supplies client updates.",
-                "at": "2026-11-21T01:44:09.663Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "setChangedAndSync and sendBlockUpdated are gone from the trade package; state changes call setChanged().",
-                "at": "2026-11-21T01:44:32.582Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not bring back sendBlockUpdated or setChangedAndSync. The earlier fix stands.",
-                "at": "2026-11-21T01:58:03.099Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not bring back `sendBlockUpdated`. The earlier fix stands.",
-                "at": "2026-11-21T02:00:31.427Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "No sendBlockUpdated or setChangedAndSync in the trade package.",
-                "at": "2026-11-21T02:06:23.301Z"
-              }
-            ]
-          }
-        ]
-      },
-      "codeReviewTree": "eaade28284e8231501bc8d66dd80fe8dd1c7d017",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
-            "acId": "AC-F026-002",
-            "problem": "The selected trade in the GUI is the first offer (2 emeralds → bread, 0/12 uses), not the discounted two-material trade (5 emeralds with specialPrice -2, so 3 emeralds, plus 1 book → diamond). There is no second required material at the cost B position, and no discounted price is shown. The GUI does not show the selected trade and its required materials as the criterion expects.",
-            "reason": "tests/e2e/auto-trader.mjs clicks at (700, 291). In the 2560×1440 capture at GUI scale 6 that point is inside the left half of the machine panel. The offer buttons are at leftPos+151 (about x≥1440 in the capture), so the click misses them, no trade_select payload is sent, and selectedOffer stays 0. AutoTraderScreen draws costB only for the selected offer, so the book never appears.",
-            "fix": "Select the second offer by clicking its real button. Compute the position from the screen (leftPos+151+45, topPos+14+1*9+4, times the GUI scale) or use an MC Pilot GUI widget/button click by label. Then wait for the trade_snapshot and confirm the screen shows emerald×3 at cost A, book×1 at cost B, the diamond result and the '▶' marker on the diamond entry before taking the screenshot.",
-            "id": "ER-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: E2E のクリック位置を2件目の取引ボタンの実座標から計算し、同期を待って撮影するよう変更しました。",
-                "at": "2026-11-21T01:57:46.368Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 2件目のボタン中央をGUIスロットの実座標から計算してクリックします。",
-                "at": "2026-11-21T02:00:16.757Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The selected offer is now the diamond trade (▶ 钻石). Cost A shows emerald×3 (discounted), cost B shows a book, and the diamond result is shown.",
-                "at": "2026-11-21T02:02:30.068Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
-            "acId": "AC-F026-002",
-            "problem": "The panel background ends above the hotbar row. The bottom player-inventory row (hotbar slots) hangs below the panel's bottom edge over the world.",
-            "reason": "AutoTraderScreen.renderBg blits back.png at imageWidth 248 × imageHeight 192 with the default 256×256 UV size. The drawn area of back.png is only about 176×179 px, so the frame stops at about y=179. gui_playerinventory.png is blitted at topPos+100 with height 90, and its hotbar slots at y=170–188 extend past the frame.",
-            "fix": "Draw a panel frame that covers the full 248×192 GUI. For example, use a nine-slice/stretched blit of back.png (as other Clayium machine screens do) or draw the frame borders explicitly to imageWidth×imageHeight. Make sure the hotbar row (menu slot y=170) sits inside the panel with a bottom border.",
-            "id": "ER-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 背景枠を GUI 全体に描画し、プレイヤー在庫とホットバーが枠内に収まるよう配置しました。",
-                "at": "2026-11-21T01:57:46.368Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 背景枠を248×220に広げ、ホットバーを枠内に収めました。",
-                "at": "2026-11-21T02:00:16.757Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The panel frame now extends below the hotbar row. All inventory slots and the hotbar are inside the frame, with a bottom border.",
-                "at": "2026-11-21T02:02:30.068Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
-            "acId": "AC-F026-002",
-            "problem": "The offer list buttons sit outside the panel. They start inside the top-right corner of the frame, at the title row, and stick out past the panel's right edge over the world (only a fragment of the list is visible, e.g. '钻石'). There is no panel area that holds the list.",
-            "reason": "The offer buttons are placed at leftPos+151, topPos+14+index*9 with width 90 (x=151–241). The visible background is only about 176 px wide, so most of each button is drawn outside the frame. The list also starts right under the title, 'Tier 8' and 'Offers' labels at y=5–6, so it crowds the title row.",
-            "fix": "Widen the drawn background to 248 px, or move the list inside the frame. Give the offers list its own inset area below the title row (for example, x=151–241 starting at y≥16) with a label above it. Make sure no button overlaps the title, 'Tier' or 'Offers' text, or the panel border.",
-            "id": "ER-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 取引一覧の見出しと10件のボタンを、タイトルと在庫の間に収めました。",
-                "at": "2026-11-21T01:57:46.368Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 取引一覧を広げた背景枠内の見出し下に配置しました。",
-                "at": "2026-11-21T02:00:16.757Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The offer list sits inside the frame under its own 'Trades' heading. It no longer overlaps the title, 'Tier 8' or the right border.",
-                "at": "2026-11-21T02:02:30.068Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
-            "acId": "AC-F026-002",
-            "problem": "The fuel slot frame is drawn on top of the 'Trade cost: 10 CE' label, so the CE value and unit are hidden behind it ('10 CE' is partly covered).",
-            "reason": "renderLabels draws the energy label at (7, 77), and the text runs to about x=97. The fuel slot is drawn at (79, 69) with size 18×18 (slot 80,70), which covers y=69–87 and x=79–97 on the same row.",
-            "fix": "Move the fuel slot away from the text rows (for example, to the right of the arrows or below the output slot). Or move the Stored, Trade cost and state labels to a column/rows that don't intersect any slot. Make sure the full 'Trade cost: <value> CE' string stays visible.",
-            "id": "ER-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 燃料スロットを CE 表示の右側へ移し、取引コストの文字と重ならないようにしました。",
-                "at": "2026-11-21T01:57:46.368Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 燃料スロットをCE表示の右側へ移し、文字との重なりを解消しました。",
-                "at": "2026-11-21T02:00:16.757Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The fuel slot is now to the right of the text rows. 'Trade cost: 10 CE' is fully visible.",
-                "at": "2026-11-21T02:02:30.068Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-21T01-52-02-959Z-064-M26-e2e/scenarios/tests-e2e-auto-trader.mjs/screenshots/AC-F026-002-selected-discounted-two-material-trade.png",
-            "acId": "AC-F026-002",
-            "problem": "The arrows from autotrader.png don't line up with the trade layout. The upper arrow starts at the ghost cost A item and points past the output slot. The lower arrow (y≈58–66) has nothing at its tail, because the cost B ghost row is at y=49, and its head runs into the '0 / 12 uses' text.",
-            "reason": "The arrow texture is blitted at (0,0) with the original 176×96 layout, but the slots and ghost items are placed at different coordinates (inputs 43,26/43,48, ghost costs 73,27/73,49, output 115,37, result ghost 134,38). The uses label is drawn at (105, 59), right where the lower arrow's head is.",
-            "fix": "Set the arrow blit offsets (or the slot and ghost-item coordinates) so that each arrow runs from the cost A and cost B ghost rows to the output slot. Move the uses label (for example, below the output slot at y≥58 and x≥115) so it doesn't overlap any arrow.",
-            "id": "ER-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 原作テクスチャから矢印だけを切り出して材料行に合わせ、取引回数表示を矢印の下へ移しました。",
-                "at": "2026-11-21T01:57:46.368Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 原作テクスチャから矢印部分を材料行に合わせて描画し、取引回数表示を矢印の下へ移しました。",
-                "at": "2026-11-21T02:00:16.757Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Both arrows start at the cost A and cost B ghost items and run toward the output slot. The uses label is below the arrows and overlaps nothing. The lower arrow's head ends slightly below the slot's bottom edge, a minor offset, not the original defect.",
-                "at": "2026-11-21T02:02:30.068Z"
-              }
-            ]
-          }
-        ]
-      },
-      "failure": {
-        "phase": "gametest",
-        "summary": "GameTest task failed",
-        "details": "GameTest task output:\n+++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: ========= 93 GAME TESTS COMPLETE IN 17.12 s ======================\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]:    - condensersrequirenineitemsandpreserveoriginaltiersandtimes\n[11:07:15] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[11:07:15] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end\n[11:07:16] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save Test Level\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved\n[11:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved\n[11:07:16] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER\n[11:07:16] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down\n\n> Task :runGameTestServer FAILED\n8 actionable tasks: 1 executed, 7 up-to-date\nConfiguration cache entry reused.\n\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':runGameTestServer'.\n> Process 'command '/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/bin/java'' finished with non-zero exit value 1\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to generate a Build Scan (powered by Develocity).\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 37s\n",
-        "logs": [
-          ".harness-state/runs/2026-11-21T02-06-39-505Z-088-M26-gametest/stdout.log",
-          ".harness-state/runs/2026-11-21T02-06-39-505Z-088-M26-gametest/stderr.log"
-        ],
-        "screenshots": []
-      },
-      "conflicts": [],
-      "reviewConflicts": []
-    },
-    {
       "id": "M29",
-      "phase": "implementation",
+      "phase": "e2e",
       "baseCommit": "63e9658102b7c4fcd17c1524b6684eeb506a339f",
       "failures": {
         "build": 0,
@@ -360,8 +11,470 @@
         "e2e": 0
       },
       "recoveries": 0,
-      "codeReview": null,
-      "codeReviewTree": null,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/java/net/claustra01/clayium/laser/LaserSpecification.java:9-16 (and src/main/resources/data/clayium/original_varieties.tsv:221-224)",
+            "acId": "AC-F030-001",
+            "problem": "The four lasers are registered as blue_clay_laser / green_clay_laser / red_clay_laser / white_clay_laser. The machine ledger (OriginalRegistryCatalog family ClayEnergyLaser, stem clay_energy_laser, Tier 7-10) and the AGENTS.md rule say machine-series IDs are `<stem>_tier_<Tier>`.",
+            "reason": "The other catalog series (e.g. the M23 interfaces, whose tsv names are also non-tier names) are registered by OriginalRegistryCatalog.machineId. These lasers ignore the ledger, so the registered IDs and the catalog name different IDs for the same original varieties.",
+            "fix": "Register the lasers as clay_energy_laser_tier_7..10 via OriginalRegistryCatalog.machineId. Update the four tsv rows, the lang/blockstate/model/loot outputs (re-run runData) and the E2E setblock IDs to match.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: レーザーIDを機械台帳の Tier 別IDに合わせ、台帳・生成データ・E2Eを更新しました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "IDs via machineId; tsv updated.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the laser ID registration, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "AGENTS.md (no M29 section)",
+            "acId": "AC-F030-001",
+            "problem": "AGENTS.md was not updated for M29. It does not record the laser and reflector IDs, the BlockEntity IDs, the CE/t values, the components, the path length 32, the recalculation period, the reflection age/merge rule, the InvertClayLaserRSCondition COMMON config key, the NBT keys, the LaserReceiver API, the GameTest name or the E2E scenario.",
+            "reason": "The common rules require AGENTS.md to be updated in the same change whenever IDs, registrations, behavior, config keys or verification steps change, and AGENTS.md is in the milestone scope.",
+            "fix": "Add an M29 section to AGENTS.md with the registered IDs, the per-tier CE/t and components, the path, reflection and merge rules, the redstone and config behavior, the saved NBT keys, and the GameTest/E2E names.",
+            "id": "CR-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に M29 のID、数値、経路、保存、Config、検証方法を記録しました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "M29 section added to AGENTS.md.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md, so the M29 section stays in place.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/laser/LaserReflectorBlockEntity.java:41-71 and src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:136-145",
+            "acId": "AC-F030-001",
+            "problem": "A reflector forwards each beam it receives synchronously and immediately. The Laser Interface relays only receiveLaser(long,long,long), so the beam age is lost. If a reflector points at a Laser Interface synchronized to that same reflector, the beam re-enters with age 0 every time. The result is unbounded recursion (StackOverflowError) on the server. Also, two beams arriving in the same tick are forwarded separately rather than as one merged beam, so the age>=10 maximum-merge rule never reaches the downstream receiver.",
+            "reason": "A loop the player can build crashes the server, and the reflector does not output the merged laser the original rules call for.",
+            "fix": "Override receiveLaser(LaserBeam, Direction) in InterfaceBlockEntity so it relays the LaserBeam with its age. Make the reflector accumulate the beams received during a tick with LaserBeam.merge and emit the merged beam once from its serverTick instead of delivering recursively inside receiveLaser.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: インターフェースが age を含むビームを中継し、反射器が同一 tick のビームを合成して次 tick に送ります。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Interface relays LaserBeam; reflector merges and emits next tick, no recursion.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the reflector or the interface relay, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/laser/LaserBlockStateProvider.java:50-54 (generated blockstates/*_clay_laser.json, laser_reflector.json)",
+            "acId": "AC-F030-002",
+            "problem": "FACING=UP uses x=90 and FACING=DOWN uses x=270. The models put the front texture or plate on the north face, and an x=90 rotation moves north to down. Up-facing lasers therefore show their front texture on the bottom, and the up-facing reflector plate renders at the bottom while its VoxelShape UP is at the top (the reverse for DOWN).",
+            "reason": "The emission direction and the reflector orientation shown in the world disagree with the actual beam direction and hitbox, which fails the 向き/反射 display requirement.",
+            "fix": "Swap the vertical rotations (UP -> x=270, DOWN -> x=90) and regenerate the blockstates with runData.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 上下方向のモデル回転を入れ替え、blockstate を再生成しました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "UP=270, DOWN=90 in generated blockstates.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the blockstate rotations, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/client/renderer/laser/LaserBlockEntityRenderer.java:104-105",
+            "acId": "AC-F030-002",
+            "problem": "The UVs use sprite.getU(0|16) and sprite.getV(0|16). In 1.21.1, TextureAtlasSprite.getU/getV take a normalized 0..1 coordinate, so 16 samples far outside the laser sprite and draws other atlas textures on the beam.",
+            "reason": "The beam does not show the original laser.png, so the original look and colors are lost.",
+            "fix": "Use sprite.getU0()/getU1() and getV0()/getV1() (or getU(0F)/getU(1F)).",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: ビームのUVをスプライトの U0/U1/V0/V1 に修正しました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Uses getU0/U1/V0/V1.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the renderer UVs, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/client/renderer/laser/LaserBlockEntityRenderer.java:66-74",
+            "acId": "AC-F030-002",
+            "problem": "The renderer returns true from shouldRenderOffScreen but does not override getRenderBoundingBox. NeoForge still frustum-culls block-entity renderers against that box, which defaults to the block's own bounds. A beam up to 32 blocks long disappears whenever the emitter or reflector block is outside the view.",
+            "reason": "The AC requires the beams to stay visible without disappearing (透明化がない) when viewed from the side, front or crossing point.",
+            "fix": "Override getRenderBoundingBox(T) to return the block AABB expanded along direction() by laserLength(), and drop the shouldRenderOffScreen override if it becomes unnecessary.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 描画境界をビームの方向と長さに沿って拡張しました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "getRenderBoundingBox expands along beam.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the render bounding box, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/client/renderer/laser/LaserBlockEntityRenderer.java:38-46",
+            "acId": "AC-F030-002",
+            "problem": "Every beam is centered on its block's center line and its half-width depends only on the component sum. Two crossing beams of the same strength at the same height, like the red/green pair in clay-lasers.mjs, have top and bottom faces in exactly the same plane inside the crossing square, which causes z-fighting.",
+            "reason": "The AC explicitly requires no z-fighting at the crossing point, and the approach calls for a z-fighting countermeasure.",
+            "fix": "Give each beam axis a slightly different half-width or offset (e.g. a small per-axis epsilon) so faces of perpendicular beams are never coplanar.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: ビーム軸ごとに幅の微差を付け、交差面の重なりを避けました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Per-axis half-width offset.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the beam widths, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/client/renderer/laser/LaserBlockEntityRenderer.java:41-42",
+            "acId": "AC-F030-002",
+            "problem": "For a reflector, the outgoing beam starts 0.501 blocks from the center, while the incoming beam ends at the reflector's center. There is a visible half-block gap at the reflection point.",
+            "reason": "The reflection should appear as one continuous beam that turns at the reflector.",
+            "fix": "Start the reflector's outgoing beam at the block center (or at the plate). Keep the 0.501 offset only for emitters, whose body is a full cube.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 反射器の出射ビームをブロック中心から描画します。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Reflector start distance is 0.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the reflector beam start, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/laser/ClayEnergyLaserBlockEntity.java:89-92",
+            "acId": null,
+            "problem": "receiveClayEnergy is only called by LaserGameTests. Production CE supply goes only through the fuel slot.",
+            "reason": "This is test-only production code, and it lets the GameTest skip the CE supply path the game actually uses.",
+            "fix": "Remove receiveClayEnergy and fuel the lasers in the GameTest by inserting compressed energetic clay into the fuel slot through the ItemHandler capability.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: テスト専用のCE注入経路を削除し、GameTest は燃料スロットの Capability から給油します。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "receiveClayEnergy removed; test fuels via capability.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back receiveClayEnergy, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/laser/LaserGameTests.java:78-90,113-131",
+            "acId": "AC-F030-001",
+            "problem": "The nonlinear effect is only checked on a LaserBeam merged by hand, with the weak inequality merged.energy() > 4*energy(1,1,1), not on what the receiver got and not against original values. The reflection check reads only the blue component and does not show that the original target stops receiving. The redstone-stopped case asserts only the CE and not that the receiver got nothing. No vertical (UP/DOWN) emission direction is tested.",
+            "reason": "Each GameTest must perform the criterion's Action and assert its Expected Result: exact CE/t, the white 3/3/3 composition, the original nonlinear values, the reflection direction and the redstone stop.",
+            "fix": "Assert LaserBeam.energy() against exact values computed from the original formula for representative beams (e.g. [1,0,0], [3,3,3], [4,4,4]) for the beam the receiver accumulated. Assert all three components after reflection and that the old straight-line target receives nothing. Assert that receivers get nothing while the laser is stopped. Include an UP or DOWN laser.",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 実受信値の非線形効果、2本の反射合成、旧直進先の停止、赤石停止、上向き照射を検証します。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Tests assert exact values, reflection merge, stop, upward.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff changes only the batch name of an unrelated ClayProduction GameTest, so the laser GameTests are unchanged.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/laser/ClayEnergyLaserBlockEntity.java:130-136 and LaserReflectorBlockEntity.java:97-120",
+            "acId": null,
+            "problem": "The emitter saves the derived runtime state irradiating and laser_length to disk. The reflector saves its visible beam, age, length and irradiating state. All of these are recomputed on the next tick (pathDirty=true), and the reflector clamps the loaded values with Math.max even though the game only produces non-negative values. LaserBeam's compact constructor also throws on negative values the game never produces.",
+            "reason": "Runtime display state does not need to be saved, and the extra validation guards states the game cannot produce, which the code style forbids.",
+            "fix": "Save only inventory and energy in saveAdditional, and send irradiating, laser_length and the visible beam only through getUpdateTag. Remove the Math.max clamps and the LaserBeam negativity check.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 永続化は燃料在庫とCEに絞り、描画状態は更新タグで同期します。不要な値域ガードも削除しました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Runtime state only in update tag; clamps and checks removed.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the laser block entity persistence, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/iface/LaserReceiver.java:9-11 and LaserReflectorBlockEntity.java:41-43",
+            "acId": null,
+            "problem": "The new receiveLaser(LaserBeam, Direction incomingSide) parameter is never used by any implementation. The reflector's long-triple override passes a dummy Direction.NORTH and drops the age.",
+            "reason": "An unused parameter plus a fake value is unnecessary abstraction, and it hides that the age is lost on that path.",
+            "fix": "Drop the incomingSide parameter and make the LaserBeam overload the single path that carries the age. Have the long-triple entry point build a LaserBeam only where an implementation actually needs it.",
+            "id": "CR-012",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 未使用の入射面引数を除き、LaserBeam を受け渡す経路に統一しました。",
+                "at": "2026-11-21T06:36:43.820Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "incomingSide removed; single LaserBeam path.",
+                "at": "2026-11-21T06:37:11.789Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the LaserReceiver API, so the earlier fix stands.",
+                "at": "2026-11-21T12:44:07.957Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "5778832eeb808f7d887b8470aa4cfcd91432bad8",
+      "e2eReview": null,
+      "failure": {
+        "phase": "gametest",
+        "summary": "GameTest task failed",
+        "details": "GameTest task output:\n[++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++X+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: ========= 92 GAME TESTS COMPLETE IN 31.60 s ======================\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]:    - condensersrequirenineitemsandpreserveoriginaltiersandtimes\n[15:38:19] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================\n[15:38:19] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server\n[15:38:19] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds\n[15:38:20] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end\n[15:38:21] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save Test Level\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved\n[15:38:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved\n[15:38:21] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER\n[15:38:21] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down\n\n> Task :runGameTestServer FAILED\n8 actionable tasks: 1 executed, 7 up-to-date\nConfiguration cache entry reused.\n\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':runGameTestServer'.\n> Process 'command '/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/bin/java'' finished with non-zero exit value 1\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to generate a Build Scan (powered by Develocity).\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 1m 9s\n",
+        "logs": [
+          ".harness-state/runs/2026-11-21T06-37-11-791Z-006-M29-gametest/stdout.log",
+          ".harness-state/runs/2026-11-21T06-37-11-791Z-006-M29-gametest/stderr.log"
+        ],
+        "screenshots": []
+      },
+      "conflicts": [],
+      "reviewConflicts": []
+    },
+    {
+      "id": "M28",
+      "phase": "implementation",
+      "baseCommit": "66d2e0872c6ec8c61289a0eb962c5037cda3f93a",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderBlockEntity.java:35-37,78-86",
+            "acId": "AC-F029-002",
+            "problem": "`ticket_status=active` is saved, and serverTick returns early while the status is ACTIVE. After a restart, the restart validation can remove a real loader's saved tickets. This happens when the forced-chunk data and the chunk data were saved at different times (for example after a crash), or when the ticket set was incomplete. The block entity then loads as ACTIVE and never asks for tickets again. It shows 'active' but keeps no chunks loaded.",
+            "reason": "AC-F029-002 requires a legitimate loader to get back the tickets it needs after a restart. The GameTest only passes because it overwrites the status with `waiting` through loadWithComponents. A real restart never does that.",
+            "fix": "After a load, re-check the tickets once on the first server tick whatever status was saved. For example, keep ACTIVE only for the running session: do not restore ACTIVE from NBT, or reset it to WAITING in loadAdditional. Persist only the `unavailable` result the GUI needs. Remove the GameTest's manual `ticket_status` overwrite so the test runs the real reload path.",
+            "id": "CR-001",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderTicketService.java:23,29-43,79-89",
+            "acId": "AC-F029-002",
+            "problem": "Restored owners are tracked in a static, JVM-wide `RESTORED_OWNERS` set. The set is never cleared when the server stops. Entries for loaders that are already ACTIVE are never consumed, because acquire is never called for them. In single-player, these entries carry over to the next world loaded in the same JVM. There, a loader at the same position skips the rejection check. The set also needs extra hooks (`forgetRestoredOwner`, `onChunkUnloaded`) only to keep itself consistent.",
+            "reason": "Static mutable state that outlives the server breaks lifecycle correctness. It is also an extra abstraction that NeoForge does not need: once the callback has validated the tickets, they are already held in ForcedChunksSavedData.",
+            "fix": "Remove `RESTORED_OWNERS`, `Owner`, `forgetRestoredOwner` and the `onChunkUnloaded` override. In acquire, count a chunk whose ticket the owner already holds as acquired. The ticket is already held when forceChunk returns false because it already exists, so check the controller's held tickets directly. Treat only a ticket that is missing after the request as a rejection.",
+            "id": "CR-002",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderTicketService.java:33-38",
+            "acId": "AC-F029-001",
+            "problem": "In NeoForge 21.1, `TicketController.forceChunk` returns false only when the same owner already holds that ticket. The code treats that result as a 'server rejection' and then releases every ticket the owner holds, including the valid ones it already had. The GameTest creates the 'rejection' the same way, by adding a duplicate ticket for the same owner beforehand. So the rejection path being tested is a duplicate ticket, not a server constraint.",
+            "reason": "AC-F029-001's 'tickets rejected because of a server constraint' must mean the requested ticket was not granted. Losing tickets the loader already held because of a duplicate is wrong behavior.",
+            "fix": "Count rejection only when, after the request, the owner still does not hold the ticking ticket for that chunk. Give an already-held ticket the success result. In the GameTest, create the rejection precondition through a real non-granted request rather than a pre-added duplicate for the same owner.",
+            "id": "CR-003",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/chunkloader/ChunkLoaderGameTests.java:35-83",
+            "acId": "AC-F029-001",
+            "problem": "The test does not set up the precondition or observe the result the criterion requires. The loader is not placed on a chunk boundary (it sits at relative 1,2,1 with no boundary check). No ticks pass after the tickets are acquired. 'Running' is only checked as `getChunkNow != null` (loaded), not as ticking. The test never checks that chunks outside the 3×3 area are not loaded by the loader.",
+            "reason": "AC-F029-001 Preconditions/Action/Expected: place the loader on a chunk boundary, advance ticks, observe the center and its 8 neighbours running, and confirm no extra surrounding chunks are loaded.",
+            "fix": "Place the loader on a block whose coordinates are on a chunk boundary (for example x%16==15 or 0), confirmed with a require. Advance ticks with runAfterDelay/succeedWhen. Assert the 9 chunks are ticking (for example `level.shouldTickBlocksAt` or `isNaturalSpawningAllowed` for each chunk). Assert that the ring of chunks at distance 2 has no ticket or ticking state from this loader.",
+            "id": "CR-004",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/chunkloader/ChunkLoaderGameTests.java:96-130",
+            "acId": "AC-F029-002",
+            "problem": "The 'restart' is simulated by calling `ForcedChunkManager.reinstatePersistentChunks` while the tickets are still live in the DistanceManager. The test checks only the serialized ForcedChunksSavedData. The validation callback removes the orphan tickets from saved data, but the orphan's live tickets stay in the level, so its 9 chunks remain force-loaded after the test. Dimension unload, an Action listed in the criterion, is not exercised at all.",
+            "reason": "AC-F029-002 expects that no orphan tickets remain and that ticket release is checked for removal, dimension unload and restart. Checking only saved data does not prove that no orphan tickets remain, and the test leaves chunks loaded for later GameTests.",
+            "fix": "Check the live ticket state (the level's DistanceManager / ticking state of the chunks) as well as the saved data. Make sure the orphan's live tickets are gone, for example by clearing them before the simulated reinstate so the saved data is the only source, as on a real startup. Clean up every ticket the test creates. Cover dimension unload, or state in AGENTS.md and the acceptance mapping how it is verified.",
+            "id": "CR-005",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderBlockEntity.java:88-98,114-116",
+            "acId": null,
+            "problem": "`getUpdatePacket`, `getUpdateTag` and `sendBlockUpdated` send the ticket status to the client block entity, but nothing on the client reads it. The screen reads the status from the menu's ContainerData.",
+            "reason": "Code style: remove code the current behavior does not use.",
+            "fix": "Remove `getUpdatePacket`, `getUpdateTag` and the `sendBlockUpdated` call. Keep `setChanged`.",
+            "id": "CR-006",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/chunkloader/ChunkLoaderLanguageEntries.java:9",
+            "acId": null,
+            "problem": "The lang key `container.clayium.chunk_loader` is generated into en_us/ja_jp, but nothing uses it. `getDisplayName` returns the block name.",
+            "reason": "Code style: remove resources the current behavior does not use.",
+            "fix": "Delete the entry and regenerate `en_us.json` and `ja_jp.json` with runData.",
+            "id": "CR-007",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/chunkloading/ChunkLoaderMenu.java:37-41",
+            "acId": null,
+            "problem": "`ticketStatus()` guards against ordinals outside the enum range and maps them to UNAVAILABLE. The server only ever sends `TicketStatus.ordinal()`, so that state cannot happen.",
+            "reason": "Code style: validate only states the game can produce.",
+            "fix": "Return `TicketStatus.values()[data.get(0)]` directly.",
+            "id": "CR-008",
+            "status": "open",
+            "history": []
+          }
+        ]
+      },
+      "codeReviewTree": "0f0cac94d7614a5a4e38e1c569abd218b6a47a19",
       "e2eReview": null,
       "failure": null,
       "conflicts": [],
@@ -394,8 +507,9 @@
     "M23",
     "M25",
     "M21",
-    "M27"
+    "M27",
+    "M26"
   ],
-  "lastCheckpoint": "63e9658102b7c4fcd17c1524b6684eeb506a339f",
+  "lastCheckpoint": "66d2e0872c6ec8c61289a0eb962c5037cda3f93a",
   "fatal": null
 }

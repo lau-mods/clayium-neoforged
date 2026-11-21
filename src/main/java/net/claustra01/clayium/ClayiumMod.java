@@ -8,6 +8,9 @@ import net.claustra01.clayium.machine.MachineCapabilities;
 import net.claustra01.clayium.machine.autocrafter.AutoCrafterCapabilities;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionCapabilities;
 import net.claustra01.clayium.machine.iface.InterfaceCapabilities;
+import net.claustra01.clayium.machine.trade.TradeCapabilities;
+import net.claustra01.clayium.machine.trade.TradeSelectPayload;
+import net.claustra01.clayium.machine.trade.TradeSnapshotPayload;
 import net.claustra01.clayium.machine.miner.MinerCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.logistics.BufferControlPayload;
@@ -33,6 +36,7 @@ public final class ClayiumMod {
         modEventBus.addListener(LogisticsCapabilities::register);
         modEventBus.addListener(StorageCapabilities::register);
         modEventBus.addListener(InterfaceCapabilities::register);
+        modEventBus.addListener(TradeCapabilities::register);
         modEventBus.addListener(MinerCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
             modEventBus.addListener(net.claustra01.clayium.gametest.iface.InterfaceGameTests::registerTestCapability);
@@ -46,6 +50,8 @@ public final class ClayiumMod {
         modEventBus.addListener(net.claustra01.clayium.logistics.multitrack.MultitrackControlPayload::register);
         modEventBus.addListener(net.claustra01.clayium.logistics.distributor.DistributorControlPayload::register);
         modEventBus.addListener(net.claustra01.clayium.logistics.filter.FilterControlPayload::register);
+        modEventBus.addListener(TradeSelectPayload::register);
+        modEventBus.addListener(TradeSnapshotPayload::register);
     }
 
     public static ResourceLocation id(String path) {

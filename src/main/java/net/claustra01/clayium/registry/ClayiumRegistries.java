@@ -60,6 +60,7 @@ public final class ClayiumRegistries {
         EnvironmentMachineRegistration.COBBLESTONE_GENERATORS.size();
         EnvironmentMachineRegistration.SALT_EXTRACTORS.size();
         EnvironmentMachineRegistration.QUARTZ_CRUCIBLE.getId();
+        TradeRegistration.AUTO_TRADER.getId();
         GadgetRegistration.ALL.size();
         WeaponRegistration.ALL.size();
         WorldgenRegistration.BLOCKS.size();

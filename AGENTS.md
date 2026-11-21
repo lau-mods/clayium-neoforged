@@ -295,6 +295,14 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 搬送は SIMULATE 後に実行し、実行時に受入量が減った差分は永続保留タンクへ格納して次 tick 以降に先に再送する。差分全量を保留できない搬送は開始しない。Capability 経由で同 tick に受け渡された装置はその tick の自動搬送を行わず、面が `BOTH` の場合も同じ面へ同 tick に往復させない。5容量のカプセル Item・レシピ・設定・流体 ID 表は追加しない。GameTest は `FluidTransportGameTests`、外観 E2E は `tests/e2e/fluid-transport.mjs`。
 
+## M26 自動取引装置
+
+`TradeRegistration` は原作キー `tile.blockAutoTrader.name` の `clayium:auto_trader` を同名 Block/Item/BlockEntity/Menu に登録する。Tier 8 は原作の自動取引装置の段階に対応し、取引1回の消費は `ClayiumRecipeEnergy.e(1.0, 8)` 内部CE。装置から x/z ±1、上方 y+1～y+4 の生存 `Merchant` を探索し、取引中の商人は使用しない。
+
+検証順は商人の存在、取引中ロック、選択オファーの存在、在庫切れ、出力空き、必要材料、CE とする。要求数は現行割引を反映した `getCostA`/`getCostB` を使い、確定時に `notifyTrade` で商人の取引回数と経験値を更新する。失敗時は在庫、CE、取引回数を変更しない。スロットは入力A 0、入力B 1、出力 2、燃料 3。上面と水平面は入力、下面は出力。保存NBTは `inventory`、`energy`、`selected_offer`、`state`。
+
+`clayium:trade_select` Payload は開いているメニュー、位置、距離、選択番号をサーバーで検証する。GUI の取引一覧、選択、現在価格、CE は `clayium:trade_snapshot` で同期する。GameTest は `selectedTradeUsesDiscountedCostsCeOutputUsesAndVillagerExperience` と `failedConditionsAreAtomicAndSelectionPayloadIsServerValidated`、画面 E2E は `tests/e2e/auto-trader.mjs`。
+
 ## M27 基本採掘機・右クリック代行機
 
 `MinerRegistration` は原作キー `tile.blockMiner.name` と `tile.blockActivator.name` を Tier 6 の同名 Block/Item `block_breaker` と `activator` に登録する。両方が `clayium:basic_block_operation` BlockEntity を使用する。入力はスロット0、出力は1～9で、20 tick ごとに正面の対象を操作する。保存 NBT は `inventory`、`owner`、`operation_tick`。

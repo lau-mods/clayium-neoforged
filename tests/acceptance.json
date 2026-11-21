@@ -547,6 +547,18 @@
       "name": "supplieditemsarecefuelwithoutfeorsurvivalrecipe"
     },
     {
+      "acId": "AC-F026-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "selectedtradeusesdiscountedcostsceoutputusesandvillagerexperience"
+    },
+    {
+      "acId": "AC-F026-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "failedconditionsareatomicandselectionpayloadisservervalidated"
+    },
+    {
       "acId": "AC-F025-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -673,6 +685,10 @@
     {
       "acId": "AC-F022-003",
       "scenario": "tests/e2e/fluid-transport.mjs"
+    },
+    {
+      "acId": "AC-F026-002",
+      "scenario": "tests/e2e/auto-trader.mjs"
     },
     {
       "acId": "AC-F025-002",

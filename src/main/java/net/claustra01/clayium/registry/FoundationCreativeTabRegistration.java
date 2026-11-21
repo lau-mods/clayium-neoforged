@@ -35,6 +35,7 @@ public final class FoundationCreativeTabRegistration {
                                 StorageRegistration.ITEMS.forEach(output::accept);
                                 WaterWheelRegistration.ITEMS.forEach(output::accept);
                                 EnvironmentMachineRegistration.allItems().forEach(output::accept);
+                                output.accept(TradeRegistration.AUTO_TRADER_ITEM);
                                 GadgetRegistration.ALL.forEach(output::accept);
                                 WeaponRegistration.ALL.forEach(output::accept);
                             })

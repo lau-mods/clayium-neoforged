@@ -33,6 +33,7 @@ import net.claustra01.clayium.datagen.iface.InterfaceLanguageEntries;
 import net.claustra01.clayium.datagen.fluid.FluidLanguageEntries;
 import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
 import net.claustra01.clayium.datagen.multitrack.MultitrackLanguageEntries;
+import net.claustra01.clayium.datagen.trade.TradeLanguageEntries;
 import net.claustra01.clayium.datagen.miner.MinerLanguageEntries;
 import net.claustra01.clayium.datagen.storage.StorageLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
@@ -50,6 +51,7 @@ import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
+import net.claustra01.clayium.registry.TradeRegistration;
 import net.claustra01.clayium.registry.MinerRegistration;
 import net.claustra01.clayium.registry.StorageRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
@@ -152,6 +154,8 @@ public final class FoundationGameTests {
             expectedBlocks.add(block.getId());
             expectedItems.add(block.getId());
         });
+        expectedBlocks.add(TradeRegistration.AUTO_TRADER.getId());
+        expectedItems.add(TradeRegistration.AUTO_TRADER_ITEM.getId());
         WorldgenRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         WorldgenRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         Set<String> workbenchOriginalKeys = Set.of(
@@ -184,7 +188,8 @@ public final class FoundationGameTests {
                         ClayiumMod.id("void_container"), ClayiumMod.id("metal_chest"),
                         ClayiumMod.id("interface"),
                         ClayiumMod.id("fluid_transport"), ClayiumMod.id("creative_ce_source"),
-                        ClayiumMod.id("auto_crafter"), ClayiumMod.id("basic_block_operation"))),
+                        ClayiumMod.id("auto_crafter"), ClayiumMod.id("basic_block_operation"),
+                        TradeRegistration.BLOCK_ENTITY.getId())),
                 "Block entity registrations differ from registered blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
@@ -297,6 +302,9 @@ public final class FoundationGameTests {
             var fluidTransport = new HashMap<String, String>();
             FluidLanguageEntries.add(locale, fluidTransport::put);
             expectedKeys.addAll(fluidTransport.keySet());
+            var trade = new HashMap<String, String>();
+            TradeLanguageEntries.add(locale, trade::put);
+            expectedKeys.addAll(trade.keySet());
             var autoCrafters = new HashMap<String, String>();
             AutoCrafterLanguageEntries.add(locale, autoCrafters::put);
             expectedKeys.addAll(autoCrafters.keySet());

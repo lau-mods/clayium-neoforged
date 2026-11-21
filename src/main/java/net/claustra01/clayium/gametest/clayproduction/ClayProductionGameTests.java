@@ -51,32 +51,40 @@ public final class ClayProductionGameTests {
         oneItem.inventory().setStackInSlot(ClayProductionBlockEntity.INPUT_SLOT,
                 new ItemStack(ClayProductionRules.itemForLevel(4)));
         oneItem.receiveClayEnergy(ClayEnergy.ofInternal(100_000));
-        helper.runAfterDelay(2, () -> {
-            for (int level = 4; level <= 12; level++) {
-                ClayProductionBlockEntity machine = machines[level - 4];
-                require(machine.requiredProgress() == (level == 4 ? 16 : level == 5 ? 32 : 64),
-                        "Incorrect recipe time at level " + level);
-                require(machine.activeInputLevel() == level, "Incorrect recipe input at level " + level);
+        for (int tick = 0; tick < 64; tick++) {
+            for (ClayProductionBlockEntity machine : machines) {
+                ClayProductionBlockEntity.serverTick(helper.getLevel(), machine.getBlockPos(),
+                        machine.getBlockState(), machine);
             }
-            require(insufficient.inventory().getStackInSlot(ClayProductionBlockEntity.RESERVED_SLOT).isEmpty(),
-                    "Mk I accepted a Mk II recipe");
-            require(oneItem.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT).isEmpty(),
-                    "One item produced a nine-item compression");
-        });
-        helper.runAfterDelay(70, () -> {
-            for (int level = 4; level <= 12; level++) {
-                ClayProductionBlockEntity machine = machines[level - 4];
-                require(machine.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT)
-                        .is(ClayProductionRules.itemForLevel(level + 1)), "Wrong output at level " + level);
-                require(machine.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT).getCount() == 1,
-                        "Wrong output count at level " + level);
-                require(machine.energyStorage().stored().internalValue()
-                        == (level == 4 ? 100_000 - 16
-                                : energyPerTick[level - 4] * (64 - (level == 5 ? 32 : 64))),
-                        "Wrong CE use at level " + level);
+            ClayProductionBlockEntity.serverTick(helper.getLevel(), insufficient.getBlockPos(),
+                    insufficient.getBlockState(), insufficient);
+            ClayProductionBlockEntity.serverTick(helper.getLevel(), oneItem.getBlockPos(),
+                    oneItem.getBlockState(), oneItem);
+            if (tick == 1) {
+                for (int level = 4; level <= 12; level++) {
+                    ClayProductionBlockEntity machine = machines[level - 4];
+                    require(machine.requiredProgress() == (level == 4 ? 16 : level == 5 ? 32 : 64),
+                            "Incorrect recipe time at level " + level);
+                    require(machine.activeInputLevel() == level, "Incorrect recipe input at level " + level);
+                }
             }
-            helper.succeed();
-        });
+        }
+        require(insufficient.inventory().getStackInSlot(ClayProductionBlockEntity.RESERVED_SLOT).isEmpty(),
+                "Mk I accepted a Mk II recipe");
+        require(oneItem.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT).isEmpty(),
+                "One item produced a nine-item compression");
+        for (int level = 4; level <= 12; level++) {
+            ClayProductionBlockEntity machine = machines[level - 4];
+            require(machine.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT)
+                    .is(ClayProductionRules.itemForLevel(level + 1)), "Wrong output at level " + level);
+            require(machine.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT).getCount() == 1,
+                    "Wrong output count at level " + level);
+            require(machine.energyStorage().stored().internalValue()
+                    == (level == 4 ? 100_000 - 16
+                            : energyPerTick[level - 4] * (64 - (level == 5 ? 32 : 64))),
+                    "Wrong CE use at level " + level);
+        }
+        helper.succeed();
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID, timeoutTicks = 30)
