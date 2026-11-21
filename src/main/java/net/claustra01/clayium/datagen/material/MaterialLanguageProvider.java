@@ -25,6 +25,7 @@ import net.claustra01.clayium.datagen.iface.InterfaceLanguageEntries;
 import net.claustra01.clayium.datagen.laser.LaserLanguageEntries;
 import net.claustra01.clayium.datagen.trade.TradeLanguageEntries;
 import net.claustra01.clayium.datagen.miner.MinerLanguageEntries;
+import net.claustra01.clayium.datagen.multiblock.MultiblockLanguageEntries;
 import net.claustra01.clayium.datagen.claytree.ClayTreeLanguageEntries;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -80,6 +81,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         StorageLanguageEntries.add(locale, this::add);
         InterfaceLanguageEntries.add(locale, this::add);
         LaserLanguageEntries.add(locale, this::add);
+        MultiblockLanguageEntries.forLocale(locale).forEach(this::add);
         TradeLanguageEntries.add(locale, this::add);
         ClayTreeLanguageEntries.add(locale, this::add);
     }

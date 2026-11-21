@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.claustra01.clayium.laser.LaserBeam;
+import net.claustra01.clayium.multiblock.MultiblockStructureNotifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -74,6 +75,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         setChangedAndSync();
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
+            MultiblockStructureNotifier.componentChanged(level, worldPosition);
         }
     }
 
@@ -83,6 +85,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         setChangedAndSync();
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
+            MultiblockStructureNotifier.componentChanged(level, worldPosition);
         }
     }
 

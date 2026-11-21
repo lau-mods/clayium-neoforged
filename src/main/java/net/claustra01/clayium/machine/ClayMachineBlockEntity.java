@@ -58,7 +58,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
-public final class ClayMachineBlockEntity extends BlockEntity
+public class ClayMachineBlockEntity extends BlockEntity
         implements MenuProvider, RedstoneControlReceiver {
 
     private static final List<WeakReference<ClayMachineBlockEntity>> LOADED_MACHINES = new ArrayList<>();
@@ -109,7 +109,14 @@ public final class ClayMachineBlockEntity extends BlockEntity
     private long lastRemoteRedstoneTick = Long.MIN_VALUE;
 
     public ClayMachineBlockEntity(BlockPos pos, BlockState state) {
-        super(MachineRegistration.MACHINE_BLOCK_ENTITY.get(), pos, state);
+        this(MachineRegistration.MACHINE_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    protected ClayMachineBlockEntity(
+            net.minecraft.world.level.block.entity.BlockEntityType<?> type,
+            BlockPos pos,
+            BlockState state) {
+        super(type, pos, state);
         MachineSeries series = ((ClayMachineBlock)state.getBlock()).series();
         inputSlots = series.inputSlots();
         outputSlots = series.outputSlots();
@@ -196,7 +203,7 @@ public final class ClayMachineBlockEntity extends BlockEntity
             setState(MachineState.OUTPUT_FULL);
             return;
         }
-        double nextRemainder = progressRemainder + progressPerTick;
+        double nextRemainder = progressRemainder + progressPerTick * processingProgressMultiplier();
         long completedProgress = Math.min(requiredProgress - progress, Math.max(1L, (long)Math.floor(nextRemainder)));
         if (!consumeProcessingEnergy(completedProgress)) {
             setState(MachineState.WAITING_FOR_ENERGY);
@@ -621,7 +628,7 @@ public final class ClayMachineBlockEntity extends BlockEntity
                 && reservedFluid.getFluidAmount() == requiredAmount;
     }
 
-    private void abortProcess() {
+    protected void abortProcess() {
         activeRecipe = null;
         activeRecipeValue = null;
         activeVanillaSmeltingRecipe = false;
@@ -709,6 +716,10 @@ public final class ClayMachineBlockEntity extends BlockEntity
     }
 
     public double overclockFactor() {
+        return 1.0D;
+    }
+
+    protected double processingProgressMultiplier() {
         return 1.0D;
     }
 
@@ -942,7 +953,7 @@ public final class ClayMachineBlockEntity extends BlockEntity
         return saveWithoutMetadata(registries);
     }
 
-    private void setState(MachineState newState) {
+    protected void setState(MachineState newState) {
         if (state != newState) {
             state = newState;
             setChanged();

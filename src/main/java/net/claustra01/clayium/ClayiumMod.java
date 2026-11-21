@@ -11,6 +11,7 @@ import net.claustra01.clayium.machine.iface.InterfaceCapabilities;
 import net.claustra01.clayium.machine.trade.TradeCapabilities;
 import net.claustra01.clayium.machine.trade.TradeSelectPayload;
 import net.claustra01.clayium.machine.trade.TradeSnapshotPayload;
+import net.claustra01.clayium.multiblock.MultiblockCapabilities;
 import net.claustra01.clayium.machine.miner.MinerCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.logistics.BufferControlPayload;
@@ -43,6 +44,9 @@ public final class ClayiumMod {
         modEventBus.addListener(StorageCapabilities::register);
         modEventBus.addListener(InterfaceCapabilities::register);
         modEventBus.addListener(net.claustra01.clayium.laser.LaserCapabilities::register);
+        modEventBus.addListener(MultiblockCapabilities::register);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(
+                net.claustra01.clayium.multiblock.MultiblockStructureNotifier::onNeighborNotify);
         modEventBus.addListener(ClayTreeCapabilities::register);
         modEventBus.addListener(TradeCapabilities::register);
         modEventBus.addListener(MinerCapabilities::register);

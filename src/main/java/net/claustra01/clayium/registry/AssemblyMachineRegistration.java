@@ -57,6 +57,9 @@ public final class AssemblyMachineRegistration {
                 new HullDefinition(4, "basic_machine_hull"),
                 new HullDefinition(5, "advanced_machine_hull"),
                 new HullDefinition(6, "precision_machine_hull"),
+                new HullDefinition(7, "clay_steel_machine_hull"),
+                new HullDefinition(8, "clayium_machine_hull"),
+                new HullDefinition(9, "ultimate_machine_hull"),
                 new HullDefinition(10, "antimatter_machine_hull"))) {
             DeferredBlock<Block> block = ClayiumRegistries.BLOCKS.registerSimpleBlock(
                     definition.id(),

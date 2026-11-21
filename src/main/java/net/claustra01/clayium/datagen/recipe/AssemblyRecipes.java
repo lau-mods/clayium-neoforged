@@ -150,6 +150,9 @@ public final class AssemblyRecipes {
                         material("large_impure_silicon_plate")))
                 .save(output, ClayiumMod.id("machine_hull/tier_5"));
         hull(output, 6, material("large_aluminium_plate"), component("precision_circuit"), true);
+        hull(output, 7, material("large_clay_steel_plate"), component("integrated_circuit"), true);
+        hull(output, 8, material("large_clayium_plate"), component("clay_core"), true);
+        hull(output, 9, material("large_ultimate_alloy_plate"), component("clay_brain"), true);
         hull(output, 10, material("large_antimatter_plate"), component("clay_spirit"), true);
     }
 

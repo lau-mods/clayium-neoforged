@@ -611,6 +611,42 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "plantedtreegrowthdropsandoriginalprocessingroutearecomplete"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnacerejectsmissinglowtierandmisplacedinterfaces"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnaceprocessesonlythroughitssynchronizedinterface"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnacestartsadvancedclaysteelrecipe"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnacestartsoriginaldustsmeltingrecipe"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyshellchangeinvalidatesthecachedstructure"
+    },
+    {
+      "acId": "AC-F032-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactorlaseracceleratesandstructuredamagestopsprocessing"
     }
   ],
   "e2e": [
@@ -741,6 +777,10 @@
     {
       "acId": "AC-F031-002",
       "scenario": "tests/e2e/clay-tree.mjs"
+    },
+    {
+      "acId": "AC-F032-002",
+      "scenario": "tests/e2e/clay-multiblocks.mjs"
     }
   ]
 }

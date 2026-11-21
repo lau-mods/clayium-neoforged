@@ -10,6 +10,7 @@ import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.registry.WaterWheelRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
+import net.claustra01.clayium.registry.MultiblockRegistration;
 import net.claustra01.clayium.registry.ClayTreeRegistration;
 import net.claustra01.clayium.world.claytree.ClayTreeLaserConversion;
 import net.minecraft.core.HolderLookup;
@@ -47,6 +48,8 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
                 .map(block -> block.get()).toArray(Block[]::new));
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(AutoCrafterRegistration.BLOCKS.stream()
                 .map(block -> block.get()).toArray(Block[]::new));
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(MultiblockRegistration.CONTROLLERS.values().stream()
+                .map(block -> (Block)block.get()).toArray(Block[]::new));
         MaterialRegistration.MATERIAL_OWNED_BLOCKS.forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
         tag(BlockTags.NEEDS_STONE_TOOL).add(
                 WorldgenRegistration.CLAY_ORE.get(),

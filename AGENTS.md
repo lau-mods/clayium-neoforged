@@ -327,3 +327,23 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 `clay_3x3_chunk_loader` は Tier 6 の同名 Block/Item と `clayium:chunk_loader` BlockEntity/Menu を使う。NeoForge `TicketController` の所有者は装置の BlockPos で、中心チャンクから X/Z 各±1の ticking ticket 9件だけを取得する。9件の途中で拒否された場合は取得済み分を戻し、`ticket_status=unavailable` を保存してGUIへ稼働不可を表示する。
 
 撤去時は9件を明示解放する。次元アンロード時の実行中 ticket は NeoForge の dimension lifecycle に委ね、永続 ticket はサーバー再起動時の `LoadingValidationCallback` で検証する。正しい位置に装置があり、ticking 9件が正確な3×3で、non-ticking ticket がない所有者だけを復元する。不正な範囲、不正な種別、装置がない所有者、Entity所有 ticket は孤児として削除する。GameTest は `loadsExactlyNineTickingChunks` と `ticketsReleaseAndRestartValidationRemovesOrphans`、外観 E2E は `tests/e2e/chunk-loader.mjs`。GameTest は level の live ticket を解放して次元アンロードを模擬し、保存済み ticket だけから再取得することで再起動時の検証を行う。実際の次元アンロードでは NeoForge がその ServerLevel の live ticket を破棄する。NeoForge 21.1 の TicketController は上限での拒否を返さず、false は同一所有者の重複 ticket を示すため、拒否表示は E2E で保存状態を用いて確認する。
+
+## M33 粘土高炉・粘土反応炉
+
+`clay_blast_furnace` と `clay_reactor` は制御 Block/Item、`clayium:multiblock_controller` は共通 BlockEntity。Tier 7～9 の `clay_steel_machine_hull`、`clayium_machine_hull`、`ultimate_machine_hull` は `AssemblyMachineRegistration.MACHINE_HULLS` に置く。Tier 3～6、10 の既存筐体も同じ登録表から参照する。
+
+構造は制御ブロックを前面中央に置いた中空3×3×3。中心は空気、背面中央は同期済みアイテムインターフェース、上面中央は同期済み赤石インターフェース、反応炉のみ下面中央は同期済みレーザーインターフェースとする。ほかの外殻は筐体。高炉は各部材 Tier 6 以上、反応炉は Tier 7 以上とし、構造 Tier は全構成部材の最低 Tier。ブロック変更とインターフェース同期変更時に再判定し、結果をキャッシュする。制御ブロックの `FORMED` BlockState と BlockEntity NBT の `formed`、`structure_tier` を保存・同期する。構造破損時には予約入力を戻して処理を止める。
+
+原作 hotfix2 JAR の `mods.clayium.util.crafting.CRecipes.recipeBlastFurnace` にある合金レシピは次の3件。CEは内部値で、括弧内の `e(値,Tier)` は原作 `CRecipes.e` と同値。
+
+| ID (`blast_furnace/` 以下) | 入力 | 出力 | Tier | CE | tick |
+|---|---|---|---:|---:|---:|
+| `clay_steel_impure_manganese` | 工業用粘土粉2、不純マンガン粉1 | 粘土鋼インゴット2 | 6 | 50,000 (`e(5,6)`) | 200 |
+| `clay_steel_advanced` | 発展工業用粘土粉1、不純マンガン粉1 | 粘土鋼インゴット1 | 7 | 500,000 (`e(5,7)`) | 5 |
+| `clay_steel_manganese` | 発展工業用粘土粉1、マンガン粉1 | 粘土鋼インゴット1 | 8 | 5,000,000 (`e(5,8)`) | 1 |
+
+粉→インゴットの高温処理も同じ原作 `recipeBlastFurnace` から生成する。カルシウム・カリウムは Tier 5 / 1,000 CE内部値 (`e(1,5)`) / 500 tick、ベリリウム・ハフニウム・粘土鋼・鋼は Tier 6 / 10,000 CE内部値 (`e(1,6)`) / 500 tick、マンガン・ストロンチウム・バリウム・クレイウムは Tier 7 / 200,000 CE内部値 (`e(2,7)`) / 1,000 tick、チタン・究極合金は Tier 8 / 4,000,000 CE内部値 (`e(4,8)`) / 2,000 tick、クロムは Tier 9 / 40,000,000 CE内部値 (`e(4,9)`) / 2,000 tick。ID は `blast_furnace/<素材名>`。鉄インゴット1と石炭2→鋼インゴット1は `blast_furnace/steel_from_iron`、Tier 6 / 10,000 CE内部値 (`e(1,6)`) / 500 tick。外部 Mod 固有の原作レシピと既定無効の HardcoreOsmium 分岐は初期登録から除外する。
+
+`machine_hull/tier_7..9` は原作 `CRecipes` の大板、回路または Clay Core/Brain、Clay Energy Excitor の格子で生成する。`multiblock/clay_blast_furnace` は必要組立機 Tier 4、120 tick、`e(1,6)`。`multiblock/clay_reactor` は必要組立機 Tier 6、1,200 tick、`e(1,7)`。反応炉のレーザー加速は原作 `mods.clayium.block.tile.TileClayReactor.proceedCraft` に従い、照射された `ClayLaser.getEnergy()` を `long` へ切り捨て、その tick の通常進捗1に加算する。任意の倍率上限を設けない。
+
+GameTest は `blastFurnaceRejectsMissingLowTierAndMisplacedInterfaces`、`blastFurnaceProcessesOnlyThroughItsSynchronizedInterface`、`blastFurnaceStartsAdvancedClaySteelRecipe`、`blastFurnaceStartsOriginalDustSmeltingRecipe`、`everyShellChangeInvalidatesTheCachedStructure`、`reactorLaserAcceleratesAndStructureDamageStopsProcessing`。外観 E2E は `tests/e2e/clay-multiblocks.mjs`。

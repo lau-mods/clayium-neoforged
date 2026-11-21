@@ -81,6 +81,8 @@
     "clayium:auto_crafter_tier_7",
     "clayium:auto_crafter_tier_8",
     "clayium:auto_crafter_tier_9",
+    "clayium:clay_blast_furnace",
+    "clayium:clay_reactor",
     "clayium:industrial_clay",
     "clayium:advanced_industrial_clay",
     "clayium:energetic_clay",

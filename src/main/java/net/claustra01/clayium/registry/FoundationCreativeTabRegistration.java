@@ -28,6 +28,7 @@ public final class FoundationCreativeTabRegistration {
                                 InterfaceRegistration.ITEMS.forEach(output::accept);
                                 output.accept(InterfaceRegistration.SYNCHRONIZER);
                                 LaserRegistration.items().forEach(output::accept);
+                                MultiblockRegistration.ITEMS.forEach(output::accept);
                                 ClayTreeRegistration.ITEMS.forEach(output::accept);
                                 FluidRegistration.ITEMS.forEach(output::accept);
                                 output.accept(FluidRegistration.FLUID_FILTER);

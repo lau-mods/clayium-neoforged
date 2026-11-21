@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 200000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:strontium_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:strontium_ingot"
+    }
+  ],
+  "processing_method": "clayium:blast_furnace",
+  "processing_ticks": 1000,
+  "required_tier": 7
+}
