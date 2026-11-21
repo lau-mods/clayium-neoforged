@@ -295,6 +295,13 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 搬送は SIMULATE 後に実行し、実行時に受入量が減った差分は永続保留タンクへ格納して次 tick 以降に先に再送する。差分全量を保留できない搬送は開始しない。Capability 経由で同 tick に受け渡された装置はその tick の自動搬送を行わず、面が `BOTH` の場合も同じ面へ同 tick に往復させない。5容量のカプセル Item・レシピ・設定・流体 ID 表は追加しない。GameTest は `FluidTransportGameTests`、外観 E2E は `tests/e2e/fluid-transport.mjs`。
 
+## M29 色別粘土レーザー
+
+- `ClayEnergyLaser` は `clay_energy_laser_tier_7`～`10` の同名 Block/Item と共通 BlockEntity `clayium:clay_energy_laser` に登録する。Tier 7/8/9/10 は青/緑/赤/白、消費は毎 tick 0.4/4/40/400 CE、成分は `[1,0,0]`/`[0,1,0]`/`[0,0,1]`/`[3,3,3]`。`laser_reflector` は同名 Block/Item と BlockEntity `clayium:laser_reflector` を使う。
+- 光路は最大32ブロックで、ブロック変化時と10 tick ごとに再計算する。反射器は受信したビームの age を増やして同一 tick のビームを合成し、次の tick に一度転送する。age 10以上は成分ごとの最大値で合成し、それ未満は加算する。`LaserBeam.energy()` は原作の色別減衰式の積から1を引く。`LaserReceiver` はビームと age を受け渡し、レーザーインターフェースが同期先へ中継する。
+- 赤石入力中は停止する。COMMON Config の `InvertClayLaserRSCondition` が true のときは停止条件を反転する。レーザーの保存 NBT は `inventory` と `energy`。照射状態、長さ、反射ビームは表示同期だけに使う。
+- GameTest は `fourLasersConsumeMergeReflectAndHonorRedstone`。描画 E2E は `tests/e2e/clay-lasers.mjs`。
+
 ## M26 自動取引装置
 
 `TradeRegistration` は原作キー `tile.blockAutoTrader.name` の `clayium:auto_trader` を同名 Block/Item/BlockEntity/Menu に登録する。Tier 8 は原作の自動取引装置の段階に対応し、取引1回の消費は `ClayiumRecipeEnergy.e(1.0, 8)` 内部CE。装置から x/z ±1、上方 y+1～y+4 の生存 `Merchant` を探索し、取引中の商人は使用しない。

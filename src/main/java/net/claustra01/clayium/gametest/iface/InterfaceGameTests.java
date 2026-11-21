@@ -137,14 +137,14 @@ public final class InterfaceGameTests {
         helper.setBlock(otherLaserTarget, Blocks.CHEST);
         long[] received = {0L, 0L, 0L};
         long[] otherReceived = {0L, 0L, 0L};
-        LASER_RECEIVERS.put(helper.absolutePos(laserTarget), (blue, green, red) -> {
-            received[0] += blue;
-            received[1] += green;
-            received[2] += red;
+        LASER_RECEIVERS.put(helper.absolutePos(laserTarget), (beam) -> {
+            received[0] += beam.blue();
+            received[1] += beam.green();
+            received[2] += beam.red();
             return true;
         });
-        LASER_RECEIVERS.put(helper.absolutePos(otherLaserTarget), (blue, green, red) -> {
-            otherReceived[0] += blue;
+        LASER_RECEIVERS.put(helper.absolutePos(otherLaserTarget), (beam) -> {
+            otherReceived[0] += beam.blue();
             return true;
         });
         helper.getLevel().invalidateCapabilities(helper.absolutePos(laserTarget));

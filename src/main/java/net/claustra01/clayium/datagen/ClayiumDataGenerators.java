@@ -34,6 +34,8 @@ import net.claustra01.clayium.datagen.logistics.LogisticsBlockStateProvider;
 import net.claustra01.clayium.datagen.logistics.LogisticsItemModelProvider;
 import net.claustra01.clayium.datagen.iface.InterfaceBlockLoot;
 import net.claustra01.clayium.datagen.iface.InterfaceBlockStateProvider;
+import net.claustra01.clayium.datagen.laser.LaserBlockLoot;
+import net.claustra01.clayium.datagen.laser.LaserBlockStateProvider;
 import net.claustra01.clayium.datagen.iface.InterfaceItemModelProvider;
 import net.claustra01.clayium.datagen.multitrack.MultitrackBlockLoot;
 import net.claustra01.clayium.datagen.multitrack.MultitrackBlockStateProvider;
@@ -77,6 +79,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new ClayProductionBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new LogisticsBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new InterfaceBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new LaserBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new CreativeSourceBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MultitrackBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new StorageBlockStateProvider(output, event.getExistingFileHelper()));
@@ -131,6 +134,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(ClayProductionBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(LogisticsBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(InterfaceBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(LaserBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(CreativeSourceBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MultitrackBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(StorageBlockLoot::new, LootContextParamSets.BLOCK),

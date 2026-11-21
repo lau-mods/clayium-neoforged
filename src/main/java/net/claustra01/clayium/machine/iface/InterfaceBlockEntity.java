@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.InterfaceRegistration;
+import net.claustra01.clayium.laser.LaserBeam;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -133,14 +134,14 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
-    public boolean receiveLaser(long blue, long green, long red) {
-        if (interfaceType() != InterfaceType.LASER || blue < 0L || green < 0L || red < 0L) {
+    public boolean receiveLaser(LaserBeam beam) {
+        if (interfaceType() != InterfaceType.LASER) {
             return false;
         }
         return resolveTarget().map(target -> {
             LaserReceiver receiver = target.getLevel().getCapability(
                     InterfaceCapabilities.LASER_RECEIVER, target.getBlockPos(), null);
-            return receiver != null && receiver.receiveLaser(blue, green, red);
+            return receiver != null && receiver.receiveLaser(beam);
         }).orElse(false);
     }
 

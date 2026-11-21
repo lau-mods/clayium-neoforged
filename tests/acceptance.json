@@ -577,6 +577,18 @@
       "name": "vanillaremainingitemsanddamagedrecipescommitexactlyonce"
     },
     {
+      "acId": "AC-F030-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fourlasersconsumemergereflectandhonorredstone"
+    },
+    {
+      "acId": "AC-F030-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reflectorstopsattargetwhenemitterticksfirst"
+    },
+    {
       "acId": "AC-F029-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -705,6 +717,10 @@
     {
       "acId": "AC-F025-002",
       "scenario": "tests/e2e/auto-crafters.mjs"
+    },
+    {
+      "acId": "AC-F030-002",
+      "scenario": "tests/e2e/clay-lasers.mjs"
     },
     {
       "acId": "AC-F029-001",

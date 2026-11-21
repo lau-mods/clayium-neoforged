@@ -1,0 +1,42 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#reflector"
+        },
+        "east": {
+          "texture": "#reflector"
+        },
+        "north": {
+          "texture": "#reflector"
+        },
+        "south": {
+          "texture": "#reflector"
+        },
+        "up": {
+          "texture": "#reflector"
+        },
+        "west": {
+          "texture": "#reflector"
+        }
+      },
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        14,
+        12
+      ]
+    }
+  ],
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "particle": "#reflector",
+    "reflector": "clayium:block/laserreflector"
+  }
+}

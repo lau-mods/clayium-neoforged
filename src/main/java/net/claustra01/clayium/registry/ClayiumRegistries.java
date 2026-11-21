@@ -48,6 +48,8 @@ public final class ClayiumRegistries {
         EnergyConverterRegistration.CONVERTERS.size();
         InterfaceRegistration.INTERFACES.size();
         InterfaceRegistration.SYNCHRONIZER.getId();
+        LaserRegistration.LASERS.size();
+        LaserRegistration.LASER_REFLECTOR.getId();
         FluidRegistration.MACHINES.size();
         MachineRegistration.MACHINES.size();
         ClayProductionRegistration.BLOCKS.size();

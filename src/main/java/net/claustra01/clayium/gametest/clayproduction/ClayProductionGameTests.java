@@ -23,7 +23,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 @GameTestHolder(ClayiumMod.MOD_ID)
 @PrefixGameTestTemplate(false)
 public final class ClayProductionGameTests {
-    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID, timeoutTicks = 120)
+    @GameTest(template = "empty", batch = "clayium_production_energy", timeoutTicks = 120)
     public static void condensersRequireNineItemsAndPreserveOriginalTiersAndTimes(GameTestHelper helper) {
         ClayProductionBlockEntity[] machines = new ClayProductionBlockEntity[9];
         long[] energyPerTick = {1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000};

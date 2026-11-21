@@ -218,10 +218,10 @@ block	tile.blockCAReactorHull.9.name	ca_reactor_hull_rank_10
 block	tile.blockEnergeticClayDecomposer.name	energetic_clay_decomposer
 block	tile.blockClayWaterWheel.name	clay_water_wheel
 block	tile.blockDenseClayWaterWheel.name	dense_clay_water_wheel
-block	tile.blockClaySteelClayEnergyLaser.name	blue_clay_laser
-block	tile.blockClayiumClayEnergyLaser.name	green_clay_laser
-block	tile.blockUltimateClayEnergyLaser.name	red_clay_laser
-block	tile.blockAntimatterClayEnergyLaser.name	white_clay_laser
+block	tile.blockClaySteelClayEnergyLaser.name	clay_energy_laser_tier_7
+block	tile.blockClayiumClayEnergyLaser.name	clay_energy_laser_tier_8
+block	tile.blockUltimateClayEnergyLaser.name	clay_energy_laser_tier_9
+block	tile.blockAntimatterClayEnergyLaser.name	clay_energy_laser_tier_10
 block	tile.blockLaserReflector.name	laser_reflector
 block	tile.blockClayTreeSapling.name	clay_tree_sapling
 block	tile.blockClayTreeLog.name	clay_tree_log

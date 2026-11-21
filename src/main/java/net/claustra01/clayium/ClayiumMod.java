@@ -20,14 +20,17 @@ import net.claustra01.clayium.storage.StorageCapabilities;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderTicketService;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 
 @Mod(ClayiumMod.MOD_ID)
 public final class ClayiumMod {
     public static final String MOD_ID = "clayium";
 
-    public ClayiumMod(IEventBus modEventBus) {
+    public ClayiumMod(IEventBus modEventBus, ModContainer modContainer) {
         ClayiumRegistries.register(modEventBus);
+        modContainer.registerConfig(ModConfig.Type.COMMON, ClayiumConfig.SPEC);
         modEventBus.addListener(ChunkLoaderTicketService::register);
         modEventBus.addListener(ClayiumDataGenerators::gatherData);
         modEventBus.addListener(MachineCapabilities::register);
@@ -38,6 +41,7 @@ public final class ClayiumMod {
         modEventBus.addListener(LogisticsCapabilities::register);
         modEventBus.addListener(StorageCapabilities::register);
         modEventBus.addListener(InterfaceCapabilities::register);
+        modEventBus.addListener(net.claustra01.clayium.laser.LaserCapabilities::register);
         modEventBus.addListener(TradeCapabilities::register);
         modEventBus.addListener(MinerCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
@@ -45,6 +49,7 @@ public final class ClayiumMod {
             modEventBus.addListener(net.claustra01.clayium.gametest.logistics.LogisticsGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.energyconverter.EnergyConverterGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.fluid.FluidTransportGameTests::registerTestCapability);
+            modEventBus.addListener(net.claustra01.clayium.gametest.laser.LaserGameTests::registerTestCapability);
         }
         modEventBus.addListener(MachineFaceModePayload::register);
         modEventBus.addListener(BufferControlPayload::register);
