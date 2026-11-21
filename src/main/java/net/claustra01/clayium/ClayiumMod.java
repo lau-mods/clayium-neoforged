@@ -19,6 +19,7 @@ import net.claustra01.clayium.logistics.LogisticsCapabilities;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.storage.StorageCapabilities;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderTicketService;
+import net.claustra01.clayium.world.area.AreaCapabilities;
 import net.claustra01.clayium.world.claytree.ClayTreeCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -50,6 +51,7 @@ public final class ClayiumMod {
         modEventBus.addListener(ClayTreeCapabilities::register);
         modEventBus.addListener(TradeCapabilities::register);
         modEventBus.addListener(MinerCapabilities::register);
+        modEventBus.addListener(AreaCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
             modEventBus.addListener(net.claustra01.clayium.gametest.iface.InterfaceGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.logistics.LogisticsGameTests::registerTestCapability);

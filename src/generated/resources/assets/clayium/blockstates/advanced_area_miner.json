@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/advanced_area_miner",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/advanced_area_miner"
+    },
+    "facing=south": {
+      "model": "clayium:block/advanced_area_miner",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/advanced_area_miner",
+      "y": 270
+    }
+  }
+}

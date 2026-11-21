@@ -601,6 +601,18 @@
       "name": "ticketsreleaseandrestartvalidationremovesorphans"
     },
     {
+      "acId": "AC-F028-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "markerheightexpansionusesworldboundsandneverscansoutside"
+    },
+    {
+      "acId": "AC-F028-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "areamachinespreservecountsprotectiontierspeedandlaseracceleration"
+    },
+    {
       "acId": "AC-F031-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -773,6 +785,10 @@
     {
       "acId": "AC-F029-001",
       "scenario": "tests/e2e/chunk-loader.mjs"
+    },
+    {
+      "acId": "AC-F028-003",
+      "scenario": "tests/e2e/area-machines.mjs"
     },
     {
       "acId": "AC-F031-002",

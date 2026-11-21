@@ -27,6 +27,7 @@ import net.claustra01.clayium.datagen.autocrafter.AutoCrafterLanguageEntries;
 import net.claustra01.clayium.datagen.environment.EnvironmentLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
 import net.claustra01.clayium.datagen.chunkloader.ChunkLoaderLanguageEntries;
+import net.claustra01.clayium.datagen.area.AreaLanguageEntries;
 import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
@@ -49,6 +50,7 @@ import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.ClayProductionRegistration;
 import net.claustra01.clayium.registry.ClayTreeRegistration;
 import net.claustra01.clayium.registry.ChunkLoaderRegistration;
+import net.claustra01.clayium.registry.AreaMachineRegistration;
 import net.claustra01.clayium.registry.CreativeSourceRegistration;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
 import net.claustra01.clayium.registry.InterfaceRegistration;
@@ -121,6 +123,8 @@ public final class FoundationGameTests {
         AutoCrafterRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         MinerRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         MinerRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
+        AreaMachineRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        AreaMachineRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         expectedBlocks.add(ChunkLoaderRegistration.CHUNK_LOADER.getId());
         expectedItems.add(ChunkLoaderRegistration.CHUNK_LOADER_ITEM.getId());
         EnergyConverterRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
@@ -206,6 +210,7 @@ public final class FoundationGameTests {
                         ClayiumMod.id("interface"),
                         ClayiumMod.id("fluid_transport"), ClayiumMod.id("creative_ce_source"),
                         ClayiumMod.id("auto_crafter"), ClayiumMod.id("basic_block_operation"),
+                        ClayiumMod.id("area_marker"), ClayiumMod.id("area_machine"),
                         ClayiumMod.id("clay_energy_laser"), ClayiumMod.id("laser_reflector"),
                         ClayiumMod.id("chunk_loader"), ClayiumMod.id("multiblock_controller"),
                         TradeRegistration.BLOCK_ENTITY.getId())),
@@ -333,6 +338,9 @@ public final class FoundationGameTests {
             var miners = new HashMap<String, String>();
             MinerLanguageEntries.add(locale, miners::put);
             expectedKeys.addAll(miners.keySet());
+            var area = new HashMap<String, String>();
+            AreaLanguageEntries.add(locale, area::put);
+            expectedKeys.addAll(area.keySet());
             var chunkLoader = new HashMap<String, String>();
             ChunkLoaderLanguageEntries.add(locale, chunkLoader::put);
             expectedKeys.addAll(chunkLoader.keySet());

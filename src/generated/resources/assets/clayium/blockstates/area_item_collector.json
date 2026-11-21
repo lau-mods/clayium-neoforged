@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/area_item_collector",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/area_item_collector"
+    },
+    "facing=south": {
+      "model": "clayium:block/area_item_collector",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/area_item_collector",
+      "y": 270
+    }
+  }
+}

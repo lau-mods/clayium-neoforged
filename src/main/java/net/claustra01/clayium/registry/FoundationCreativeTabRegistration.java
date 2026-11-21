@@ -23,6 +23,7 @@ public final class FoundationCreativeTabRegistration {
                                 AssemblyMachineRegistration.ITEMS.forEach(output::accept);
                                 AutoCrafterRegistration.ITEMS.forEach(output::accept);
                                 MinerRegistration.ITEMS.forEach(output::accept);
+                                AreaMachineRegistration.ITEMS.forEach(output::accept);
                                 output.accept(ChunkLoaderRegistration.CHUNK_LOADER_ITEM);
                                 EnergyConverterRegistration.ITEMS.forEach(output::accept);
                                 InterfaceRegistration.ITEMS.forEach(output::accept);

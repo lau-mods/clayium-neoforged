@@ -328,6 +328,13 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 撤去時は9件を明示解放する。次元アンロード時の実行中 ticket は NeoForge の dimension lifecycle に委ね、永続 ticket はサーバー再起動時の `LoadingValidationCallback` で検証する。正しい位置に装置があり、ticking 9件が正確な3×3で、non-ticking ticket がない所有者だけを復元する。不正な範囲、不正な種別、装置がない所有者、Entity所有 ticket は孤児として削除する。GameTest は `loadsExactlyNineTickingChunks` と `ticketsReleaseAndRestartValidationRemovesOrphans`、外観 E2E は `tests/e2e/chunk-loader.mjs`。GameTest は level の live ticket を解放して次元アンロードを模擬し、保存済み ticket だけから再取得することで再起動時の検証を行う。実際の次元アンロードでは NeoForge がその ServerLevel の live ticket を破棄する。NeoForge 21.1 の TicketController は上限での拒否を返さず、false は同一所有者の重複 ticket を示すため、拒否表示は E2E で保存状態を用いて確認する。
 
+## M30 マーカーと範囲装置
+
+`clay_marker`、`clay_marker_open_pit`、`clay_marker_ground_leveling`、`clay_marker_prism` は共通の `clayium:area_marker` BlockEntity を使う。通常は選択したYを維持し、露天掘は下限、整地は上限、角柱は上下限を対象 Level の `getMinBuildHeight()` と `getMaxBuildHeight()-1` まで広げる。選択範囲は両端を含み、x→z→yの順次カーソルで走査する。マーカー保存NBTは `second_corner` と `owner`。同じ次元で同種・同一所有者の2点を順に右クリックすると対角を選ぶ。各軸64ブロック以内とし、64は原作 `TileClayMarker.maxRange` に由来する。最後に選んだマーカーを範囲装置へ右クリックで適用すると選択記憶を消去し、選択が無ければ装置のGUIを開く。
+
+`area_item_collector` Tier 7、`area_miner` Tier 8、`advanced_area_miner` Tier 9、`area_replacer` Tier 10、`area_activator` Tier 8 は共通の `clayium:area_machine` BlockEntity とMenuを使う。スロット0は工具・使用品・置換材、1はM10の統合 ItemFilter、2～10は出力、11はCE燃料。M27の `BlockOperationService` で権限、保護イベント、LootTable、幸運・シルクタッチ、右クリックを処理し、未ロードチャンクや記録次元外を操作しない。保存NBTは `inventory`、`energy`、`progress`、`area_min`、`area_max`、`cursor`、`target_dimension`、`owner`、`status`。未ロード、保護、出力満杯、置換材不足では現在座標を維持し、状態を `UNLOADED`、`PROTECTED`、`OUTPUT_FULL`、`NO_MATERIAL` とする。所有者・次元・CE不足は `NO_OWNER`、`WRONG_DIMENSION`、`NO_ENERGY`。正常な再試行で状態を解除する。
+
+原作 hotfix2 JAR の `TileAreaMiner` は進捗100/tick、400/採掘作業、内部CE1000/tick、`TileAreaCollector` は進捗100/tick、10/収集作業、内部CE100/tick。Tier 8と9の採掘機でこの基本値は同じである。両クラスのレーザー倍率は `1+4*log10(1+floor(laserEnergy)/1000)`、CEと進捗の双方に乗じる。5機種ともM29の `LaserReceiver` Capabilityを受け、レーザーは次tickに適用する。マーカーと装置の BlockEntityRenderer は選択枠を描画し、原作PNGを参照する。GameTest は `markerHeightExpansionUsesWorldBoundsAndNeverScansOutside` と `areaMachinesPreserveCountsProtectionTierSpeedAndLaserAcceleration`、E2E は `tests/e2e/area-machines.mjs`。
 ## M33 粘土高炉・粘土反応炉
 
 `clay_blast_furnace` と `clay_reactor` は制御 Block/Item、`clayium:multiblock_controller` は共通 BlockEntity。Tier 7～9 の `clay_steel_machine_hull`、`clayium_machine_hull`、`ultimate_machine_hull` は `AssemblyMachineRegistration.MACHINE_HULLS` に置く。Tier 3～6、10 の既存筐体も同じ登録表から参照する。
