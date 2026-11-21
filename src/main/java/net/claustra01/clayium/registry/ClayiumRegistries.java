@@ -42,6 +42,7 @@ public final class ClayiumRegistries {
         FoundationItemRegistration.ALL.size();
         MaterialRegistration.CREATIVE_TAB_ITEMS.size();
         AssemblyMachineRegistration.MACHINES.size();
+        AutoCrafterRegistration.AUTO_CRAFTERS.size();
         EnergyConverterRegistration.CONVERTERS.size();
         InterfaceRegistration.INTERFACES.size();
         InterfaceRegistration.SYNCHRONIZER.getId();

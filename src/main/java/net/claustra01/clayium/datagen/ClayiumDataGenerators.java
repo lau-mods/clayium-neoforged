@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.gadget.GadgetItemModelProvider;
+import net.claustra01.clayium.datagen.autocrafter.AutoCrafterBlockLoot;
+import net.claustra01.clayium.datagen.autocrafter.AutoCrafterBlockStateProvider;
 import net.claustra01.clayium.datagen.fluid.FluidBlockLoot;
 import net.claustra01.clayium.datagen.fluid.FluidBlockStateProvider;
 import net.claustra01.clayium.datagen.fluid.FluidItemModelProvider;
@@ -57,6 +59,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new FoundationItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MachineBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new AutoCrafterBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new EnergyConverterBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new FluidBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new AssemblyMachineModels(output, event.getExistingFileHelper()));
@@ -106,6 +109,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(WorldgenBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MaterialBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MachineBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(AutoCrafterBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(EnergyConverterBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(FluidBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(ClayProductionBlockLoot::new, LootContextParamSets.BLOCK),

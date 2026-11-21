@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/auto_crafter_tier_7",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/auto_crafter_tier_7"
+    },
+    "facing=south": {
+      "model": "clayium:block/auto_crafter_tier_7",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/auto_crafter_tier_7",
+      "y": 270
+    }
+  }
+}

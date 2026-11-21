@@ -216,7 +216,8 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
 
     private void tickSolarFabricator(ServerLevel level) {
         BlockPos top = worldPosition.above();
-        if (!level.canSeeSky(top) || !level.isDay() || level.isRaining()) {
+        if (level.getBlockState(top).isSolidRender(level, top)
+                || !level.canSeeSky(top) || !level.isDay() || level.isRaining()) {
             state = State.SKY_BLOCKED;
             setChanged();
             return;

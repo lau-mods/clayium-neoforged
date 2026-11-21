@@ -5,6 +5,7 @@ import net.claustra01.clayium.energy.fe.EnergyConverterCapabilities;
 import net.claustra01.clayium.fluid.FluidCapabilities;
 import net.claustra01.clayium.fluid.FluidTransportControlPayload;
 import net.claustra01.clayium.machine.MachineCapabilities;
+import net.claustra01.clayium.machine.autocrafter.AutoCrafterCapabilities;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionCapabilities;
 import net.claustra01.clayium.machine.iface.InterfaceCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
@@ -23,6 +24,7 @@ public final class ClayiumMod {
         ClayiumRegistries.register(modEventBus);
         modEventBus.addListener(ClayiumDataGenerators::gatherData);
         modEventBus.addListener(MachineCapabilities::register);
+        modEventBus.addListener(AutoCrafterCapabilities::register);
         modEventBus.addListener(ClayProductionCapabilities::register);
         modEventBus.addListener(EnergyConverterCapabilities::register);
         modEventBus.addListener(FluidCapabilities::register);

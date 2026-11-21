@@ -509,6 +509,24 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "supplieditemsarecefuelwithoutfeorsurvivalrecipe"
+    },
+    {
+      "acId": "AC-F025-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfivetierscraftatoriginalcycleswithoutinfiniteoutput"
+    },
+    {
+      "acId": "AC-F025-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blockedandpartialcraftsneverconsumematerialsorenergy"
+    },
+    {
+      "acId": "AC-F025-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "vanillaremainingitemsanddamagedrecipescommitexactlyonce"
     }
   ],
   "e2e": [
@@ -611,6 +629,10 @@
     {
       "acId": "AC-F022-003",
       "scenario": "tests/e2e/fluid-transport.mjs"
+    },
+    {
+      "acId": "AC-F025-002",
+      "scenario": "tests/e2e/auto-crafters.mjs"
     }
   ]
 }

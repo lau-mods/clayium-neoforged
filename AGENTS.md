@@ -270,6 +270,16 @@ GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` �
 
 GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsAreCeFuelWithoutFeOrSurvivalRecipe`。
 
+## M25 自動クラフト装置
+
+`auto_crafter_tier_{5,6,7,8,9}` は `clayium:auto_crafter` BlockEntity と Menu を共用する。3×3のゴーストパターン、材料9スロット、出力6スロット、CE燃料1スロットを持つ。上面と水平面の Item Capability は材料・燃料への搬入、下面は出力からの搬出に限定する。
+
+保存 NBT は `inventory`、`pattern`、`energy`、`craft_tick`。ゴーストパターンは破壊時にドロップせず、結果プレビューは保存しない。
+
+原作 hotfix2 の Tier 5～9 は、周期／周期内の最大製作回数／1製作あたり内部CEが順に `20/1/0`、`1/1/10`、`1/16/40`、`1/64/160`、`1/256/640`。材料はゴーストと ItemStack の Data Components まで一致させる。`CraftingInput` で通常クラフトレシピを再検証し、結果と `getRemainingItems` の全品が出力へ収まることを先に確認してから、材料とCEを確定消費する。満杯・材料不足・無効レシピでは何も消費しない。
+
+製作レシピは `auto_crafter/auto_crafter_tier_*` に置き、M13の組立レシピ形式を使う。GameTest は `allFiveTiersCraftAtOriginalCyclesWithoutInfiniteOutput`、`blockedAndPartialCraftsNeverConsumeMaterialsOrEnergy`、`vanillaRemainingItemsAndDamagedRecipesCommitExactlyOnce`。外観E2Eは `tests/e2e/auto-crafters.mjs`。
+
 ## M22 直接流体輸送
 
 `FluidRegistration` は `fluid_translator_tier_4`～`13` と `fluid_transfer_machine_tier_5` を同名 Block/Item で登録し、共通の `clayium:fluid_transport` BlockEntity と Menu を使う。単一タンク容量と全方向合計の毎 tick 転送上限は GR-06 の値を使用する。外部接続は `Capabilities.FluidHandler.BLOCK` のみとし、1 mB 単位で直接搬送する。

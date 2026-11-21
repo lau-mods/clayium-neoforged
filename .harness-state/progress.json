@@ -4,7 +4,7 @@
     {
       "id": "M21",
       "phase": "e2e",
-      "baseCommit": "bec2cc64741ded2404be6566e2a85cf09c8da3b7",
+      "baseCommit": "1669c16b0cf4e4423ecc2fc117dd0f4c6ab6bba2",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -64,6 +64,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the slot or handler code, so the earlier fix still holds.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only resolves merge conflicts. ContainerInputSlot and the menus are still in place.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -117,6 +123,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the 16-bit ContainerData sync.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the 16-bit ContainerData sync.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -170,6 +182,12 @@
                 "by": "claude",
                 "note": "The loot table and component retention are not affected by the diff.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The loot table and component retention are unchanged. StorageBlockLoot is still there.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -223,6 +241,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the block entity's syncState.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the block entity's syncState.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -276,6 +300,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the item models or the renderer.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the item models or the renderer. The StorageItemModelProvider registration is kept in the merge.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -329,6 +359,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the GameTests.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are unchanged, and the acceptance entries for them are kept in the merge.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -382,6 +418,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the GameTests.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are unchanged.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -435,6 +477,12 @@
                 "by": "claude",
                 "note": "The diff does not touch the GameTests.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are unchanged.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -488,6 +536,12 @@
                 "by": "claude",
                 "note": "The diff only changes the camera pitch in the E2E script. The loop over all 57 chests and every page is unchanged.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E script is not touched by the diff.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -541,6 +595,12 @@
                 "by": "claude",
                 "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The M21 section is kept in AGENTS.md and the conflict markers are gone. A search of src/main, AGENTS.md and tests/acceptance.json finds none.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           },
@@ -594,12 +654,18 @@
                 "by": "claude",
                 "note": "The diff adds no unreachable-state checks to the M21 code. The solar fabricator change is outside M21.",
                 "at": "2026-11-21T01:05:27.514Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds no unreachable-state checks. It only resolves merge conflicts.",
+                "at": "2026-11-21T01:22:53.820Z"
               }
             ]
           }
         ]
       },
-      "codeReviewTree": "628a60aa7c69a02b00548d87e5cf67a0d5409360",
+      "codeReviewTree": "23535a2e66c01246d8441f96acf2f8256aa6ac4a",
       "e2eReview": {
         "kind": "e2e",
         "issues": [
@@ -610,7 +676,7 @@
             "reason": "The screenshot is taken before the scenario's camera move and world edits are visible on the client. `command()` and `screenshot()` are not awaited, and nothing waits after `camera()` to confirm the view is at x=0.5, y=104.5, z=-31.5. Later shots of the same run show the platform and chests, so the blocks do exist; the capture simply happened too early.",
             "fix": "In `tests/e2e/storage-containers.mjs`, await every `command()` and `camera()` call. After `camera()`, wait for the client position to match, plus a few ticks for chunks to re-render, before calling `await screenshot(...)`. Keep the camera inside the 45×17 platform view so all 57 chests are in frame.",
             "id": "ER-001",
-            "status": "open",
+            "status": "resolved",
             "history": [
               {
                 "status": "open",
@@ -653,6 +719,12 @@
                 "by": "codex",
                 "note": "fixed: チェスト群の撮影前に観戦モードへ切り替え、カメラの位置と向きの到達を確認して描画を待つようにしました。再撮影による画面確認は残っています。",
                 "at": "2026-11-21T01:05:19.245Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The overview shot now shows the smooth-stone platform with the rows of metal chests in frame, plus the three containers in front. The per-material tints can be told apart, though the chests are small at this distance.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -663,7 +735,7 @@
             "reason": "Same cause as the overview shot: the screenshot fires before the camera move and the `setblock` commands are applied and rendered, because those calls are not awaited and nothing waits for the view to settle.",
             "fix": "Await the setblock commands and the camera move, wait for the render to settle, then capture. Better still, give the containers their own camera position near (0.5, 101.5, -9.5) facing south so all three blocks fill the frame.",
             "id": "ER-002",
-            "status": "open",
+            "status": "resolved",
             "history": [
               {
                 "status": "open",
@@ -706,6 +778,12 @@
                 "by": "codex",
                 "note": "fixed: 3種のコンテナを近距離で捉える位置と角度に調整し、視点の到達と描画待ちの後に撮影するようにしました。再撮影による画面確認は残っています。",
                 "at": "2026-11-21T01:05:19.245Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The exterior shot is a close view of the three containers: the black/white striped unexpanded one, the yellow expanded one and the white/black void one. The metal chest rows are visible behind them.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -735,6 +813,12 @@
                 "by": "claude",
                 "note": "The world chests behind the GUIs show shaded models with material tints, such as the dark blue vanadium chest and the dark red cobalt chest. The silicon shot shows light and dark faces, and the container shots show the tinted layers. They are no longer flat black. Dark tantalum is a dark material, not an unlit one.",
                 "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The world chests behind the chest GUIs are shaded and tinted (green, dark red, blue, teal, purple and others), not flat black. Dark materials such as tantalum look dark because of their tint, not because they are unlit.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -764,6 +848,12 @@
                 "by": "claude",
                 "note": "Page counters \"1/1\", \"2/5\", \"1/8\" and \"1/1\" are drawn crisp, with no shadow and a clear gap on both sides, in the silicon, americium, cobalt and neodymium GUIs.",
                 "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The page counters (1/1, 1/2, 2/2, 1/3, 1/5 and so on) are drawn crisp, with no shadow and a clear gap on both sides, in every chest GUI I opened.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -793,6 +883,12 @@
                 "by": "claude",
                 "note": "Where the title band is visible (silicon, americium, cobalt, neodymium), the ◀/▶ buttons sit inside the frame with a margin at the top and right. The first slot row starts below them. In the tallest panels (europium, invar, vanadium, tantalum, palladium) the title row is cut off by the screen top. That is a separate cause from the button placement, which is fixed.",
                 "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Where the title band is on screen (Rubidium, Caesium, Francium, Radium, Actinium and others), the ◀/▶ buttons sit inside the frame with a margin at the top and right, and the first slot row starts below them. In the tallest panels (Titanium, Strontium, Barium and the 13x8 chests) the title row is cut off by the screen top. That is a separate framing cause, not the button placement.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -822,6 +918,12 @@
                 "by": "claude",
                 "note": "The 物品栏 label is drawn. The player inventory is separated from the chest grid, the hotbar has its own gap, and the panel has bottom padding. This holds in the silicon, americium, cobalt and neodymium GUIs. In the tall panels the bottom is cut off by the screen, but the layout spacing is correct.",
                 "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Chest and player inventory are separated, the 物品栏 label is drawn, the hotbar has its own gap and the panel has bottom padding. This holds in the short panels, which show the whole layout. In the tall panels the bottom is cut off by the screen, but the spacing is the same. The invar shot returned no image on the first read and was not re-read; I judged this on the other chest GUIs.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -851,6 +953,12 @@
                 "by": "claude",
                 "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no doubled shadow.",
                 "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no doubled shadow, centred under the slot.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -880,6 +988,12 @@
                 "by": "claude",
                 "note": "\"Clay Core expanded\" sits directly under the title. It is well clear of the 物品栏 label.",
                 "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"Clay Core expanded\" sits directly under the title and is well clear of the 物品栏 label.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           },
@@ -909,28 +1023,25 @@
                 "by": "claude",
                 "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
                 "at": "2026-11-20T22:11:18.459Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
+                "at": "2026-11-21T01:18:39.642Z"
               }
             ]
           }
         ]
       },
-      "failure": {
-        "phase": "gametest",
-        "summary": "GameTest task failed",
-        "details": "GameTest task output:\nt]: test-mock-player[embedded] logged in with entity id 3652 at (-8.5, -60.0, -2.5)\n[07:19:57] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player joined the game\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++  +++                 ]\n[07:19:58] [Server thread/INFO] [minecraft/PlayerList]: test-mock-player[embedded] logged in with entity id 3654 at (3.5, -60.0, 6.5)\n[07:19:58] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player joined the game\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++  ++++++              ]\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++  ++++++  +++         ]\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 8 11\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 1 0\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 12 2\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 8 15\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 9 0\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 11 5\n[07:19:58] [Server thread/ERROR] [minecraft/ChunkAccess]: Unprimed heightmap: OCEAN_FLOOR_WG 11 9\n[07:19:58] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++++++++++ ++++         ]\n[07:19:58] [Server thread/INFO] [minecraft/PlayerList]: test-mock-player[embedded] logged in with entity id 6888 at (1.5, -60.0, 0.5)\n[07:19:58] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player joined the game\n[07:19:59] [Server thread/INFO] [minecraft/RecipeManager]: Loaded 1694 recipes\n[07:19:59] [Server thread/INFO] [minecraft/AdvancementTree]: Loaded 1507 advancements\n[07:20:00] [Server thread/INFO] [minecraft/RecipeManager]: Loaded 1694 recipes\n[07:20:01] [Server thread/INFO] [minecraft/AdvancementTree]: Loaded 1507 advancements\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++++++++]\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++X++++++++++++++++++++++++++++++++++++++++++++++++]\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: ========= 77 GAME TESTS COMPLETE IN 11.56 s ======================\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]:    - solarmachinesrequireopenskyrespectcapsanduselithium\n[07:20:02] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: test-mock-player lost connection: Server closed\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: test-mock-player left the game\n[07:20:02] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether\n[07:20:03] [Server thread/DEBUG] [ne.ne.ne.co.CommonHooks/WP]: Gathered mod list to write to world save Test Level\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved\n[07:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved\n[07:20:03] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER\n[07:20:03] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down\n\n> Task :runGameTestServer FAILED\n8 actionable tasks: 1 executed, 7 up-to-date\nConfiguration cache entry reused.\n\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':runGameTestServer'.\n> Process 'command '/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home/bin/java'' finished with non-zero exit value 1\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to generate a Build Scan (powered by Develocity).\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 41s\n",
-        "logs": [
-          ".harness-state/runs/2026-11-20T22-19-21-729Z-083-M21-gametest/stdout.log",
-          ".harness-state/runs/2026-11-20T22-19-21-729Z-083-M21-gametest/stderr.log"
-        ],
-        "screenshots": []
-      },
+      "failure": null,
       "conflicts": [],
       "reviewConflicts": []
     },
     {
-      "id": "M25",
-      "phase": "e2e",
-      "baseCommit": "e91426828329ed94fe5f10f0210316d08fedae1d",
+      "id": "M26",
+      "phase": "implementation",
+      "baseCommit": "1669c16b0cf4e4423ecc2fc117dd0f4c6ab6bba2",
       "failures": {
         "build": 0,
         "gametest": 0,
@@ -941,123 +1052,48 @@
         "kind": "code",
         "issues": [
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:108-168",
-            "acId": "AC-F025-001",
-            "problem": "`craftOne` calls `planCraft` once per craft, and every call runs `RecipeManager.getRecipeFor(RecipeType.CRAFTING, ...)` with no last-recipe hint. A Tier 9 machine runs up to 256 full crafting-recipe searches every tick, Tier 8 runs 64, and Tier 7 runs 16.",
-            "reason": "Every search walks all loaded crafting recipes. With the original cycles of 1 tick and up to 256 crafts per cycle, one machine can cost hundreds of thousands of recipe matches per tick. Vanilla's crafter and the crafting menu avoid this by reusing the last matched recipe.",
-            "fix": "Find the recipe once per cycle, or cache the last `RecipeHolder<CraftingRecipe>` and pass it to `getRecipeFor(type, input, level, lastRecipe)`. Recheck `matches` against the actual `CraftingInput` before each commit, so data-component differences are still validated.",
+            "target": "AGENTS.md (no M26 section)",
+            "acId": null,
+            "problem": "The milestone adds a registered Block/Item/BlockEntity/Menu `auto_trader`, a payload `clayium:trade_select`, Tier 8, a CE cost per trade of `ClayiumRecipeEnergy.e(1.0, 8)`, the merchant search box (x/z ±1, y+1..y+4 above the device), the slot layout (input A 0, input B 1, output 2, fuel 3), the item-handler face mapping, saved NBT keys (`inventory`, `energy`, `selected_offer`, `state`), the stop states and the GameTest/E2E names. None of this is in AGENTS.md.",
+            "reason": "The project rules say that changes to user-visible behaviour, IDs, registrations, conditions and verification steps must update AGENTS.md in the same change. Every earlier milestone has a section, and M26's scope lists AGENTS.md.",
+            "fix": "Add an `## M26 自動取引装置` section that records the IDs, original key `tile.blockAutoTrader.name`, Tier and its source, CE per trade, the search area and merchant-busy rule, the validation order (merchant, lock, offer, out of stock, output space, materials, CE), the use of current `getCostA`/`getCostB` and `notifyTrade`, the slot and face layout, the NBT keys, the payload validation, and the GameTest and E2E names.",
             "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 周期内で直前の RecipeHolder を検索ヒントとして再利用し、各製作前に実際の CraftingInput との一致を再確認します。",
-                "at": "2026-11-21T01:14:53.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The last RecipeHolder is passed as a hint to getRecipeFor within a cycle, and matches() is rechecked against the actual input before each craft.",
-                "at": "2026-11-21T01:15:04.788Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:57-60,250-264",
-            "acId": "AC-F025-002",
-            "problem": "The result preview is recomputed only when the pattern changes or the block entity loads (`previewDirty`). After `/reload` or any datapack change, the preview keeps the old result even though crafting now uses the new RecipeManager.",
-            "reason": "The criterion requires an accurate result display. AGENTS.md M03 says recipe reloads notify machines and displays through `ClayiumRecipesReloadedEvent`, as `ClayMachineBlockEntity` does. This block entity does not subscribe, so a removed or changed recipe still shows the old output.",
-            "fix": "Set `previewDirty = true` when `ClayiumRecipesReloadedEvent` fires, using the same listener pattern as `ClayMachineBlockEntity`. Alternatively, recompute the preview from the per-cycle recipe lookup, so the shown result always matches the recipe used for crafting.",
+            "target": "src/main/java/net/claustra01/clayium/machine/trade/AutoTraderBlockEntity.java:291-346 (TradeContainerData) / AutoTraderMenu.java:83-126",
+            "acId": "AC-F026-002",
+            "problem": "The selected trade and the offer list reach the client through `ContainerData`, which vanilla sends as 16-bit shorts (`ClientboundContainerSetDataPacket`). Index 16 holds `ENERGY_PER_TRADE` = 1,000,000 internal units, which gets truncated, so the GUI shows the wrong trade CE. Items are sent as raw registry int IDs plus a count, so data components are lost. For example, a librarian's enchanted book or an armorer's enchanted armour shows as a plain item, and costs with components are shown wrongly. Also, every `get(index)` call runs `offer()`/`offerCount()`, each doing a new entity AABB search, so each open menu does about 37 entity searches every tick. The menu GameTest reads the server-side ContainerData directly, so none of this is caught.",
+            "reason": "AC-F026-002 requires the GUI to show the selected trade and its required materials correctly. ContainerData is meant only for small int values; full ItemStacks and long values need proper stream codecs.",
+            "fix": "Send the merchant's offers (e.g. `MerchantOffers.STREAM_CODEC` or ItemStack/ItemCost stream codecs for the visible offers) plus the selected index, state and long CE values with a clientbound payload or the menu's extra data when they change. Keep ContainerData only for values that fit in 16 bits. Look up the merchant once per server tick instead of once per data index. Make the GameTest check the values the client screen actually receives.",
             "id": "CR-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: ClayiumRecipesReloadedEvent で結果プレビューを再計算対象にしました。",
-                "at": "2026-11-21T01:14:53.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "A ClayiumRecipesReloadedEvent listener sets previewDirty on loaded crafters whose level uses the reloaded RecipeManager. The event exposes recipeManager().",
-                "at": "2026-11-21T01:15:04.788Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:105-111,327-343",
-            "acId": null,
-            "problem": "`tickServer` calls `setChangedAndSync()` at the end of every cycle, even when nothing was crafted. For Tier 6 to 9 that is every tick. Each call runs `sendBlockUpdated`, which sends the full `saveWithoutMetadata` tag (16-slot inventory, pattern and energy) to every tracking client. The non-cycle ticks also call `setChanged()` with no state change except `craftTick`.",
-            "reason": "No client-side renderer reads this block entity's data. The menu already syncs slots and `ContainerData`. Sending block updates every tick for idle machines wastes network bandwidth and triggers neighbour/render updates for no use.",
-            "fix": "Call `setChanged()` (and a sync only if a client consumer actually needs it) only when a craft committed or stored state changed. Remove `getUpdateTag`/`getUpdatePacket` and the `sendBlockUpdated` path unless a client feature reads the block entity data.",
+            "target": "tests/e2e/auto-trader.mjs:18-28",
+            "acId": "AC-F026-002",
+            "problem": "`/item replace block 0 100 0 container.N` needs the block entity to be a vanilla `Container`. `AutoTraderBlockEntity` only has an `ItemStackHandler`, so these commands fail and the materials and fuel are never placed. If they did work, the device ticks `tryTrade` every tick, so during the 10-tick wait it would complete the trade (the compressed energetic clay gives exactly 1,000,000 internal CE) and use up the inputs before the screenshot. Either way, the screenshot does not show the intended selected trade with its required materials. It also shows no stop condition, and with only one offer it does not show a trade list or a selection.",
+            "reason": "The E2E is the only evidence for the screen part of AC-F026-002, which asks for a capture of the trade list with the selected trade and its required materials shown correctly.",
+            "fix": "Fill the device in a way that works for an ItemHandler-only block entity, for example from a vanilla chest or hopper next to it, or through player inventory clicks in the GUI. Give the villager several offers, select a non-first offer through the GUI, and set up a stop condition (e.g. missing material or no CE) so the screenshot shows the list, the highlighted selection, the current discounted required materials and the stop state without the trade consuming them.",
             "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 毎周期のブロック更新送信と未使用の更新パケットを削除し、保存状態が変わったときだけ setChanged を呼びます。",
-                "at": "2026-11-21T01:14:53.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "setChangedAndSync, getUpdateTag and getUpdatePacket are gone. Only setChanged remains, and it is skipped on every-tick cycles where nothing was crafted.",
-                "at": "2026-11-21T01:15:04.788Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           },
           {
-            "target": "src/main/java/net/claustra01/clayium/machine/autocrafter/AutoCrafterBlockEntity.java:415-436",
+            "target": "src/main/java/net/claustra01/clayium/machine/trade/AutoTraderBlockEntity.java:200-205 (setChangedAndSync)",
             "acId": null,
-            "problem": "`ContainerData` index 1 (`craftTick`) and the `set` override that writes `craftTick` are never read. `AutoCrafterMenu` and `AutoCrafterScreen` use only indices 0, 2, 3 and 4–7, and `set` is never called on the server-side data.",
-            "reason": "The code style requires removing code that the current behavior does not use.",
-            "fix": "Remove the `craftTick` data slot and the `set` body, reduce the data count to the slots that are used, and update `AutoCrafterMenu`'s `SimpleContainerData` size and indices to match.",
+            "problem": "`level.sendBlockUpdated(...)` is called on every state change, but the block entity does not override `getUpdatePacket`/`getUpdateTag`, so nothing is synced. The call only forces useless block updates and re-renders, up to once per tick while the state changes.",
+            "reason": "The code style says to remove code the current behaviour does not use. The client gets its data only through the menu.",
+            "fix": "Replace `setChangedAndSync()` with a plain `setChanged()` (or sync through the menu as described above) and remove the `sendBlockUpdated` call.",
             "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 未使用の craftTick 同期スロットと書き込み処理を削除し、Menu のデータ数と参照位置を更新しました。",
-                "at": "2026-11-21T01:14:53.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The craftTick ContainerData slot and the set body are removed. The data count is 7, and the Menu indices are updated to match.",
-                "at": "2026-11-21T01:15:04.788Z"
-              }
-            ]
-          },
-          {
-            "target": "AGENTS.md:266-272",
-            "acId": null,
-            "problem": "The M25 section does not record the block entity's saved NBT keys (`inventory`, `pattern`, `energy`, `craft_tick`). The other machine sections in this file (M06, M10, M15, M16, M20, M22) document theirs.",
-            "reason": "The repository guide says AGENTS.md keeps IDs and save formats as the current specification and must be updated with the change.",
-            "fix": "Add the save keys `inventory`, `pattern`, `energy`, `craft_tick` to the M25 section. Also state that the ghost pattern does not drop and that the result preview is not saved.",
-            "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: AGENTS.md に保存 NBT キー、ゴーストパターンのドロップ有無、プレビューの非保存を記録しました。",
-                "at": "2026-11-21T01:14:53.817Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md M25 now lists the NBT keys inventory, pattern, energy and craft_tick. It also states that the pattern does not drop and that the preview is not saved.",
-                "at": "2026-11-21T01:15:04.788Z"
-              }
-            ]
+            "status": "open",
+            "history": []
           }
         ]
       },
-      "codeReviewTree": "7c0819323b26c5291b06bc9638effad405164e2e",
+      "codeReviewTree": "5b80e2e64b2f3166d70a73a116a4015f0249fefa",
       "e2eReview": null,
       "failure": null,
       "conflicts": [],
@@ -1087,8 +1123,9 @@
     "M15",
     "M22",
     "M24",
-    "M23"
+    "M23",
+    "M25"
   ],
-  "lastCheckpoint": "e91426828329ed94fe5f10f0210316d08fedae1d",
+  "lastCheckpoint": "1669c16b0cf4e4423ecc2fc117dd0f4c6ab6bba2",
   "fatal": null
 }

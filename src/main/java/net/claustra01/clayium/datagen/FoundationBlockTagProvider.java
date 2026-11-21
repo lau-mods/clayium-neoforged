@@ -2,6 +2,7 @@ package net.claustra01.clayium.datagen;
 
 import java.util.concurrent.CompletableFuture;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.registry.AutoCrafterRegistration;
 import net.claustra01.clayium.registry.FoundationBlockRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
@@ -40,6 +41,8 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WorldgenRegistration.BLOCKS.stream()
                 .map(block -> block.get()).toArray(Block[]::new));
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WaterWheelRegistration.BLOCKS.stream()
+                .map(block -> block.get()).toArray(Block[]::new));
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(AutoCrafterRegistration.BLOCKS.stream()
                 .map(block -> block.get()).toArray(Block[]::new));
         MaterialRegistration.MATERIAL_OWNED_BLOCKS.forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
         tag(BlockTags.NEEDS_STONE_TOOL).add(

@@ -16,12 +16,14 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.registry.AutoCrafterRegistration;
 import net.claustra01.clayium.registry.EnvironmentMachineRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.claustra01.clayium.registry.EnergyConverterRegistration;
 import net.claustra01.clayium.registry.FluidRegistration;
 import net.claustra01.clayium.datagen.LegacyTranslations;
+import net.claustra01.clayium.datagen.autocrafter.AutoCrafterLanguageEntries;
 import net.claustra01.clayium.datagen.environment.EnvironmentLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
 import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
@@ -102,6 +104,8 @@ public final class FoundationGameTests {
         }
         AssemblyMachineRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         AssemblyMachineRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
+        AutoCrafterRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        AutoCrafterRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         EnergyConverterRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         EnergyConverterRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         InterfaceRegistration.INTERFACES.values().forEach(definition -> {
@@ -169,7 +173,8 @@ public final class FoundationGameTests {
                         ClayiumMod.id("quartz_crucible"), ClayiumMod.id("multitrack_buffer"),
                         ClayiumMod.id("distributor"), ClayiumMod.id("clay_production_machine"),
                         ClayiumMod.id("energy_converter"), ClayiumMod.id("interface"),
-                        ClayiumMod.id("fluid_transport"), ClayiumMod.id("creative_ce_source"))),
+                        ClayiumMod.id("fluid_transport"), ClayiumMod.id("creative_ce_source"),
+                        ClayiumMod.id("auto_crafter"))),
                 "Block entity registrations differ from registered blocks");
         require(clayiumIds(BuiltInRegistries.ENTITY_TYPE).equals(Set.of(
                         WeaponRegistration.CLAY_BALL.getId(), WeaponRegistration.TELEPORT_BALL.getId())),
@@ -279,6 +284,9 @@ public final class FoundationGameTests {
             var fluidTransport = new HashMap<String, String>();
             FluidLanguageEntries.add(locale, fluidTransport::put);
             expectedKeys.addAll(fluidTransport.keySet());
+            var autoCrafters = new HashMap<String, String>();
+            AutoCrafterLanguageEntries.add(locale, autoCrafters::put);
+            expectedKeys.addAll(autoCrafters.keySet());
             for (var tier : net.claustra01.clayium.material.CompressionTier.values()) {
                 expectedKeys.add("block.clayium." + tier.id());
             }
