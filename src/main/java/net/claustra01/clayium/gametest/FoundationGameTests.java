@@ -46,6 +46,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.claustra01.clayium.registry.OriginalClassInventory;
 import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.ClayProductionRegistration;
+import net.claustra01.clayium.registry.ClayTreeRegistration;
 import net.claustra01.clayium.registry.ChunkLoaderRegistration;
 import net.claustra01.clayium.registry.CreativeSourceRegistration;
 import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
@@ -168,6 +169,8 @@ public final class FoundationGameTests {
         LaserRegistration.LASER_ITEMS.forEach(item -> expectedItems.add(item.getId()));
         expectedBlocks.add(LaserRegistration.LASER_REFLECTOR.getId());
         expectedItems.add(LaserRegistration.LASER_REFLECTOR_ITEM.getId());
+        ClayTreeRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        ClayTreeRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         Set<String> workbenchOriginalKeys = Set.of(
                 "tile.blockClayWorkTable.name", "tile.blockClayCraftingTable.name",
                 "tile.blockRawClayMachineHull.0.name", "tile.blockMachineHull.0.name",
@@ -363,6 +366,8 @@ public final class FoundationGameTests {
             expectedKeys.add("gui.clayium.machine.required_energy");
             expectedKeys.add("gui.clayium.machine.inventory");
             expectedKeys.add("gui.clayium.machine.empty");
+            ClayTreeRegistration.BLOCKS.forEach(block ->
+                    expectedKeys.add("block.clayium." + block.getId().getPath()));
             require(language.keySet().equals(expectedKeys),
                     "Generated language keys differ from the registered objects and tooltips");
         }

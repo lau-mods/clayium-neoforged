@@ -50,6 +50,7 @@ public final class ClayiumRegistries {
         InterfaceRegistration.SYNCHRONIZER.getId();
         LaserRegistration.LASERS.size();
         LaserRegistration.LASER_REFLECTOR.getId();
+        ClayTreeRegistration.BLOCKS.size();
         FluidRegistration.MACHINES.size();
         MachineRegistration.MACHINES.size();
         ClayProductionRegistration.BLOCKS.size();

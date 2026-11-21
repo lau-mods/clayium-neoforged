@@ -5,6 +5,7 @@ import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.worldgen.ClayOreConfiguration;
+import net.claustra01.clayium.datagen.claytree.ClayTreeWorldgen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
@@ -54,6 +55,7 @@ public final class WorldgenDataProvider {
     }
 
     private static void bootstrapConfigured(BootstrapContext<ConfiguredFeature<?, ?>> context) {
+        ClayTreeWorldgen.bootstrap(context);
         register(context, MAIN_MIDDLE, composite(24, 10, 0.5F, false));
         register(context, MAIN_DEEP, composite(24, 10, 0.5F, false));
         register(context, LARGE_MIDDLE, composite(6, 0, 0.0F, true));

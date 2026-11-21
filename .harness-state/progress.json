@@ -1,6 +1,499 @@
 {
   "status": "running",
-  "active": [],
+  "active": [
+    {
+      "id": "M33",
+      "phase": "gametest",
+      "baseCommit": "72a145007c3cb9fa872143314e9bb54b7db393bb",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "AGENTS.md (no M33 section)",
+            "acId": null,
+            "problem": "The diff does not touch AGENTS.md, which is in the milestone scope. Nothing records the M33 specification: the controller and hull IDs (`clay_blast_furnace`, `clay_reactor`, `clay_steel/clayium/ultimate_machine_hull`), the BlockEntity `clayium:multiblock_controller`, the structure rule (empty centre; item interface at the back centre, redstone at the top, laser at the bottom for the reactor; minimum Tier 6/7; structure Tier = lowest component Tier), the new NBT keys `formed`/`structure_tier`, the `FORMED` blockstate, the `blast_furnace/*` recipe IDs and their CE and tick values, the laser speed-up formula, and the GameTest and E2E names.",
+            "reason": "The common rules require that any change to IDs, registrations, data-generation rules or test procedures updates AGENTS.md in the same change. Every earlier milestone documents these items.",
+            "fix": "Add an `## M33 クレイ高炉・粘土反応炉` section to AGENTS.md. Record the IDs, structure layout and Tier rules, NBT keys, recipe IDs with their values, the laser formula with its original-source reference, and the GameTest/E2E names listed above.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Documented M33 IDs, structure rules, NBT, recipes, laser formula, and test names in AGENTS.md.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has an M33 section covering IDs, structure, NBT, recipes, laser formula and tests.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches the E2E camera script, so the M33 AGENTS.md section is unaffected.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/MultiblockControllerBlockEntity.java:93-101",
+            "acId": "AC-F032-002",
+            "problem": "The laser speed-up is `min(1000, 1 + LaserBeam.energy())` applied to progress per tick. No original source is cited for this formula or for the cap of 1000. The GameTest only checks that progress with the laser is strictly greater than without it.",
+            "reason": "The criterion requires the time reduction to follow the original specification. An invented formula with an arbitrary cap cannot be shown to match the original, and a `>` check would pass for any speed-up.",
+            "fix": "Take the progress/time multiplier from the original hotfix2 `TileClayReactor` (how laser energy changes craft time) and implement exactly that formula, without an invented cap. Document it in AGENTS.md. Make the GameTest assert the exact expected progress, or the exact completion tick, for a known beam.",
+            "id": "CR-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Used the original reactor's integer laser energy addition without the invented cap; GameTest checks the exact progress ratio.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The multiplier is now 1 + (long)energy with no cap, matching the documented original source. The GameTest asserts an exact 2x ratio.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the laser formula or its GameTest.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/multiblock/MultiblockRecipes.java:11-15",
+            "acId": "AC-F032-001",
+            "problem": "Only three one-input dust-to-ingot recipes are generated (clay steel, clayium, ultimate alloy), with energy multipliers 1/10/10 and 200/1000/3000 ticks. No source is given for these values. The blast furnace has two input slots, but no two-input alloy recipe exists, and no GameTest runs one.",
+            "reason": "The criterion's Action is to start the original alloy and high-temperature recipes, and the approach asks for the original recipes to be generated by datagen. Values that cannot be traced, and the missing alloy recipes, leave the criterion unmet.",
+            "fix": "Port every hotfix2 `CRecipes.recipeBlastFurnace` entry, including the two-input alloy recipes, with their original Tier, CE and time. Document the list in AGENTS.md. Make the GameTest start a two-input alloy recipe as well as a dust recipe.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Generated the original applicable alloy and high temperature recipes with their Tier, CE, and tick values; GameTests start both recipe types.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The dust recipes, steel_from_iron and three two-input alloy recipes are generated and documented. GameTests start both alloy and dust recipes.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch recipe generation.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/recipe/AssemblyRecipes.java:138-154; src/main/java/net/claustra01/clayium/datagen/multiblock/MultiblockRecipes.java",
+            "acId": "AC-F032-001",
+            "problem": "No recipe produces `clay_blast_furnace`, `clay_reactor`, `clay_steel_machine_hull`, `clayium_machine_hull` or `ultimate_machine_hull`. All five blocks can only be obtained from the creative tab.",
+            "reason": "In survival a player cannot build the structure required by AC-F032-001 or AC-F032-002. Every earlier machine milestone generates the original production recipes.",
+            "fix": "Generate the original crafting/assembler recipes for both controllers and the Tier 7–9 hulls with datagen, as is done for `machine_hull/tier_*` and `assembly_machine/*`. Use IDs such as `machine_hull/tier_7..9` and `multiblock/clay_blast_furnace`, `multiblock/clay_reactor`, and commit the generated JSON.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Generated recipes for both controllers and all three new machine hulls.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Recipes for machine_hull/tier_7..9, multiblock/clay_blast_furnace and multiblock/clay_reactor are generated.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the production recipes.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/MultiblockRegistration.java:46-60; src/main/java/net/claustra01/clayium/multiblock/MultiblockCasingBlock.java; src/main/java/net/claustra01/clayium/datagen/multiblock/MultiblockLanguageEntries.java",
+            "acId": null,
+            "problem": "Machine hulls are now registered in two places with two block classes. Tiers 3–6 and 10 are plain `Block`s in `AssemblyMachineRegistration.MACHINE_HULLS`. Tiers 7–9 are a new `MultiblockCasingBlock` in a second `MACHINE_HULLS` map. Because of this, `hullTier`, the GameTest `hull()` helper, the tag, loot, model and lang providers all have to handle both maps. Their names are also hand-written again even though `MachineLanguageEntries` already builds hull names from the Tier prefixes.",
+            "reason": "This duplicates an existing responsibility and adds an abstraction where one registry already exists. Common rule: don't implement the same responsibility twice; code style: keep one direct path per behaviour.",
+            "fix": "Add Tiers 7, 8 and 9 to the `HullDefinition` list in `AssemblyMachineRegistration`, so the existing hull model, lang, loot and tag code covers them. Remove `MultiblockCasingBlock`, the hull map in `MultiblockRegistration`, and the hull entries in `MultiblockLanguageEntries`. Look up the hull Tier from the single map.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Moved Tier 7–9 hulls into the existing assembly hull registration and removed the duplicate casing registration.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Hulls 7–9 are in AssemblyMachineRegistration and the duplicate casing class and registry are removed. A redundant CONTROLLERS.size() line remains in ClayiumRegistries, which is harmless.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the hull registration.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/MultiblockCasingBlock.java:20-37; src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlock.java:87-96; src/main/java/net/claustra01/clayium/multiblock/MultiblockControllerBlockEntity.java:17,45",
+            "acId": "AC-F032-002",
+            "problem": "Structure-change notification only covers some cases. It uses `setPlacedBy`, which runs only when a player places a block, not for `setblock`, pistons or structure placement. Removing the Tier 3–6/10 hulls (for example the precision hull used by the blast furnace) sends no notification. Removing an interface block sends none. Filling the empty centre sends none. All of these cases fall back to a full rescan every 20 ticks, during which a broken structure keeps processing.",
+            "reason": "The approach requires re-evaluation on change notifications, and AC-F032-002 requires processing to stop when the structure is broken. Notifications that work only for some blocks give inconsistent, delayed behaviour.",
+            "fix": "Mark controllers dirty from one general hook that fires for any block change. For example, handle NeoForge `BlockEvent.NeighborNotifyEvent` (or the block-update hooks) and call `MultiblockStructureNotifier.componentChanged`. Remove the per-block `setPlacedBy`/`onRemove` hooks. Once every change is covered, remove the 20-tick safety rescan.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Used a general block change notification, removed periodic rescanning, and tested center, hull, and interface removal.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "A NeighborNotifyEvent listener now marks nearby controllers dirty. The per-block hooks and the 20-tick rescan are removed, and a test covers centre, hull and interface removal.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the structure-change notification code.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/MultiblockCapabilities.java:14-17",
+            "acId": null,
+            "problem": "A `FluidHandler.BLOCK` capability is registered on the controller. Neither the blast furnace nor the reactor has fluid recipes or a fluid interface.",
+            "reason": "Code style: implement only what the criteria require and remove code the current behaviour doesn't use. It also exposes fluid tanks directly on a block whose input and output should go through interfaces.",
+            "fix": "Remove the FluidHandler registration.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Removed the unused fluid capability from the controller.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The FluidHandler capability registration is removed.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the capability registration.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/MultiblockControllerBlockEntity.java:56-80,121-124",
+            "acId": "AC-F032-002",
+            "problem": "When `formed` or `structureTier` changes, the code only calls `setChanged()`; no block-entity update reaches the client. `tier()` on the client uses its stale `formed` and `structureTier` fields. `ClayMachineScreen`, which reads `machine.tier()` client-side, therefore shows the wrong Tier and hull after the structure forms or breaks.",
+            "reason": "Saving and synchronisation: the GUI display of the multiblock's state and Tier must follow the server.",
+            "fix": "When the structure result changes, call `level.sendBlockUpdated(...)`. Alternatively, sync the structure Tier through the menu's ContainerData and derive `formed` from the `FORMED` blockstate on the client.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Sends a block entity update when the formed state or structure Tier changes.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "sendBlockUpdated is called when formed or the structure Tier changes. The update tag is built from the saved NBT, which includes formed and structure_tier.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch client sync.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/multiblock/MultiblockGameTests.java:34-53",
+            "acId": "AC-F032-001",
+            "problem": "The missing-controller case only checks that the controller position is air. It never tries to start a recipe and never asserts that the item interface fails to route and that nothing is processed. The misplaced-interface case inserts input straight into the controller's inventory instead of through an interface.",
+            "reason": "Each GameTest must perform its criterion's Action (start the recipe on each structure) and assert the Expected Result (no start, and input/output only through the specified interface).",
+            "fix": "Missing controller: insert the input through the synchronized item interface and assert the insert is rejected or returned, and that no controller is processing. Misplaced interface: insert through the misplaced interface and assert no recipe starts. Low Tier: assert as now, after inserting through the interface.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Invalid structure tests now insert recipe inputs through the relevant interfaces.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The invalid-structure GameTests now insert inputs through the interfaces and assert rejection or no start.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the invalid-structure GameTests.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/multiblock/MultiblockGameTests.java:78-118",
+            "acId": "AC-F032-002",
+            "problem": "The laser test calls `InterfaceBlockEntity.receiveLaser` directly with a hand-made `LaserBeam(1,0,0)` instead of aiming a real `clay_energy_laser` at the laser interface. It compares 10-tick progress deltas with `>`, not processing time. After the hull is removed it checks only `activeRecipe() == null`; it never checks that ticking further does not progress and that reserved inputs went back to the input slots.",
+            "reason": "The Preconditions require a laser interface connected to the reactor, and the Expected Result is the original time reduction and a stop on structure damage. The test has to set these up and assert them exactly.",
+            "fix": "Place an energised `clay_energy_laser_tier_7` aimed at the synchronized laser interface and tick it. Assert the exact time or progress ratio given by the original formula. After removing a hull, assert that progress stays at 0 on further ticks and that the reserved inputs are back in the input slots.",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The test uses an energized laser block, checks exact acceleration, and verifies stopped progress and returned inputs after damage.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The test uses a real energised laser block and asserts the exact progress ratio. After the hull is removed it asserts zero progress and that the reserved inputs are returned.",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the laser GameTest.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/MultiblockControllerBlockEntity.java:93-117",
+            "acId": null,
+            "problem": "`laserProgressMultiplier()` is a public method whose only caller is the `processingProgressMultiplier()` override.",
+            "reason": "Code style: no helper or indirection until a second call site uses it.",
+            "fix": "Move the multiplier logic into `processingProgressMultiplier()` and delete `laserProgressMultiplier()`.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Inlined the laser calculation into its sole caller.",
+                "at": "2026-11-21T14:51:30.296Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "laserProgressMultiplier() is inlined into processingProgressMultiplier().",
+                "at": "2026-11-21T14:51:57.196Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the multiplier method.",
+                "at": "2026-11-21T14:55:27.318Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "17a262c9ba0d4ed9f686907eb160c9af780bb50a",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-21T14-52-39-952Z-022-M33-e2e/scenarios/tests-e2e-clay-multiblocks.mjs/screenshots/AC-F032-002-rear-item-and-top-redstone-interfaces.png",
+            "acId": "AC-F032-002",
+            "problem": "The shot is named for the rear item interface and the top redstone interface, but no top face of either 3×3×3 structure is visible. The sky sits directly above the top edge of both shells, so the redstone interface at the top center is never rendered. Only the two rear item interfaces show. The first screenshot (camera y=103.2) does not show the top faces either, so neither multiblock's redstone interface face is captured anywhere in the milestone evidence.",
+            "reason": "The horizon is near y≈420 px, but the top edges of the structures are near y≈115 px. That puts the eye below the shell top at y=103, not at the requested y=104.0 with pitch 15. The creative player most likely dropped to the smooth-stone floor (eye ≈ 101.6) after the camera teleport because flight was not enabled. The scenario then captured the shells from below their top. As a result, it cannot be confirmed that the top redstone interface renders close to the original.",
+            "fix": "In tests/e2e/clay-multiblocks.mjs, keep the client airborne before both camera calls. Enable flying (for example with `/ability`, or by switching to spectator mode or using MC Pilot's fly option), or teleport and capture without waiting for a fall. For the second shot, raise the camera to about y=107 with pitch ≈35–40 so that the top center redstone interfaces of both shells show next to the rear item interfaces. Then retake both screenshots.",
+            "id": "ER-001",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Enabled spectator mode before both camera calls and raised both views, including the rear view to y=107 with a 38° downward pitch, so the camera does not fall below the shell tops.",
+                "at": "2026-11-21T14:55:18.883Z"
+              }
+            ]
+          }
+        ]
+      },
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
+    },
+    {
+      "id": "M30",
+      "phase": "implementation",
+      "baseCommit": "72a145007c3cb9fa872143314e9bb54b7db393bb",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/area/AreaMachineBlockEntity.java:110-136",
+            "acId": "AC-F028-002",
+            "problem": "`scanBlocks` moves the cursor forward before it runs the operation. Only the UNLOADED result moves it back. When the result is NO_OUTPUT_SPACE (output full), the target block has already been passed, so it stays unmined for the rest of the pass. FAILED results also just continue: a replacer with an empty or non-block replacement slot passes over every block in the area without replacing any.",
+            "reason": "The AC says only allowed coordinates are handled and that replacement counts match. A machine that silently passes over blocks when its output is full or its material runs out leaves the area partly unprocessed, and the counts no longer match the area.",
+            "fix": "Move the cursor forward only after SUCCESS, NO_TARGET or a filter rejection. For NO_OUTPUT_SPACE, and for the replacer having no usable replacement item, keep the cursor on the current target and stop with a status such as OUTPUT_FULL or NO_MATERIAL.",
+            "id": "CR-001",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/area/AreaMachineBlockEntity.java:156-172",
+            "acId": "AC-F028-002",
+            "problem": "The replacer breaks the target through `BlockOperationService`, then places the new block with a plain `serverLevel.setBlockAndUpdate(target, blockItem.getBlock().defaultBlockState())`. Nothing checks permission to place there. No `BlockEvent.EntityPlaceEvent` is fired, `canSurvive` and placement state are not checked, and the owner FakePlayer is not used for the placement.",
+            "reason": "The AC says protected targets are not changed. Protection mods cancel placement through the NeoForge place event, which is skipped here. The default state can also be invalid at the target (for example a torch with nothing to attach to).",
+            "fix": "Place the block through the owner FakePlayer with `BlockItem.place(new BlockPlaceContext(...))`, or fire `EventHooks.onBlockPlace`/`EntityPlaceEvent`, then check the result. Consume the replacement item only on success. If placement is denied, return DENIED without breaking the original block first: check placement before the break or simulate it.",
+            "id": "CR-002",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/area/AreaMachineType.java:3-7",
+            "acId": "AC-F028-002",
+            "problem": "The scan speeds (1/1/4/1/1 operations per tick, no CE cost) and the laser bonus formula `max(1, floor(beam.energy()))` in `AreaMachineBlockEntity.acceleratedOperations` have no cited source in the original hotfix2 classes (TileAreaMiner, TileAdvancedAreaMiner, TileAreaCollector, TileAreaReplacer, TileAreaActivator). Speed comes from the machine type, not the Tier, and no machine uses any Clay Energy.",
+            "reason": "The AC requires the original's per-Tier speeds and acceleration. Other milestones fix such values from the original JAR (see M16 and M20 in AGENTS.md). Invented constants do not meet the criterion, and running at one block per tick with no CE cost goes beyond the original balance.",
+            "fix": "Read the original area machine classes. Copy their per-Tier progress, energy consumption and laser acceleration formula into `AreaMachineType` and `acceleratedOperations`, adding CE consumption and a fuel slot if the original has them. Record the values and their source in AGENTS.md, and have the GameTest assert the exact values.",
+            "id": "CR-003",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/area/AreaMachineGameTests.java:183-190",
+            "acId": "AC-F028-002",
+            "problem": "The test checks acceleration by calling `acceleratedOperations(new LaserBeam(...))` directly. It never delivers a beam through the `InterfaceCapabilities.LASER_RECEIVER` capability, never toggles the laser, and never measures how many blocks a tick actually processes. Protection is tested only for mining, not for replacement or activation. No test checks that blocks just outside the configured area stay untouched while the machine runs.",
+            "reason": "The criterion's Action is to run the machines and switch the acceleration condition, and the Expected Result is that only allowed coordinates are changed and protected targets stay unchanged. The assertions cover neither the runtime capability path nor protection for every operation type.",
+            "fix": "Fill a multi-block area. Get the LaserReceiver capability with `level.getCapability`, deliver a beam, let `serverTick` run, and assert the number of blocks processed with and without the laser equals the exact expected values. Add protected-target cases for the replacer (cancel the place/break event) and the activator. Put sentinel blocks next to the area and assert they are unchanged afterwards.",
+            "id": "CR-004",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/area/AreaMachineGameTests.java:44-84",
+            "acId": "AC-F028-001",
+            "problem": "The test places four marker blocks at Y=-64/0/255/319, then never uses them. It calls `AreaBounds.between` on raw coordinates, never pairs markers or calls `AreaMarkerBlockEntity.selectedArea()`/`configureFromMarker`, and never runs a machine to prove no coordinate outside the range is scanned. The markers are also placed at absolute positions outside the test structure and never removed.",
+            "reason": "The Preconditions and Action are placing markers at the boundaries and applying the expansion through selection. The 'never scans outside' result needs a real scan. Blocks left outside the structure can leak into other tests.",
+            "fix": "Place the markers inside the test's reach, or remove them in a finally block. Pair them through the marker API (`select`, or placement with an owner) and read `selectedArea()` from each marker type. Configure a machine from a marker near the build limits and run it until the cursor wraps. Assert that only positions inside `getMinBuildHeight()`..`getMaxBuildHeight()-1` and the selected X/Z were touched, for example with sentinel blocks just outside.",
+            "id": "CR-005",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/area/AreaMachineBlock.java:87-97",
+            "acId": "AC-F028-002",
+            "problem": "Area machines have no Menu or GUI, so a player cannot place a tool, replacement material or filter into a chosen slot. The only way in is the ItemHandler capability, and `insertItem` accepts slots 0 and 1. Slot 0 accepts any item, so a hopper puts an ItemFilter into the operation slot instead of the filter slot. Right-click gives no feedback when a marker range is or is not applied.",
+            "reason": "The AC Action is for a player to run the machines with tools, filters and replacement items. Without a way to fill slots 0 and 1 separately, the M10 filter integration cannot be used in play.",
+            "fix": "Add an area machine Menu and Screen (reuse the existing machine screen base) that exposes slot 0, the filter slot and the outputs, opened from `useWithoutItem`. Alternatively, reject ItemFilter items in slot 0 of the external handler. Show a message when a marker range is applied.",
+            "id": "CR-006",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/area/AreaSelection.java:7-25",
+            "acId": "AC-F028-001",
+            "problem": "The remembered marker is stored in `Player.getPersistentData()` under hand-made keys. The value is written into the player save permanently and never cleared after use. Pairing (`AreaMarkerBlock.pairWithNearest`: nearest marker of the same type and owner within ±16 blocks, found by scanning 35,937 positions on every placement) and this right-click workflow are documented nowhere.",
+            "reason": "The project already uses NeoForge Data Attachments for per-player state (M18 `gadget_player_state`). Raw persistent data is the legacy path. Without documentation, the selection rules (radius, same type, owner) cannot be checked against the AC.",
+            "fix": "Replace the persistent-data keys with a non-serialized Data Attachment, or clear the value after a machine uses it. Document the pairing radius, same-type/owner rule and right-click workflow in the AGENTS.md M30 section. Check that the 16-block search radius matches the original marker range.",
+            "id": "CR-007",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/area/AreaBlockStateProvider.java:29-42",
+            "acId": "AC-F028-003",
+            "problem": "The marker model shows `laserreflector.png` (the laser reflector's texture) on its front and `denseclay.png` on its body, and the markers get a horizontal FACING property. Nothing shows that the original markers looked like this. In `AreaMarkerBlock`, the model is a 6×12×6 pillar but the block has no `getShape` override, so its outline and collision are a full cube.",
+            "reason": "The AC requires original PNGs that let users read the marker. Putting the laser reflector texture on a marker misrepresents the block, the made-up facing adds a state the original did not have, and a full-cube outline around a thin pillar is a wrong boundary display.",
+            "fix": "Use the texture the original marker blocks used (check the original CBlocks/marker classes) and drop FACING if the original markers had no orientation. Add a VoxelShape override that matches the model in `AreaMarkerBlock`.",
+            "id": "CR-008",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/area/AreaMachineBlockEntity.java:96-102,365-374",
+            "acId": null,
+            "problem": "Every tick that processes at least one block calls `setChangedAndSync`, sending a full block update to clients. `getUpdateTag` sends `cursor`, `target_dimension` and `status`, but no client code reads them; the renderer only uses `workArea`. Once `status` becomes PROTECTED, UNLOADED or OUTPUT_FULL, it never returns to IDLE.",
+            "reason": "Syncing data the client does not use, on every working tick, wastes network traffic. A status that sticks after its cause is gone is stale saved state.",
+            "fix": "Sync only when `workArea` changes (`configureArea`), call plain `setChanged()` during scanning, and put only `area_min`/`area_max` in the update tag. Reset `status` at the start of each `runOperationsNow`.",
+            "id": "CR-009",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/world/area/AreaMachineBlockEntity.java:257-271",
+            "acId": null,
+            "problem": "Unused or one-off code: `cursorPosition()`, `AreaMarkerBlockEntity.secondCorner()` and `AreaBounds.contains()` are never called. `configureFromMarker` is a one-line wrapper with a single caller. `REPLACEMENT_SLOT` is an alias of `OPERATION_SLOT`. The `try/catch` around `OperationStatus.valueOf` in `loadAdditional` guards against data the game never writes.",
+            "reason": "The code style requires removing unused code and avoiding wrappers or validation for states the game cannot produce.",
+            "fix": "Delete `cursorPosition`, `secondCorner()` and `AreaBounds.contains`, and inline `configureFromMarker` at its single call site. Use one slot constant, and parse the status directly or drop it from NBT if it is not needed.",
+            "id": "CR-010",
+            "status": "open",
+            "history": []
+          },
+          {
+            "target": "AGENTS.md:325-331",
+            "acId": null,
+            "problem": "The M30 section leaves out the marker BlockEntity NBT keys (`second_corner`, `owner`), the marker pairing and selection workflow, the per-machine speeds, which machine types accept lasers (the capability is registered for all five), and the stop conditions and statuses.",
+            "reason": "AGENTS.md is the implementation spec and must record IDs, conditions and numbers whenever user-visible behavior or saved data is added.",
+            "fix": "Add the marker NBT keys, the pairing and selection rules, the original-sourced speed and acceleration values per machine, the machine types that accept lasers, and the stop and status semantics to the M30 section.",
+            "id": "CR-011",
+            "status": "open",
+            "history": []
+          }
+        ]
+      },
+      "codeReviewTree": "09c0c9584c05491711933497fba82251cae536c9",
+      "e2eReview": null,
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
+    }
+  ],
   "completed": [
     "M01",
     "M02",
@@ -30,8 +523,9 @@
     "M27",
     "M26",
     "M28",
-    "M29"
+    "M29",
+    "M32"
   ],
-  "lastCheckpoint": "1efc8ada8e4c64147e97abeb96e64584a40c9123",
+  "lastCheckpoint": "72a145007c3cb9fa872143314e9bb54b7db393bb",
   "fatal": null
 }

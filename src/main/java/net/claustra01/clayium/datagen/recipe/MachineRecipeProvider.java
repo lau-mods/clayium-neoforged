@@ -11,6 +11,7 @@ import net.claustra01.clayium.datagen.autocrafter.AutoCrafterRecipes;
 import net.claustra01.clayium.datagen.environment.EnvironmentRecipes;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionRecipes;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterRecipes;
+import net.claustra01.clayium.datagen.claytree.ClayTreeRecipes;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.MaterialRegistration;
@@ -41,6 +42,7 @@ public final class MachineRecipeProvider extends RecipeProvider {
         ChemicalRecipes.buildRecipes(recipeOutput);
         EnvironmentRecipes.buildRecipes(recipeOutput);
         EnergyConverterRecipes.buildRecipes(recipeOutput);
+        ClayTreeRecipes.buildRecipes(recipeOutput);
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BENDING_MACHINE, 4)
                 .requires(Items.TERRACOTTA, 2)
                 .requiresFluid(new FluidStack(Fluids.WATER, 250))

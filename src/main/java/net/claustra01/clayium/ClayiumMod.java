@@ -18,6 +18,7 @@ import net.claustra01.clayium.logistics.LogisticsCapabilities;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.storage.StorageCapabilities;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderTicketService;
+import net.claustra01.clayium.world.claytree.ClayTreeCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -42,6 +43,7 @@ public final class ClayiumMod {
         modEventBus.addListener(StorageCapabilities::register);
         modEventBus.addListener(InterfaceCapabilities::register);
         modEventBus.addListener(net.claustra01.clayium.laser.LaserCapabilities::register);
+        modEventBus.addListener(ClayTreeCapabilities::register);
         modEventBus.addListener(TradeCapabilities::register);
         modEventBus.addListener(MinerCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {

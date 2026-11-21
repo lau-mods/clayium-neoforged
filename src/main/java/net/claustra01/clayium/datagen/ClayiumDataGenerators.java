@@ -45,6 +45,8 @@ import net.claustra01.clayium.datagen.storage.StorageItemModelProvider;
 import net.claustra01.clayium.datagen.worldgen.WorldgenBlockLoot;
 import net.claustra01.clayium.datagen.worldgen.WorldgenBlockStateProvider;
 import net.claustra01.clayium.datagen.worldgen.WorldgenDataProvider;
+import net.claustra01.clayium.datagen.claytree.ClayTreeBlockLoot;
+import net.claustra01.clayium.datagen.claytree.ClayTreeBlockStateProvider;
 import net.claustra01.clayium.datagen.waterwheel.WaterWheelBlockLoot;
 import net.claustra01.clayium.datagen.waterwheel.WaterWheelBlockStateProvider;
 import net.claustra01.clayium.datagen.recipe.MachineRecipeProvider;
@@ -84,6 +86,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new MultitrackBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new StorageBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorldgenBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new ClayTreeBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WaterWheelBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new EnvironmentBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorkbenchBlockStateProvider(output, event.getExistingFileHelper()));
@@ -124,6 +127,7 @@ public final class ClayiumDataGenerators {
                         List.of(
                                 new LootTableProvider.SubProviderEntry(FoundationBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(WorldgenBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(ClayTreeBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MaterialBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MachineBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(AutoCrafterBlockLoot::new, LootContextParamSets.BLOCK),

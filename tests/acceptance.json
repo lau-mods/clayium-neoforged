@@ -599,6 +599,18 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "ticketsreleaseandrestartvalidationremovesorphans"
+    },
+    {
+      "acId": "AC-F031-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "laserthresholdtagsandnaturalgenerationmatchclaytreerules"
+    },
+    {
+      "acId": "AC-F031-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "plantedtreegrowthdropsandoriginalprocessingroutearecomplete"
     }
   ],
   "e2e": [
@@ -725,6 +737,10 @@
     {
       "acId": "AC-F029-001",
       "scenario": "tests/e2e/chunk-loader.mjs"
+    },
+    {
+      "acId": "AC-F031-002",
+      "scenario": "tests/e2e/clay-tree.mjs"
     }
   ]
 }

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "clayium:block/log_claytree_top",
+    "side": "clayium:block/log_claytree"
+  }
+}

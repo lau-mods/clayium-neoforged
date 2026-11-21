@@ -10,10 +10,13 @@ import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.registry.WaterWheelRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
+import net.claustra01.clayium.registry.ClayTreeRegistration;
+import net.claustra01.clayium.world.claytree.ClayTreeLaserConversion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -53,5 +56,21 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
                 WorldgenRegistration.LARGE_DENSE_CLAY_ORE.get(),
                 WorldgenRegistration.DEEPSLATE_LARGE_DENSE_CLAY_ORE.get(),
                 FoundationBlockRegistration.CLAYIUM_BLOCK.get());
+        tag(BlockTags.MINEABLE_WITH_AXE).add(ClayTreeRegistration.CLAY_TREE_LOG.get());
+        tag(BlockTags.LOGS).add(ClayTreeRegistration.CLAY_TREE_LOG.get());
+        tag(BlockTags.LOGS_THAT_BURN).add(ClayTreeRegistration.CLAY_TREE_LOG.get());
+        tag(BlockTags.LEAVES).add(ClayTreeRegistration.CLAY_TREE_LEAF.get());
+        tag(BlockTags.SAPLINGS).add(ClayTreeRegistration.CLAY_TREE_SAPLING.get());
+        tag(ClayTreeLaserConversion.LASER_TREE_SOURCES).add(
+                Blocks.OAK_SAPLING,
+                Blocks.SPRUCE_SAPLING,
+                Blocks.BIRCH_SAPLING,
+                Blocks.JUNGLE_SAPLING,
+                Blocks.ACACIA_SAPLING,
+                Blocks.DARK_OAK_SAPLING,
+                Blocks.CHERRY_SAPLING,
+                Blocks.MANGROVE_PROPAGULE,
+                Blocks.AZALEA,
+                Blocks.FLOWERING_AZALEA);
     }
 }

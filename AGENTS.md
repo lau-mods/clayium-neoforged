@@ -243,7 +243,13 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 
 `VanillaCompatRecipes` は `grinder/raw_{iron,gold,copper}`（Raw Ore 1個→対応粉1個）、`grinder/raw_{iron,gold,copper}_block`（原鉱石ブロック1個→対応粉9個）、`grinder/{iron,gold,copper}_ore`（石・深層岩鉱石1個→対応粉2個）を生成する。いずれも Tier 4、40 tick、`ClayiumRecipeEnergy.e(1.0, 4)`。入力は NeoForge の `Tags.Items.RAW_MATERIALS_*`、`STORAGE_BLOCKS_RAW_*`、`ORES_*` を使用し、バニラの鉱石 LootTable は変更しない。Raw Ore と粉の精錬はそれぞれ1個のインゴットを作る。
 
-原木・葉・苗木の物質変換系列にサクラ、マングローブ、ツツジ、開花ツツジを追加し、既存系列と同じ Tier 8 の段階で処理する。粘土作業台・作業板の製作は `minecraft:planks` を使い、竹板材を受け付ける。竹は苗木として扱わない。`clayium:laser_tree_sources` は `#minecraft:saplings` で、サクラ苗木、マングローブの芽、ツツジ、開花ツツジを含む。レーザーによる利用は M32 が担当する。
+原木・葉・苗木の物質変換系列にサクラ、マングローブ、ツツジ、開花ツツジを追加し、既存系列と同じ Tier 8 の段階で処理する。粘土作業台・作業板の製作は `minecraft:planks` を使い、竹板材を受け付ける。竹は苗木として扱わない。アイテムタグ `clayium:laser_tree_sources` は `#minecraft:saplings` を参照する。M32 の同名ブロックタグは旧6樹種の苗木、サクラ苗木、マングローブの芽、ツツジ、開花ツツジを明示し、照射対象を決める。
+
+## M32 粘土樹
+
+`ClayTreeRegistration` は `clay_tree_sapling`、`clay_tree_leaf`、`clay_tree_log` の同名 Block/Item を登録する。M29 のレーザー受信 Capability はブロックタグ `clayium:laser_tree_sources` を照合し、受信した単一ビームの `energy()` が1000以上で、粘土樹苗木が生存できる位置だけを変換する。999以下、不適格ブロック、吊り下がったマングローブの芽は変換しない。
+
+`clayium:clay_tree` ConfiguredFeature は高さ5～7の直立幹、半径2・高さ3の葉冠を持ち、`TreeGrower` の植樹成長だけに使用する。PlacedFeature や自然生成の Biome Modifier には追加しない。原木は自身を落とす。葉はハサミ・シルクタッチで自身を落とし、通常採取では粘土粉5%、高密度粘土粉0.5%を独立抽選し、幸運補正を適用する。原木の粉砕は Tier 5・200 tick・1000内部CEで有機粘土1個、遠心分離は Tier 6・400 tick・10000内部CEで発展工業用粘土粉16、マンガン粉5、リチウム粉3、ジルコニウム粉1を出す。GameTest は `laserThresholdTagsAndNaturalGenerationMatchClayTreeRules` と `plantedTreeGrowthDropsAndOriginalProcessingRouteAreComplete`、外観 E2E は `tests/e2e/clay-tree.mjs`。
 
 GameTest は `rawOresPreserveMetalBalanceAndVanillaDrops` と `modernWoodsUseTagsAndBambooIsNotASapling`。
 
