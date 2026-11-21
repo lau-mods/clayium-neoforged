@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "expanded=false,facing=east": {
+      "model": "clayium:block/storage_container",
+      "y": 90
+    },
+    "expanded=false,facing=north": {
+      "model": "clayium:block/storage_container"
+    },
+    "expanded=false,facing=south": {
+      "model": "clayium:block/storage_container",
+      "y": 180
+    },
+    "expanded=false,facing=west": {
+      "model": "clayium:block/storage_container",
+      "y": 270
+    },
+    "expanded=true,facing=east": {
+      "model": "clayium:block/storage_container_expanded",
+      "y": 90
+    },
+    "expanded=true,facing=north": {
+      "model": "clayium:block/storage_container_expanded"
+    },
+    "expanded=true,facing=south": {
+      "model": "clayium:block/storage_container_expanded",
+      "y": 180
+    },
+    "expanded=true,facing=west": {
+      "model": "clayium:block/storage_container_expanded",
+      "y": 270
+    }
+  }
+}

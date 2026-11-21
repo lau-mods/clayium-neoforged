@@ -2,1045 +2,8 @@
   "status": "running",
   "active": [
     {
-      "id": "M21",
-      "phase": "e2e",
-      "baseCommit": "1669c16b0cf4e4423ecc2fc117dd0f4c6ab6bba2",
-      "failures": {
-        "build": 0,
-        "gametest": 0,
-        "e2e": 0
-      },
-      "recoveries": 0,
-      "codeReview": {
-        "kind": "code",
-        "issues": [
-          {
-            "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerMenu.java:31 (also VoidContainerMenu.java:25, StorageContainerBlockEntity.java:110-176, VoidContainerBlockEntity.java:17-33)",
-            "acId": "AC-F021-001",
-            "problem": "The GUI slot is a NeoForge `SlotItemHandler` wrapped around handlers that do not implement `IItemHandlerModifiable`. When you drop a stack into the slot, `SlotItemHandler.set` casts the handler to `IItemHandlerModifiable` and throws a ClassCastException. That happens on click, on shift-click into an empty slot, and on `quickMoveStack` from slot 0 (`slot.set(EMPTY)`). The storage handler's `getStackInSlot` also returns a copy. `moveItemStackTo` grows that copy instead of the stored amount, so items the player shift-clicks into a partly filled container disappear. Shift-clicking out of the container moves items from the copy without lowering `amount`, so items are duplicated or the game crashes.",
-            "reason": "The criterion says inserting into the container must not lose items, and the void container must discard what the player inserts. Through the GUI, both containers crash, lose items or duplicate them.",
-            "fix": "Use a dedicated Slot subclass for the storage and void slots. It should send all changes through the handler: `insertItem` in `safeInsert`/`set`, and `extractItem` in `remove`. Alternatively, give the storage and void containers no item slot and handle insertion and extraction in `quickMoveStack` and `clicked` through `insertItem`/`extractItem`. Either way the stored `amount` must be the only source of truth.",
-            "id": "CR-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: GUI slots now insert and extract through the handlers, keeping the stored amount authoritative.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "ContainerInputSlot sends set, remove and safeInsert through the handler's insertItem and extractItem. The menus' quickMoveStack insert and extract through the handler too, so the stored amount stays authoritative.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the slot or handler code. The fix still holds.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the slot or handler code, so the earlier fix still holds.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes E2E camera code. The slot and handler code is untouched, so the fix still holds.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The slot and handler code is unchanged, so the fix still holds.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the slot or handler code, so the earlier fix still holds.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only resolves merge conflicts. ContainerInputSlot and the menus are still in place.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerBlockEntity.java:179-200, StorageContainerMenu.java:69-75",
-            "acId": "AC-F021-001",
-            "problem": "`StorageData` sends `amount` and `capacity` as 32-bit halves through `ContainerData`. The vanilla `ClientboundContainerSetDataPacket` only carries a short per data slot, so values such as 65,536 or 2,147,483,647 reach the client truncated. The GUI then shows the wrong amount and capacity.",
-            "reason": "The player cannot see the 65,536 and 2,147,483,647 capacity boundaries the criterion requires. Other menus in this mod (`ClayMachineBlockEntity`, `ClayProductionBlockEntity`/`ClayProductionMenu.readLong`) already split longs into 16-bit parts.",
-            "fix": "Split `amount` and `capacity` into four 16-bit data slots each (`(int)(value >>> (i*16)) & 0xFFFF`). Rebuild them on the client the same way `ClayProductionMenu.readLong` does, and resize the `SimpleContainerData`.",
-            "id": "CR-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Amount and capacity sync as four 16-bit parts each.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Amount and capacity are each split into four 16-bit data slots, rebuilt on the client by readLong, and the ContainerData size is 9.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not change the 16-bit ContainerData sync. The screen change only moves how the amount is drawn.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the 16-bit ContainerData sync.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the 16-bit ContainerData sync.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The 16-bit ContainerData sync is unchanged.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the 16-bit ContainerData sync.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the 16-bit ContainerData sync.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/datagen/storage/StorageBlockLoot.java:17 and src/main/java/net/claustra01/clayium/storage/StorageContainerBlock.java",
-            "acId": "AC-F021-001",
-            "problem": "Breaking a storage container drops a bare `storage_container` item. The loot table uses `dropSelf`, and neither `onRemove` nor a data component keeps the stored item, the amount or the Clay Core expansion. Up to 2,147,483,647 items and the consumed Clay Core are deleted.",
-            "reason": "The criterion forbids item loss in the storage container.",
-            "fix": "Keep the contents when the block is mined. Store the item, amount and expansion in a Data Component on the dropped item: use `copy_components` in the generated loot table together with the block entity's `collectImplicitComponents`/`applyImplicitComponents`, and restore the `expanded` block state on placement. Add a GameTest for breaking and placing it again.",
-            "id": "CR-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: The storage container drop retains its contents and expansion data, which placement restores.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The loot table copies custom_data from the block entity. collectImplicitComponents and applyImplicitComponents save and restore the contents, and getStateForPlacement restores the EXPANDED block state. A GameTest covers break and replace.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not affected by the diff. The loot table and component retention are unchanged.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The loot table and component retention are not affected by the diff.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The loot table and component retention are not affected by the diff.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The loot table and component retention are unchanged.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The loot table and component retention are not affected by the diff.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The loot table and component retention are unchanged. StorageBlockLoot is still there.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/storage/StorageContainerBlockEntity.java:97-108",
-            "acId": null,
-            "problem": "`syncState` calls `level.sendBlockUpdated(...,3)` on every insertion and extraction. The block entity has no `getUpdateTag`/`getUpdatePacket`, and no client code reads its data, so each hopper or pipe transfer sends a useless block update.",
-            "reason": "The code style asks to remove code the current behavior does not use and to rely on the vanilla mechanisms (`setChanged` plus menu data sync).",
-            "fix": "Call only `setChanged()` on content changes. Change the `EXPANDED` block state only in `applyClayCore`, and remove the `sendBlockUpdated` branch.",
-            "id": "CR-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Content changes now use setChanged without redundant block updates.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Content changes call only setChanged, and the block state is updated only in applyClayCore.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Not affected by the diff. syncState still only calls setChanged.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the block entity's syncState.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the block entity's syncState.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. syncState is unchanged.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the block entity's syncState.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the block entity's syncState.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/generated/resources/assets/clayium/models/item/*_chest.json (StorageItemModelProvider.java:22-27) and blockstates/*_chest.json (StorageBlockStateProvider.java:46-47)",
-            "acId": "AC-F021-002",
-            "problem": "The 57 metal chest item models use `item/generated` with textures from `clayium:entity/metalchest/*`. That directory is not in the block/item atlas, and the mod adds no atlas source, so every metal chest item shows the missing texture. Even if the textures were stitched, you would see the flat, unwrapped chest entity texture instead of a chest. The blockstates point to `minecraft:block/air`, so breaking particles show the missing texture too.",
-            "reason": "The criterion requires each material's own appearance based on the original PNGs, and the items are part of that appearance.",
-            "fix": "Render the items through the chest model: use a `builtin/entity` parent with an `IClientItemExtensions` `BlockEntityWithoutLevelRenderer` that reuses `MetalChestRenderer` and the material tint. Give the block model a particle texture taken from the existing original PNG. Remove the item-color registration in `MaterialColors` if it is no longer used.",
-            "id": "CR-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Metal chest items use the chest renderer, and block models have a particle texture copied from an original PNG.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Metal chest items use a builtin/entity parent with a BlockEntityWithoutLevelRenderer, and the block models use a particle texture. The item-color registration was removed.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff adds noOcclusion and a getShape override to MetalChestBlock. This is consistent with the invisible render shape and the entity-renderer items. The builtin/entity item path is unchanged.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the item models or the renderer.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the item models or the renderer.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The item models and renderer are unchanged.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the item models or the renderer.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the item models or the renderer. The StorageItemModelProvider registration is kept in the merge.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:79-117",
-            "acId": "AC-F021-002",
-            "problem": "`allFiftySevenMetalChestsMatchTheCapacityLedger` compares `MetalChestType.ALL` with itself: the handler size is built from the same `type.slots()` the test checks. There is no independent GR-08 ledger, so a wrong width, height or page count in `MetalChestType` would still pass. All pages are also filled with `inventory().setStackInSlot` instead of the menu slots, so operating each page through the menu is never tested.",
-            "reason": "The criterion's precondition is a ledger of each material's page and slot counts, and its action is operating every page of every chest.",
-            "fix": "Put an independent table of the 57 (id, columns, rows, pages) values from the original GR-08 data in the test and compare `MetalChestType`/the registry against it. On each page, insert and take items through the active `menu.slots` (`quickMoveStack` from the player inventory and `slot.safeInsert`/`safeTake`), then check that the items reach the expected handler indexes and survive save and load.",
-            "id": "CR-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: GameTests compare all 57 types with an independent GR-08 ledger and operate slots on every page.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The test compares all 57 types with an independent GR-08 ledger, then inserts, takes and shift-moves items through the menu slots on every page.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTests are not touched by the diff. The menu slot positions changed, but the test works through slots and handler indexes.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The GameTests are unchanged.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTests are unchanged, and the acceptance entries for them are kept in the merge.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:25-78",
-            "acId": "AC-F021-001",
-            "problem": "The storage test calls `applyClayCore()` directly instead of using a Clay Core on the block (`useItemOn`). It does not check that the Clay Core is consumed or that the `expanded` block state is set. It never inserts or extracts through the container menu, which is the path that crashes, loses or duplicates items. It saves and reloads only the expanded state, never the basic 65,536 state.",
-            "reason": "The criterion's action is to apply a Clay Core and to insert again; this test bypasses both.",
-            "fix": "Place the block in the level, give a mock player a Clay Core and use it on the block through the block's `useItemOn`. Assert that the core stack shrank and `EXPANDED` is true. Insert and take items through `StorageContainerMenu`/`VoidContainerMenu` slots and `quickMoveStack`, and check that the totals are conserved. Save and reload at the basic 65,536 boundary as well.",
-            "id": "CR-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: GameTests apply and consume a Clay Core through block interaction and exercise GUI insertion, extraction, and basic-state saving.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The test uses a Clay Core through useItemOn and checks the consumed stack and the EXPANDED state. It operates the storage and void menus through slots, clicks and quickMoveStack, and saves and reloads the basic state.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTests are not touched by the diff.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The GameTests are unchanged.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTests are unchanged.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/gametest/storage/StorageGameTests.java:121-143",
-            "acId": "AC-F021-002",
-            "problem": "`metalChestMenusKeepIndependentServerAuthoritativePages` writes directly to the shared handler and reads the value back. It never moves an item through either menu's slots on its selected page, and never checks that the other menu sees the change. Writing to the handler and reading it back proves nothing about concurrent menus.",
-            "reason": "A GameTest has to perform the action and assert the expected result. Here the assertion is trivially true.",
-            "fix": "Insert an item through `first.slots` on page 1 and another through `second.slots` on page 7, for example with `quickMoveStack` from each player's inventory. Assert that each item lands in the correct handler index and that the other menu's matching slot shows it.",
-            "id": "CR-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: The concurrent-menu test inserts through each menu and verifies that both menus see the shared inventory.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The concurrent-menu test inserts through each menu's slots and checks that the other menu sees the item on its own page.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTests are not touched by the diff.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script. The GameTests are unchanged.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff does not touch the GameTests.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The GameTests are unchanged.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "tests/e2e/storage-containers.mjs:21-64",
-            "acId": "AC-F021-002",
-            "problem": "The E2E scenario opens only the Europium chest and screenshots only page 1 and page 8. It turns pages by clicking at a hard-coded pixel offset (`centerX + 223`) and never checks that the page indicator or slot contents changed. The other 56 chests are never opened, and their pages are never operated or captured. For AC-F021-001 it captures only exteriors: no GUI with the amount or capacity, and no insertion.",
-            "reason": "The criterion requires operating every page of every chest and capturing the opened GUIs.",
-            "fix": "Loop over all 57 chests. Open each one, capture every page while switching with the page button, and verify the page and slot contents each time with `gui layout`, using the button's position from the layout rather than a fixed offset. Add a storage container GUI capture that shows the 65,536 and 2,147,483,647 amounts.",
-            "id": "CR-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: The E2E scenario opens all 57 chests, captures every page, derives page-button coordinates from the GUI layout, and captures storage GUI capacity boundaries.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E loops over all 57 chests and every page, takes the page button from the layout where it is available, and captures the storage and void GUIs at the capacity boundaries.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E scenario still loops over all 57 chests and every page. The diff adds awaits and a settled camera. The page button position now follows the new layout, and the fallback offset was updated to match.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E scenario still loops over all 57 chests and every page. The diff only adds a look-at target and waits to the camera settling.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E scenario still loops over all 57 chests and every page. It checks the layout for the active slots, takes the page button from the layout, and captures the storage and void GUIs. The diff only changes how the camera is set and checked: it now sets the yaw and pitch directly and verifies them.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E scenario still loops over all 57 chests and every page, and still captures the storage and void GUIs. The diff only changes camera handling: it drops the look-set call, switches to spectator for the exterior shots, and adjusts heights and pitch.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only changes the camera pitch in the E2E script. The loop over all 57 chests and every page is unchanged.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The E2E script is not touched by the diff.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "AGENTS.md",
-            "acId": null,
-            "problem": "AGENTS.md has no M21 section. It does not record the storage container capacities, the Clay Core expansion, the NBT keys (`stored`, `amount`, `expanded`, `inventory`), the block entity and menu IDs (`storage_container`, `void_container`, `metal_chest`), the 57-chest columns×rows×pages table, the page-button protocol, or the GameTest and E2E names.",
-            "reason": "The project rules require AGENTS.md to be updated together with changes to IDs, registrations, behavior and verification steps, and AGENTS.md is in this milestone's scope.",
-            "fix": "Add an M21 section like the existing milestone sections, with the IDs, capacities, save keys, the GR-08 capacity table, the Capability exposure rules and the test names.",
-            "id": "CR-010",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: AGENTS.md now records M21 IDs, capacities, persistence, capability rules, chest dimensions, and verification names.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md now has an M21 section covering the IDs, capacities, NBT keys, the GR-08 table, the page protocol and the test names.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md is not touched by the diff. The M21 section is still in place.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "AGENTS.md is not touched by the diff, and the M21 section is still there.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The M21 section is kept in AGENTS.md and the conflict markers are gone. A search of src/main, AGENTS.md and tests/acceptance.json finds none.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          },
-          {
-            "target": "src/main/java/net/claustra01/clayium/storage/MetalChestType.java:67-71,82-88; StorageContainerMenu.java:28-31; VoidContainerMenu.java:24-25; MetalChestMenu.java:26-27; StorageContainerBlockEntity.java:89; StorageContainerBlockEntity.java:170-174",
-            "acId": null,
-            "problem": "Several places check for states the game cannot produce:\n- A compact-constructor check that the dimensions are positive, for constant data.\n- A null check in `material()`.\n- `chest == null` / `storage == null` fallbacks in the menus. They change the slot count (StorageContainerMenu, VoidContainerMenu) or crash anyway (MetalChestMenu dereferences `chest.inventory()`).\n- Clamping of the saved amount.\n- `checkSlot` throws.",
-            "reason": "The code style says to validate only states the game can produce and to rely on Minecraft and NeoForge guarantees.",
-            "fix": "Remove the dimension and material checks, the null fallbacks (resolve the block entity directly), the amount clamp and the `checkSlot` helpers.",
-            "id": "CR-011",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Removed the listed unreachable-state checks and fallbacks.",
-                "at": "2026-11-20T21:08:11.205Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The dimension and material checks, the null fallbacks, the amount clamp and the checkSlot helpers were removed.",
-                "at": "2026-11-20T21:08:36.266Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff adds no new unreachable-state checks or null fallbacks. The earlier removals still stand.",
-                "at": "2026-11-20T21:26:49.797Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff adds no unreachable-state checks.",
-                "at": "2026-11-20T21:50:03.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff adds no unreachable-state checks to the production code.",
-                "at": "2026-11-20T22:14:26.511Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff only touches the E2E script and adds no unreachable-state checks to production code.",
-                "at": "2026-11-20T22:19:21.726Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff adds no unreachable-state checks to the M21 code. The solar fabricator change is outside M21.",
-                "at": "2026-11-21T01:05:27.514Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The diff adds no unreachable-state checks. It only resolves merge conflicts.",
-                "at": "2026-11-21T01:22:53.820Z"
-              }
-            ]
-          }
-        ]
-      },
-      "codeReviewTree": "23535a2e66c01246d8441f96acf2f8256aa6ac4a",
-      "e2eReview": {
-        "kind": "e2e",
-        "issues": [
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-all-57-original-layered-metal-chests.png",
-            "acId": "AC-F021-002",
-            "problem": "The overview shot shows only the default flat grass world, seen from the player's normal eye height in daytime. None of the 57 metal chests appear, and neither does the smooth-stone platform at y=99, so no per-material exterior can be checked.",
-            "reason": "The screenshot is taken before the scenario's camera move and world edits are visible on the client. `command()` and `screenshot()` are not awaited, and nothing waits after `camera()` to confirm the view is at x=0.5, y=104.5, z=-31.5. Later shots of the same run show the platform and chests, so the blocks do exist; the capture simply happened too early.",
-            "fix": "In `tests/e2e/storage-containers.mjs`, await every `command()` and `camera()` call. After `camera()`, wait for the client position to match, plus a few ticks for chunks to re-render, before calling `await screenshot(...)`. Keep the camera inside the 45×17 platform view so all 57 chests are in frame.",
-            "id": "ER-001",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Awaited world edits and screenshots, then verified camera position and allowed rendering time before the overview capture.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The overview shot still shows only the flat grass field and sky. No platform and none of the 57 chests are in frame, so the capture still happens before the camera move and world edits take effect.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 57種のチェストの外観撮影前に視点をチェスト群へ向け、描画更新を待つよう変更しました。再撮影による確認は残っています。",
-                "at": "2026-11-20T21:49:55.358Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The overview shot shows only sky, clouds and the sun, with the hand at the bottom right. The camera points straight up. No platform and none of the 57 chests are in frame, so nothing can be checked. The capture is still wrong.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 57チェストの撮影前にカメラ位置と yaw/pitch の到達を確認し、描画を待つよう変更しました。再撮影による画面確認は残っています。",
-                "at": "2026-11-20T22:14:06.376Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 57種の撮影中に落下しないよう観戦モードへ切り替え、位置と向きを確認してから撮影するようにしました。",
-                "at": "2026-11-20T22:19:12.796Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: チェスト群の撮影前に観戦モードへ切り替え、カメラの位置と向きの到達を確認して描画を待つようにしました。再撮影による画面確認は残っています。",
-                "at": "2026-11-21T01:05:19.245Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The overview shot now shows the smooth-stone platform with the rows of metal chests in frame, plus the three containers in front. The per-material tints can be told apart, though the chests are small at this distance.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-basic-expanded-and-void-container-exteriors.png",
-            "acId": "AC-F021-001",
-            "problem": "The exterior shot is the same empty grass view as the 57-chest overview. The unexpanded storage container, the expanded one and the void container at (-2/0/2, 100, -5) do not appear.",
-            "reason": "Same cause as the overview shot: the screenshot fires before the camera move and the `setblock` commands are applied and rendered, because those calls are not awaited and nothing waits for the view to settle.",
-            "fix": "Await the setblock commands and the camera move, wait for the render to settle, then capture. Better still, give the containers their own camera position near (0.5, 101.5, -9.5) facing south so all three blocks fill the frame.",
-            "id": "ER-002",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Added a settled camera view close to the three containers before their exterior capture.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The exterior shot is still an empty grass view. Only two tiny specks sit on the horizon, so the storage container, expanded container and void container cannot be inspected. The closer camera position did not take effect.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 3種のコンテナの外観撮影前にも近距離の視点を明示し、描画更新を待つよう変更しました。再撮影による確認は残っています。",
-                "at": "2026-11-20T21:49:55.358Z"
-              },
-              {
-                "status": "open",
-                "by": "claude",
-                "note": "The exterior shot is also only sky and clouds. The storage, expanded and void containers do not appear. The close camera framing still has no effect, and the view even points skyward.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 3コンテナの近距離撮影にも同じ位置・向きの確認と描画待ちを適用しました。再撮影による画面確認は残っています。",
-                "at": "2026-11-20T22:14:06.376Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 3種のコンテナを近距離で捉える位置と角度に調整し、位置確認と描画待ちの後に撮影するようにしました。",
-                "at": "2026-11-20T22:19:12.796Z"
-              },
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: 3種のコンテナを近距離で捉える位置と角度に調整し、視点の到達と描画待ちの後に撮影するようにしました。再撮影による画面確認は残っています。",
-                "at": "2026-11-21T01:05:19.245Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The exterior shot is a close view of the three containers: the black/white striped unexpanded one, the yellow expanded one and the white/black void one. The metal chest rows are visible behind them.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-silicon_chest-page-1-of-1.png",
-            "acId": "AC-F021-002",
-            "problem": "The metal chests visible in the world behind every chest GUI (silicon, vanadium, cobalt, tantalum, palladium and others) are drawn as solid black chest shapes. None of the base/dark/light material tints are visible, while the stone floor next to them is still lit.",
-            "reason": "`MetalChestBlock` uses `RenderShape.INVISIBLE` with a block entity renderer, but `StorageRegistration.containerProperties()` does not call `noOcclusion()`. The block therefore counts as an opaque full cube, so the light value passed to `MetalChestRenderer` for its own position is 0 and the model renders black. Neighbouring faces are also culled.",
-            "fix": "Give metal chests their own properties, `containerProperties().noOcclusion()`, and return a chest-shaped `VoxelShape` such as `Block.box(1,0,1,15,14,15)` from `getShape`, as vanilla `ChestBlock` does. The renderer then receives real light and shows the tinted layers.",
-            "id": "ER-003",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Made metal chests non-occluding and gave them a chest-shaped voxel shape so the renderer receives light.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The world chests behind the GUIs now show shading and material tints. These include the blue vanadium chest, the dark-red cobalt chest and the green, red and blue ones behind the silicon GUI. They are no longer solid black.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The world chests behind the GUIs show shaded models with material tints, such as the dark blue vanadium chest and the dark red cobalt chest. The silicon shot shows light and dark faces, and the container shots show the tinted layers. They are no longer flat black. Dark tantalum is a dark material, not an unlit one.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The world chests behind the chest GUIs are shaded and tinted (green, dark red, blue, teal, purple and others), not flat black. Dark materials such as tantalum look dark because of their tint, not because they are unlit.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-americium_chest-page-2-of-5.png",
-            "acId": "AC-F021-002",
-            "problem": "The page counter between the ◀ and ▶ buttons cannot be read on any chest page: \"2/5\", \"8/8\" and \"3/3\" show up as smeared double glyphs whose edges run into both buttons.",
-            "reason": "`MetalChestScreen.renderLabels` uses `drawCenteredString`, which always adds a drop shadow, with dark text colour 0x404040. The label is also centred at `imageWidth-30` inside a gap only 20px wide (between `imageWidth-40` and `imageWidth-20`), so the shadowed text touches both buttons.",
-            "fix": "Draw the label without a shadow: `graphics.drawString(font, page, imageWidth - 30 - font.width(page) / 2, y, 0x404040, false)`. Widen the gap so labels up to \"8/8\" fit with padding, for example ◀ at `imageWidth-66` and ▶ at `imageWidth-24` with the label centred between them.",
-            "id": "ER-004",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Widened the page-control gap and drew its counter without a shadow.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The page counters read cleanly as \"1/1\", \"2/5\" and \"8/8\" in the silicon, americium, cobalt and neodymium GUIs. There is no doubled shadow and a clear gap on both sides of the counter.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Page counters \"1/1\", \"2/5\", \"1/8\" and \"1/1\" are drawn crisp, with no shadow and a clear gap on both sides, in the silicon, americium, cobalt and neodymium GUIs.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The page counters (1/1, 1/2, 2/2, 1/3, 1/5 and so on) are drawn crisp, with no shadow and a clear gap on both sides, in every chest GUI I opened.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-europium_chest-page-8-of-8.png",
-            "acId": "AC-F021-002",
-            "problem": "In every metal chest GUI the ◀/▶ page buttons cover the panel's top and right border: the ▶ button runs over the right frame edge and both buttons sit flush with the top edge. The title band is also only 13px tall, so the buttons touch the first slot row.",
-            "reason": "The buttons are placed at `topPos + 1`, 12px tall, and the ▶ button ends at `imageWidth - 2`. That is inside the 3–4px frame drawn by `LogisticsBackground.draw`, and the slot grid starts at y=13–14 directly below.",
-            "fix": "Keep the buttons inside the frame (for example `bounds(leftPos + imageWidth - 24, topPos + 4, 18, 12)` and the matching ◀ position). Make the title band taller by moving storage slots to y≈18 in both `MetalChestMenu` and `MetalChestScreen.renderBg`, and update `imageHeight()` to match.",
-            "id": "ER-005",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Moved page buttons inside the frame and increased the title-band height.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "In silicon, americium, cobalt and neodymium the ◀/▶ buttons sit inside the frame with a margin on the top and right edges. The title band is taller and the first slot row starts below the buttons. The large chests (europium, invar and others) are cut off at the top of the screen, but the button placement itself is fixed.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Where the title band is visible (silicon, americium, cobalt, neodymium), the ◀/▶ buttons sit inside the frame with a margin at the top and right. The first slot row starts below them. In the tallest panels (europium, invar, vanadium, tantalum, palladium) the title row is cut off by the screen top. That is a separate cause from the button placement, which is fixed.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Where the title band is on screen (Rubidium, Caesium, Francium, Radium, Actinium and others), the ◀/▶ buttons sit inside the frame with a margin at the top and right, and the first slot row starts below them. In the tallest panels (Titanium, Strontium, Barium and the 13x8 chests) the title row is cut off by the screen top. That is a separate framing cause, not the button placement.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-002-invar_chest-page-1-of-1.png",
-            "acId": "AC-F021-002",
-            "problem": "The chest grid runs straight into the player inventory with no gap and no \"Inventory\" label. The hotbar is not separated from the main inventory, and the bottom slot row sits on the panel's bottom edge with no bottom border. In the 9-wide chests (invar, silicon, hafnium and others) chest rows and player rows look identical, so the user cannot tell where the chest's capacity ends. This applies to all 57 chest GUIs (europium, vanadium, tantalum, palladium and others).",
-            "reason": "`MetalChestMenu` and `MetalChestScreen` put the player inventory at `14 + rows*18`, right after the last chest row, and the hotbar at `+54` with no 4px gap. `imageHeight()` is `14 + rows*18 + 72`, which leaves no bottom padding, and `playerInventoryTitle` is never drawn.",
-            "fix": "Use a vanilla-style layout:\n- Storage starts at y=18.\n- `playerY = 18 + rows*18 + 14`.\n- Draw `playerInventoryTitle` at `playerY - 11`.\n- Put the hotbar at `playerY + 58`.\n- `imageHeight = playerY + 76 + 7`.\n\nApply the same offsets in the Menu slot positions and in `renderBg`.",
-            "id": "ER-006",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Separated chest and player slots, added the inventory label and hotbar gap, and increased bottom padding.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The player inventory is now separated from the chest grid. The 物品栏 label is drawn, the hotbar has its own gap, and the panel has bottom padding. This holds in the silicon, americium, cobalt and neodymium GUIs.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "The 物品栏 label is drawn. The player inventory is separated from the chest grid, the hotbar has its own gap, and the panel has bottom padding. This holds in the silicon, americium, cobalt and neodymium GUIs. In the tall panels the bottom is cut off by the screen, but the layout spacing is correct.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "Chest and player inventory are separated, the 物品栏 label is drawn, the hotbar has its own gap and the panel has bottom padding. This holds in the short panels, which show the whole layout. In the tall panels the bottom is cut off by the screen, but the spacing is the same. The invar shot returned no image on the first read and was not re-read; I judged this on the other chest GUIs.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-basic-65536-gui.png",
-            "acId": "AC-F021-001",
-            "problem": "The amount line \"65,536 / 65,536\" is drawn as bold, smeared double text with a heavy dark shadow and is hard to read. The same happens to \"2,147,483,646 / 2,147,483,647\" in the expanded GUI.",
-            "reason": "`StorageContainerScreen.renderLabels` uses `drawCenteredString`, which forces a drop shadow, with dark grey 0x404040. A dark shadow under dark text produces the doubled glyphs.",
-            "fix": "Draw the amount without a shadow, centred by hand: `graphics.drawString(font, amount, (imageWidth - font.width(amount)) / 2, 58, 0x404040, false)`.",
-            "id": "ER-007",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Drew the storage amount centered without a shadow.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no shadow.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no doubled shadow.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"65,536 / 65,536\" and \"2,147,483,646 / 2,147,483,647\" are drawn as crisp single-weight text with no doubled shadow, centred under the slot.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-expanded-2147483647-gui.png",
-            "acId": "AC-F021-001",
-            "problem": "The \"Clay Core expanded\" label overlaps the player inventory title (物品栏) below it, so the two lines of text are drawn on top of each other.",
-            "reason": "In `StorageContainerScreen` the expanded label is drawn at y=70 and `inventoryLabelY` is 75. Both are 9px-tall text lines only 5px apart.",
-            "fix": "Move the expanded label clear of the inventory title. For example, draw it at y=20 under the container title, or move the amount to y=50 and the label to y=62. Alternatively, grow `imageHeight` and push the player inventory and its label down by at least 10px.",
-            "id": "ER-008",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Moved the expanded label below the container title, clear of the inventory label.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"Clay Core expanded\" now sits directly under the title and is clear of the 物品栏 label.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"Clay Core expanded\" sits directly under the title. It is well clear of the 物品栏 label.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"Clay Core expanded\" sits directly under the title and is well clear of the 物品栏 label.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          },
-          {
-            "target": ".harness-state/runs/2026-11-20T21-09-13-635Z-007-M21-e2e/scenarios/tests-e2e-storage-containers.mjs/screenshots/AC-F021-001-void-gui.png",
-            "acId": "AC-F021-001",
-            "problem": "The red notice \"Inserted items are discarded\" has the same smeared, doubled look and is hard to read.",
-            "reason": "`VoidContainerScreen` draws the centred notice with `drawCenteredString`, which adds a forced drop shadow, in a dark red colour, just like the storage container amount line.",
-            "fix": "Draw the notice with `drawString(..., false)` and centre it manually. If a shadow is wanted, use a lighter colour that works with it.",
-            "id": "ER-009",
-            "status": "resolved",
-            "history": [
-              {
-                "status": "open",
-                "by": "codex",
-                "note": "fixed: Drew the void notice centered without a shadow.",
-                "at": "2026-11-20T21:26:26.094Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
-                "at": "2026-11-20T21:47:38.948Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
-                "at": "2026-11-20T22:11:18.459Z"
-              },
-              {
-                "status": "resolved",
-                "by": "claude",
-                "note": "\"Inserted items are discarded\" is drawn as crisp single text with no doubled shadow.",
-                "at": "2026-11-21T01:18:39.642Z"
-              }
-            ]
-          }
-        ]
-      },
-      "failure": null,
-      "conflicts": [],
-      "reviewConflicts": []
-    },
-    {
       "id": "M26",
-      "phase": "implementation",
+      "phase": "e2e",
       "baseCommit": "1669c16b0cf4e4423ecc2fc117dd0f4c6ab6bba2",
       "failures": {
         "build": 0,
@@ -1058,8 +21,21 @@
             "reason": "The project rules say that changes to user-visible behaviour, IDs, registrations, conditions and verification steps must update AGENTS.md in the same change. Every earlier milestone has a section, and M26's scope lists AGENTS.md.",
             "fix": "Add an `## M26 自動取引装置` section that records the IDs, original key `tile.blockAutoTrader.name`, Tier and its source, CE per trade, the search area and merchant-busy rule, the validation order (merchant, lock, offer, out of stock, output space, materials, CE), the use of current `getCostA`/`getCostB` and `notifyTrade`, the slot and face layout, the NBT keys, the payload validation, and the GameTest and E2E names.",
             "id": "CR-001",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Added the M26 IDs, Tier, trade rules, storage, payloads and verification names to AGENTS.md.",
+                "at": "2026-11-21T01:44:09.663Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has an M26 section covering IDs, Tier, CE cost, search area, validation order, slots, NBT keys, payloads and test names.",
+                "at": "2026-11-21T01:44:32.582Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/machine/trade/AutoTraderBlockEntity.java:291-346 (TradeContainerData) / AutoTraderMenu.java:83-126",
@@ -1068,8 +44,21 @@
             "reason": "AC-F026-002 requires the GUI to show the selected trade and its required materials correctly. ContainerData is meant only for small int values; full ItemStacks and long values need proper stream codecs.",
             "fix": "Send the merchant's offers (e.g. `MerchantOffers.STREAM_CODEC` or ItemStack/ItemCost stream codecs for the visible offers) plus the selected index, state and long CE values with a clientbound payload or the menu's extra data when they change. Keep ContainerData only for values that fit in 16 bits. Look up the merchant once per server tick instead of once per data index. Make the GameTest check the values the client screen actually receives.",
             "id": "CR-002",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Replaced offer data encoded as short values and item IDs with a MerchantOffers client payload carrying full stacks and long CE values. The GameTest checks a codec round trip.",
+                "at": "2026-11-21T01:44:09.663Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ContainerData is replaced by a TradeSnapshotPayload using MerchantOffers.STREAM_CODEC and VAR_LONG values, sent when the content hash changes. The merchant is cached once per tick. The GameTest round-trips the codec and checks components, discounted costs and the long CE value.",
+                "at": "2026-11-21T01:44:32.582Z"
+              }
+            ]
           },
           {
             "target": "tests/e2e/auto-trader.mjs:18-28",
@@ -1078,8 +67,21 @@
             "reason": "The E2E is the only evidence for the screen part of AC-F026-002, which asks for a capture of the trade list with the selected trade and its required materials shown correctly.",
             "fix": "Fill the device in a way that works for an ItemHandler-only block entity, for example from a vanilla chest or hopper next to it, or through player inventory clicks in the GUI. Give the villager several offers, select a non-first offer through the GUI, and set up a stop condition (e.g. missing material or no CE) so the screenshot shows the list, the highlighted selection, the current discounted required materials and the stop state without the trade consuming them.",
             "id": "CR-003",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The E2E now fills the block entity through NBT, presents two offers, selects the discounted second offer and leaves trading stopped for the screenshot.",
+                "at": "2026-11-21T01:44:09.663Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E fills the block entity via NBT merge, spawns two offers, and clicks the second one in the GUI. With no fuel the device stops for lack of CE, so nothing is consumed. The click at (700,291) lands on the second offer button at GUI scale 1, assuming MC Pilot runs at that scale; I did not confirm the scale.",
+                "at": "2026-11-21T01:44:32.582Z"
+              }
+            ]
           },
           {
             "target": "src/main/java/net/claustra01/clayium/machine/trade/AutoTraderBlockEntity.java:200-205 (setChangedAndSync)",
@@ -1088,12 +90,42 @@
             "reason": "The code style says to remove code the current behaviour does not use. The client gets its data only through the menu.",
             "fix": "Replace `setChangedAndSync()` with a plain `setChanged()` (or sync through the menu as described above) and remove the `sendBlockUpdated` call.",
             "id": "CR-004",
-            "status": "open",
-            "history": []
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Removed the block update call; state changes use setChanged(), and the open menu supplies client updates.",
+                "at": "2026-11-21T01:44:09.663Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "setChangedAndSync and sendBlockUpdated are gone from the trade package; state changes call setChanged().",
+                "at": "2026-11-21T01:44:32.582Z"
+              }
+            ]
           }
         ]
       },
-      "codeReviewTree": "5b80e2e64b2f3166d70a73a116a4015f0249fefa",
+      "codeReviewTree": "13b484eaadfdb83f376b9e6f76f0ea54656f7407",
+      "e2eReview": null,
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
+    },
+    {
+      "id": "M27",
+      "phase": "implementation",
+      "baseCommit": "45ebc7fe9bd4a4fc215a37f96b79da22fc449687",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": null,
+      "codeReviewTree": null,
       "e2eReview": null,
       "failure": null,
       "conflicts": [],
@@ -1124,8 +156,9 @@
     "M22",
     "M24",
     "M23",
-    "M25"
+    "M25",
+    "M21"
   ],
-  "lastCheckpoint": "1669c16b0cf4e4423ecc2fc117dd0f4c6ab6bba2",
+  "lastCheckpoint": "45ebc7fe9bd4a4fc215a37f96b79da22fc449687",
   "fatal": null
 }

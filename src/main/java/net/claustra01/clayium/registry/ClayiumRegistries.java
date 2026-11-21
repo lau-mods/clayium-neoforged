@@ -51,6 +51,7 @@ public final class ClayiumRegistries {
         ClayProductionRegistration.BLOCKS.size();
         FormingMachineRegistration.MACHINES.size();
         LogisticsRegistration.BUFFERS.size();
+        StorageRegistration.METAL_CHESTS.size();
         CreativeSourceRegistration.CREATIVE_ENERGY_SOURCE.getId();
         MultitrackRegistration.MULTITRACK_BUFFERS.size();
         MultitrackRegistration.DISTRIBUTORS.size();

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "clayium:block/storagecontainer",
+    "side": "clayium:block/storagecontainerside",
+    "top": "clayium:block/storagecontainertop"
+  }
+}

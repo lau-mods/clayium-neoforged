@@ -463,6 +463,30 @@
       "name": "allconvertertierspreserveratesrecipesredstoneandstoredfe"
     },
     {
+      "acId": "AC-F021-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "storagecapacityexpansionoverflowpersistenceandvoidareexact"
+    },
+    {
+      "acId": "AC-F021-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "storagecontentssurvivebreakingandplacement"
+    },
+    {
+      "acId": "AC-F021-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfiftysevenmetalchestsmatchthecapacityledger"
+    },
+    {
+      "acId": "AC-F021-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalchestmenuskeepindependentserverauthoritativepages"
+    },
+    {
       "acId": "AC-F004-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -593,6 +617,14 @@
     {
       "acId": "AC-F019-002",
       "scenario": "tests/e2e/item-buffer.mjs"
+    },
+    {
+      "acId": "AC-F021-001",
+      "scenario": "tests/e2e/storage-containers.mjs"
+    },
+    {
+      "acId": "AC-F021-002",
+      "scenario": "tests/e2e/storage-containers.mjs"
     },
     {
       "acId": "AC-F012-002",

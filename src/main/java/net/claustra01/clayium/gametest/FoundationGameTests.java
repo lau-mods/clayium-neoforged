@@ -33,6 +33,7 @@ import net.claustra01.clayium.datagen.iface.InterfaceLanguageEntries;
 import net.claustra01.clayium.datagen.fluid.FluidLanguageEntries;
 import net.claustra01.clayium.datagen.logistics.LogisticsLanguageEntries;
 import net.claustra01.clayium.datagen.multitrack.MultitrackLanguageEntries;
+import net.claustra01.clayium.datagen.storage.StorageLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -48,6 +49,7 @@ import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
+import net.claustra01.clayium.registry.StorageRegistration;
 import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.claustra01.clayium.registry.WeaponRegistration;
 import net.claustra01.clayium.registry.WaterWheelRegistration;
@@ -140,6 +142,8 @@ public final class FoundationGameTests {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
         });
+        StorageRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        StorageRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         ClayProductionRegistration.BLOCKS.values().forEach(block -> {
             expectedBlocks.add(block.getId());
             expectedItems.add(block.getId());
@@ -172,7 +176,9 @@ public final class FoundationGameTests {
                         ClayiumMod.id("buffer"), ClayiumMod.id("cobblestone_generator"),
                         ClayiumMod.id("quartz_crucible"), ClayiumMod.id("multitrack_buffer"),
                         ClayiumMod.id("distributor"), ClayiumMod.id("clay_production_machine"),
-                        ClayiumMod.id("energy_converter"), ClayiumMod.id("interface"),
+                        ClayiumMod.id("energy_converter"), ClayiumMod.id("storage_container"),
+                        ClayiumMod.id("void_container"), ClayiumMod.id("metal_chest"),
+                        ClayiumMod.id("interface"),
                         ClayiumMod.id("fluid_transport"), ClayiumMod.id("creative_ce_source"),
                         ClayiumMod.id("auto_crafter"))),
                 "Block entity registrations differ from registered blocks");
@@ -278,6 +284,9 @@ public final class FoundationGameTests {
             var energyConverters = new HashMap<String, String>();
             EnergyConverterLanguageEntries.add(locale, energyConverters::put);
             expectedKeys.addAll(energyConverters.keySet());
+            var storage = new HashMap<String, String>();
+            StorageLanguageEntries.add(locale, storage::put);
+            expectedKeys.addAll(storage.keySet());
             var interfaces = new HashMap<String, String>();
             InterfaceLanguageEntries.add(locale, interfaces::put);
             expectedKeys.addAll(interfaces.keySet());

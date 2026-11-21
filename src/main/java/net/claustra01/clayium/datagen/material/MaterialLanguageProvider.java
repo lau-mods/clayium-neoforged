@@ -19,6 +19,7 @@ import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
 import net.claustra01.clayium.datagen.waterwheel.WaterWheelLanguageEntries;
 import net.claustra01.clayium.datagen.multitrack.MultitrackLanguageEntries;
+import net.claustra01.clayium.datagen.storage.StorageLanguageEntries;
 import net.claustra01.clayium.datagen.iface.InterfaceLanguageEntries;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -69,6 +70,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         LogisticsLanguageEntries.add(locale, this::add);
         CreativeSourceLanguageEntries.add(locale, this::add);
         MultitrackLanguageEntries.add(locale, this::add);
+        StorageLanguageEntries.add(locale, this::add);
         InterfaceLanguageEntries.add(locale, this::add);
     }
 }

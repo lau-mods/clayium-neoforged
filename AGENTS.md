@@ -257,6 +257,13 @@ GameTest は `rawOresPreserveMetalBalanceAndVanillaDrops` と `modernWoodsUseTag
 
 GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` と `distributorsShareFairlyAcrossThreeTiersAndSkipFullOutputs`。外観 E2E は `tests/e2e/multitrack-logistics.mjs`。
 
+## M21 大容量収納と金属チェスト
+
+`StorageRegistration` は `storage_container`、`void_container` と57素材の `<material>_chest` を同名 Block/Item で登録する。BlockEntity/Menu ID は `storage_container`、`void_container`、`metal_chest`。ストレージは1品目を `long` で数え、初期容量65,536、Clay Core適用後は2,147,483,647。保存 NBT は `stored`、`amount`、`expanded`。破壊ドロップは同じ値を Item の `custom_data` に保持し、設置時に復元する。外部 `IItemHandler` は1スロットを通常スタック単位で公開し、搬入と搬出はその都度実残量を更新する。虚空コンテナは明示的な ItemHandler/GUI 投入だけを破棄する。金属チェストの保存 NBT は `inventory` で、Capability は全スロットを公開する。
+
+GR-08 の金属チェスト台帳は `素材:横×縦×ページ` とする。`SILICON:9×5×1 ALUMINIUM:9×6×1 CLAY_STEEL:9×8×1 CLAYIUM:13×8×1 ULTIMATE_ALLOY:13×8×3 MAGNESIUM:9×6×1 SODIUM:9×6×1 LITHIUM:9×7×1 ZIRCONIUM:9×7×1 ZINC:9×6×1 MANGANESE:9×6×1 CALCIUM:9×6×1 POTASSIUM:9×6×1 NICKEL:9×6×1 BERYLLIUM:10×8×1 LEAD:9×6×1 HAFNIUM:9×8×1 CHROME:13×8×1 TITANIUM:13×8×1 STRONTIUM:10×8×1 BARIUM:10×8×1 AZ91D_ALLOY:13×8×1 ZK60A_ALLOY:13×8×1 RUBIDIUM:13×3×1 CAESIUM:13×3×1 FRANCIUM:13×4×1 RADIUM:13×4×1 ACTINIUM:13×5×1 THORIUM:13×5×1 PROTACTINIUM:13×6×1 URANIUM:13×6×2 NEPTUNIUM:13×6×3 PLUTONIUM:13×6×4 AMERICIUM:13×6×5 CURIUM:13×6×6 LANTHANUM:13×2×2 CERIUM:13×2×4 PRASEODYMIUM:13×2×6 NEODYMIUM:13×2×8 PROMETHIUM:13×4×8 SAMARIUM:13×6×8 EUROPIUM:13×8×8 VANADIUM:4×8×1 COBALT:11×6×1 PALLADIUM:11×8×1 PLATINUM:13×8×2 IRIDIUM:13×8×3 OSMIUM:13×8×4 RHENIUM:13×8×5 TANTALUM:10×8×1 TUNGSTEN:13×8×1 MOLYBDENUM:13×8×2 ANTIMONY:9×6×1 BISMUTH:9×6×1 BRASS:9×6×1 ELECTRUM:13×8×1 INVAR:9×8×1`。ユーロピウムは832スロット。ページボタンは `clickMenuButton` の0始まりのページ番号でサーバーへ送る。各メニューは自分の表示ページを持ち、スロットの `isActive` とプレイヤーの shift 移動範囲を同じページへ限定する。
+
+GameTest は `storageCapacityExpansionOverflowPersistenceAndVoidAreExact`、`storageContentsSurviveBreakingAndPlacement`、`allFiftySevenMetalChestsMatchTheCapacityLedger`、`metalChestMenusKeepIndependentServerAuthoritativePages`。外観 E2E は `tests/e2e/storage-containers.mjs`。
 ## M23 座標同期インターフェース
 
 - `InterfaceRegistration` は `clay_interface_tier_5`～`13`、`redstone_interface_tier_5`～`13`、`clay_laser_interface_tier_7`～`13` の25種を同名 Block/Item に登録する。ID は `<stem>_tier_<Tier>`、共通 BlockEntity/Menu は `clayium:interface`。同期工具は `clayium:synchronizer`、記録先の Data Component は `clayium:synchronized_target`。

@@ -12,6 +12,7 @@ import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.logistics.BufferControlPayload;
 import net.claustra01.clayium.logistics.LogisticsCapabilities;
 import net.claustra01.clayium.registry.ClayiumRegistries;
+import net.claustra01.clayium.storage.StorageCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -29,6 +30,7 @@ public final class ClayiumMod {
         modEventBus.addListener(EnergyConverterCapabilities::register);
         modEventBus.addListener(FluidCapabilities::register);
         modEventBus.addListener(LogisticsCapabilities::register);
+        modEventBus.addListener(StorageCapabilities::register);
         modEventBus.addListener(InterfaceCapabilities::register);
         if (MOD_ID.equals(System.getProperty("neoforge.enabledGameTestNamespaces"))) {
             modEventBus.addListener(net.claustra01.clayium.gametest.iface.InterfaceGameTests::registerTestCapability);
