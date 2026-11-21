@@ -14,6 +14,7 @@ import net.claustra01.clayium.machine.ca.CaSeries;
 import net.claustra01.clayium.machine.series.MachineSeries;
 import net.claustra01.clayium.machine.series.SmeltingSeries;
 import net.claustra01.clayium.machine.iface.RedstoneControlReceiver;
+import net.claustra01.clayium.multiblock.careactor.CaReactorCoreBlockEntity;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeCache;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
@@ -170,6 +171,10 @@ public class ClayMachineBlockEntity extends BlockEntity
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+        if (!canProcess()) {
+            setState(MachineState.IDLE);
+            return;
+        }
         enforceFuelLimit();
         if (isRemoteRedstonePowered()) {
             setState(MachineState.IDLE);
@@ -252,8 +257,11 @@ public class ClayMachineBlockEntity extends BlockEntity
             setState(MachineState.OUTPUT_FULL);
             return;
         }
-        TierManager.ProcessingParameters parameters = TierManager.calculate(
-                series.parameters(tier()), recipe.processingTicks(), recipe.clayEnergy(), overclockFactor());
+        TierManager.ProcessingParameters parameters = processingParameters(recipe);
+        if (parameters == null) {
+            setState(MachineState.IDLE);
+            return;
+        }
         if (!canPower(parameters.energyPerProgress().internalValue())) {
             setState(MachineState.WAITING_FOR_ENERGY);
             return;
@@ -322,7 +330,7 @@ public class ClayMachineBlockEntity extends BlockEntity
                 List.of());
     }
 
-    private List<ItemStack> fixedOutputs(ClayiumMachineRecipe recipe) {
+    protected List<ItemStack> fixedOutputs(ClayiumMachineRecipe recipe) {
         if (series() != CaSeries.CONDENSER || level == null) {
             return combineStacks(recipe.itemOutputs());
         }
@@ -732,6 +740,16 @@ public class ClayMachineBlockEntity extends BlockEntity
         return activeProgressMultiplier;
     }
 
+    protected boolean canProcess() {
+        return true;
+    }
+
+    @Nullable
+    protected TierManager.ProcessingParameters processingParameters(ClayiumMachineRecipe recipe) {
+        return TierManager.calculate(
+                series().parameters(tier()), recipe.processingTicks(), recipe.clayEnergy(), overclockFactor());
+    }
+
     public int fuelLimit() {
         return level == null ? 1 : AugmentScanner.fuelLimit(level, worldPosition);
     }
@@ -1030,6 +1048,14 @@ public class ClayMachineBlockEntity extends BlockEntity
                 case 12 -> fluidOutput.isEmpty() ? 0 : BuiltInRegistries.FLUID.getId(fluidOutput.getFluid().getFluid()) + 1;
                 case 13 -> fluidOutput.getFluidAmount();
                 case 14, 15, 16, 17 -> (int)(requiredEnergy() >>> ((index - 14) * 16)) & 0xFFFF;
+                case 18 -> ClayMachineBlockEntity.this instanceof CaReactorCoreBlockEntity reactor
+                        && reactor.isFormed() ? 1 : 0;
+                case 19 -> ClayMachineBlockEntity.this instanceof CaReactorCoreBlockEntity reactor
+                        ? reactor.coilCount() : 0;
+                case 20 -> ClayMachineBlockEntity.this instanceof CaReactorCoreBlockEntity reactor
+                        ? reactor.hullCount() : 0;
+                case 21 -> ClayMachineBlockEntity.this instanceof CaReactorCoreBlockEntity reactor
+                        ? (int)Math.round(reactor.averageRank() * 100.0D) : 0;
                 default -> 0;
             };
         }
@@ -1040,7 +1066,7 @@ public class ClayMachineBlockEntity extends BlockEntity
 
         @Override
         public int getCount() {
-            return 18;
+            return 22;
         }
     }
 

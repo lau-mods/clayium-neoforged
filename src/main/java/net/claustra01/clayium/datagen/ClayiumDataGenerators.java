@@ -64,6 +64,8 @@ import net.claustra01.clayium.datagen.multiblock.MultiblockBlockLoot;
 import net.claustra01.clayium.datagen.multiblock.MultiblockBlockStateProvider;
 import net.claustra01.clayium.datagen.ca.CaBlockStateProvider;
 import net.claustra01.clayium.datagen.ca.CaBlockLoot;
+import net.claustra01.clayium.datagen.careactor.CaReactorBlockLoot;
+import net.claustra01.clayium.datagen.careactor.CaReactorBlockStateProvider;
 import net.claustra01.clayium.datagen.pan.PanBlockLoot;
 import net.claustra01.clayium.datagen.pan.PanBlockStateProvider;
 import net.minecraft.data.DataGenerator;
@@ -103,6 +105,7 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new TradeBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MultiblockBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new CaBlockStateProvider(output, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new CaReactorBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new PanBlockStateProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new WorkbenchItemModelProvider(output, event.getExistingFileHelper()));
@@ -163,6 +166,7 @@ public final class ClayiumDataGenerators {
                                 new LootTableProvider.SubProviderEntry(TradeBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(MultiblockBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(CaBlockLoot::new, LootContextParamSets.BLOCK),
+                                new LootTableProvider.SubProviderEntry(CaReactorBlockLoot::new, LootContextParamSets.BLOCK),
                                 new LootTableProvider.SubProviderEntry(PanBlockLoot::new, LootContextParamSets.BLOCK)),
                         event.getLookupProvider()));
         generator.addProvider(event.includeServer(), WorldgenDataProvider.create(event));

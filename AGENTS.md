@@ -372,6 +372,16 @@ GameTest は `allEightCaMachinesPreserveOriginalTiersRecipesAndResonance`、`res
 
 GameTest は `threeByThreeMiningStaysInPlaneAndRespectsBreakProtection`、`rememberedClayShapeRotatesMinesAndSurvivesItemSerialization`、`fourClayToolsKeepOriginalDurabilitySpeedOreHarvestAndConfig`。外観 E2E は `tests/e2e/advanced-clay-tools.mjs`。
 
+## M35 巨大CA反応炉
+
+`CaReactorRegistration` は `ca_reactor_core_mk_{i,ii,iii,iv}` と `ca_reactor_coil_mk_{i,ii,iii,iv}` を Tier 10～13、`ca_reactor_hull_rank_{1..10}` を同名 Block/Item として登録する。原作キーはコアが `tile.block{Antimatter,PureAntimatter,OEC,OPA}CAReactorCore.name`、コイルが `tile.blockCAReactorCoil.{antimatter,pureantimatter,oec,opa}.name`、筐体が `tile.blockCAReactorHull.{0..9}.name`。筐体アイテムの Tier はランク1～4が10～13、ランク5～10は13。4コアは `clayium:ca_reactor_core` BlockEntity と共通加工機 Menu を使う。
+
+コアに直接接するコイルから中空リングの連結成分を探索する。コイルは最低8個・最大128個、各コイルの隣接コイルは2個、非コイル面は筐体、同期済みアイテム・レーザーインターフェース、または唯一のコアで覆う。別のコアが同じリングに接すると無効。筐体は50個以上、コイルTierはコアと同じ、インターフェースTierはコア以上、筐体ランクはコアTier−3以下。インターフェースの同期先はコアの次元・座標と一致させる。変更通知時に構造キャッシュを失効させ、毎tickは探索しない。コアから各軸8ブロック以内の変更と、探索済み部材に接する変更を監視する。
+
+筐体数N・筐体平均ランクRから出力倍率 `0.2*1.02^N*7.5^R`、CE倍率 `1.01^(N*R)`、圧縮ランク `min(int(R),8)`、時間倍率 `9^R` を求める。tick・内部CE・出力個数は切り捨て、正の出力が1未満なら1個とする。出力はスタック上限64個で分割し、出力枠が埋まる場合は開始しない。非有限・負値・long超過時は安全停止する。圧縮はレシピ出力が純反物質の場合だけ適用する。`ca_reactor/pure_antimatter` は反物質1→純反物質1、Tier10、内部CE100,000,000、20tick。構造表示用の `reactor_formed`、`reactor_coils`、`reactor_hulls`、`reactor_average_rank` はクライアントへの更新タグのみで送る。`CAReactorGlittering` は初期true。
+
+GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` と `reactorUsesHotfixTwoFormulaCompressionEnergyTimeAndSafeStops`。外観 E2E は `tests/e2e/ca-reactor.mjs`。
+
 ## M36 PAN
 
 `pan_core` と `pan_cable` は Tier 11。`pan_adapter_tier_10`～`13` と `pan_duplicator_tier_4`～`13` は原作台帳に対応する。コアと複製機は共通の `clayium:pan` BlockEntity と Menu を使い、複製機のスロットは見本0、反物質1、出力2、CE燃料3。保存NBTは `inventory`、`energy`、`progress`、`active_consumption`。後者は再読み込み後の閉包変更時だけ進捗を破棄するために使う。

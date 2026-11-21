@@ -6,6 +6,7 @@ import java.util.Map;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
+import net.claustra01.clayium.multiblock.careactor.CaReactorCoreBlockEntity;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.Minecraft;
@@ -79,7 +80,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         for (int input = 0; input < inputSlots; input++) {
             graphics.blit(SLOT, leftPos + ClayMachineMenu.inputX(inputSlots, input) - 1, topPos + 34, 0, 0, 18, 18);
         }
-        int outputSlots = menu.machine() == null ? 1 : menu.machine().outputSlots();
+        int outputSlots = menu.machine() == null ? 1 : Math.min(menu.machine().outputSlots(), 4);
         for (int output = 0; output < outputSlots; output++) {
             graphics.blit(
                     SLOT,
@@ -163,6 +164,23 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
                         "gui.clayium.machine.required_energy", formatEnergy(menu.requiredEnergy())),
                 80, 69, 0x404040, false);
         ClayMachineBlockEntity machine = menu.machine();
+        if (machine instanceof CaReactorCoreBlockEntity) {
+            Component structure = Component.translatable(
+                    "gui.clayium.ca_reactor.structure",
+                    Component.translatable(menu.reactorFormed()
+                            ? "gui.clayium.ca_reactor.formed" : "gui.clayium.ca_reactor.incomplete"),
+                    menu.reactorCoils(), menu.reactorHulls());
+            Component rank = Component.translatable(
+                    "gui.clayium.ca_reactor.rank",
+                    String.format(java.util.Locale.ROOT, "%.2f", menu.reactorAverageRank()));
+            float scale = Math.min(0.65F, 162.0F / font.width(structure));
+            graphics.pose().pushPose();
+            graphics.pose().scale(scale, scale, 1.0F);
+            graphics.drawString(font, structure, (int)(7 / scale), (int)(77 / scale),
+                    menu.reactorFormed() ? 0x168A16 : 0xAA2020, false);
+            graphics.drawString(font, rank, (int)(7 / scale), (int)(83 / scale), 0x404040, false);
+            graphics.pose().popPose();
+        }
         if (machine != null && menu.state() == ClayMachineBlockEntity.MachineState.RUNNING) {
             int reservedStart = machine.inputSlots() + machine.outputSlots();
             for (int input = 0; input < machine.inputSlots(); input++) {
@@ -176,8 +194,10 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
                 }
             }
         }
-        graphics.drawString(font, Component.translatable("gui.clayium.machine.inventory"),
-                inventoryLabelX, inventoryLabelY, 0x404040, false);
+        if (!(machine instanceof CaReactorCoreBlockEntity)) {
+            graphics.drawString(font, Component.translatable("gui.clayium.machine.inventory"),
+                    inventoryLabelX, inventoryLabelY, 0x404040, false);
+        }
     }
 
     private int stateColor() {

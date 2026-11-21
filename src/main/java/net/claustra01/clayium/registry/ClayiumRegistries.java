@@ -45,6 +45,10 @@ public final class ClayiumRegistries {
         PanRegistration.DEFINITIONS.size();
         CaRegistration.AUGMENTS.size();
         CaRegistration.COLLECTOR_BLOCK_ENTITY.getId();
+        CaReactorRegistration.CORES.size();
+        CaReactorRegistration.COILS.size();
+        CaReactorRegistration.HULLS.size();
+        CaReactorRegistration.CORE_BLOCK_ENTITY.getId();
         AssemblyMachineRegistration.MACHINES.size();
         AutoCrafterRegistration.AUTO_CRAFTERS.size();
         MinerRegistration.BLOCKS.size();

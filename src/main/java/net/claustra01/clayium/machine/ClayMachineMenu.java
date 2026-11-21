@@ -20,7 +20,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public ClayMachineMenu(int containerId, Inventory playerInventory, BlockPos machinePos) {
-        this(containerId, playerInventory, machineAt(playerInventory, machinePos), new SimpleContainerData(18));
+        this(containerId, playerInventory, machineAt(playerInventory, machinePos), new SimpleContainerData(22));
     }
 
     public ClayMachineMenu(
@@ -36,10 +36,10 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new SlotItemHandler(machine.inventory(), input, inputX(machine.inputSlots(), input), 35));
             }
-            for (int output = 0; output < machine.outputSlots(); output++) {
+            for (int output = 0; output < Math.min(machine.outputSlots(), 4); output++) {
                 addSlot(new SlotItemHandler(
-                        machine.inventory(), machine.outputSlot(output), outputX(machine.outputSlots(), output),
-                        outputY(machine.outputSlots(), output)));
+                        machine.inventory(), machine.outputSlot(output), outputX(Math.min(machine.outputSlots(), 4), output),
+                        outputY(Math.min(machine.outputSlots(), 4), output)));
             }
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new LockedSlot(machine, machine.reservedSlot(input), -1000, -1000));
@@ -86,7 +86,8 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         }
         ItemStack original = slot.getItem().copy();
         ItemStack moving = slot.getItem();
-        int machineSlots = machine == null ? 0 : machine.inventory().getSlots();
+        int machineSlots = machine == null ? 0 : machine.inputSlots() * 2
+                + Math.min(machine.outputSlots(), 4) + 1;
         if (index < machineSlots) {
             if (!moveItemStackTo(moving, machineSlots, slots.size(), true)) {
                 return ItemStack.EMPTY;
@@ -94,7 +95,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         } else {
             boolean moved = machine != null
                     && machine.inventory().isItemValid(machine.fuelSlot(), moving)
-                    && moveItemStackTo(moving, machine.fuelSlot(), machine.fuelSlot() + 1, false);
+                    && moveItemStackTo(moving, machineSlots - 1, machineSlots, false);
             if (!moved && (machine == null || !moveItemStackTo(moving, 0, machine.inputSlots(), false))) {
                 return ItemStack.EMPTY;
             }
@@ -151,6 +152,22 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
 
     public long requiredEnergy() {
         return readLong(14);
+    }
+
+    public boolean reactorFormed() {
+        return data.get(18) != 0;
+    }
+
+    public int reactorCoils() {
+        return data.get(19);
+    }
+
+    public int reactorHulls() {
+        return data.get(20);
+    }
+
+    public double reactorAverageRank() {
+        return data.get(21) / 100.0D;
     }
 
     public FluidStack inputFluid() {

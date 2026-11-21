@@ -1,11 +1,13 @@
 package net.claustra01.clayium.machine.iface;
 
 import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.claustra01.clayium.laser.LaserBeam;
 import net.claustra01.clayium.multiblock.MultiblockStructureNotifier;
+import net.claustra01.clayium.multiblock.careactor.CaReactorStructureNotifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -76,6 +78,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
             MultiblockStructureNotifier.componentChanged(level, worldPosition);
+            CaReactorStructureNotifier.componentChanged(level, worldPosition);
         }
     }
 
@@ -86,6 +89,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
             MultiblockStructureNotifier.componentChanged(level, worldPosition);
+            CaReactorStructureNotifier.componentChanged(level, worldPosition);
         }
     }
 
@@ -173,12 +177,17 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        SynchronizedTarget previousTarget = target;
         super.loadAdditional(tag, registries);
         ResourceLocation dimension = ResourceLocation.tryParse(tag.getString("target_dimension"));
         target = dimension == null || !tag.contains("target_pos") ? null : new SynchronizedTarget(
                 net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimension),
                 BlockPos.of(tag.getLong("target_pos")));
         owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
+        if (level != null && !Objects.equals(previousTarget, target)) {
+            MultiblockStructureNotifier.componentChanged(level, worldPosition);
+            CaReactorStructureNotifier.componentChanged(level, worldPosition);
+        }
     }
 
     @Override

@@ -29,6 +29,7 @@ import net.claustra01.clayium.datagen.area.AreaLanguageEntries;
 import net.claustra01.clayium.datagen.multiblock.MultiblockLanguageEntries;
 import net.claustra01.clayium.datagen.claytree.ClayTreeLanguageEntries;
 import net.claustra01.clayium.datagen.ca.CaLanguageEntries;
+import net.claustra01.clayium.datagen.careactor.CaReactorLanguageEntries;
 import net.claustra01.clayium.datagen.advancedtool.AdvancedToolLanguageEntries;
 import net.claustra01.clayium.datagen.pan.PanLanguageEntries;
 import net.minecraft.data.PackOutput;
@@ -90,6 +91,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         TradeLanguageEntries.add(locale, this::add);
         ClayTreeLanguageEntries.add(locale, this::add);
         CaLanguageEntries.add(locale, this::add);
+        CaReactorLanguageEntries.add(locale, this::add);
         PanLanguageEntries.add(locale, this::add);
         AdvancedToolLanguageEntries.add(locale, this::add);
     }

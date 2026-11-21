@@ -709,6 +709,18 @@
       "name": "energystorageupgradescapatsixtyfouranddroponlytheexcess"
     },
     {
+      "acId": "AC-F035-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactoracceptsonlycoveredtiermatchedringsandinvalidatesitscache"
+    },
+    {
+      "acId": "AC-F035-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactoruseshotfixtwoformulacompressionenergytimeandsafestops"
+    },
+    {
       "acId": "AC-F036-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -907,6 +919,10 @@
     {
       "acId": "AC-F034-002",
       "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F035-003",
+      "scenario": "tests/e2e/ca-reactor.mjs"
     },
     {
       "acId": "AC-F037-002",
