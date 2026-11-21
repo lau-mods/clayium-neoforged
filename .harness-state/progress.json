@@ -1,6 +1,963 @@
 {
   "status": "running",
-  "active": [],
+  "active": [
+    {
+      "id": "M35",
+      "phase": "implementation",
+      "baseCommit": "a7c6f29737c08e9862fff639411f4571774ab096",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "AGENTS.md (no M35 section)",
+            "acId": null,
+            "problem": "AGENTS.md has no M35 section. Nothing records the core, coil and hull IDs, the original-key mapping, the `ca_reactor_core` BlockEntity, the structure rules (search radius 8, minimum 8 coils, maximum 128, two coil neighbours per coil, ≥50 hulls, required item and laser interfaces, interface Tier ≥ core Tier, maximum hull rank = core Tier − 3), the formulas, the min-1 / max-64 output rule, the recipe ID `ca_reactor/pure_antimatter` with its values, the NBT keys `reactor_formed`/`reactor_coils`/`reactor_hulls`/`reactor_average_rank`, the `CAReactorGlittering` config, the GameTest names or `tests/e2e/ca-reactor.mjs`.",
+            "reason": "The project rules require AGENTS.md to be updated in the same change whenever IDs, registrations, enable conditions, data generation or verification steps change. Every earlier milestone has its own section.",
+            "fix": "Add a `## M35 巨大CA反応炉` section to AGENTS.md covering the registrations, structure conditions and limits, formulas and rounding/stop rules, recipe ID and values, saved/synced NBT keys, config key, GameTest names and the E2E scenario.",
+            "id": "CR-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.md に M35 の ID、構造条件、式、レシピ、同期項目、検証方法を記載しました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now has a ## M35 section with IDs, structure rules, formulas, recipe, NBT keys, config, GameTests and E2E.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md still has the M35 section, and the diff does not change it.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The M35 section in AGENTS.md is unchanged by the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md. The M35 section is still there.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md. The M35 section is still there.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md. The M35 section is still there.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/careactor/CaReactorStructure.java:84-88",
+            "acId": "AC-F035-001",
+            "problem": "An interface counts as a reactor part as soon as its block is an `InterfaceBlock` of high enough Tier. Nothing checks that it is synchronized to this core. The GameTest and the E2E never synchronize their interfaces, yet the reactor forms.",
+            "reason": "The approach says I/O goes through M23 interfaces. M33's `MultiblockStructure.interfaceTier` requires the target dimension and position to match the controller. An unsynchronized interface, or one linked elsewhere, cannot feed the core, so the structure is accepted while it cannot actually work.",
+            "fix": "Check that each interface's `InterfaceBlockEntity.target()` matches the level dimension and the core position, the same way M33 does. Synchronize the interfaces in the GameTest and E2E builds, and add a GameTest case where an unsynchronized interface is rejected.",
+            "id": "CR-002",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: インターフェースの同期先がコアの次元と位置に一致する場合だけ構造に採用し、GameTest と E2E の接続も設定しました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "CaReactorStructure now requires each interface's target to equal SynchronizedTarget.at(level, corePos). GameTest and E2E synchronize the interfaces, and an unlinked-interface case is rejected.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the interface synchronization check.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The interface synchronization check is not touched by the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the interface synchronization check.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The interface synchronization check is not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The interface target check in CaReactorStructure is unchanged. The GameTest now also checks that a changed target breaks the structure.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/machine/iface/InterfaceBlockEntity.java:78,88",
+            "acId": "AC-F035-001",
+            "problem": "`synchronize` and `disconnect` notify only `MultiblockStructureNotifier`, not `CaReactorStructureNotifier`. Changing an interface's link never invalidates the CA reactor's cached structure.",
+            "reason": "AC-F035-001 requires the cache to update after structure changes. Once synchronization becomes a structure condition, a stale cache would keep a reactor formed after its interface is re-linked or disconnected.",
+            "fix": "Also call `CaReactorStructureNotifier.componentChanged(level, worldPosition)` in `synchronize` and `disconnect`, or route both multiblock types through one notifier.",
+            "id": "CR-003",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: インターフェースの同期・切断時に CA 反応炉の構造キャッシュも失効させます。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "InterfaceBlockEntity.synchronize and disconnect both call CaReactorStructureNotifier.componentChanged.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the notifier calls in InterfaceBlockEntity.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The notifier calls in InterfaceBlockEntity are not touched by the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the notifier calls in InterfaceBlockEntity.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The notifier calls in InterfaceBlockEntity are not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "synchronize and disconnect still notify CaReactorStructureNotifier. loadAdditional now also notifies when the target changes through block data.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/careactor/CaReactorStructure.java:28-33,111-119",
+            "acId": "AC-F035-001",
+            "problem": "The core is never required to be part of the ring structure. `findFirstCoil` takes the nearest coil anywhere in a 17×17×17 cube, and the core only has to be one of the blocks covering a coil if it happens to touch one. A core several blocks away from a complete ring forms, and several cores can all claim the same ring and each produce output.",
+            "reason": "The spec (PROJECT.md F-035, and the approach 'コアから中空リング状コイル経路を辿り') requires the coil path to be traced from the core, around a hollow ring at the centre. With the current search, unrelated or shared rings are accepted, which also duplicates output.",
+            "fix": "Start the coil path from the core: require the core to touch the ring (or sit at its defined position) and start tracing from a coil adjacent to the core. Add a GameTest showing that a detached core, and a second core sharing the same ring, are rejected.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: コアに接するコイルから探索し、同じリングに接する別コアを拒否します。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The search starts only from a coil adjacent to the core. A second core touching the path is rejected, and the core must cover exactly one coil face. Detached and shared-ring cases are tested.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The core-anchored search is unchanged by the diff.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The core-anchored search is unchanged by the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the core-anchored search.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The core-anchored search is not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The core-anchored search is not touched by the diff.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/careactor/CaReactorCoreBlockEntity.java:91-101",
+            "acId": "AC-F035-001",
+            "problem": "`observes` treats changes within Euclidean distance 10 of the core as relevant. `findFirstCoil` searches a cube of radius 8, whose corners are about 13.9 blocks away. While no coil is found, `components` holds only the core, so placing a coil near a corner of the search cube never marks the cache dirty.",
+            "reason": "AC-F035-001 requires the cache to update after structure changes. Coils placed in the outer part of the search volume leave a stale 'no coil found' result.",
+            "fix": "Make the observed region match the search region exactly, for example a Chebyshev distance ≤ `SEARCH_RADIUS` check. Alternatively, if the core-anchored search above is adopted, derive the observed set from that search.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 未形成時の変更監視を各軸8ブロック以内に合わせました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "observes() now uses a Chebyshev distance ≤ SEARCH_RADIUS, matching the search region.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "observes() is still a Chebyshev check. The diff only adds createMenu, which validates the structure before the menu opens.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The Chebyshev observes() check is unchanged by the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the Chebyshev observes() check.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The Chebyshev observes() check is not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The Chebyshev observes() check is not touched by the diff.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/careactor/CaReactorFormula.java:39-44",
+            "acId": "AC-F035-002",
+            "problem": "`scale` returns empty whenever the computed output count is above 64, so the reactor silently stays IDLE. A valid large reactor (up to 128 coils, so several hundred hulls) gets E/9^c well above 64 and can never run. Separately, any result below 1 is raised to 1 (for example N=58, R=1 gives 0.4 of a compressed item but outputs 1 compressed pure antimatter), which produces more than the formula gives.",
+            "reason": "AC-F035-002 requires the output to follow the hotfix2 output and compression formula. Only non-finite, negative or long-overflow values are supposed to cause a safe stop; a normal large count is not an abnormal value.",
+            "fix": "Produce the formula's count even when it exceeds 64, by splitting it across output stacks or the output slots, and stop only for non-finite, negative or long-overflow values. Apply the hotfix2 rounding, documented in AGENTS.md, instead of forcing a minimum of 1.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 64個超の出力を複数スタックに分割します。1個未満を1個にする規則は M35 の出力規則として維持しました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The 64-item cap is gone, and outputs are split across stacks. The minimum of 1 is kept and documented in AGENTS.md as the M35 rule, which matches the spec.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The output-splitting formula code is not in the diff.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The output-splitting formula code is not in the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the formula or output splitting.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The formula and output splitting are not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The formula and output splitting are not touched by the diff.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/careactor/CaReactorCoreBlockEntity.java:130-140",
+            "acId": "AC-F035-002",
+            "problem": "`fixedOutputs` ignores `recipe.itemOutputs()`: every `clayium:ca_reactor` recipe outputs the hardcoded pure-antimatter series, and the count ignores the recipe's output count.",
+            "reason": "Machine recipes are data-driven (M03), so a data pack's CA reactor recipe outputs are discarded. The base output should be the recipe output scaled by E.",
+            "fix": "Derive the output item and base count from the recipe's item outputs, then apply the multiplier and compression rank to that. If compression maps an item to its compressed form, resolve it from the recipe output rather than a fixed array.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 出力品と基礎個数をレシピから取得し、純反物質の出力にだけ圧縮を適用します。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "fixedOutputs now derives the output item and base count from recipe.itemOutputs(). Compression applies only to pure antimatter.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Outputs are still derived from the recipe. The diff does not touch this.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Outputs are still derived from the recipe. The diff does not touch this.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch how outputs are derived from the recipe.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "How outputs are derived from the recipe is not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "How outputs are derived from the recipe is not touched by the diff.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/careactor/CaReactorGameTests.java:31-72",
+            "acId": "AC-F035-001",
+            "problem": "The structure test only checks `isFormed()`. It never puts antimatter into an invalid reactor to confirm that processing does not start, and it never confirms that a valid one starts a recipe. For Tier mismatch it covers only a coil of the wrong Tier. It does not cover an interface below the core Tier, a hull rank above the core limit, a coil with three coil neighbours, or a path over 128 coils. For the cache it only checks invalidation, never that the structure forms again once the part is restored.",
+            "reason": "AC-F035-001's Action is 'start processing and confirm the recipe', and its Expected Result covers rejecting ring-connection, hull-count and Tier violations and updating the cache after changes.",
+            "fix": "For each invalid build, insert antimatter and CE, tick, and assert that `activeRecipe()` is null and the input is untouched; for the valid build, assert that a recipe starts. Add cases for a low-Tier interface, an over-rank hull, a branching coil and an over-long path. Restore the removed hull and assert the reactor forms again with exactly one more validation.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 有効構造の処理開始と各無効構造の入力保持を検査し、部材復元後の再形成も追加しました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The tests now cover starting a recipe on a valid build and input retention for each invalid build, including low-Tier interface, over-rank hull, branching coil and over-128 path. They also check re-forming after a hull is restored.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are not in the diff.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only adds a client update-tag round-trip check to the GameTest. The earlier structure coverage is still there.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only adds an update-packet assertion to the GameTest. The structure coverage is kept.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only adds assertions for the FORMED block state and the menu data slots. The earlier structure coverage is kept.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only adds a GameTest case for an interface target changed through block data. The earlier coverage is kept.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/gametest/careactor/CaReactorGameTests.java:74-147",
+            "acId": "AC-F035-002",
+            "problem": "The runtime checks are circular. The expected values come from `core.formula().scale(...)`, the same code under test, and `requiredEnergy` is only compared with `requiredProgress*energyPerProgress`. The test never measures CE actually consumed (stored energy before and after), never asserts the number of ticks taken, and never asserts the output count, only the item type. The safe stop is checked only on the formula record, never on a running reactor.",
+            "reason": "AC-F035-002's Action compares consumed CE, required time and the pure antimatter produced across reactors with different N and R, and requires a safe stop on abnormal values.",
+            "fix": "Compute the expected ticks (20×9^R), CE (floor(e(1,10)×1.01^(N×R)) × ticks) and output item/count independently from N and R for each build. Assert the elapsed ticks, the drop in stored CE and the output count. Add a runtime case where the formula is invalid and assert the reactor stays IDLE without consuming input or CE.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 期待値を独立に計算し、実際の経過tick、CE減少量、出力個数、実行時のオーバーフロー停止を検査します。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Expected ticks, CE and output count are computed independently. The tests also assert the measured tick count, CE drop, and a runtime overflow stop.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The GameTests are not in the diff.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The runtime checks are unchanged by the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff leaves the runtime checks unchanged.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The runtime checks are not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The runtime checks are not touched by the diff.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/ca-reactor.mjs:19-67",
+            "acId": "AC-F035-003",
+            "problem": "The E2E builds only a Mk I core with Mk I coils and rank-1 hulls. The other three core/coil Tiers and hull ranks 2–10 are never placed or photographed. The laser interface is not synchronized to the core, so the shot does not show a laser actually reaching a working reactor.",
+            "reason": "AC-F035-003 requires that the configured Tier and rank are visible and that the ring, coil, hull and laser/glitter rendering show no transparency or render conflicts. With one Tier and one rank, the texture mapping for the rest (for example `careactorhull-(rank-1)`) is never checked.",
+            "fix": "Place and photograph all four cores and coils and all ten hull ranks (for example in a row next to the reactor). Synchronize the item and laser interfaces to the core with the synchronizer so the formed reactor's laser and glitter are shown in their real working state.",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: E2E に全4段階のコア・コイルと全10ランクの筐体を配置し、稼働用インターフェースを同期しました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E places all four cores and coils and all ten hull ranks, and synchronizes the item and laser interfaces.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E still covers all four cores and coils and all ten hull ranks, with synchronized interfaces. The diff only adds a hull re-place step to trigger re-validation.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E is not in the diff.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E is not in the diff.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The E2E is not in the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only adds await to the E2E commands. The four core/coil tiers, ten hull ranks and synchronized interfaces are still there.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/registry/CaReactorRegistration.java:63-64",
+            "acId": null,
+            "problem": "Each hull's item gets Tier component `9 + rank`, which gives Tiers 14–19 for ranks 5–10, and its block properties use the same value.",
+            "reason": "The mod's Tier range is 0–13 (`TierManager.MAX_TIER = 13`). A Tier above 13 is not a state the original progression has, and it is shown in tooltips.",
+            "fix": "Use the original hull Tiers, within 10–13, for both the item component and the block properties, and record them in AGENTS.md.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 筐体の Block と Item の Tier を10～13に収めました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Hull Block and Item Tier is capped with min(9+rank, 13), so it stays within 10–13.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The hull Tier cap is unchanged.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The hull Tier cap is unchanged.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the hull Tier cap.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The hull Tier cap is not touched by the diff.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The hull Tier cap is not touched by the diff.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/careactor/CaReactorCoilBlock.java:20-30, CaReactorHullBlock.java:20-30, CaReactorCoreBlock.java:34-38",
+            "acId": null,
+            "problem": "Structure invalidation is wired twice: the global `NeighborNotifyEvent` listener and the `onPlace`/`onRemove` overrides on the coil, hull and core blocks both call `CaReactorStructureNotifier.componentChanged` for the same block change.",
+            "reason": "The code style requires one direct path per behaviour. The `NeighborNotifyEvent` listener already sees placement and removal of these blocks.",
+            "fix": "Keep a single invalidation path, for example only the `NeighborNotifyEvent` listener as in M33, and remove the redundant `onPlace`/`onRemove` overrides.",
+            "id": "CR-012",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 重複するブロックの設置・撤去フックを削除し、変更通知経路を一本化しました。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The onPlace/onRemove overrides are removed. Only the NeighborNotifyEvent listener and the interface hook remain.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back the duplicate onPlace/onRemove hooks.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The duplicate onPlace/onRemove hooks are not back.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back the duplicate onPlace/onRemove hooks.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The duplicate onPlace/onRemove hooks are not back. The FORMED update uses setBlock with flag 2, which does not notify neighbors.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The duplicate onPlace/onRemove hooks are not back. The new notification is in the interface's loadAdditional, not a block hook.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/multiblock/careactor/CaReactorCoreBlockEntity.java:191-212",
+            "acId": null,
+            "problem": "The derived structure cache (`reactor_formed`, `reactor_coils`, `reactor_hulls`, `reactor_average_rank`) is written to the world save. On load, a formed structure and formula are rebuilt from these saved values, even though the server always re-validates on the first tick anyway.",
+            "reason": "These values exist only for client display. Persisting derived state and rebuilding a formula from it adds a saved structure that can disagree with the world, and the dirty-flag logic in `loadAdditional` becomes unclear.",
+            "fix": "Send the structure fields only in `getUpdateTag`/`handleUpdateTag`, or through menu data. Keep the server-side cache in memory only and always dirty after load.",
+            "id": "CR-013",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 構造の派生値を保存NBTから外し、クライアント更新タグだけで送ります。",
+                "at": "2026-11-21T20:00:55.471Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The structure fields are now written only in getUpdateTag and read in handleUpdateTag. They are no longer in the save NBT.",
+                "at": "2026-11-21T20:01:29.672Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not move structure fields back into the save NBT. createMenu only triggers validation.",
+                "at": "2026-11-21T20:09:48.932Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The class has no saveAdditional override, so the structure fields are still written only in getUpdateTag. loadAdditional now reads them only when reactor_formed is present, which only the update tag carries. Normal world saves lack the key and return early, so the derived structure is not restored from disk. This change fixes the client update path, which previously did not get the fields.",
+                "at": "2026-11-21T20:16:33.473Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds getUpdatePacket(), which sends the existing getUpdateTag. The structure fields stay out of the save NBT and are sent only to the client.",
+                "at": "2026-11-21T20:23:07.519Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The structure fields are still not in the save NBT. The diff adds menu data slots (18–21) and a FORMED block state for client display, and these are derived values that are not saved as structure NBT.",
+                "at": "2026-11-21T20:35:10.799Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not move structure fields into the save NBT.",
+                "at": "2026-11-21T20:41:56.949Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "c83969a767689c652378f19f34fea28622d7d884",
+      "e2eReview": {
+        "kind": "e2e",
+        "issues": [
+          {
+            "target": ".harness-state/runs/2026-11-21T20-02-11-239Z-037-M35-e2e/scenarios/tests-e2e-ca-reactor.mjs/screenshots/AC-F035-003-formed-core-gui-tier-rank-and-structure-counts.png",
+            "acId": "AC-F035-003",
+            "problem": "The red structure line 'Structure: Incomplete  Coils 0  Hu…' is drawn on top of the title 'Large CA Reactor Core Mk I'. It also runs past the right edge of the GUI panel into the JEI item list, so the hull count is cut off. The 'Average rank: 0.00' line below it covers the top-left output slot.",
+            "reason": "ClayMachineScreen.renderLabels draws the reactor structure and rank text at a 0.65 scale starting at (122,32)/(122,43), which is about x=79,y=21 in GUI space. That is the same row as the title, which is drawn at y=21 with a width of up to imageWidth-14. Nothing limits the line to the space left before the right edge of the panel, and the rank line falls inside the output slot area.",
+            "fix": "Move the CA reactor structure and rank text to free space that does not overlap the title or any slot, for example under the 'Use … CE' line or between the input and output columns. You can also split it into separate lines for state, coils, hulls and rank. Scale each line, or use font.split, so it fits inside imageWidth-8. Check that the title, all four output slots and the text never overlap.",
+            "id": "ER-001",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 構造状態・コイル数・筐体数・平均ランクをスロットの下の空き行に収め、幅に応じて縮小しました。",
+                "at": "2026-11-21T20:09:31.138Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The structure line now sits on its own row below the 'Use 0.000 CE' line and above the inventory. It no longer overlaps the title or any output slot. It also stays inside the GUI panel, and the hull count and 'Average rank: 0.00' are fully visible. The end of 'Average rank: 0.00' sits right at the panel's right border, but it does not reach the JEI list.",
+                "at": "2026-11-21T20:12:11.984Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The structure and rank text no longer overlaps the title or an output slot. But it is now drawn outside the GUI panel, to the left of it, in a dark box at the screen edge. It is cut off by the screen edge: 'Structure:' is missing, 'ncomplete' has lost its first letter, and 'Average' is missing from 'rank: 0.00'. The text is not inside the panel and cannot be read in full.",
+                "at": "2026-11-21T20:18:42.285Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 構造情報と平均ランクをGUI内の空き行へ移し、幅に合わせて縮小しました。",
+                "at": "2026-11-21T20:22:59.226Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The structure line 'Structure: Incomplete Coils 0 Hulls 0' now sits on its own row below 'Use 0.000 CE', inside the GUI panel. 'Average rank: 0.00' is on the row below it. Neither line overlaps the title or any output slot, and neither reaches the JEI list. The text is fully readable.",
+                "at": "2026-11-21T20:25:20.178Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "In the new GUI screenshot, the red 'Structure: Incomplete  Coils 0  Hulls 0' line sits on its own row below 'Use 0.000 CE'. 'Average rank: 0.00' is on the row under it. Both lines are inside the panel and fully readable. They do not overlap the title or any output slot, and they do not reach the JEI list.",
+                "at": "2026-11-21T20:37:16.088Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "In the new GUI screenshot the red 'Structure: Incomplete  Coils 0  Hulls 0' line sits on its own row below 'Use 0.000 CE', and 'Average rank: 0.00' is on the row under it. Both lines are inside the panel and fully readable. They do not overlap the title or any output slot, and they do not reach the JEI list.",
+                "at": "2026-11-21T20:44:03.281Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-21T20-02-11-239Z-037-M35-e2e/scenarios/tests-e2e-ca-reactor.mjs/screenshots/AC-F035-003-formed-core-gui-tier-rank-and-structure-counts.png",
+            "acId": "AC-F035-003",
+            "problem": "This GUI belongs to the complete reactor at (0,102,0), which has 16 Tier 10 coils, more than 50 rank 1 hulls and synchronized item and laser interfaces. Even so, it shows 'Incomplete', 'Coils 0' and 'Average rank: 0.00'. You cannot read the formed state, coil and hull counts, or hull rank from it.",
+            "reason": "The screen reads reactor.isFormed(), coilCount(), hullCount() and averageRank() from the client-side BlockEntity. These values only reach the client through the update tag (reactor_formed, reactor_coils, reactor_hulls, reactor_average_rank). After the structure is evaluated, or after the interfaces are synchronized by data merge, no block update or menu data sync is sent, so the client keeps its default values. Another possibility is that the structure is never re-evaluated after the interface target change.",
+            "fix": "Whenever the cached structure result changes, call level.sendBlockUpdated, or sync these fields through the menu's ContainerData. Also make sure the structure is re-evaluated when a synchronized interface's target changes and when the core's menu opens. After the fix, the formed reactor's GUI must show the formed state in green, 16 coils, the real hull count and average rank 1.00.",
+            "id": "ER-002",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GUIを開く際に構造を再評価します。E2Eでのインターフェース同期後にも構造変更を通知するようにしました。",
+                "at": "2026-11-21T20:09:31.138Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The core GUI still shows a red 'Structure: Incomplete  Coils 0  Hulls 0  Average rank: 0.00'. The screenshot is named formed-core-gui, so the formed state, coil count, hull count and rank still do not reach the client. The expected green formed state, 16 coils, a real hull count and rank 1.00 are not shown.",
+                "at": "2026-11-21T20:12:11.984Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 形成状態・コイル数・筐体数・平均ランクをクライアントの更新読み込み経路へ反映し、GUI の重なりも解消しました。更新タグの復元を GameTest で確認しました。",
+                "at": "2026-11-21T20:16:21.894Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The core GUI still shows a red 'Incomplete  Coils 0  Hulls 0' and 'rank: 0.00'. This is the screenshot of the formed reactor's core. The formed state, 16 coils, the hull count and average rank 1.00 are still not shown.",
+                "at": "2026-11-21T20:18:42.285Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 形成状態・コイル数・筐体数・平均ランクをブロック更新パケットに含め、GameTestで確認しました。",
+                "at": "2026-11-21T20:22:59.226Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The core GUI of the formed reactor still reads red 'Structure: Incomplete  Coils 0  Hulls 0' and 'Average rank: 0.00'. The formed state, 16 coils, the real hull count and rank 1.00 still do not reach the client.",
+                "at": "2026-11-21T20:25:20.178Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: GUIの形成状態、コイル数、筐体数、平均ランクを既存のメニュー同期データから表示するよう変更しました。形成済み構造の値をGameTestで確認しました。",
+                "at": "2026-11-21T20:32:41.639Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The core GUI in the formed-core screenshot still shows the red 'Structure: Incomplete  Coils 0  Hulls 0' and 'Average rank: 0.00'. The formed state, 16 coils, the real hull count and rank 1.00 still do not reach the client.",
+                "at": "2026-11-21T20:37:16.088Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: /data mergeによる同期先変更でも形成判定を失効させます。同期解除と復元をGameTestで確認し、E2Eの構築順序も保証しました。GUIの実画面確認は再撮影が必要です。",
+                "at": "2026-11-21T20:41:42.625Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The core GUI of the formed reactor still shows the red 'Structure: Incomplete  Coils 0  Hulls 0' and 'Average rank: 0.00'. The formed state, 16 coils, the real hull count and average rank 1.00 are still not shown.",
+                "at": "2026-11-21T20:44:03.281Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-21T20-02-11-239Z-037-M35-e2e/scenarios/tests-e2e-ca-reactor.mjs/screenshots/AC-F035-003-formed-glittering-ring-and-incomplete-reactor.png",
+            "acId": "AC-F035-003",
+            "problem": "The formed reactor on the right, with its laser beam entering the ring, looks exactly the same as the incomplete reactor in the middle. Its core shows no glittering overlay (careactorcore_1), even though CAReactorGlittering is true by default, so the formed state cannot be told apart in the world.",
+            "reason": "CaReactorCoreRenderer only draws the glitter when core.isFormed() is true on the client. The formed flag is never sent to the client (the same cause as the GUI showing 'Incomplete'), so the renderer returns early.",
+            "fix": "Send the formed state to the client with sendBlockUpdated or the update packet whenever the structure result changes. Then confirm that the glittering overlay appears only on the formed core and never on the incomplete reactor or on standalone cores.",
+            "id": "ER-003",
+            "status": "open",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 再評価時のブロック更新で形成状態をクライアントへ送り、形成状態に依存する光彩描画を更新します。",
+                "at": "2026-11-21T20:09:31.138Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The formed reactor on the right, with the laser entering the ring, still looks the same as the incomplete reactor in the middle. Neither shows a visible glittering overlay on the core. The GUI in the same run still reads 'Incomplete', which points to the same client-sync cause, so the formed state still cannot be told apart in the world.",
+                "at": "2026-11-21T20:12:11.984Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 光彩描画が参照する形成状態をクライアントへ復元するよう修正しました。実際の描画は E2E 未再撮影のため、画像での確認が残ります。",
+                "at": "2026-11-21T20:16:21.894Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The formed reactor on the right, with the laser entering the ring, still looks the same as the incomplete reactor in the middle. Neither core shows a glittering overlay, so the formed state still cannot be told apart in the world.",
+                "at": "2026-11-21T20:18:42.285Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 光彩描画が参照する形成状態を同じ更新パケットでクライアントへ送るようにしました。実際の描画結果はE2E再撮影での確認が必要です。",
+                "at": "2026-11-21T20:22:59.226Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "In the world shot, the formed reactor on the right with the laser entering the ring looks the same as the incomplete reactor in the middle. Neither core shows a glittering overlay, so the formed state still cannot be told apart. The GUI in the same run still reads 'Incomplete', which points to the same client-sync cause.",
+                "at": "2026-11-21T20:25:20.178Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 形成状態をコアのBlockStateへ反映し、光彩描画がその状態を参照するよう変更しました。形成時と構造破損時の状態遷移をGameTestで確認しました。",
+                "at": "2026-11-21T20:32:41.639Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "In the world shot, the formed reactor on the right with the laser entering the ring looks the same as the incomplete reactor in the middle. Neither core shows a glittering overlay, so the formed state still cannot be told apart in the world. The GUI in the same run still reads 'Incomplete'.",
+                "at": "2026-11-21T20:37:16.088Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 光彩描画が参照する形成状態を、同期先変更後に再評価できるよう修正しました。形成解除と再形成の状態遷移はGameTestで確認済みです。光彩の見た目は再撮影が必要です。",
+                "at": "2026-11-21T20:41:42.625Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "In the world shot, the formed reactor on the right with the laser entering the ring still looks the same as the incomplete reactor in the middle. Neither core shows a glittering overlay, so the formed state cannot be told apart in the world. The GUI in the same run still reads 'Incomplete'.",
+                "at": "2026-11-21T20:44:03.281Z"
+              }
+            ]
+          },
+          {
+            "target": ".harness-state/runs/2026-11-21T20-02-11-239Z-037-M35-e2e/scenarios/tests-e2e-ca-reactor.mjs/screenshots/AC-F035-003-four-core-coil-tiers-and-ten-hull-ranks.png",
+            "acId": "AC-F035-003",
+            "problem": "The four reactor cores in the front row (ca_reactor_core_mk_i to mk_iv) look identical. Each is a white block with the same overlay, so you cannot see which core is Tier 10, 11, 12 or 13. The coils and hulls behind them do show visibly different tiers and ranks.",
+            "reason": "CaReactorBlockStateProvider gives all four cores the same cube_all model using clayium:block/careactorcore. Nothing in the model changes with the tier, such as the tier's machine hull base texture under the core overlay.",
+            "fix": "Find out how the original hotfix2 JAR tells the core tiers apart (for example, a per-tier machinehull base with the careactorcore overlay, or per-tier textures). Rebuild the core models from those original PNGs without modifying them, for example a two-layer model with the tier's hull base and the careactorcore overlay as cutout. Each Mk I to IV core should then be identifiable in the world and in item form.",
+            "id": "ER-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 各Mkの原作 machinehull PNGを下地に、原作 careactorcore PNGを重ねるモデルを生成しました。",
+                "at": "2026-11-21T20:09:31.138Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The four front-row cores now look different from each other. Each has a different tier base in orange, yellow, purple or dark blue, with the careactorcore overlay on top. The Mk I to IV cores can be told apart.",
+                "at": "2026-11-21T20:12:11.984Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The four front-row cores are clearly different from each other. Each has a different tier base in orange, yellow, purple or dark blue, with the careactorcore overlay on top. The Mk I to IV cores can be told apart.",
+                "at": "2026-11-21T20:18:42.285Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The four front-row cores are clearly different from each other. Each has a different tier base in orange, yellow, purple or dark blue, with the careactorcore overlay on top. The Mk I to IV cores can be told apart.",
+                "at": "2026-11-21T20:25:20.178Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The four front-row cores are clearly different from each other. Each has a different tier base in orange, yellow, purple or dark blue, with the careactorcore overlay on top. The Mk I to IV cores can be told apart.",
+                "at": "2026-11-21T20:37:16.088Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The four front-row cores are clearly different from each other. Each has its own tier base in orange, yellow, purple or dark blue, with the careactorcore overlay on top, so Mk I to IV can be told apart.",
+                "at": "2026-11-21T20:44:03.281Z"
+              }
+            ]
+          }
+        ]
+      },
+      "failure": null,
+      "conflicts": [],
+      "reviewConflicts": []
+    }
+  ],
   "completed": [
     "M01",
     "M02",
@@ -35,8 +992,9 @@
     "M33",
     "M30",
     "M31",
-    "M34"
+    "M34",
+    "M36"
   ],
-  "lastCheckpoint": "f7131ba8ce1477a7904a9b0112f274667e7c62bc",
+  "lastCheckpoint": "a7c6f29737c08e9862fff639411f4571774ab096",
   "fatal": null
 }

@@ -707,6 +707,48 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "energystorageupgradescapatsixtyfouranddroponlytheexcess"
+    },
+    {
+      "acId": "AC-F036-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "networktraversalisiterativeboundedandinvalidated"
+    },
+    {
+      "acId": "AC-F036-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "realnetworkscanstopsatdepthandnodelimits"
+    },
+    {
+      "acId": "AC-F036-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "connectedadapterrebuildsclosureafterrecipereload"
+    },
+    {
+      "acId": "AC-F036-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "recipeclosurerejectscyclesfreerecipesandunknowncomponents"
+    },
+    {
+      "acId": "AC-F036-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "connectedadapterrebuildsclosureafterrecipereload"
+    },
+    {
+      "acId": "AC-F037-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "duplicatorconsumesoneantimatterandexactcoreenergywhilekeepingsample"
+    },
+    {
+      "acId": "AC-F037-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allpantiersduplicateatoriginalcerates"
     }
   ],
   "e2e": [
@@ -865,6 +907,10 @@
     {
       "acId": "AC-F034-002",
       "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F037-002",
+      "scenario": "tests/e2e/pan-machines.mjs"
     }
   ]
 }

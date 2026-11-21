@@ -42,6 +42,7 @@ public final class ClayiumRegistries {
         FoundationItemRegistration.ALL.size();
         MaterialRegistration.CREATIVE_TAB_ITEMS.size();
         CaRegistration.MACHINES.size();
+        PanRegistration.DEFINITIONS.size();
         CaRegistration.AUGMENTS.size();
         CaRegistration.COLLECTOR_BLOCK_ENTITY.getId();
         AssemblyMachineRegistration.MACHINES.size();

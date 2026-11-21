@@ -371,3 +371,11 @@ GameTest は `allEightCaMachinesPreserveOriginalTiersRecipesAndResonance`、`res
 粘土鋼工具の操作モードは `clayium:advanced_tool_mode`、記憶形状は `clayium:advanced_tool_pattern` Data Component に保存する。モード0は単体、1～最大値未満は `(2m+1)×(2m+1)` の面内採掘、最大値は記憶形状。サーバー設定 `ClaySteelPickaxeRange` は初期2、範囲0～64で、形状登録時の半径にも使う。粘土ブロックへの使用で周囲の粘土形状を記録する。追加採掘は M27 の `BlockOperationService` を通し、有効な工具対象、保護、権限とドロップを確認する。
 
 GameTest は `threeByThreeMiningStaysInPlaneAndRespectsBreakProtection`、`rememberedClayShapeRotatesMinesAndSurvivesItemSerialization`、`fourClayToolsKeepOriginalDurabilitySpeedOreHarvestAndConfig`。外観 E2E は `tests/e2e/advanced-clay-tools.mjs`。
+
+## M36 PAN
+
+`pan_core` と `pan_cable` は Tier 11。`pan_adapter_tier_10`～`13` と `pan_duplicator_tier_4`～`13` は原作台帳に対応する。コアと複製機は共通の `clayium:pan` BlockEntity と Menu を使い、複製機のスロットは見本0、反物質1、出力2、CE燃料3。保存NBTは `inventory`、`energy`、`progress`、`active_consumption`。後者は再読み込み後の閉包変更時だけ進捗を破棄するために使う。
+
+探索は深度1000、最大10000ノード、1 tick 256ノード、200 tickごとの再走査とし、設置・撤去・レシピ再読込で失効する。レシピ収集と閉包反復も1 tick 256件まで。原作 hotfix2 JAR の `mods.clayium.block.tile.TilePANCore` は粘土ブロック・丸石・原木を原価1、圧縮粘土を順に10～10^13、塩を `TileCobblestoneGenerator.progressMax * TileSaltExtractor.energyPerWork / 6 = 500`、反物質を100000、金属分離の不純粉を `(TileChemicalMetalSeparator.baseConsumingEnergy * baseCraftTime + 1000) * 488 / weight` とする。`PANACFactoryCraftingTable` はクラフト費用10を加える。循環・零費用だけでは候補を増やさず、未知の Data Component 付きスタックを禁止する。
+
+原作 `mods.clayium.block.tile.TilePANDuplicator.proceedCraft` は複製 CE を `100000 * multConsumingEnergy` 内部値ずつ毎 tick 消費して進む。倍率は `UtilTier.setTierManagers` の一般機械値で、Tier 4～13 は順に1、5、25、1、1、1、250、1、1、1。必要 tick は `ceil(consumption / (100000 * 倍率))`、最低1。反物質1個を消費し見本を保持する。GameTest は `networkTraversalIsIterativeBoundedAndInvalidated`、`realNetworkScanStopsAtDepthAndNodeLimits`、`recipeClosureRejectsCyclesFreeRecipesAndUnknownComponents`、`connectedAdapterRebuildsClosureAfterRecipeReload`、`duplicatorConsumesOneAntimatterAndExactCoreEnergyWhileKeepingSample`、`allPanTiersDuplicateAtOriginalCeRates`。外観 E2E は `tests/e2e/pan-machines.mjs`。
