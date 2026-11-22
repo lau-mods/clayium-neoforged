@@ -1111,15 +1111,348 @@ Action: 必要Tier、材料、生成物、処理時間、消費CE、液体入出
 
 Expected Result: データパックの実際のレシピと同じ内容を表示し、液体はカプセルでなくmBで示す。閲覧Mod未導入でもClayium単独の起動と機械処理が成立する。
 
-### F-043: 設定・全Tier進行・正式版の完成検証
+### F-043: 原作全装置・装備の生存モード製作経路の復元
 
 #### Description
 
-依存Feature: F-001～F-042の全て。原作の`ProgressionRate`初期1.0、HardcoreAluminium／HardcoreOsmium初期false、EnableInjectorRecipeOfInterface初期false、ClaySteelPickaxeRange初期2、InvertClayLaserRSCondition初期false、CAReactorGlittering初期true、LaserQuality初期8、Tier別製造・搬送・収納倍率などを現行NeoForge Configへ移す。CE→FEの組立レシピは初期有効、生成鉱石・レシピ値はデータパックを正本とする。旧`UtilityMode`は一切実装しない。液体カプセル用設定、流体IDの保存設定、旧TileEntity代替名、数値Entity ID、旧PacketSendingRate依存は廃止する。初回正式版の完了条件は、原作のすべての主要機能、Tier 0～13、33機械系列168機種、全57金属チェスト、CA・PAN・銃・ガジェット・直接流体・FEの実装とGameTest/E2Eの合格とする。Tier途中までの公開テスト版は本計画に含めない。
+依存Feature: F-005、F-007、F-008～F-042のうち対象設備を提供するFeature、およびF-044。原作`mods.clayium.util.crafting.CRecipes`の`registerMachineRecipes`・`registerToolRecipes`・`registerHullRecipes`・`registerMainMaterialRecipes`・`registerMaterialRecipes`を基準に、**すべての生存モード用装置・部品・装備の製作経路を一括して復元する**。0.1.0 JARの`data/clayium/recipe/`には468レシピJSONが存在するが、登録済みのTier機械のうち、22系列123機種はJSON上で一度も成果物として参照されていない。現時点の不足候補は次表のとおりである。これは「JARに含まれる静的JSONレシピの成果物に存在しない」という検査結果であり、動的登録も含む実行時の入手不能が確定したという意味ではない。原作ではそもそもサバイバル製造不可の対象があれば除外理由を記録する。
+
+| 機械系列 | JSONで製造結果に現れないTier |
+|---|---|
+| `alloy_smelter` | 6 |
+| `buffer` | 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 |
+| `ca_condenser` | 9, 10, 11 |
+| `ca_injector` | 9, 10, 11, 12, 13 |
+| `chemical_reactor` | 4, 5, 8 |
+| `clay_energy_laser` | 7, 8, 9, 10 |
+| `clay_interface` | 5, 6, 7, 8, 9, 10, 11, 12, 13 |
+| `clay_laser_interface` | 7, 8, 9, 10, 11, 12, 13 |
+| `condenser` | 2, 3, 4, 5, 10 |
+| `decomposer` | 2, 3, 4 |
+| `distributor` | 7, 8, 9 |
+| `electrolysis_reactor` | 6, 7, 8, 9 |
+| `fluid_transfer_machine` | 5 |
+| `fluid_translator` | 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 |
+| `grinder` | 2, 3, 4, 5, 6, 10 |
+| `multitrack_buffer` | 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 |
+| `pan_adapter` | 10, 11, 12, 13 |
+| `pan_duplicator` | 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 |
+| `redstone_interface` | 5, 6, 7, 8, 9, 10, 11, 12, 13 |
+| `salt_extractor` | 4, 5, 6, 7 |
+| `smelter` | 4, 5, 6, 7, 8, 9 |
+| `transformer` | 7, 8, 9, 10, 11, 12 |
+
+Tier別加工機に加え、`clay_water_wheel`／`dense_clay_water_wheel`、マーカー、基本採掘機、`area_miner`・`advanced_area_miner`・`area_replacer`・`area_item_collector`・`area_activator`、`laser_reflector`、`quartz_crucible`、`auto_trader`、3×3チャンクローダー、CA反応炉のコア・コイル・rank別筐体、PANコア・ケーブル、ストレージコンテナ・虚空コンテナなど、非Tier装置と構造材も検証対象に含める。工具（Clay Pickaxe／Shovel、Clay Steel工具を含む）、粘土銃4系統、ガジェットホルダー、全ガジェット、各種フィルターも含める。**金属チェスト57種類には、素材別インゴット8個＋中央の通常チェスト、および素材別インゴット8個＋中央の既存金属チェストという原作の2方式のクラフトを実装する。**
+
+入力材料・配置・数量・出力・Tier・前提機械・処理時間・CEはhotfix2のレシピ登録処理を解析して再現する。1.12.2版のCE調整は採用しない。許可済み変更はRaw Oreと現行素材の追加、カプセル廃止に伴う直接流体経路、B/W統合、CE→FE変換器の初期製作有効化などに限る。創造モード専用の原作アイテムにサバイバルレシピを追加して進行を変更しない。全レシピの網羅検証と数値整合はF-049で実施する。
 
 #### Acceptance Criteria
 
-##### AC-F043-001: 設定値と除外機能
+##### AC-F043-001: 登録済み機械の入手経路
+
+Preconditions: 原作JARの機械登録表と0.1.0の22系列123機種不足候補を検証対象として固定する。
+
+Action: 原作の各機種に対応する製造工程をデータ駆動形式へ移し、実行時`RecipeManager`と各加工機で入手経路を検査する。
+
+Expected Result: 原作でサバイバル製造可能な機種すべてにTier制約を満たす有効な経路がある。候補123機種を原作対象・意図的除外・実行時既存・復元済みに分類し、結果を台帳へ保存する。
+
+##### AC-F043-002: 非Tier設備・CA/PANの完成経路
+
+Preconditions: 新規ワールドでTier0相当の材料から開始し、原作の水車、範囲装置、CA/PAN構造材のレシピ表を用意する。
+
+Action: 初期機械からレーザー・CA・PAN・各種コンテナまでの製作依存関係を検索し、代表装置を実際に製作する。
+
+Expected Result: コマンドや外部Mod必須材料に依存せず原作と同等の手順で製造でき、未登録アイテム・循環依存・不当なTier飛越しが発生しない。
+
+##### AC-F043-003: 金属チェスト57種と全装備のレシピ
+
+Preconditions: 57素材のインゴット・2種類の中央チェスト、および原作工具・ガジェット・粘土銃・フィルターの全品種を用意する。
+
+Action: 各金属チェストの2方式をクラフトし、装備・補助道具の低Tier／高Tierの製作を原作CRecipesと照合する。
+
+Expected Result: 金属チェスト57品種に原作相当の2経路が存在し、全生存モード装備・道具・フィルターに正当な入手経路がある。B/W統合による旧IDの省略以外は無断統合しない。
+
+##### AC-F043-004: レシピ再読込と表示・実行の一致
+
+Preconditions: 原作対応のクラフトレシピと機械レシピを登録し、JEI/EMIのいずれかを導入する。
+
+Action: データパックを再読込後、作成結果、入力数量、Tier、CE、時間、実機処理を照合する。
+
+Expected Result: 表示・検索・実行に現れる内容が一致し、レシピが存在するのに実機が拒絶する、または実機には存在するが閲覧できないという不整合がない。
+
+### F-044: 未登録の素材・設置ブロック・初期加工設備の統合復元
+
+#### Description
+
+依存Feature: F-001～F-005、F-007、F-010～F-011。原作の素材・設置ブロック・独立した初期設備のうち、0.1.0のRegistry／モデルに未登録と判定された品種を**一つの素材・ブロック網羅性Feature**で復元する。原作`CItems.itemCompressedClayShard`の`compressed_clay_shard`、`industrial_clay_shard`、`advanced_industrial_clay_shard`の3種を登録し、原作`CRecipes.registerMaterialRecipes`にある鉱石1→シャード2/3/5（Grinder）、シャード4→対応する圧縮／工業／発展工業粘土1（Condenser）の経路を復元する。石・深層岩の各鉱石変種は等価な加工入力とする。時間3/6/9およびCEは原作コードで再検証する。
+
+原作の`tile.blockMetal.*` 57種類の設置金属・合金ブロック：
+
+`actinium_block`, `americium_block`, `antimony_block`, `az91_d_alloy_block`, `barium_block`, `beryllium_block`, `bismuth_block`, `brass_block`, `bronze_block`, `caesium_block`, `calcium_block`, `cerium_block`, `chrome_block`, `cobalt_block`, `copper_block`, `curium_block`, `electrum_block`, `europium_block`, `francium_block`, `hafnium_block`, `invar_block`, `iridium_block`, `lanthanum_block`, `lead_block`, `lithium_block`, `magnesium_block`, `manganese_block`, `molybdenum_block`, `neodymium_block`, `neptunium_block`, `nickel_block`, `osmium_block`, `palladium_block`, `platinum_block`, `plutonium_block`, `potassium_block`, `praseodymium_block`, `promethium_block`, `protactinium_block`, `radium_block`, `rhenium_block`, `rubidium_block`, `samarium_block`, `silver_block`, `sodium_block`, `steel_block`, `strontium_block`, `tantalum_block`, `thorium_block`, `tin_block`, `titanium_block`, `tungsten_block`, `uranium_block`, `vanadium_block`, `zinc_block`, `zirconium_block`, `zk60_a_alloy_block`
+
+原作`CBlocks.blockSiliconeColored`の16色シリコンゴムブロック：
+
+`black_silicone_block`, `blue_silicone_block`, `brown_silicone_block`, `cyan_silicone_block`, `gray_silicone_block`, `green_silicone_block`, `light_blue_silicone_block`, `light_gray_silicone_block`, `lime_silicone_block`, `magenta_silicone_block`, `orange_silicone_block`, `pink_silicone_block`, `purple_silicone_block`, `red_silicone_block`, `white_silicone_block`, `yellow_silicone_block`
+
+原作の染色レシピはシリコンブロック8個と該当染料1個→染色品8個。さらに原作の6筐体 `dense_clay_machine_hull`、`pure_antimatter_machine_hull`、`oec_machine_hull`、`opa_machine_hull`、`az91_d_alloy_hull`、`zk60_a_alloy_hull` を復元する。**独立機種**の `elemental_milling_machine` は通常の`milling_machine_tier_3/4`に吸収せず、原作の`CBlocks.blockElementalMillingMachine`・専用レシピに基づいて共通機械基盤上に追加する。
+
+既存のバニラ銅ブロックや標準素材ブロックへ無断統合せず、原作の名前・形状・素材量・設置特性・硬さ・採掘工具・Tier・回収物を保持する。PNGは原作に含まれる画像を**バイト改変せず**使用し、色の表現はBlockStateモデル・tint・描画機構で実現する。登録内容は原作台帳から照合し、この列挙以外の欠落を検出した場合も本Featureに取り込む。
+
+#### Acceptance Criteria
+
+##### AC-F044-001: 素材・ブロック全品種の登録
+
+Preconditions: 原作CBlocks・CItems・言語キーの全品種台帳と0.1.0のRegistry、モデル、LootTableを用意する。
+
+Action: 金属ブロック57、シリコン16、筐体6、シャード3、Elemental Milling Machine 1の登録・モデル・日本語/英語名・設置状態を調べる。
+
+Expected Result: 列挙した計83品種に原作相当の識別可能な対応物が存在し、未登録品種、異素材への化け、誤ったデフォルト表示が残らない。明示的廃止対象だけは除外する。
+
+##### AC-F044-002: 鉱石の欠片と専用初期フライス盤
+
+Preconditions: 石／深層岩の6鉱石とシャード3種、独立Elemental Milling Machineを準備する。
+
+Action: 原作のGrinder・Condenser経路とElemental Milling Machineの専用レシピを実行する。
+
+Expected Result: シャード産出2/3/5、4個の凝縮、および専用フライス盤の必要Tier・入力・CE・時間が原作準拠で動作し、通常の上位機械に代替させない。
+
+##### AC-F044-003: 金属ブロックと染色品の材料変換
+
+Preconditions: 原作の金属インゴット57種類とシリコン16染料、各素材ブロックを準備する。
+
+Action: 各原作レシピでブロック化、戻し加工、染色8→8、採掘回収を実行する。
+
+Expected Result: 全素材で原作の数量と材料同一性が保たれ、染色ブロックを保存・再起動しても色が変わらず、資源増殖が生じない。
+
+##### AC-F044-004: 原作PNG・ブロック形状・見た目
+
+Preconditions: 原作と1.21.1版に含まれる同名・同機能アイテムと設置物を並べる。
+
+Action: 描画・ドロップ・スタック・Tierツールチップを比較し、原作PNGのSHA-256も照合する。
+
+Expected Result: 画像は原作の416 PNGと一致し、新たな未承認画像を作成しない。素材色、輪郭、テクスチャ座標、アイテム表示が原作と同等である。
+
+### F-045: 装置・道具の原作固有動作と設定操作の一括復元
+
+#### Description
+
+依存Feature: F-008、F-018～F-020、F-027～F-031、F-043～F-044。原作の「機械が稼働するが固有の操作が欠ける」問題を、一つの**動作差分Feature**として検証・復元する。承認済みのB/Wフィルター統合、現行水中判定、流体カプセル廃止等は覆さない。
+
+(1) **初期粘土工作工具**：旧`ItemCraftingTools`の粘土麺棒・スライサー各60、ヘラ36の耐久値、クラフト1回につき耐久1消費、破損後の生粘土工作素材4/3/2個返却、スタック上限1を再現する。0.1.0の汎用アイテム登録と通常ShapedRecipeだけでは、工具の残余処理が成立しない。
+
+(2) **範囲採掘機**：原作`TileAreaMiner`の`filterHarvestSlot`、`filterFortuneSlot`、`filterSilktouchSlot`の独立条件を再現する。0.1.0の単一`FILTER_SLOT`を復元対象とし、原作相当の通常・幸運・シルクタッチ各処理と優先順位を保持する。
+
+(3) **レーザーの対ブロック作用**：原作`ClayLaserManager.irradiateLaser`にある空気・ガラスの透過、距離32、エネルギー蓄積（過去10履歴、対象変更時リセット）、硬さに応じたブロック破壊、石炭・鉄・金・ダイヤ・レッドストーン・ラピス・エメラルド鉱石の対応ブロックへの変換、苗木の段階処理を再現する。原作で検出した300～999/300000以上の苗木閾値をhotfix2コードで再確認する。1.21.1の深層岩バニラ鉱石はStone版と同等の対応を設ける。未承認の資源変換・違法ブロック破壊は行わない。
+
+(4) **範囲右クリック代行**：旧`TileAreaActivator`の`RayTraceMemory`、視線判定のON/OFF、スニーク設定、対象エンティティへのインタラクション、ブロック操作を再現する。現在のBlockOperationServiceが提供するBlock操作だけで完成扱いしない。
+
+(5) **Quartz Crucible**：原作の落下`ItemEntity`から不純シリコンインゴット・糸を少量ずつ受け取る投げ入れ操作を、追加済みの右クリック投入と併存させる。
+
+(6) **フィルター設定複製**：原作`ItemFilterDuplicator`の設定コピー、Copyフラグ・解除、上限100、循環構造の拒否を、統合B/Wフィルターと現行設定GUIで提供する。旧アイテムIDそのものの復活は不要である。
+
+各操作に付随する音、操作可否の表示、状態の保存・同期も原作と照合する。NeoForgeの保護イベント・FakePlayer・サーバー権限を迂回せず、各操作のアイテムやCEの二重消費・増殖を防止する。操作画面の配置と見た目はF-046で検証する。
+
+#### Acceptance Criteria
+
+##### AC-F045-001: 工具の耐久とクラフト残余
+
+Preconditions: 粘土麺棒、スライサー、ヘラと各手作業レシピを用意する。
+
+Action: 耐久限界まで連続クラフトし、工具の返却状態と破損直後の残余を検査する。
+
+Expected Result: 耐久60/60/36、クラフト1回につき-1、破損後の原料4/3/2返却が成立し、重複返却・無限増殖がない。
+
+##### AC-F045-002: 範囲採掘・幸運・シルクタッチ・右クリック代行
+
+Preconditions: 範囲内に通常採掘品、幸運適用品、シルクタッチ必須品、使用可能ブロックとエンティティを置く。
+
+Action: 独立した3種フィルターとRayTrace／スニーク操作を設定して各装置を稼働させる。
+
+Expected Result: 原作相当の対象選択・ドロップ・操作種別・優先順位が成立し、権限や保護のない対象には操作しない。
+
+##### AC-F045-003: レーザーの透過・変換・蓄積
+
+Preconditions: 空気・ガラス・石材・各原作対象鉱石・深層岩版・苗木・ベッドロック・受光機を用意する。
+
+Action: 距離・遮蔽・履歴を変更しつつ照射し、変換、破壊、受光、苗木成長を比較する。
+
+Expected Result: 原作の距離32、ガラス透過、10履歴・対象変更時リセット、7系列の鉱石変換、各閾値作用を満たし、消費CEと物質収支が一致する。
+
+##### AC-F045-004: るつぼ投げ入れ・フィルターコピー
+
+Preconditions: Quartz Crucibleと投げ入れ用素材、複合条件B/Wフィルターを用意する。
+
+Action: アイテム投下、右クリック投入、フィルター複写・編集・100件上限超過・循環設定を試す。
+
+Expected Result: 有効投入だけが一度消費され、両方式が使用できる。設定はコピー先だけ編集でき、上限・循環検証・再起動保存が成立する。
+
+### F-046: Clayium全操作GUI・表示・配置の原作同等性
+
+#### Description
+
+依存Feature: F-001、F-007～F-008、F-019～F-029、F-033～F-040、F-043～F-045。原作のGUIは単なるテクスチャファイルではなく、`GuiTemp`のタイル状背景、`GuiClayEnergyTemp`、`GuiClayMachines`のスロット・進捗バー、機械名、各種ボタン、付加表示の組合せで成立している。**PNGが0.1.0に全点含まれていても、配置・表示状態が同等とは限らない。** 0.1.0は`ClayMachineScreen`や新Screen群で描画を再構成しており、原作の画面に対する視覚的・操作的な同等性は未保証である。原作`mods.clayium.gui.client.*`の全20画面クラス、画面用の原作PNG19種、`GuiTemp`の座標、状態別表示、ボタン、スクロール、ツールチップを参照し、**Clayiumの全GUI**を対象に比較・修正する。
+
+対象には粘土工作台・作業板、すべての加工機とCE表示、水車、ソーラー製造機、金属分離、反応炉とCA/PAN、各種アイテム/液体バッファ・インターフェース・複線搬送・フィルター編集、範囲採掘と設定画面、自動クラフトと自動取引、貯蔵容器・57金属チェストの多ページUI、ガジェットホルダー、オートイート設定、FE変換器を含める。旧`GuiPANCore`の変換可能アイテムの**一覧・必要CE・ソート/逆順・スライダー・詳細表示・禁止指定**は、0.1.0の`PanScreen`の基本的な数値ラベルだけで代替しない。`GuiAutoTrader`の取引ページと選択状態、`GuiMultipageContainer`のページ操作、`GuiAreaMiner`の採掘モード表示も個別に照合する。
+
+ユーザーが許可したレシピ・流体・B/W・FEの新仕様に由来する部品の変更は認める。ただし、原作の**画面構成・色・余白・スロット位置関係・バー形状・表示単位・クリック領域・状態の伝達方法**を可能な限り維持する。新しいボタン・数値欄は機能的に必要な範囲に限定して原作の視覚体系に組み込む。原作PNGを再描画せず`GuiGraphics`で参照する。現行文字フォント、GUIスケール、アクセシビリティの差による厳密なピクセル一致は要求しないが、原作と識別できないほど異なる独自デザインへの置換は未達成とする。
+
+原作1.7.10で実際にGUIを撮影できる場合はそれを比較基準とする。実行できない場合はhotfix2の`Gui*`クラスを逆解析し、原作画像を使用して各画面の位置・レイヤー・色・動作状態を仕様表と画像で復元する。出力する比較資料には元画面、移植画面、原作との許可差分の説明を必ず含める。F-047のレシピ閲覧GUIとは別に評価する。
+
+#### Acceptance Criteria
+
+##### AC-F046-001: 全GUIの表示台帳と見た目
+
+Preconditions: 原作20 GUIクラス、原作GUI PNG、0.1.0のScreen登録と実行中の全装置を確認する。
+
+Action: 画面ごとの背景、ウィンドウサイズ、スロット座標、CE/進捗表示、ボタン、装置専用部品を表にして、原作基準と新スクリーンを同一GUIスケール相当で画像比較する。
+
+Expected Result: 原作画面に対応する全種類が移植版で開け、画像の誤配置・意図しない大幅な再設計・欠けたスロット・ボタン・数値欄がない。許可済み仕様変更による差は一覧化される。
+
+##### AC-F046-002: PAN・多ページ容器・取引と設定画面
+
+Preconditions: PANに多数の変換候補、チェストに複数ページ、取引機に複数オファーを用意する。
+
+Action: PANの並べ替え、逆順、スクロール、コストの詳細、禁止設定、チェストのページ送り、取引選択、フィルター編集、範囲装置の各設定を操作する。
+
+Expected Result: 原作で操作できた項目が同等の画面上で操作でき、画面を閉じて再度開いても設定と選択状態が正しい。単なる静的ラベル画面ではない。
+
+##### AC-F046-003: 描画状態と通信の同期
+
+Preconditions: CE消費中、稼働停止、容量満杯、エラー、流体あり/なし、非表示対象の状態を用意する。
+
+Action: 2クライアントでGUIを開き、操作・スクロール・更新・再接続を繰り返す。
+
+Expected Result: 数値・状態・ツールチップ・バーの表示がサーバーの実状態と一致し、文字が見切れず、クライアント側の表示変更だけで不正な動作が起こらない。
+
+##### AC-F046-004: 原作アセットの無加工と画面比較の成果物
+
+Preconditions: 原作のGUI PNGと1.21.1プロジェクトの使用PNG・モデルを用意する。
+
+Action: 対応PNGのSHA-256を照合し、初期・稼働・設定・満杯・エラーなど代表状態のスクリーンショットを保存する。
+
+Expected Result: PNGは無加工のまま原作に由来し、画面比較ファイル・操作対応表が納品される。レイアウト差分が残る場合は変更が必要な理由を具体的に記録する。
+
+### F-047: JEI・EMIでの原作NEIレシピ画面と操作の再現
+
+#### Description
+
+依存Feature: F-005、F-042、F-043～F-046。**原作NEIと0.1.0のJEI/EMIの表示内容だけでなく見た目と操作を比較し、Clayium専用部分を再現する。** 原作は`plugin.nei.NEITemp`、`NEIClayMachines`、`NEIClayWorkTable`、`NEIMetalSeparator`、`NEIDescription`、`LoadNEIConfig`により、原作`assets/clayium/textures/gui/nei.png`の背景、加工機ごとのレシピカテゴリ、固定した入出力位置、進捗表示、`Tier:`、`CE/t × 時間 = 総CE`表記、種類別の特殊説明ページ、金属分離の確率表示、作業板の専用表示、レシピ使用・作成双方の検索、GUIからのレシピ参照・転送/オーバーレイを実装していた。原作`NEITemp.drawTier`では例として相対座標(6,43)、`drawEnergy`では(6,52)に情報が置かれ、`NEIClayMachines.getGuiTexture`は`clayium:textures/gui/nei.png`を返す。
+
+0.1.0の`compat.jei.MachineRecipeCategory`は**176×103の共通矩形**に左寄せ入力・右寄せ出力・横並びの説明文を描画し、原作NEIの背景・画面構成を使用していない。同JARのJEI登録には通常加工方法とPAN複製カテゴリはあるが、原作の`NEIDescription`に相当する専用カテゴリが確認できない。`compat.emi.EmiMachineRecipe`も原作専用描画を共通化した方式ではない。原作のPNGがJARに収録されているだけで完成と判定しない。
+
+**修正範囲**：① JEIとEMIのClayiumレシピコンテンツ部に原作NEIの背景・枠・相対位置・余白・色・情報表示順・進捗を再現する。② 加工方法ごとのTier・エネルギー・加工時間・工具・入出力・選択材料・副産物と金属分離の重み/確率を保持する。③ `LoadNEIConfig`の特殊説明`CobblestoneGenerator`・`SaltExtractor`・`QuartzCrucible`・`SolarClayFabricator`・`ClayTree`を、対応カテゴリ/情報ページとして閲覧・検索できるようにする。④ 原作`NEIClayWorkTable`の専用表示と粘土作業台の?ボタン／レシピオーバーレイに相当する参照・配置補助（現行JEI/EMIの正式APIの範囲）を提供する。⑤ レシピからその機械・使用例へ移動できる触媒、原料の利用経路・成果物の製造経路、ページ送り、タグ代替、流体のmB表示、各種検索を提供する。
+
+NEI/JEI/EMIという**外部Mod本体の全体UI**や検索サイドバーをClayium側で改造して一致させる必要はない。一致対象は原作が独自に提供した「Clayiumのレシピカテゴリ内容と表示・操作」である。カプセルは復活させず液体を直接描画する。Raw Oreや深層岩、追加樹種のレシピは現代化仕様に従う。原作NEI互換のレンダリング情報は共通の表示モデルと描画ヘルパーへ集約し、JEI/EMIで別々の手書き画面へ分岐させない。
+
+#### Acceptance Criteria
+
+##### AC-F047-001: 見た目の原作同等性
+
+Preconditions: hotfix2のNEI実装と`nei.png`、0.1.0のJEI/EMIカテゴリ、および加工機・作業台・金属分離の代表レシピを用意する。
+
+Action: 原作NEIレイアウトを逆解析または実機撮影して参照画像を作り、同じ材料とカテゴリをJEI・EMIの両方で表示・撮影する。
+
+Expected Result: Clayium固有領域の背景、スロット群、進捗・Tier・CE・時間・文字の位置関係が原作と同等で、共通の無装飾176×103画面だけで代替しない。外部Viewer本体の外枠・検索UIの差は許容する。
+
+##### AC-F047-002: 全機械カテゴリ・特殊説明ページ
+
+Preconditions: 原作LoadNEIConfigに登録された全加工方法、粘土作業板、金属分離、5種類の特殊説明とPANの関連表示を列挙する。
+
+Action: JEI/EMIの各カテゴリを開き、レシピ数、材料、重み、説明、Tier・CE・時間を相互照合する。
+
+Expected Result: 原作にあるカテゴリが見えないという状態がなく、CobblestoneGenerator・SaltExtractor・QuartzCrucible・SolarClayFabricator・ClayTreeの情報ページも閲覧できる。原作レシピが表示から脱落しない。
+
+##### AC-F047-003: 画面操作・触媒・転送補助
+
+Preconditions: JEI/EMIを個別に導入し、粘土作業台、作業板、加工機GUIを開く。
+
+Action: レシピ/使用用途検索、カテゴリ切替、触媒表示、ツール/確率のツールチップ、作業台への配置補助やレシピ転送を操作する。
+
+Expected Result: 原作の?ボタン等に相当する機能が現行正式APIで成立し、必須材料の誤配置、不正なクライアント操作、レシピ未登録による検索不能が生じない。
+
+##### AC-F047-004: 液体・確率・データパックの一致
+
+Preconditions: 流体入力/出力、ランダム成果物、異Tierのレシピを用意する。
+
+Action: JEI/EMIでmB量、確率、必要CE・時間・Tierを表示した後、レシピをデータパックで変更して再読込する。
+
+Expected Result: 双方のビューアが同じサーバーレシピに追従し、原作CE演算と現代の直接流体仕様を矛盾なく示す。JEI/EMI未導入でもClayium本体が起動する。
+
+### F-048: ワールド内モデル・アニメーション・エフェクトの原作同等性
+
+#### Description
+
+依存Feature: F-001～F-003、F-021、F-028～F-036、F-044～F-045。原作には`render.block.RenderClayContainer`、`RenderLaserReflector`、`RenderMetalChest`、`RenderPANCable`、`RenderQuartzCrucible`、`render.tile.AreaMachineRenderer`、`CAReactorRenderer`、`ClayLaserRenderer`、`ClayMarkerRenderer`、`InterfaceRenderer`、`MetalChestRenderer`、`StorageContainerRenderer`等がある。0.1.0では一部をJSONモデルと少数のBlockEntityRendererで再構成しているが、**原作と同じPNGを格納した事実は3D形状、向き、接続、アニメーション、視覚フィードバックの再現を証明しない。** とくに原作では専用描画が存在したPANケーブルについて、0.1.0のモデルは`minecraft:block/cube_all`の単純立方体である。原作の接続状態を反映した形状/テクスチャとなっているか確認し修正する。すでに移植版で動作するレーザービーム等は捨てず、原作相当の色・太さ・明滅・向き・長さに校正する。
+
+対象はレーザー本体・反射器・ビーム、PANケーブル、CAコアとマルチブロックの稼働表示、範囲マーカー・領域線、インターフェース接続面、Quartz Crucibleの中身と加熱段階、金属チェスト・多段ストレージのモデル/開閉、特殊工具の持ち方/破損表現、銃と弾丸の表示、粘土樹の状態、機械稼働時の光・粒子・音・状態変化など、原作の演出一式を網羅する。原作にない過剰な発光・粒子は追加しない。**形状を原作に合わせることを優先し、旧OpenGLコードを逐語移植する必要はない**。Minecraft 1.21.1のJSONモデル、BlockState、BlockEntityRenderer、EntityRendererを使用して構成する。画像は1.7.10 JARのPNGのみを無加工で再使用する。
+
+原作描画コードとその使用アセット、移植版モデル/レンダラーの対応表を作り、設置方角・状態・距離・光源条件別に比較する。モデルに必要な形状を原作PNGからのUV指定だけで再現できない場合も、PNG自体の加工・生成はしない。画面外やチャンク離脱後の不要な描画、マルチプレイ同期不整合を防ぐ。確実に原作と異なることを確認できる要素と、静的JAR検査だけでは断定できない要素を区別して記録する。
+
+#### Acceptance Criteria
+
+##### AC-F048-001: 専用レンダラー・モデルの対応関係
+
+Preconditions: 原作のblock/tile/itemレンダラー一覧、全関連PNG、移植版のBlockState/Model/Renderer一覧を抽出する。
+
+Action: 同等の描画手段の有無を照合し、PANケーブル、反射器、Quartz Crucible、範囲マーカー、CA反応炉、インターフェース、チェストを原作に対応する状態で撮影する。
+
+Expected Result: 専用描画がJSONモデルへ置換された対象も含め、原作の輪郭・可視面・向き・状態・接続が再現され、単なる無関係の立方体表示で完了扱いしない。
+
+##### AC-F048-002: レーザー・機械・粒子の稼働演出
+
+Preconditions: 4色レーザーと反射器、稼働CA、鉱石照射、範囲採掘、チェスト・銃・粘土樹を用意する。
+
+Action: 停止/稼働、方角変更、接続/切断、消費エネルギー変化、ブロック破壊前後などを描画・比較する。
+
+Expected Result: 原作相当のアニメーション、色、ビーム形状、マーカー表示、ツール/銃のアイコン・モデル・粒子・音・状態フィードバックが成立する。
+
+##### AC-F048-003: 視覚素材・再起動・距離による表示
+
+Preconditions: 原作416PNGのハッシュ台帳を用意し、複数装置を稼働させる。
+
+Action: ファイルハッシュ比較、遠方/近距離、チャンク離脱/復帰、専用サーバー+2クライアントで描画差分を確認する。
+
+Expected Result: 既存PNGは無改変で使用し、テクスチャ破損・表示残留・向きの食い違い・マルチプレイの描画不一致を生じさせない。
+
+### F-049: 原作と1.21.1版の全要素対応台帳・完成判定
+
+#### Description
+
+依存Feature: F-001～F-042、F-043～F-048。F-043～F-048を網羅しても、JARの総ファイル数一致だけで完全移植は証明できない。hotfix2と0.1.0（および修正後JAR）のレシピ、登録内容、内部計算、特殊操作、GUI/NEIとJEI/EMI表示、モデル/描画、エフェクト、言語・説明、操作手段を、**機能単位で追跡できる対応台帳**にする。原作はJava実装によって複数レシピを動的登録し、移植版は`clayium:machine`等のJSON中心であるため、旧バイトコードのレシピ登録呼び出し回数と新JSON数が等しいことを合格条件にしない。投入/出力数量、代替材料、加工方法、必要Tier、CE、処理tick、確率副産物、装置への適用条件を意味的に比較する。
+
+各要素には原作クラス・JARパス・必要ならバイトコード命令箇所、移植先Registry ID / JSON / Javaクラス、原作の表示PNG/GUI画面名、現行の表示画面・操作手順、テスト名を記録し、判定を`同等`・`明示的に変更済み`・`欠落`・`未確認`に分類する。**未確認を同等とみなしてはならない。** 許可変更はStone/Deepslate鉱石と現高度、Raw Ore・新樹種、新流体直接輸送、カプセル廃止、CE→FEのみ、B/W統合、現行API置換、UtilityMode廃止、FE変換器初期レシピ有効化、旧ワールド非対応などPROJECT.md明記事項だけである。変更理由なくレシピ・数値・見た目・操作を簡略化してはいけない。
+
+**本Featureを正式版の最終受入ゲートとする。** 自動で比較できる登録・計算・レシピはGameTest/Javaテスト/台帳照合を使用する。見た目はJEI・EMI両方、原作対応GUI、ワールド内レンダラーでE2Eスクリーンショット比較を実施する。原作1.7.10環境を起動できない場合はJARの実際のテクスチャと旧クラスの描画座標・処理分岐を復元して比較基準を作り、再現していない要素がないかをレビューする。
+
+**設定と公開条件（旧F-043からの統合）:** 原作の`ProgressionRate`初期1.0、HardcoreAluminium／HardcoreOsmium初期false、EnableInjectorRecipeOfInterface初期false、ClaySteelPickaxeRange初期2、InvertClayLaserRSCondition初期false、CAReactorGlittering初期true、LaserQuality初期8、Tier別製造・搬送・収納倍率などを現行NeoForge Configへ移す。CE→FEの組立レシピは初期有効、生成鉱石・レシピ値はデータパックを正本とする。旧`UtilityMode`は一切実装しない。液体カプセル用設定、流体IDの保存設定、旧TileEntity代替名、数値Entity ID、旧PacketSendingRate依存は廃止する。初回正式版の完了条件は、原作のすべての主要機能、Tier 0～13、33機械系列168機種、全57金属チェスト、CA・PAN・銃・ガジェット・直接流体・FEの実装とGameTest/E2Eの合格とする。Tier途中までの公開テスト版は本計画に含めない。
+
+#### Acceptance Criteria
+
+##### AC-F049-001: 静的要素・材料・レシピの全対応表
+
+Preconditions: 両JARの登録要素、原作CRecipes、0.1.0の468件レシピJSON、新しい修正JAR/ソース、許可変更一覧を用意する。
+
+Action: 原作の全品種とレシピ経路を移植版へ1対1または明示的変換関係で対応付け、Tier・CE・時間・入力・出力・確率を比較する。
+
+Expected Result: 原作に存在した生存モード用要素のうち、`欠落`と`未確認`が0件になる。許可された変更は対応方法と理由を明記し、許可されていない代替品による穴埋めがない。
+
+##### AC-F049-002: 操作・表示・カテゴリの全対応表
+
+Preconditions: 原作NEI、GUI、rendererのクラスとPNG、および新JEI/EMI・Screen・Modelを台帳化する。
+
+Action: 全主要画面、特殊NEI説明5種、作業台の?操作、PANリスト、対応ブロックの描画を機能・表示・ユーザー操作で照合する。
+
+Expected Result: 原作の画面・機能・操作に対応する実装と検証画像/テストが存在し、ただPNGがあるという理由で同等判定した項目がない。
+
+##### AC-F049-003: 原作固有値・状態・保存の動作検査
+
+Preconditions: Tier0～13の機械、ガジェット、レーザー、エネルギー、水車、CA/PAN、メタ素材を持つ複数の新規ワールドを用意する。
+
+Action: 加工時間・CE/t・合計CE・分離抽選・工具残余・レーザー・採掘・フィルター複製・再起動保存を実機やGameTestで検証する。
+
+Expected Result: 既知の欠落F-043～F-045を修復し、状態保存・権限・アイテム収支・マルチプレイに原作からの無断仕様劣化が残らない。
+
+##### AC-F049-004: 設定値と除外機能
 
 Preconditions: Modの初期Config、生成された登録ID、レシピ・アイテムリストを確認する。
 
@@ -1127,21 +1460,29 @@ Action: 各設定の初期値・反映結果と、廃止した機能の有無を
 
 Expected Result: 原作から保持すべき設定が機能し、UtilityModeとカプセル関連・旧ID依存は存在しない。CE→FE変換器は初期有効である。
 
-##### AC-F043-002: Tier 0～13の進行閉包
+##### AC-F049-005: Tier 0～13の進行閉包
 
 Preconditions: 新規1.21.1ワールドで粘土・バニラ資源のみを開始資源とし、創作的なアイテム追加を行わない。
 
 Action: 全Tierの代表的なレシピ依存を自動検査し、Tier 13の上位装置・素材へ到達する資源経路を調べる。
 
-Expected Result: 外部Mod専用素材や液体カプセルを必須とせず、Tier 0からTier 13まで原作と同等の進行が成立する。原作33機械系列168機種、全57金属チェストが登録され、特定Tierだけ未実装で残らない。
+Expected Result: 外部Mod専用素材や液体カプセルを必須とせず、Tier 0からTier 13まで原作と同等の進行が成立する。原作33機械系列168機種、全57金属チェストが登録され、特定Tierだけ未実装で残らない。 F-043～F-049の全ACと対応台帳も合格している。
 
-##### AC-F043-003: 専用サーバー・再起動・複数クライアント
+##### AC-F049-006: 専用サーバー・再起動・複数クライアント
 
 Preconditions: 新規ワールドの専用サーバーと2クライアントで上位装置、流体、PAN、ガジェット、チャンクローダーを稼働させる。
 
 Action: 連続稼働、セーブ、サーバー再起動、チャンク離脱・復帰、装着変更を行う。
 
 Expected Result: アイテム／流体／CEの増殖や消失、不正な属性残存、無限探索、同期破綻、未解除チケットが生じず、クライアントを正常に再接続できる。
+
+##### AC-F049-007: 正式版の総合完了判定
+
+Preconditions: F-001～F-042、F-043～F-048のAcceptance Criteriaおよび台帳をすべて準備する。
+
+Action: Minecraft 1.21.1/NeoForgeでTier0から13、全機械系列・57金属チェスト・最終装置と装備、JEI/EMI、全GUIと主要3D描画を試験する。
+
+Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件であることを証明できた場合にのみ本Featureを合格とし、初回正式版の完成判定を行う。
 
 ## Global Requirements
 
