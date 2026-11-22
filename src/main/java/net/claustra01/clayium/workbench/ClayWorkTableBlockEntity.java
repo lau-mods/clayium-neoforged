@@ -8,6 +8,7 @@ import net.claustra01.clayium.recipe.ClayiumRecipeInput;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.RecipeRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
+import net.claustra01.clayium.tool.ClayCraftingToolItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -110,7 +111,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
 
         ClayiumMachineRecipe value = recipe.get().value();
         if (activeRecipe == null) {
-            if (!canStoreOutputs(value.itemOutputs())) {
+            if (!canStoreOutputs(value.itemOutputs(), action)) {
                 return false;
             }
             ItemStack reserved = inventory.extractItem(
@@ -128,7 +129,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
             setChanged();
             return true;
         }
-        if (!canStoreOutputs(value.itemOutputs())) {
+        if (!canStoreOutputs(value.itemOutputs(), action)) {
             setChanged();
             return false;
         }
@@ -202,14 +203,30 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
             return;
         }
         ItemStack tool = inventory.getStackInSlot(TOOL_SLOT);
+        if (tool.getItem() instanceof ClayCraftingToolItem craftingTool) {
+            ItemStack remainder = craftingTool.getCraftingRemainingItem(tool);
+            if (remainder.is(craftingTool)) {
+                inventory.setStackInSlot(TOOL_SLOT, remainder);
+            } else {
+                inventory.setStackInSlot(TOOL_SLOT, ItemStack.EMPTY);
+                insertOutput(remainder);
+            }
+            return;
+        }
         tool.hurtAndBreak(1, (ServerLevel) level, null, item -> {});
     }
 
-    private boolean canStoreOutputs(List<ItemStack> outputs) {
+    private boolean canStoreOutputs(List<ItemStack> outputs, int action) {
         ItemStackHandler simulation = new ItemStackHandler(2);
         simulation.setStackInSlot(0, inventory.getStackInSlot(FIRST_OUTPUT_SLOT).copy());
         simulation.setStackInSlot(1, inventory.getStackInSlot(SECOND_OUTPUT_SLOT).copy());
-        for (ItemStack output : outputs) {
+        java.util.ArrayList<ItemStack> allOutputs = new java.util.ArrayList<>(outputs);
+        ItemStack tool = inventory.getStackInSlot(TOOL_SLOT);
+        if (action > 2 && tool.getItem() instanceof ClayCraftingToolItem craftingTool
+                && tool.getDamageValue() + 1 >= tool.getMaxDamage()) {
+            allOutputs.add(craftingTool.getCraftingRemainingItem(tool));
+        }
+        for (ItemStack output : allOutputs) {
             ItemStack remaining = simulation.insertItem(0, output.copy(), false);
             remaining = simulation.insertItem(1, remaining, false);
             if (!remaining.isEmpty()) {
@@ -221,7 +238,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
 
     private void insertOutput(ItemStack output) {
         ItemStack remaining = mergeOutput(FIRST_OUTPUT_SLOT, output);
-        mergeOutput(SECOND_OUTPUT_SLOT, remaining);
+        remaining = mergeOutput(SECOND_OUTPUT_SLOT, remaining);
     }
 
     private ItemStack mergeOutput(int slot, ItemStack output) {

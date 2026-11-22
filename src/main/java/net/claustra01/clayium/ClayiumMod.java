@@ -22,6 +22,7 @@ import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.storage.StorageCapabilities;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderTicketService;
 import net.claustra01.clayium.world.area.AreaCapabilities;
+import net.claustra01.clayium.world.area.AreaMachineControlPayload;
 import net.claustra01.clayium.world.claytree.ClayTreeCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -76,6 +77,7 @@ public final class ClayiumMod {
         modEventBus.addListener(net.claustra01.clayium.logistics.filter.FilterControlPayload::register);
         modEventBus.addListener(TradeSelectPayload::register);
         modEventBus.addListener(TradeSnapshotPayload::register);
+        modEventBus.addListener(AreaMachineControlPayload::register);
     }
 
     public static ResourceLocation id(String path) {

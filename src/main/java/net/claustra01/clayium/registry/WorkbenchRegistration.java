@@ -4,6 +4,7 @@ import java.util.List;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.item.FoundationItem;
 import net.claustra01.clayium.tool.BufferConfigurationToolItem;
+import net.claustra01.clayium.tool.ClayCraftingToolItem;
 import net.claustra01.clayium.workbench.ClayCraftingBoardBlock;
 import net.claustra01.clayium.workbench.ClayCraftingBoardBlockEntity;
 import net.claustra01.clayium.workbench.ClayCraftingBoardMenu;
@@ -44,9 +45,12 @@ public final class WorkbenchRegistration {
     public static final DeferredItem<FoundationItem> RAW_CLAY_ROLLING_PIN = tool("raw_clay_rolling_pin", 0, 0);
     public static final DeferredItem<FoundationItem> RAW_CLAY_SLICER = tool("raw_clay_slicer", 0, 0);
     public static final DeferredItem<FoundationItem> RAW_CLAY_SPATULA = tool("raw_clay_spatula", 0, 0);
-    public static final DeferredItem<FoundationItem> CLAY_ROLLING_PIN = tool("clay_rolling_pin", 1, 60);
-    public static final DeferredItem<FoundationItem> CLAY_SLICER = tool("clay_slicer", 1, 60);
-    public static final DeferredItem<FoundationItem> CLAY_SPATULA = tool("clay_spatula", 1, 36);
+    public static final DeferredItem<ClayCraftingToolItem> CLAY_ROLLING_PIN = craftingTool(
+            "clay_rolling_pin", 60, 4);
+    public static final DeferredItem<ClayCraftingToolItem> CLAY_SLICER = craftingTool(
+            "clay_slicer", 60, 3);
+    public static final DeferredItem<ClayCraftingToolItem> CLAY_SPATULA = craftingTool(
+            "clay_spatula", 36, 2);
     public static final DeferredItem<FoundationItem> CLAY_IO_CONFIGURATOR = tool("clay_io_configurator", 1, 128);
     public static final DeferredItem<FoundationItem> CLAY_PIPING_CONFIGURATOR = tool(
             "clay_piping_configurator", 1, 128);
@@ -115,6 +119,17 @@ public final class WorkbenchRegistration {
             }
             return new FoundationItem(properties);
         });
+    }
+
+    private static DeferredItem<ClayCraftingToolItem> craftingTool(
+            String id, int durability, int brokenClayBalls) {
+        return ClayiumRegistries.ITEMS.register(
+                id,
+                () -> new ClayCraftingToolItem(
+                        new Item.Properties()
+                                .durability(durability)
+                                .component(FoundationDataComponentRegistration.TIER.get(), 1),
+                        brokenClayBalls));
     }
 
     private WorkbenchRegistration() {

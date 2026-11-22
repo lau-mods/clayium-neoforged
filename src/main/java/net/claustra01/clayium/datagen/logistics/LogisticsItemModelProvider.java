@@ -21,5 +21,8 @@ public final class LogisticsItemModelProvider extends ItemModelProvider {
         getBuilder("white_list_item_filter")
                 .parent(new ModelFile.UncheckedModelFile("minecraft:item/generated"))
                 .texture("layer0", ClayiumMod.id("item/filterwhitelist"));
+        getBuilder("item_filter_duplicator")
+                .parent(new ModelFile.UncheckedModelFile("minecraft:item/generated"))
+                .texture("layer0", ClayiumMod.id("item/filterduplicator"));
     }
 }

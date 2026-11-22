@@ -24,6 +24,7 @@ public final class LaserReflectorBlockEntity extends BlockEntity implements Lase
     private long nextPathCheck;
     private boolean pathDirty = true;
     private boolean irradiating;
+    private final LaserIrradiation irradiation = new LaserIrradiation();
 
     public LaserReflectorBlockEntity(BlockPos pos, BlockState state) {
         super(LaserRegistration.REFLECTOR_BLOCK_ENTITY.get(), pos, state);
@@ -50,7 +51,7 @@ public final class LaserReflectorBlockEntity extends BlockEntity implements Lase
                 reflector.pathDirty = false;
                 reflector.nextPathCheck = gameTime + 10L;
             }
-            reflector.path.deliver(serverLevel, outgoing, output);
+            reflector.path.deliver(serverLevel, outgoing, output, reflector.irradiation, pos);
             boolean changed = !reflector.irradiating || !reflector.visibleBeam.equals(outgoing)
                     || oldLength != reflector.path.length();
             reflector.visibleBeam = outgoing;
@@ -109,6 +110,9 @@ public final class LaserReflectorBlockEntity extends BlockEntity implements Lase
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
+        if (tag.contains("irradiation")) {
+            irradiation.load(tag.getCompound("irradiation"));
+        }
         if (level != null && level.isClientSide) {
             visibleBeam = new LaserBeam(tag.getLong("laser_blue"), tag.getLong("laser_green"),
                     tag.getLong("laser_red"), tag.getInt("laser_age"));
@@ -116,6 +120,14 @@ public final class LaserReflectorBlockEntity extends BlockEntity implements Lase
             irradiating = tag.getBoolean("irradiating");
         }
         pathDirty = true;
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        CompoundTag irradiationTag = new CompoundTag();
+        irradiation.save(irradiationTag);
+        tag.put("irradiation", irradiationTag);
     }
 
     @Override

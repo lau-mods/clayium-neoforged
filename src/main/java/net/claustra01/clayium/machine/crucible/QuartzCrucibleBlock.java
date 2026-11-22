@@ -9,6 +9,8 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
@@ -94,6 +96,14 @@ public final class QuartzCrucibleBlock extends BaseEntityBlock {
             stack.shrink(consumed);
         }
         return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (!level.isClientSide && entity instanceof ItemEntity item
+                && level.getBlockEntity(pos) instanceof QuartzCrucibleBlockEntity crucible) {
+            crucible.absorbDroppedItem(item);
+        }
     }
 
     @Override

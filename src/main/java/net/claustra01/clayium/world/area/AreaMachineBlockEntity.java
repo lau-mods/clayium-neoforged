@@ -17,6 +17,7 @@ import net.claustra01.clayium.world.operation.BlockOperationService;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -34,6 +35,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -49,8 +54,10 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class AreaMachineBlockEntity extends BlockEntity implements LaserReceiver, MenuProvider {
     public static final int OPERATION_SLOT = 0;
-    public static final int FILTER_SLOT = 1;
-    public static final int OUTPUT_START = 2;
+    public static final int HARVEST_FILTER_SLOT = 1;
+    public static final int FORTUNE_FILTER_SLOT = 2;
+    public static final int SILK_TOUCH_FILTER_SLOT = 3;
+    public static final int OUTPUT_START = 4;
     public static final int OUTPUT_SLOTS = 9;
     public static final int FUEL_SLOT = OUTPUT_START + OUTPUT_SLOTS;
     public static final int MAX_OPERATIONS_PER_TICK = 1000;
@@ -64,7 +71,8 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             return switch (slot) {
-                case FILTER_SLOT -> stack.is(LogisticsRegistration.ITEM_FILTER.get());
+                case HARVEST_FILTER_SLOT, FORTUNE_FILTER_SLOT, SILK_TOUCH_FILTER_SLOT ->
+                        stack.is(LogisticsRegistration.ITEM_FILTER.get());
                 case FUEL_SLOT -> ClayEnergyStorage.fuelValue(stack).internalValue() > 0L;
                 case OPERATION_SLOT -> !stack.is(LogisticsRegistration.ITEM_FILTER.get());
                 default -> true;
@@ -73,7 +81,8 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
 
         @Override
         public int getSlotLimit(int slot) {
-            return slot == FILTER_SLOT ? 1 : super.getSlotLimit(slot);
+            return slot >= HARVEST_FILTER_SLOT && slot <= SILK_TOUCH_FILTER_SLOT
+                    ? 1 : super.getSlotLimit(slot);
         }
     };
     private final IItemHandler itemHandler = new AreaItemHandler();
@@ -85,6 +94,10 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
     private LaserBeam pendingLaser = new LaserBeam(0L, 0L, 0L);
     private long progress;
     private OperationStatus status = OperationStatus.IDLE;
+    private RayTraceMemory rayTraceMemory;
+    private ActivatorTarget activatorTarget = ActivatorTarget.BLOCK;
+    private boolean activatorRayTrace;
+    private boolean activatorSneaking;
 
     public AreaMachineBlockEntity(BlockPos pos, BlockState state) {
         super(AreaMachineRegistration.MACHINE_BLOCK_ENTITY.get(), pos, state);
@@ -154,9 +167,12 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
                 break;
             }
             BlockState targetState = serverLevel.getBlockState(target);
-            if (targetState.isAir() || !accepts(new ItemStack(targetState.getBlock().asItem()))) {
-                advanceCursor();
-                continue;
+            if (machineType() != AreaMachineType.ACTIVATOR || activatorTarget == ActivatorTarget.BLOCK) {
+                if (targetState.isAir()
+                        || !acceptsHarvest(new ItemStack(targetState.getBlock().asItem()))) {
+                    advanceCursor();
+                    continue;
+                }
             }
             BlockOperationResult result = switch (machineType()) {
                 case MINER, ADVANCED_MINER -> breakTarget(serverLevel, target);
@@ -193,13 +209,39 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
     }
 
     private BlockOperationResult breakTarget(ServerLevel serverLevel, BlockPos target) {
+        ItemStack targetItem = new ItemStack(serverLevel.getBlockState(target).getBlock().asItem());
+        ItemStack originalTool = inventory.getStackInSlot(OPERATION_SLOT).copy();
+        ItemStack tool = originalTool.copy();
+        if (tool.isEmpty()) {
+            tool = new ItemStack(Items.DIAMOND_PICKAXE);
+        }
+        if (matchesFilter(FORTUNE_FILTER_SLOT, targetItem)) {
+            tool.set(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+            tool.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                    .getOrThrow(Enchantments.FORTUNE), 3);
+        }
+        if (matchesFilter(SILK_TOUCH_FILTER_SLOT, targetItem)) {
+            tool.set(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+            tool.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                    .getOrThrow(Enchantments.SILK_TOUCH), 1);
+        }
         return BlockOperationService.breakBlock(
                 serverLevel,
                 worldPosition,
                 target,
                 owner,
-                inventory.getStackInSlot(OPERATION_SLOT).copy(),
-                stack -> inventory.setStackInSlot(OPERATION_SLOT, stack),
+                tool,
+                stack -> {
+                    if (!inventory.getStackInSlot(OPERATION_SLOT).isEmpty()) {
+                        if (stack.isEmpty()) {
+                            inventory.setStackInSlot(OPERATION_SLOT, ItemStack.EMPTY);
+                        } else {
+                            ItemStack damaged = originalTool.copy();
+                            damaged.setDamageValue(stack.getDamageValue());
+                            inventory.setStackInSlot(OPERATION_SLOT, damaged);
+                        }
+                    }
+                },
                 stacks -> insertOutputs(stacks, true).isEmpty(),
                 stacks -> insertOutputs(stacks, false));
     }
@@ -242,15 +284,56 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
     }
 
     private BlockOperationResult activateTarget(ServerLevel serverLevel, BlockPos target) {
+        if (rayTraceMemory == null) {
+            rayTraceMemory = RayTraceMemory.standard(
+                    getBlockState().getValue(AreaMachineBlock.FACING));
+        }
+        if (activatorTarget != ActivatorTarget.BLOCK) {
+            BlockOperationService.UseResult entityUse = BlockOperationService.useEntity(
+                    serverLevel, worldPosition, target, owner,
+                    inventory.getStackInSlot(OPERATION_SLOT).copyWithCount(1),
+                    rayTraceMemory.startAt(target), rayTraceMemory.look(), activatorRayTrace, activatorSneaking);
+            if (entityUse.result() == BlockOperationResult.SUCCESS) {
+                return finishActivation(serverLevel, entityUse);
+            }
+            if (entityUse.result() == BlockOperationResult.DENIED) {
+                return BlockOperationResult.DENIED;
+            }
+            if (activatorTarget == ActivatorTarget.ENTITY) {
+                return entityUse.result();
+            }
+        }
+        BlockState targetState = serverLevel.getBlockState(target);
+        if (targetState.isAir() || !acceptsHarvest(new ItemStack(targetState.getBlock().asItem()))) {
+            return BlockOperationResult.NO_TARGET;
+        }
         ItemStack input = inventory.getStackInSlot(OPERATION_SLOT);
         ItemStack used = input.isEmpty() ? ItemStack.EMPTY : input.copyWithCount(1);
-        Direction facing = getBlockState().getValue(AreaMachineBlock.FACING);
+        BlockHitResult hit = rayTraceMemory.directHit(target);
+        if (activatorRayTrace) {
+            Vec3 start = rayTraceMemory.startAt(target);
+            Vec3 end = start.add(rayTraceMemory.look().scale(Math.max(3.0D, rayTraceMemory.relativeEye().length())));
+            var clipped = serverLevel.clip(new net.minecraft.world.level.ClipContext(
+                    start, end, net.minecraft.world.level.ClipContext.Block.OUTLINE,
+                    net.minecraft.world.level.ClipContext.Fluid.NONE,
+                    FakePlayerFactory.get(serverLevel, new GameProfile(owner, "[Clayium]"))));
+            if (clipped.getType() != net.minecraft.world.phys.HitResult.Type.BLOCK) {
+                return BlockOperationResult.NO_TARGET;
+            }
+            hit = clipped;
+        }
         BlockOperationService.UseResult use = BlockOperationService.useBlock(
-                serverLevel, worldPosition, target, facing, owner, used);
+                serverLevel, worldPosition, hit, owner, used, activatorSneaking);
+        return finishActivation(serverLevel, use);
+    }
+
+    private BlockOperationResult finishActivation(
+            ServerLevel serverLevel, BlockOperationService.UseResult use) {
         if (use.result() != BlockOperationResult.SUCCESS) {
             return use.result();
         }
 
+        ItemStack input = inventory.getStackInSlot(OPERATION_SLOT);
         List<ItemStack> returned = new ArrayList<>(use.returnedItems());
         if (!input.isEmpty()) {
             ItemStack remaining = input.copy();
@@ -291,7 +374,7 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         }
         int collected = 0;
         List<ItemEntity> entities = serverLevel.getEntitiesOfClass(
-                ItemEntity.class, workArea.box(), entity -> entity.isAlive() && accepts(entity.getItem()));
+                ItemEntity.class, workArea.box(), entity -> entity.isAlive() && acceptsHarvest(entity.getItem()));
         for (ItemEntity entity : entities) {
             if (collected >= budget) {
                 break;
@@ -308,8 +391,14 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         return collected;
     }
 
-    private boolean accepts(ItemStack candidate) {
-        return !candidate.isEmpty() && ItemFilter.accepts(inventory.getStackInSlot(FILTER_SLOT), candidate);
+    private boolean acceptsHarvest(ItemStack candidate) {
+        return !candidate.isEmpty() && ItemFilter.accepts(
+                inventory.getStackInSlot(HARVEST_FILTER_SLOT), candidate);
+    }
+
+    private boolean matchesFilter(int slot, ItemStack candidate) {
+        ItemStack filter = inventory.getStackInSlot(slot);
+        return !filter.isEmpty() && ItemFilter.accepts(filter, candidate);
     }
 
     private List<ItemStack> insertOutputs(List<ItemStack> stacks, boolean simulate) {
@@ -362,6 +451,45 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         return inventory;
     }
 
+    public void rememberRayTrace(Player player, Direction hitFace) {
+        if (machineType() == AreaMachineType.ACTIVATOR) {
+            rayTraceMemory = RayTraceMemory.lookingFrom(player, worldPosition, hitFace);
+            setChangedAndSync();
+        }
+    }
+
+    public void applyActivatorControl(int action, Player player) {
+        if (machineType() != AreaMachineType.ACTIVATOR) {
+            return;
+        }
+        switch (action) {
+            case 0 -> activatorTarget = activatorTarget.next();
+            case 1 -> activatorRayTrace = !activatorRayTrace;
+            case 2 -> activatorSneaking = !activatorSneaking;
+            case 3 -> rememberRayTrace(player, getBlockState().getValue(AreaMachineBlock.FACING));
+            default -> {
+                return;
+            }
+        }
+        setChangedAndSync();
+    }
+
+    public ActivatorTarget activatorTarget() {
+        return activatorTarget;
+    }
+
+    public boolean activatorRayTrace() {
+        return activatorRayTrace;
+    }
+
+    public boolean activatorSneaking() {
+        return activatorSneaking;
+    }
+
+    public RayTraceMemory rayTraceMemory() {
+        return rayTraceMemory;
+    }
+
     @Override
     public Component getDisplayName() {
         return getBlockState().getBlock().getName();
@@ -401,6 +529,12 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         tag.putLong("cursor", cursor);
         tag.putString("target_dimension", targetDimension);
         tag.putString("status", status.name());
+        tag.putString("activator_target", activatorTarget.name());
+        tag.putBoolean("activator_ray_trace", activatorRayTrace);
+        tag.putBoolean("activator_sneaking", activatorSneaking);
+        if (rayTraceMemory != null) {
+            tag.put("ray_trace_memory", rayTraceMemory.save());
+        }
         if (owner != null) {
             tag.putUUID("owner", owner);
         }
@@ -423,6 +557,12 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         targetDimension = tag.getString("target_dimension");
         owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
         status = tag.contains("status") ? OperationStatus.valueOf(tag.getString("status")) : OperationStatus.IDLE;
+        activatorTarget = tag.contains("activator_target")
+                ? ActivatorTarget.valueOf(tag.getString("activator_target")) : ActivatorTarget.BLOCK;
+        activatorRayTrace = tag.getBoolean("activator_ray_trace");
+        activatorSneaking = tag.getBoolean("activator_sneaking");
+        rayTraceMemory = tag.contains("ray_trace_memory")
+                ? RayTraceMemory.load(tag.getCompound("ray_trace_memory")) : null;
     }
 
     @Override
@@ -457,35 +597,58 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         NO_ENERGY
     }
 
+    public enum ActivatorTarget {
+        BLOCK,
+        ENTITY,
+        BOTH;
+
+        public ActivatorTarget next() {
+            return values()[(ordinal() + 1) % values().length];
+        }
+    }
+
     private final class AreaItemHandler implements IItemHandler {
         @Override
         public int getSlots() {
-            return inventory.getSlots();
+            return 1 + OUTPUT_SLOTS + 1;
         }
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return inventory.getStackInSlot(slot);
+            return inventory.getStackInSlot(exposedSlot(slot));
         }
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return slot < OUTPUT_START || slot == FUEL_SLOT ? inventory.insertItem(slot, stack, simulate) : stack;
+            int actual = exposedSlot(slot);
+            return actual == OPERATION_SLOT || actual == FUEL_SLOT
+                    ? inventory.insertItem(actual, stack, simulate) : stack;
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return slot >= OUTPUT_START ? inventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+            int actual = exposedSlot(slot);
+            return actual >= OUTPUT_START ? inventory.extractItem(actual, amount, simulate) : ItemStack.EMPTY;
         }
 
         @Override
         public int getSlotLimit(int slot) {
-            return inventory.getSlotLimit(slot);
+            return inventory.getSlotLimit(exposedSlot(slot));
         }
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return inventory.isItemValid(slot, stack);
+            return inventory.isItemValid(exposedSlot(slot), stack);
+        }
+
+        private int exposedSlot(int slot) {
+            if (slot == 0) {
+                return OPERATION_SLOT;
+            }
+            if (slot <= OUTPUT_SLOTS) {
+                return OUTPUT_START + slot - 1;
+            }
+            return FUEL_SLOT;
         }
     }
 }

@@ -11,7 +11,7 @@ public record ItemFilterSettings(Mode mode, List<ItemFilterRule> rules) {
     public static final Codec<ItemFilterSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Mode.CODEC
                     .optionalFieldOf("mode", Mode.BLACKLIST).forGetter(ItemFilterSettings::mode),
-            ItemFilterRule.CODEC.listOf(0, 32)
+            ItemFilterRule.CODEC.listOf(0, 100)
                     .optionalFieldOf("rules", List.of()).forGetter(ItemFilterSettings::rules))
             .apply(instance, ItemFilterSettings::new));
 
@@ -29,7 +29,7 @@ public record ItemFilterSettings(Mode mode, List<ItemFilterRule> rules) {
     }
 
     public ItemFilterSettings withRule(ItemFilterRule rule) {
-        if (rules.size() >= 32) {
+        if (rules.size() >= 100 || !FilterCopyValidator.canAdd(this, rule)) {
             return this;
         }
         java.util.ArrayList<ItemFilterRule> changed = new java.util.ArrayList<>(rules);

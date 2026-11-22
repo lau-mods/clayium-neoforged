@@ -1,6 +1,30 @@
 {
   "gameTests": [
     {
+      "acId": "AC-F045-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "craftingtoolsreturndamageandrawclayexactlyonce"
+    },
+    {
+      "acId": "AC-F045-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "areafiltersandactivatorpreservepriorityprotectionandinteraction"
+    },
+    {
+      "acId": "AC-F045-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "lasertransmitsconvertsaccumulatesandhonorsprotection"
+    },
+    {
+      "acId": "AC-F045-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "crucibleandfiltercopiesconsumevalidateandpersistexactly"
+    },
+    {
       "acId": "AC-F043-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -854,6 +878,22 @@
     }
   ],
   "e2e": [
+    {
+      "acId": "AC-F045-001",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
+    {
+      "acId": "AC-F045-002",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
+    {
+      "acId": "AC-F045-003",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
+    {
+      "acId": "AC-F045-004",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
     {
       "acId": "AC-F039-002",
       "scenario": "tests/e2e/advanced-clay-tools.mjs"

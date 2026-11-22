@@ -82,6 +82,7 @@ public final class OriginalRegistryCatalog {
             new RegisteredEntry("tile.blockPureAntimatterPANDuplicator.name", "pan_duplicator_tier_11", true),
             new RegisteredEntry("tile.blockOECPANDuplicator.name", "pan_duplicator_tier_12", true),
             new RegisteredEntry("tile.blockOPAPANDuplicator.name", "pan_duplicator_tier_13", true),
+            new RegisteredEntry("item.itemFilterDuplicator.copy.name", "item_filter_duplicator", false),
             new RegisteredEntry("item.itemFilterWhitelist.name", "white_list_item_filter", false),
             new RegisteredEntry("item.itemDirectionMemory.name", "direction_memory_card", false),
             new RegisteredEntry("item.itemGadget.Blank.name", "clay_gadget_template", false),

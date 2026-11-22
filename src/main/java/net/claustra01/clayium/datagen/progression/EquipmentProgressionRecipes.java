@@ -114,6 +114,13 @@ public final class EquipmentProgressionRecipes {
         machine(output, "white_list_item_filter", LogisticsRegistration.ITEM_FILTER.get(),
                 4, 8, 20, circuit(5), 1,
                 ProgressionRecipeSupport.material("industrial_clay_plate"), 3);
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.TOOLS,
+                        LogisticsRegistration.FILTER_DUPLICATOR.get())
+                .requires(LogisticsRegistration.ITEM_FILTER.get(), 3)
+                .unlockedBy("has_item_filter", InventoryChangeTrigger.TriggerInstance
+                        .hasItems(LogisticsRegistration.ITEM_FILTER.get()))
+                .save(output, ClayiumMod.id("progression/equipment/item_filter_duplicator"));
         machine(output, "fluid_filter", FluidRegistration.FLUID_FILTER.get(),
                 4, 8, 20, LogisticsRegistration.ITEM_FILTER.get(), 1, Items.BUCKET, 1);
         machine(output, "synchronizer", InterfaceRegistration.SYNCHRONIZER.get(),

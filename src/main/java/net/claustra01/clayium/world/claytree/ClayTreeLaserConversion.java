@@ -1,9 +1,13 @@
 package net.claustra01.clayium.world.claytree;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.laser.LaserBeam;
 import net.claustra01.clayium.machine.iface.LaserReceiver;
 import net.claustra01.clayium.registry.ClayTreeRegistration;
+import net.claustra01.clayium.world.operation.BlockOperationResult;
+import net.claustra01.clayium.world.operation.BlockOperationService;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
@@ -27,8 +31,11 @@ public final class ClayTreeLaserConversion {
         if (beam.energy() < REQUIRED_ENERGY) {
             return true;
         }
-        level.setBlock(position, ClayTreeRegistration.CLAY_TREE_SAPLING.get().defaultBlockState(), 3);
-        return true;
+        UUID owner = UUID.nameUUIDFromBytes(("clayium-laser:" + position.asLong())
+                .getBytes(StandardCharsets.UTF_8));
+        return BlockOperationService.replaceBlock(level, position, position, owner,
+                ClayTreeRegistration.CLAY_TREE_SAPLING.get().defaultBlockState())
+                == BlockOperationResult.SUCCESS;
     }
 
     private ClayTreeLaserConversion() {

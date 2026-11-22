@@ -40,6 +40,7 @@ public final class ClayEnergyLaserBlockEntity extends BlockEntity implements Las
     private long nextPathCheck;
     private boolean pathDirty = true;
     private boolean irradiating;
+    private final LaserIrradiation irradiation = new LaserIrradiation();
 
     public ClayEnergyLaserBlockEntity(BlockPos pos, BlockState state) {
         super(LaserRegistration.LASER_BLOCK_ENTITY.get(), pos, state);
@@ -68,7 +69,7 @@ public final class ClayEnergyLaserBlockEntity extends BlockEntity implements Las
         boolean stopped = ClayiumConfig.INVERT_CLAY_LASER_RS_CONDITION.get() ? !powered : powered;
         boolean active = !stopped && energy.consume(specification().energyPerTick(), fuel.getStackInSlot(0));
         if (active) {
-            path.deliver(serverLevel, specification().beam(), direction);
+            path.deliver(serverLevel, specification().beam(), direction, irradiation, worldPosition);
             setChanged();
         }
         if (irradiating != active) {
@@ -125,6 +126,9 @@ public final class ClayEnergyLaserBlockEntity extends BlockEntity implements Las
         super.saveAdditional(tag, registries);
         tag.put("inventory", fuel.serializeNBT(registries));
         tag.put("energy", energy.serializeNBT(registries));
+        CompoundTag irradiationTag = new CompoundTag();
+        irradiation.save(irradiationTag);
+        tag.put("irradiation", irradiationTag);
     }
 
     @Override
@@ -135,6 +139,9 @@ public final class ClayEnergyLaserBlockEntity extends BlockEntity implements Las
         }
         if (tag.contains("energy")) {
             energy.deserializeNBT(registries, tag.getCompound("energy"));
+        }
+        if (tag.contains("irradiation")) {
+            irradiation.load(tag.getCompound("irradiation"));
         }
         if (level != null && level.isClientSide) {
             irradiating = tag.getBoolean("irradiating");

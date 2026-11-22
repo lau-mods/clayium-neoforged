@@ -672,3 +672,4 @@ exception	clayium:capsule_125mb	explicit_change	-	-	-	-	-	-	-	direct_fluid_trans
 exception	clayium:capsule_25mb	explicit_change	-	-	-	-	-	-	-	direct_fluid_transport
 exception	clayium:capsule_5mb	explicit_change	-	-	-	-	-	-	-	direct_fluid_transport
 exception	clayium:capsule_1mb	explicit_change	-	-	-	-	-	-	-	direct_fluid_transport
+device_or_material	clayium:item_filter_duplicator	restored	clayium:progression/equipment/item_filter_duplicator	minecraft:crafting_shapeless	-	-	-	3*clayium:white_list_item_filter	1*clayium:item_filter_duplicator	hotfix2:CRecipes.registerToolRecipes:B/W_unified

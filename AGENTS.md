@@ -413,3 +413,14 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 製作レシピは `ClayiumDataGenerators` に登録した `ProgressionRecipeProvider` が `datagen/progression/` のドメイン別生成クラスを呼び、`progression/` 以下へ生成する。材料・数量・配置・加工方法・Tier・tick・CE は hotfix2 `CRecipes` の各登録呼出しに従う。原作の作業台・組立機・CA注入機・反応炉の区別を保ち、既存Providerの経路を重複生成しない。金属チェスト57種は素材インゴット8個と `Tags.Items.CHESTS_WOODEN`、または素材インゴット8個と `clayium:metal_chests` の中央素材で作り、内容物は引き継がない。
 
 GameTest は `allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePaths`、`survivalDependencyGraphReachesNonTierCaPanAndContainersWithoutTierLeap`、`fiftySevenMetalChestsHaveBothOriginalCraftingRoutesAndEquipmentIsReachable`、`reloadedViewerDataMatchesMachineAcceptanceAndExecution`。外観E2Eは `tests/e2e/survival-recipes.mjs`。
+
+## M40 原作固有動作
+
+- 原作 hotfix2 の `ItemCraftingTools` は粘土麺棒・スライサー・ヘラをスタック1、耐久60/60/36とする。クラフト残余は耐久を1増やした同じ工具で、破損する回だけ粘土玉4/3/2個へ置き換える。通常クラフトと粘土作業台は同じ残余規則を使い、工具と粘土玉を同時に返さない。
+- `TileAreaMiner` のフィルター順は通常採掘対象、幸運、シルクタッチの3スロット。幸運はレベル3で、同じ対象が幸運とシルクタッチの両方に一致するとシルクタッチが上書きする。フィルタースロットは外部 Item Capability に公開しない。範囲代行機の対象はブロック・Entity・両方、視線判定とスニークは独立設定で、`RayTraceMemory` とともに保存する。
+- `ClayLaserManager` の照射距離は描画長32、探索距離1～31、透過対象は空気とガラス。照射履歴は10件で、対象ブロック・状態または距離が変わると履歴と累積を消去する。岩石破壊閾値は `floor(hardness+1)*100`。石炭・鉄・金・ダイヤ・レッドストーン・ラピス・エメラルド鉱石は対応する素材ブロックへ変換し、深層岩版も同じ結果とする。苗木は累積300～999で段階を1つ進め、300,000以上で粘土樹苗木へ変換する。既存 `LaserReceiver` を先に処理し、受理されなかったブロックだけ一般照射を行う。破壊・変換は FakePlayer の保護イベントを通す。
+- Quartz Crucible は不純シリコンを最大8個保持する。右クリックと開口部へ落下した `ItemEntity` の双方から空き分だけ取り込み、加熱完了後は糸1個だけを消費する。同じEntityを二重に消費しない。
+- `item_filter_duplicator` は原作 `filterduplicator.png` を使うTier 7品。主手に複写器、副手に統合フィルターを持って使用すると、最初は設定を複写器へ保存し、次の使用で副手のフィルターへ適用する。`clayium:item_filter` は両アイテムの設定、`clayium:filter_copy` は複写器だけのCopy状態を保存する。条件上限は100、入れ子深度は16で、祖先と同じ設定へ戻る循環を拒否する。Copy状態はスニーク使用で解除し、コピー後のフィルター編集はコピー元へ波及しない。
+- レーザー本体と反射器の保存NBT `irradiation` は `total`、`history`、`target`、`target_block`、`target_distance` を含む。範囲装置の保存NBTは `activator_target`、`activator_ray_trace`、`activator_sneaking`、`ray_trace_memory` を含む。`clayium:area_machine_control` Payload の action 0 は対象モード、1 は視線判定、2 はスニーク、3 は視線記憶を変更する。
+
+GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndActivatorPreservePriorityProtectionAndInteraction`、`laserTransmitsConvertsAccumulatesAndHonorsProtection`、`crucibleAndFilterCopiesConsumeValidateAndPersistExactly`。外観 E2E は `tests/e2e/original-behaviors.mjs`。

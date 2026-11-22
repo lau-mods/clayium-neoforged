@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 
 public final class QuartzCrucibleBlockEntity extends BlockEntity {
     public static final int CAPACITY = 8;
@@ -35,6 +37,36 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
             updateStage(QuartzCrucibleStage.READY);
         }
         setChanged();
+    }
+
+    public void absorbDroppedItem(ItemEntity entity) {
+        if (level == null || level.isClientSide || !entity.isAlive()) {
+            return;
+        }
+        double x = entity.getX() - worldPosition.getX();
+        double z = entity.getZ() - worldPosition.getZ();
+        if (x < 0.1875D || x > 0.8125D || z < 0.1875D || z > 0.8125D
+                || entity.getY() < worldPosition.getY() + 0.25D) {
+            return;
+        }
+        ItemStack stack = entity.getItem();
+        int consumed = 0;
+        if (stack.is(MaterialRegistration.MATERIAL_ITEMS.get("impure_silicon_ingot").get())) {
+            consumed = insertImpureSilicon(stack.getCount());
+        } else if (stack.is(net.minecraft.world.item.Items.STRING) && useString()) {
+            consumed = 1;
+        }
+        if (consumed <= 0) {
+            return;
+        }
+        ItemStack remaining = stack.copy();
+        remaining.shrink(consumed);
+        if (remaining.isEmpty()) {
+            entity.discard();
+        } else {
+            entity.setItem(remaining);
+        }
+        level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.25F, 1.0F);
     }
 
     public int insertImpureSilicon(int offered) {

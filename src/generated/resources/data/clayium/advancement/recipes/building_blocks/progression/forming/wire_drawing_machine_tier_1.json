@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "clayium:clay_spindle"
+            "items": "clayium:clay_machine_hull"
           }
         ]
       },

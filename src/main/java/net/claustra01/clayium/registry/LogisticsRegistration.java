@@ -12,11 +12,13 @@ import net.claustra01.clayium.logistics.BufferConfiguration;
 import net.claustra01.clayium.logistics.BufferMenu;
 import net.claustra01.clayium.logistics.filter.ItemFilterSettings;
 import net.claustra01.clayium.logistics.filter.FilterMenu;
+import net.claustra01.clayium.logistics.filter.FilterDuplicatorItem;
 import net.claustra01.clayium.logistics.filter.UnifiedItemFilterItem;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
+import com.mojang.serialization.Codec;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -37,6 +39,10 @@ public final class LogisticsRegistration {
                     "buffer_configuration",
                     builder -> builder.persistent(BufferConfiguration.CODEC)
                             .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(BufferConfiguration.CODEC)));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> FILTER_COPY =
+            ClayiumRegistries.DATA_COMPONENT_TYPES.registerComponentType(
+                    "filter_copy",
+                    builder -> builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 
     public static final Map<Integer, BufferDefinition> BUFFERS;
     public static final List<DeferredBlock<BufferBlock>> BLOCKS;
@@ -75,7 +81,13 @@ public final class LogisticsRegistration {
             "white_list_item_filter",
             () -> new UnifiedItemFilterItem(new Item.Properties().stacksTo(1)
                     .component(ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.ALLOW_ALL)));
-    public static final List<DeferredItem<? extends Item>> ITEMS = List.of(ITEM_FILTER);
+    public static final DeferredItem<FilterDuplicatorItem> FILTER_DUPLICATOR = ClayiumRegistries.ITEMS.register(
+            "item_filter_duplicator",
+            () -> new FilterDuplicatorItem(new Item.Properties().stacksTo(1)
+                    .component(FoundationDataComponentRegistration.TIER.get(), 7)
+                    .component(ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.ALLOW_ALL)
+                    .component(FILTER_COPY.get(), false)));
+    public static final List<DeferredItem<? extends Item>> ITEMS = List.of(ITEM_FILTER, FILTER_DUPLICATOR);
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BufferBlockEntity>> BUFFER_BLOCK_ENTITY =
             ClayiumRegistries.BLOCK_ENTITY_TYPES.register(

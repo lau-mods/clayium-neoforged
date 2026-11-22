@@ -150,15 +150,15 @@ public final class AreaMachineGameTests {
         AreaMachineMenu menu = (AreaMachineMenu)miner.createMenu(1, operator.getInventory(), operator);
         ItemStack menuFilter = new ItemStack(LogisticsRegistration.ITEM_FILTER.get());
         operator.getInventory().setItem(0, menuFilter);
-        ItemStack transferred = menu.quickMoveStack(operator, 39);
-        require(menu.stillValid(operator) && menu.slots.size() == 48
+        ItemStack transferred = menu.quickMoveStack(operator, 41);
+        require(menu.stillValid(operator) && menu.slots.size() == 50
                         && !transferred.isEmpty()
-                        && miner.inventory().getStackInSlot(AreaMachineBlockEntity.FILTER_SLOT)
+                        && miner.inventory().getStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT)
                                 .is(LogisticsRegistration.ITEM_FILTER.get())
                         && !miner.inventory().isItemValid(AreaMachineBlockEntity.OPERATION_SLOT,
                                 new ItemStack(LogisticsRegistration.ITEM_FILTER.get())),
                 "The area menu did not expose and route its operation, filter, fuel and output slots");
-        miner.inventory().setStackInSlot(AreaMachineBlockEntity.FILTER_SLOT, ItemStack.EMPTY);
+        miner.inventory().setStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT, ItemStack.EMPTY);
         Holder<Enchantment> silkTouch = helper.getLevel().registryAccess()
                 .lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH);
         ItemStack silkTool = new ItemStack(Items.DIAMOND_PICKAXE);
@@ -177,10 +177,10 @@ public final class AreaMachineGameTests {
         filter.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), new ItemFilterSettings(
                 ItemFilterSettings.Mode.WHITELIST,
                 List.of(ItemFilterRule.fromExample(ItemFilterRule.MatchType.FUZZY, new ItemStack(Items.DIAMOND)))));
-        miner.inventory().setStackInSlot(AreaMachineBlockEntity.FILTER_SLOT, filter);
+        miner.inventory().setStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT, filter);
         require(miner.runOperationsNow(1) == 0 && helper.getBlockState(filteredTarget).is(Blocks.STONE),
                 "The M10 item filter did not exclude a block from area mining");
-        miner.inventory().setStackInSlot(AreaMachineBlockEntity.FILTER_SLOT, ItemStack.EMPTY);
+        miner.inventory().setStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT, ItemStack.EMPTY);
 
         BlockPos collectorPosition = new BlockPos(2, 2, 5);
         BlockPos collectedPosition = new BlockPos(3, 2, 5);
