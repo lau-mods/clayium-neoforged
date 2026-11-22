@@ -35,6 +35,7 @@ import net.claustra01.clayium.datagen.chunkloader.ChunkLoaderLanguageEntries;
 import net.claustra01.clayium.datagen.area.AreaLanguageEntries;
 import net.claustra01.clayium.datagen.advancedtool.AdvancedToolLanguageEntries;
 import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
+import net.claustra01.clayium.datagen.compat.CompatLanguageEntries;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.claustra01.clayium.datagen.iface.InterfaceLanguageEntries;
@@ -323,6 +324,9 @@ public final class FoundationGameTests {
             Set<String> expectedKeys = new HashSet<>(original.keySet());
             expectedKeys.addAll(GadgetTranslations.forLocale(locale).keySet());
             expectedKeys.addAll(WeaponTranslations.forLocale(locale).keySet());
+            var compatibility = new HashMap<String, String>();
+            CompatLanguageEntries.add(locale, compatibility::put);
+            expectedKeys.addAll(compatibility.keySet());
             var logistics = new HashMap<String, String>();
             LogisticsLanguageEntries.add(locale, logistics::put);
             expectedKeys.addAll(logistics.keySet());

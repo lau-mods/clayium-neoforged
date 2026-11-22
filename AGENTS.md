@@ -389,3 +389,10 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 探索は深度1000、最大10000ノード、1 tick 256ノード、200 tickごとの再走査とし、設置・撤去・レシピ再読込で失効する。レシピ収集と閉包反復も1 tick 256件まで。原作 hotfix2 JAR の `mods.clayium.block.tile.TilePANCore` は粘土ブロック・丸石・原木を原価1、圧縮粘土を順に10～10^13、塩を `TileCobblestoneGenerator.progressMax * TileSaltExtractor.energyPerWork / 6 = 500`、反物質を100000、金属分離の不純粉を `(TileChemicalMetalSeparator.baseConsumingEnergy * baseCraftTime + 1000) * 488 / weight` とする。`PANACFactoryCraftingTable` はクラフト費用10を加える。循環・零費用だけでは候補を増やさず、未知の Data Component 付きスタックを禁止する。
 
 原作 `mods.clayium.block.tile.TilePANDuplicator.proceedCraft` は複製 CE を `100000 * multConsumingEnergy` 内部値ずつ毎 tick 消費して進む。倍率は `UtilTier.setTierManagers` の一般機械値で、Tier 4～13 は順に1、5、25、1、1、1、250、1、1、1。必要 tick は `ceil(consumption / (100000 * 倍率))`、最低1。反物質1個を消費し見本を保持する。GameTest は `networkTraversalIsIterativeBoundedAndInvalidated`、`realNetworkScanStopsAtDepthAndNodeLimits`、`recipeClosureRejectsCyclesFreeRecipesAndUnknownComponents`、`connectedAdapterRebuildsClosureAfterRecipeReload`、`duplicatorConsumesOneAntimatterAndExactCoreEnergyWhileKeepingSample`、`allPanTiersDuplicateAtOriginalCeRates`。外観 E2E は `tests/e2e/pan-machines.mjs`。
+
+## M37 レシピ閲覧・標準他Mod互換
+
+- JEI API は `compileOnly`、開発確認用本体は `localRuntime`、EMI API は `compileOnly` とする。両Modは `neoforge.mods.toml` のクライアント任意依存であり、プラグインクラスを通常のClayiumロード経路から参照しない。
+- M03の全 `ClayiumRecipeMethod` にJEI/EMIカテゴリを用意し、クライアントの実際の `RecipeManager` からレシピを登録する。必要Tier、材料、生成物、TierManager適用後の処理tickと合計CE、直接流体入出力の正確なmB量を表示する。粘土作業台、CA反応炉、PAN複製も閲覧対象にする。
+- 他Modとのアイテム・流体・FE接続は `Capabilities.ItemHandler.BLOCK`、`Capabilities.FluidHandler.BLOCK`、`Capabilities.EnergyStorage.BLOCK` だけを使用する。FE入力はCE→FE変換器と通常機械のいずれも受け付けず、既存の `c:`、`minecraft:`、`clayium:` タグを正本とする。
+- GameTest は `itemFluidAndFeTransferOnlyThroughNeoForgeCapabilities`、`commonMinecraftAndClayiumTagsResolveToRegisteredItems`、`recipeViewerDataMatchesReloadedDatapackRecipes`。閲覧Mod未導入で全GameTestが起動することも確認する。JEI画面のE2Eは `tests/e2e/recipe-viewers.mjs`。

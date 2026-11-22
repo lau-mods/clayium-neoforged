@@ -15,6 +15,7 @@ import net.claustra01.clayium.datagen.gadget.GadgetTranslations;
 import net.claustra01.clayium.datagen.fluid.FluidLanguageEntries;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterLanguageEntries;
 import net.claustra01.clayium.datagen.clayproduction.ClayProductionLanguageEntries;
+import net.claustra01.clayium.datagen.compat.CompatLanguageEntries;
 import net.claustra01.clayium.datagen.chunkloader.ChunkLoaderLanguageEntries;
 import net.claustra01.clayium.datagen.creative.CreativeSourceLanguageEntries;
 import net.claustra01.clayium.datagen.weapon.WeaponTranslations;
@@ -94,5 +95,6 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         CaReactorLanguageEntries.add(locale, this::add);
         PanLanguageEntries.add(locale, this::add);
         AdvancedToolLanguageEntries.add(locale, this::add);
+        CompatLanguageEntries.add(locale, this::add);
     }
 }

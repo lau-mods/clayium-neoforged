@@ -35,6 +35,12 @@ repositories {
             includeGroup 'net.mezzdev.config'
         }
     }
+    maven {
+        url = 'https://maven.terraformersmc.com/releases'
+        content {
+            includeGroup 'dev.emi'
+        }
+    }
 }
 
 base {
@@ -124,8 +130,16 @@ configurations {
 }
 
 dependencies {
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+
     // JEI is available in development runs without becoming a published dependency.
-    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    if (!gradle.startParameter.taskNames.any { it.toLowerCase().contains('gametest') }) {
+        localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    }
+
+    // EMI's API is compile-time only so Clayium can run without EMI installed.
+    compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

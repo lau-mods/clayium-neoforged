@@ -65,6 +65,8 @@ public final class ClayiumMod {
             modEventBus.addListener(net.claustra01.clayium.gametest.energyconverter.EnergyConverterGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.fluid.FluidTransportGameTests::registerTestCapability);
             modEventBus.addListener(net.claustra01.clayium.gametest.laser.LaserGameTests::registerTestCapability);
+            modEventBus.addListener(
+                    net.claustra01.clayium.gametest.compat.StandardCompatibilityGameTests::registerTestCapabilities);
         }
         modEventBus.addListener(MachineFaceModePayload::register);
         modEventBus.addListener(BufferControlPayload::register);

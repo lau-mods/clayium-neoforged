@@ -214,6 +214,11 @@ public final class MachineRecipeGameTests {
                     .map(RecipeHolder::value)
                     .filter(recipe -> recipe.processingTicks() == 80 && recipe.clayEnergy() == 900_000L)
                     .isPresent(), "Changed values are stale in cache");
+            ClayiumMachineRecipe changed = (ClayiumMachineRecipe)current.byKey(changedId).orElseThrow().value();
+            var display = net.claustra01.clayium.compat.RecipeViewerData.from(changed);
+            require(display.processingTicks() == 80 && display.clayEnergy() == 72_000_000L
+                            && display.formattedClayEnergy().equals("720"),
+                    "Viewer values did not update with the reloaded recipe");
             NeoForge.EVENT_BUS.unregister(listener);
             removeTestPack(server, pack);
         });

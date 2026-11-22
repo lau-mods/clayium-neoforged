@@ -761,6 +761,36 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "allpantiersduplicateatoriginalcerates"
+    },
+    {
+      "acId": "AC-F042-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "itemfluidandfetransferonlythroughneoforgecapabilities"
+    },
+    {
+      "acId": "AC-F042-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "commonminecraftandclayiumtagsresolvetoregistereditems"
+    },
+    {
+      "acId": "AC-F042-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyassemblytierprocessesitsrepresentativerecipe"
+    },
+    {
+      "acId": "AC-F042-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "datapackreloadreplacescacheandskipsmissingexternalitem"
+    },
+    {
+      "acId": "AC-F042-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "recipeviewerdatamatchesloadeddatapackrecipes"
     }
   ],
   "e2e": [
@@ -927,6 +957,10 @@
     {
       "acId": "AC-F037-002",
       "scenario": "tests/e2e/pan-machines.mjs"
+    },
+    {
+      "acId": "AC-F042-002",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
     }
   ]
 }
