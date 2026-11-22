@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "i": {
-      "item": "clayium:dense_clay_ball"
+      "item": "minecraft:clay_ball"
     },
     "o": {
       "item": "clayium:dense_clay_ring"

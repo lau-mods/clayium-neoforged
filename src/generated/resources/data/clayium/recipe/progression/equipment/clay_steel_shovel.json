@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "item": "clayium:clay_steel_ingot"
+    },
+    "|": {
+      "item": "clayium:dense_clay_stick"
+    }
+  },
+  "pattern": [
+    "#",
+    "|",
+    "|"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:clay_steel_shovel"
+  }
+}

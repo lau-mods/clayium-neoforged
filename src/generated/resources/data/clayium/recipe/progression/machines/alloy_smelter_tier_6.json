@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 10000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:smelter_tier_6"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:precision_circuit"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:alloy_smelter_tier_6"
+    }
+  ],
+  "processing_method": "clayium:assembler",
+  "processing_ticks": 40,
+  "required_tier": 4
+}

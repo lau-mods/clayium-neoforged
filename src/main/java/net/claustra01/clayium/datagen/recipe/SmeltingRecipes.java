@@ -56,13 +56,18 @@ public final class SmeltingRecipes {
                 .requires(common("dusts/" + recipe.material()), 1)
                 .output(material(recipe.material() + "_ingot"), 1)
                 .save(output, ClayiumMod.id("smelter/" + recipe.material())));
-        for (String material : List.of("impure_silicon", "silicon", "silicone", "iron", "gold", "lead",
+        for (String material : List.of("impure_silicon", "silicon", "iron", "gold", "lead",
                 "copper", "bronze", "brass", "electrum", "invar")) {
             SimpleCookingRecipeBuilder.smelting(common("dusts/" + material), RecipeCategory.MISC,
                             material(material + "_ingot"), 0.0F, 200)
                     .unlockedBy("has_dust", InventoryChangeTrigger.TriggerInstance.hasItems(material(material + "_dust")))
                     .save(output, ClayiumMod.id("smelting/" + material));
         }
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(material("impure_silicon_ingot")),
+                        RecipeCategory.MISC, material("silicone_ingot"), 0.0F, 200)
+                .unlockedBy("has_impure_silicon", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        material("impure_silicon_ingot")))
+                .save(output, ClayiumMod.id("smelting/silicone"));
         alloyRecipes(output);
         ELECTROLYSIS.forEach(recipe -> machine(
                         ClayiumRecipeMethod.ELECTROLYSIS_REACTOR,

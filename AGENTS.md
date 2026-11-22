@@ -405,3 +405,11 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 - `elemental_milling_machine` は通常の26成形機とは別のTier 1機種で、共通 `processing_machine` BlockEntity/Menuと原作の `milling_machine` RecipeTypeを使う。本体レシピは `forming_machine/elemental_milling_machine`、高密度粘土板1→粘土回路基板1の専用経路は `elemental_milling_machine/clay_circuit_board`、内部CE 1、32 tick。
 - 金属は `material_block/<id>` でインゴット9→ブロック1、`material_ingot/<material>` でブロック1→インゴット9。染色は `silicone/<color>` でシリコーンブロック8と `c:dyes/<color>` 1→固定色ブロック8。
 - GameTest は `allEightyThreeRestoredVarietiesHaveRegistriesDataAndNames`、`oreShardsAndCondensationPreserveOriginalBalances`、`metalAndSiliconeRecipesPreserveMaterialWithoutGrowth`、`elementalMillingMachineExecutesItsOriginalFirstCircuitRecipe`、`allOriginalPngHashesAndTintLayersRemainUnmodified`。外観E2Eは `tests/e2e/material-blocks.mjs`。
+
+## M39 生存製作経路
+
+生存製作台帳の正本は `data/clayium/survival_recipe_ledger.tsv`。1行を1個の名前付き Registry ID とし、`recipe_ids`、`method`、`required_tier`、`processing_ticks`、`clay_energy`、`inputs`、`outputs`、`original_source` を記録する。同じ品目の複数経路は各列を `|` で対応付ける。M39で追加した経路を `restored`、以前から有効な経路を `runtime_existing`、原作の創造専用品を `intentional_exclusion`、カプセル廃止・直接流体・B/W統合を `explicit_change` と分類する。
+
+製作レシピは `ClayiumDataGenerators` に登録した `ProgressionRecipeProvider` が `datagen/progression/` のドメイン別生成クラスを呼び、`progression/` 以下へ生成する。材料・数量・配置・加工方法・Tier・tick・CE は hotfix2 `CRecipes` の各登録呼出しに従う。原作の作業台・組立機・CA注入機・反応炉の区別を保ち、既存Providerの経路を重複生成しない。金属チェスト57種は素材インゴット8個と `Tags.Items.CHESTS_WOODEN`、または素材インゴット8個と `clayium:metal_chests` の中央素材で作り、内容物は引き継がない。
+
+GameTest は `allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePaths`、`survivalDependencyGraphReachesNonTierCaPanAndContainersWithoutTierLeap`、`fiftySevenMetalChestsHaveBothOriginalCraftingRoutesAndEquipmentIsReachable`、`reloadedViewerDataMatchesMachineAcceptanceAndExecution`。外観E2Eは `tests/e2e/survival-recipes.mjs`。

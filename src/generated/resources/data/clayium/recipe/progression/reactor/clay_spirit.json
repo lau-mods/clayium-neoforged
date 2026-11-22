@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100000000,
+  "item_inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium:clay_brain"
+      }
+    },
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "clayium:excited_clay_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:clay_spirit"
+    }
+  ],
+  "processing_method": "clayium:reactor",
+  "processing_ticks": 10000000000000,
+  "required_tier": 9
+}

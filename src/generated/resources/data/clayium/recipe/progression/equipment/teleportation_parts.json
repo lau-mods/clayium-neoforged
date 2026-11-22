@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1000000000,
+  "item_inputs": [
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium:pure_antimatter"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:integrated_circuit"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:teleportation_parts"
+    }
+  ],
+  "processing_method": "clayium:reactor",
+  "processing_ticks": 10000000000000,
+  "required_tier": 11
+}

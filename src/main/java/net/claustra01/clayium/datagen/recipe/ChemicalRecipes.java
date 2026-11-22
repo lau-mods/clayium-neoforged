@@ -85,7 +85,7 @@ public final class ChemicalRecipes {
         chemical(5, 30, 5)
                 .requires(material("dense_clay_dust"), 1)
                 .output(material("impure_silicon_dust"), 1)
-                .output(material("impure_aluminium_dust"), 1)
+                .output(material("aluminium_dust"), 1)
                 .save(output, ClayiumMod.id("chemical_reactor/dense_clay_separation"));
         chemical(8, 1, 8, 10.0D)
                 .requires(material("salt"), 1)

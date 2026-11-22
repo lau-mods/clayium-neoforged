@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gadget": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium:clay_gadget_economical_auto_eat"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium:progression/equipment/clay_gadget_auto_eat"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gadget"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium:progression/equipment/clay_gadget_auto_eat"
+    ]
+  }
+}

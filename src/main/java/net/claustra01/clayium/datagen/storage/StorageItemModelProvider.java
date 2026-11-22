@@ -20,6 +20,7 @@ public final class StorageItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         StorageRegistration.METAL_CHESTS.values().forEach(definition -> getBuilder(definition.type().id())
-                .parent(new ModelFile.UncheckedModelFile("minecraft:builtin/entity")));
+                .parent(new ModelFile.UncheckedModelFile("minecraft:item/chest"))
+                .texture("particle", ClayiumMod.id("block/metalchest_particle")));
     }
 }

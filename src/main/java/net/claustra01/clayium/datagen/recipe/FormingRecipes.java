@@ -257,7 +257,7 @@ public final class FormingRecipes {
 
     private static void clayParts(RecipeOutput output) {
         for (String prefix : new String[] {"clay", "dense_clay"}) {
-            ItemLike ball = prefix.equals("clay") ? Items.CLAY_BALL : material("dense_clay_ball");
+            ItemLike ball = Items.CLAY_BALL;
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material(prefix + "_cutting_head"))
                     .define('i', material(prefix + "_blade"))
                     .define('o', material(prefix + "_ring"))
@@ -272,6 +272,20 @@ public final class FormingRecipes {
                     .unlockedBy("has_ring", InventoryChangeTrigger.TriggerInstance.hasItems(
                             material(prefix + "_ring")))
                     .save(output, ClayiumMod.id("forming_parts/" + prefix + "_bearing"));
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material(prefix + "_grinding_head"))
+                    .define('i', material(prefix + "_needle"))
+                    .define('o', material(prefix + "_ring"))
+                    .pattern("iii").pattern("ioi").pattern("iii")
+                    .unlockedBy("has_needle", InventoryChangeTrigger.TriggerInstance.hasItems(
+                            material(prefix + "_needle")))
+                    .save(output, ClayiumMod.id("forming_parts/" + prefix + "_grinding_head"));
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material(prefix + "_wheel"))
+                    .define('#', material(prefix + "_plate"))
+                    .define('o', material(prefix + "_ring"))
+                    .pattern("###").pattern("#o#").pattern("###")
+                    .unlockedBy("has_plate", InventoryChangeTrigger.TriggerInstance.hasItems(
+                            material(prefix + "_plate")))
+                    .save(output, ClayiumMod.id("forming_parts/" + prefix + "_wheel"));
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material(prefix + "_spindle"))
                     .define('0', material("small_" + prefix + "_ring"))
                     .define('#', material(prefix + "_plate"))

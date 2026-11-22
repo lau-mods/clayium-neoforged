@@ -63,6 +63,16 @@ public final class CondenserGrinderDecomposerRecipes {
                 .requires(Items.CLAY, 1)
                 .output(material("clay_dust"), 4)
                 .save(output, ClayiumMod.id("grinder/clay"));
+        ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.GRINDER, 0)
+                .requires(compression("industrial_clay"), 1)
+                .output(material("industrial_clay_dust"), 1)
+                .clayEnergy(1L).processingTicks(12)
+                .save(output, ClayiumMod.id("grinder/industrial_clay_block"));
+        ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.GRINDER, 0)
+                .requires(compression("advanced_industrial_clay"), 1)
+                .output(material("advanced_industrial_clay_dust"), 1)
+                .clayEnergy(2L).processingTicks(12)
+                .save(output, ClayiumMod.id("grinder/advanced_industrial_clay_block"));
         machine(ClayiumRecipeMethod.GRINDER, 3, 40, 1.0D)
                 .requires(Items.QUARTZ, 1)
                 .output(material("quartz_dust"), 1)
@@ -99,6 +109,11 @@ public final class CondenserGrinderDecomposerRecipes {
     }
 
     private static void decomposer(RecipeOutput output) {
+        ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.DECOMPOSER, 0)
+                .requires(material("industrial_clay_dust"), 1)
+                .output(material("energized_clay_dust"), 3)
+                .clayEnergy(1L).processingTicks(60)
+                .save(output, ClayiumMod.id("decomposer/industrial_clay_dust"));
         machine(ClayiumRecipeMethod.DECOMPOSER, 2, 20, 1.0D)
                 .requires(Items.CLAY, 1)
                 .output(Items.CLAY_BALL, 4)

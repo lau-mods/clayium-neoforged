@@ -4,7 +4,7 @@
   "cookingtime": 200,
   "experience": 0.0,
   "ingredient": {
-    "tag": "c:dusts/silicone"
+    "item": "clayium:impure_silicon_ingot"
   },
   "result": {
     "count": 1,

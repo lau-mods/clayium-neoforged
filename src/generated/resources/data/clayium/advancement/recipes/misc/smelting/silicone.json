@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_dust": {
+    "has_impure_silicon": {
       "conditions": {
         "items": [
           {
-            "items": "clayium:silicone_dust"
+            "items": "clayium:impure_silicon_ingot"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_dust"
+      "has_impure_silicon"
     ]
   ],
   "rewards": {

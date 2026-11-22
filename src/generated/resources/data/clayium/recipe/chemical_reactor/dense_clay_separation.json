@@ -16,7 +16,7 @@
     },
     {
       "count": 1,
-      "id": "clayium:impure_aluminium_dust"
+      "id": "clayium:aluminium_dust"
     }
   ],
   "processing_method": "clayium:chemical_reactor",

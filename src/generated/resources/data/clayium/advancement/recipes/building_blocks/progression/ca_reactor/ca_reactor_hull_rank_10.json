@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gem": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium:octuple_compressed_pure_antimatter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium:progression/ca_reactor/ca_reactor_hull_rank_10"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gem"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium:progression/ca_reactor/ca_reactor_hull_rank_10"
+    ]
+  }
+}

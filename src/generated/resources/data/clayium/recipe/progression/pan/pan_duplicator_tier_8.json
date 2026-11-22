@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "clayium:triple_compressed_pure_antimatter"
+    },
+    "D": {
+      "item": "clayium:pan_duplicator_tier_7"
+    },
+    "I": {
+      "item": "clayium:francium_ingot"
+    },
+    "M": {
+      "item": "clayium:clayium_machine_hull"
+    }
+  },
+  "pattern": [
+    "#I#",
+    "DMD",
+    "#I#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:pan_duplicator_tier_8"
+  }
+}

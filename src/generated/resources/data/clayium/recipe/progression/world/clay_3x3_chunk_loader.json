@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "clayium:zk60_a_alloy_hull"
+    },
+    "C": {
+      "item": "clayium:precision_circuit"
+    },
+    "P": {
+      "item": "clayium:advanced_circuit"
+    }
+  },
+  "pattern": [
+    "PCP",
+    "C#C",
+    "PCP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:clay_3x3_chunk_loader"
+  }
+}

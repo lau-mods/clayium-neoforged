@@ -1,6 +1,36 @@
 {
   "gameTests": [
     {
+      "acId": "AC-F043-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allonehundredtwentythreecandidatemachineshaveclassifiedruntimepaths"
+    },
+    {
+      "acId": "AC-F043-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "progressionrecipesfordifferentproductsneversharethesameinputs"
+    },
+    {
+      "acId": "AC-F043-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "survivaldependencygraphreachesnontiercapanandcontainerswithouttierleap"
+    },
+    {
+      "acId": "AC-F043-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fiftysevenmetalchestshavebothoriginalcraftingroutesandequipmentisreachable"
+    },
+    {
+      "acId": "AC-F043-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reloadedviewerdatamatchesmachineacceptanceandexecution"
+    },
+    {
       "acId": "AC-F039-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -999,6 +1029,22 @@
     {
       "acId": "AC-F044-004",
       "scenario": "tests/e2e/material-blocks.mjs"
+    },
+    {
+      "acId": "AC-F043-001",
+      "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F043-002",
+      "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F043-003",
+      "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F043-004",
+      "scenario": "tests/e2e/survival-recipes.mjs"
     }
   ]
 }

@@ -57,8 +57,8 @@ public final class MultitrackFaceRenderer implements BlockEntityRenderer<Multitr
             int offset = vertex * 3;
             vertices.addVertex(pose.pose(), points[offset], points[offset + 1], points[offset + 2])
                     .setColor(255, 255, 255, 255)
-                    .setUv(sprite.getU(vertex == 0 || vertex == 3 ? 0 : 16),
-                            sprite.getV(vertex < 2 ? 16 : 0))
+                    .setUv(sprite.getU(vertex == 0 || vertex == 3 ? 0F : 1F),
+                            sprite.getV(vertex < 2 ? 1F : 0F))
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(light)
                     .setNormal(pose, direction.getStepX(), direction.getStepY(), direction.getStepZ());

@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100000000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:opa_machine_hull"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium:clay_reactor"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:ca_reactor_core_mk_iv"
+    }
+  ],
+  "processing_method": "clayium:assembler",
+  "processing_ticks": 120,
+  "required_tier": 10
+}
