@@ -70,6 +70,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
                     if (!foundation.containsKey(columns[0])) {
                         add(columns[0], columns[locale.equals("ja_jp") ? 2 : 1]);
                     }
+
                 });
             }
         } catch (IOException exception) {
@@ -97,4 +98,5 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         AdvancedToolLanguageEntries.add(locale, this::add);
         CompatLanguageEntries.add(locale, this::add);
     }
+
 }

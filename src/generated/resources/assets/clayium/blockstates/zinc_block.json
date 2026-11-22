@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "clayium:block/zinc_block"
+    }
+  }
+}

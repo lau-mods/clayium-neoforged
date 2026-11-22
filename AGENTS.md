@@ -396,3 +396,12 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 - M03の全 `ClayiumRecipeMethod` にJEI/EMIカテゴリを用意し、クライアントの実際の `RecipeManager` からレシピを登録する。必要Tier、材料、生成物、TierManager適用後の処理tickと合計CE、直接流体入出力の正確なmB量を表示する。粘土作業台、CA反応炉、PAN複製も閲覧対象にする。
 - 他Modとのアイテム・流体・FE接続は `Capabilities.ItemHandler.BLOCK`、`Capabilities.FluidHandler.BLOCK`、`Capabilities.EnergyStorage.BLOCK` だけを使用する。FE入力はCE→FE変換器と通常機械のいずれも受け付けず、既存の `c:`、`minecraft:`、`clayium:` タグを正本とする。
 - GameTest は `itemFluidAndFeTransferOnlyThroughNeoForgeCapabilities`、`commonMinecraftAndClayiumTagsResolveToRegisteredItems`、`recipeViewerDataMatchesReloadedDatapackRecipes`。閲覧Mod未導入で全GameTestが起動することも確認する。JEI画面のE2Eは `tests/e2e/recipe-viewers.mjs`。
+
+## M38 未登録素材・設置ブロック・初期フライス盤
+
+- `MaterialRegistration` は原作 `blockMetal` の57種を `<material>_block`、`blockSiliconeColored` の16色を `<color>_silicone_block` として同名Block/Itemに登録する。金属は `metalblock_base/dark/light.png` の3層を素材色でtintし、シリコーンは `siliconecolored.png` を登録IDに対応する固定 `DyeColor` でtintする。全ブロックはツルハシ採掘、硬度・爆発耐性2.0、自身ドロップ。
+- シャードは `compressed_clay_shard`、`industrial_clay_shard`、`advanced_industrial_clay_shard`。GrinderレシピIDは `grinder/<ore>_to_<shard>` で石・深層岩の6鉱石を扱い、出力2/3/5、内部CE 1、3/6/9 tick。Condenserは `condenser/{compressed,industrial,advanced_industrial}_clay_shard`、入力4、内部CE 1、3/6/9 tick。
+- 追加筐体は `dense_clay_machine_hull` Tier 2、`pure_antimatter_machine_hull` Tier 11、`oec_machine_hull` Tier 12、`opa_machine_hull` Tier 13、`az91_d_alloy_hull` と `zk60_a_alloy_hull` Tier 6。標準筐体は `MACHINE_HULLS`、全筐体は `MACHINE_HULL_DEFINITIONS` を正本とする。レシピIDは `machine_hull/tier_{2,11,12,13}` と `machine_hull/{az91_d_alloy_hull,zk60_a_alloy_hull}`。
+- `elemental_milling_machine` は通常の26成形機とは別のTier 1機種で、共通 `processing_machine` BlockEntity/Menuと原作の `milling_machine` RecipeTypeを使う。本体レシピは `forming_machine/elemental_milling_machine`、高密度粘土板1→粘土回路基板1の専用経路は `elemental_milling_machine/clay_circuit_board`、内部CE 1、32 tick。
+- 金属は `material_block/<id>` でインゴット9→ブロック1、`material_ingot/<material>` でブロック1→インゴット9。染色は `silicone/<color>` でシリコーンブロック8と `c:dyes/<color>` 1→固定色ブロック8。
+- GameTest は `allEightyThreeRestoredVarietiesHaveRegistriesDataAndNames`、`oreShardsAndCondensationPreserveOriginalBalances`、`metalAndSiliconeRecipesPreserveMaterialWithoutGrowth`、`elementalMillingMachineExecutesItsOriginalFirstCircuitRecipe`、`allOriginalPngHashesAndTintLayersRemainUnmodified`。外観E2Eは `tests/e2e/material-blocks.mjs`。

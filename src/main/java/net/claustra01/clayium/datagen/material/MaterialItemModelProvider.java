@@ -61,5 +61,14 @@ public final class MaterialItemModelProvider extends ItemModelProvider {
                     .parent(new ModelFile.UncheckedModelFile("minecraft:item/generated"))
                     .texture("layer0", ClayiumMod.id("item/" + definition.texture()));
         }
+        getBuilder("compressed_clay_shard")
+                .parent(new ModelFile.UncheckedModelFile("minecraft:item/generated"))
+                .texture("layer0", ClayiumMod.id("item/compressedclay-shard-1"));
+        getBuilder("industrial_clay_shard")
+                .parent(new ModelFile.UncheckedModelFile("minecraft:item/generated"))
+                .texture("layer0", ClayiumMod.id("item/compressedclay-shard-2"));
+        getBuilder("advanced_industrial_clay_shard")
+                .parent(new ModelFile.UncheckedModelFile("minecraft:item/generated"))
+                .texture("layer0", ClayiumMod.id("item/compressedclay-shard-3"));
     }
 }

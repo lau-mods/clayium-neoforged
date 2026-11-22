@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium:zk60_a_alloy_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium:zk60_a_alloy_ingot"
+  }
+}

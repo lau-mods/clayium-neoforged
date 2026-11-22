@@ -10,11 +10,11 @@ public final class MachineLanguageEntries {
     public static void add(String locale, BiConsumer<String, String> add) {
         String[] englishPrefixes = {
                 "", "Clay", "Dense Clay", "Simple", "Basic", "Advanced", "Precision",
-                "Clay Steel", "Clayium", "Ultimate", "Antimatter"
+                "Clay Steel", "Clayium", "Ultimate", "Antimatter", "Pure Antimatter", "OEC", "OPA"
         };
         String[] japanesePrefixes = {
                 "", "粘土", "高密度粘土", "簡易", "基本", "発展", "精密",
-                "粘土鋼", "クレイウム", "究極", "反物質"
+                "粘土鋼", "クレイウム", "究極", "反物質", "純反物質", "OEC", "OPA"
         };
         Stream.of(
                 MachineRegistration.MACHINES.values().stream().map(definition ->
@@ -61,11 +61,15 @@ public final class MachineLanguageEntries {
                     add.accept("block.clayium." + definition.id(),
                             prefix + (locale.equals("ja_jp") ? "" : " ") + name);
                 });
-        AssemblyMachineRegistration.MACHINE_HULLS.forEach((tier, block) -> {
-            String prefix = locale.equals("ja_jp") ? japanesePrefixes[tier] : englishPrefixes[tier];
-            add.accept("block.clayium." + block.getId().getPath(),
-                    prefix + (locale.equals("ja_jp") ? "機械筐体" : " Machine Hull"));
-        });
+        AssemblyMachineRegistration.MACHINE_HULL_DEFINITIONS.values().stream()
+                .filter(definition -> definition.primary()
+                        && definition.tier() >= 3 && definition.tier() <= 10)
+                .forEach(definition -> {
+                    String prefix = locale.equals("ja_jp")
+                            ? japanesePrefixes[definition.tier()] : englishPrefixes[definition.tier()];
+                    add.accept("block.clayium." + definition.id(),
+                            prefix + (locale.equals("ja_jp") ? "マシン筐体" : " Machine Hull"));
+                });
         add.accept("gui.clayium.machine.state.idle", locale.equals("ja_jp") ? "停止中" : "Idle");
         add.accept("gui.clayium.machine.state.running", locale.equals("ja_jp") ? "処理中" : "Processing");
         add.accept("gui.clayium.machine.state.output_full", locale.equals("ja_jp") ? "出力満杯" : "Output full");

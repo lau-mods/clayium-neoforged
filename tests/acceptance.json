@@ -791,6 +791,36 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "recipeviewerdatamatchesloadeddatapackrecipes"
+    },
+    {
+      "acId": "AC-F044-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alleightythreerestoredvarietieshaveregistriesdataandnames"
+    },
+    {
+      "acId": "AC-F044-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "oreshardsandcondensationpreserveoriginalbalances"
+    },
+    {
+      "acId": "AC-F044-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "elementalmillingmachineexecutesitsoriginalfirstcircuitrecipe"
+    },
+    {
+      "acId": "AC-F044-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalandsiliconerecipespreservematerialwithoutgrowth"
+    },
+    {
+      "acId": "AC-F044-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alloriginalpnghashesandtintlayersremainunmodified"
     }
   ],
   "e2e": [
@@ -961,6 +991,14 @@
     {
       "acId": "AC-F042-002",
       "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F044-001",
+      "scenario": "tests/e2e/material-blocks.mjs"
+    },
+    {
+      "acId": "AC-F044-004",
+      "scenario": "tests/e2e/material-blocks.mjs"
     }
   ]
 }

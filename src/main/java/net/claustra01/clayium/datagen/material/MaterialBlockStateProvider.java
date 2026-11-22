@@ -5,6 +5,7 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.material.CompressionTier;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -56,6 +57,44 @@ public final class MaterialBlockStateProvider extends BlockStateProvider {
                     : ClayiumMod.id("block/" + textureName);
             cubeAll(entry.getValue().get(), texture);
         }
+        for (var entry : MaterialRegistration.METAL_BLOCKS.entrySet()) {
+            Block block = entry.getValue().get();
+            var model = models().getBuilder(entry.getKey())
+                    .parent(models().getExistingFile(mcLoc("block/block")))
+                    .texture("base", ClayiumMod.id("block/metalblock_base"))
+                    .texture("dark", ClayiumMod.id("block/metalblock_dark"))
+                    .texture("light", ClayiumMod.id("block/metalblock_light"))
+                    .texture("particle", ClayiumMod.id("block/metalblock_base"))
+                    .renderType("translucent");
+            tintedCube(model, "#base", 0, 0.0F, 16.0F);
+            tintedCube(model, "#dark", 1, -0.01F, 16.01F);
+            tintedCube(model, "#light", 2, -0.02F, 16.02F);
+            simpleBlock(block, model);
+            simpleBlockItem(block, model);
+        }
+        for (var entry : MaterialRegistration.SILICONE_BLOCKS.entrySet()) {
+            Block block = entry.getValue().get();
+            var model = models().getBuilder(entry.getKey())
+                    .parent(models().getExistingFile(mcLoc("block/block")))
+                    .texture("all", ClayiumMod.id("block/siliconecolored"))
+                    .texture("particle", ClayiumMod.id("block/siliconecolored"));
+            tintedCube(model, "#all", 0, 0.0F, 16.0F);
+            simpleBlock(block, model);
+            simpleBlockItem(block, model);
+        }
+    }
+
+    private static void tintedCube(
+            net.neoforged.neoforge.client.model.generators.BlockModelBuilder model,
+            String texture,
+            int tintIndex,
+            float from,
+            float to) {
+        var element = model.element().from(from, from, from).to(to, to, to);
+        for (Direction direction : Direction.values()) {
+            element.face(direction).texture(texture).tintindex(tintIndex).cullface(direction).end();
+        }
+        element.end();
     }
 
     private void cubeAll(Block block, ResourceLocation texture) {

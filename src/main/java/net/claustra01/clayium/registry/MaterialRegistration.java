@@ -9,7 +9,9 @@ import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.item.FoundationItem;
 import net.claustra01.clayium.material.ClayMaterials;
 import net.claustra01.clayium.material.CompressionTier;
+import net.claustra01.clayium.material.MaterialBlockDefinition;
 import net.claustra01.clayium.material.MaterialShape;
+import net.claustra01.clayium.material.SiliconeBlockDefinition;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -48,6 +50,9 @@ public final class MaterialRegistration {
     public static final Map<String, DeferredBlock<? extends Block>> MATERIAL_BLOCKS;
     public static final Map<String, DeferredItem<? extends Item>> MATERIAL_ITEMS;
     public static final Map<String, DeferredItem<? extends Item>> COMPONENTS;
+    public static final Map<String, DeferredBlock<? extends Block>> METAL_BLOCKS;
+    public static final Map<String, DeferredBlock<? extends Block>> SILICONE_BLOCKS;
+    public static final Map<String, DeferredItem<? extends Item>> SHARDS;
     public static final List<DeferredBlock<? extends Block>> MATERIAL_OWNED_BLOCKS;
     public static final List<DeferredItem<? extends Item>> CREATIVE_TAB_ITEMS;
 
@@ -57,6 +62,9 @@ public final class MaterialRegistration {
         Map<String, DeferredBlock<? extends Block>> materialBlocks = new LinkedHashMap<>();
         Map<String, DeferredItem<? extends Item>> materialItems = new LinkedHashMap<>();
         Map<String, DeferredItem<? extends Item>> components = new LinkedHashMap<>();
+        Map<String, DeferredBlock<? extends Block>> metalBlocks = new LinkedHashMap<>();
+        Map<String, DeferredBlock<? extends Block>> siliconeBlocks = new LinkedHashMap<>();
+        Map<String, DeferredItem<? extends Item>> shards = new LinkedHashMap<>();
         List<DeferredBlock<? extends Block>> materialOwnedBlocks = new ArrayList<>();
         List<DeferredItem<? extends Item>> creativeTabItems = new ArrayList<>();
 
@@ -123,10 +131,50 @@ public final class MaterialRegistration {
             creativeTabItems.add(item);
         }
 
+        for (MaterialBlockDefinition definition : MaterialBlockDefinition.ORIGINAL_METAL_BLOCKS) {
+            DeferredBlock<Block> block = ClayiumRegistries.BLOCKS.registerSimpleBlock(
+                    definition.id(),
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(2.0F, 2.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.STONE));
+            DeferredItem<FoundationBlockItem> item = registerBlockItem(
+                    definition.id(), block, definition.tier());
+            metalBlocks.put(definition.id(), block);
+            materialOwnedBlocks.add(block);
+            creativeTabItems.add(item);
+        }
+
+        for (SiliconeBlockDefinition definition : SiliconeBlockDefinition.ORIGINAL_COLORS) {
+            DeferredBlock<Block> block = ClayiumRegistries.BLOCKS.registerSimpleBlock(
+                    definition.id(),
+                    BlockBehaviour.Properties.of()
+                            .mapColor(definition.color().getMapColor())
+                            .strength(2.0F, 2.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.STONE));
+            DeferredItem<FoundationBlockItem> item = registerBlockItem(definition.id(), block, ClayMaterials.VARIANTS_BY_ID.get("silicone_block").tier());
+            siliconeBlocks.put(definition.id(), block);
+            materialOwnedBlocks.add(block);
+            creativeTabItems.add(item);
+        }
+
+        for (String id : List.of(
+                "compressed_clay_shard", "industrial_clay_shard", "advanced_industrial_clay_shard")) {
+            DeferredItem<FoundationItem> item = ClayiumRegistries.ITEMS.register(
+                    id, () -> new FoundationItem(new Item.Properties()));
+            shards.put(id, item);
+            creativeTabItems.add(item);
+        }
+
         COMPRESSION_BLOCKS = immutableMap(compressionBlocks);
         MATERIAL_BLOCKS = immutableMap(materialBlocks);
         MATERIAL_ITEMS = immutableMap(materialItems);
         COMPONENTS = immutableMap(components);
+        METAL_BLOCKS = immutableMap(metalBlocks);
+        SILICONE_BLOCKS = immutableMap(siliconeBlocks);
+        SHARDS = immutableMap(shards);
         MATERIAL_OWNED_BLOCKS = List.copyOf(materialOwnedBlocks);
         CREATIVE_TAB_ITEMS = List.copyOf(creativeTabItems);
     }

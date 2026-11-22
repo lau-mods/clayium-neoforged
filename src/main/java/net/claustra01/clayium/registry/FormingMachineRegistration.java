@@ -8,6 +8,7 @@ import java.util.Map;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.machine.ClayMachineBlock;
 import net.claustra01.clayium.machine.series.FormingSeries;
+import net.claustra01.clayium.machine.series.ElementalMillingSeries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -17,6 +18,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 
 public final class FormingMachineRegistration {
     public static final Map<String, MachineDefinition> MACHINES;
+    public static final DeferredBlock<ClayMachineBlock> ELEMENTAL_MILLING_MACHINE;
     public static final List<DeferredBlock<ClayMachineBlock>> BLOCKS;
     public static final List<DeferredItem<FoundationBlockItem>> ITEMS;
 
@@ -49,6 +51,25 @@ public final class FormingMachineRegistration {
                 items.add(item);
             }
         }
+        int elementalTier = 1;
+        ELEMENTAL_MILLING_MACHINE = ClayiumRegistries.BLOCKS.register(
+                "elemental_milling_machine",
+                () -> new ClayMachineBlock(
+                        BlockBehaviour.Properties.of()
+                                .mapColor(MapColor.STONE)
+                                .strength(3.25F, 6.0F)
+                                .sound(SoundType.STONE),
+                        ElementalMillingSeries.INSTANCE,
+                        elementalTier));
+        DeferredItem<FoundationBlockItem> elementalItem = ClayiumRegistries.ITEMS.register(
+                "elemental_milling_machine",
+                () -> new FoundationBlockItem(
+                        ELEMENTAL_MILLING_MACHINE.get(),
+                        new Item.Properties().component(
+                                FoundationDataComponentRegistration.TIER.get(), elementalTier)));
+        blocks.add(ELEMENTAL_MILLING_MACHINE);
+        items.add(elementalItem);
+
         MACHINES = Collections.unmodifiableMap(machines);
         BLOCKS = List.copyOf(blocks);
         ITEMS = List.copyOf(items);

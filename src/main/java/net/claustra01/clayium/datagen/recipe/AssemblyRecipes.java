@@ -136,6 +136,7 @@ public final class AssemblyRecipes {
     }
 
     private static void machineHulls(RecipeOutput output) {
+        hull(output, 2, material("large_dense_clay_plate"), component("clay_circuit"), false);
         hull(output, 3, material("large_industrial_clay_plate"), component("simple_circuit"), false);
         hull(output, 4, material("large_advanced_industrial_clay_plate"), component("basic_circuit"), true);
         ShapedRecipeBuilder.shaped(
@@ -154,6 +155,22 @@ public final class AssemblyRecipes {
         hull(output, 8, material("large_clayium_plate"), component("clay_core"), true);
         hull(output, 9, material("large_ultimate_alloy_plate"), component("clay_brain"), true);
         hull(output, 10, material("large_antimatter_plate"), component("clay_spirit"), true);
+        hull(output, 11, material("large_pure_antimatter_plate"), component("clay_soul"), true);
+        hull(output, 12, material("large_octuple_energetic_clay_plate"), component("clay_anima"), true);
+        hull(output, 13, material("large_octuple_pure_antimatter_plate"), component("clay_psyche"), true);
+
+        machine(ClayiumRecipeMethod.ASSEMBLER, 4, ClayiumRecipeEnergy.e(1.0D, 6), 120)
+                .requires(material("large_az91_d_alloy_plate"))
+                .requires(component("precision_circuit"))
+                .output(hull("az91_d_alloy_hull"), 1)
+                .save(output, ClayiumMod.id("machine_hull/az91_d_alloy_hull"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, hull("zk60_a_alloy_hull"))
+                .define('#', material("large_zk60_a_alloy_plate"))
+                .define('C', component("precision_circuit"))
+                .pattern("###").pattern("#C#").pattern("###")
+                .unlockedBy("has_plate", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        material("large_zk60_a_alloy_plate")))
+                .save(output, ClayiumMod.id("machine_hull/zk60_a_alloy_hull"));
     }
 
     private static void hull(
@@ -233,6 +250,10 @@ public final class AssemblyRecipes {
 
     private static ItemLike material(String id) {
         return MaterialRegistration.MATERIAL_ITEMS.get(id).get();
+    }
+
+    private static ItemLike hull(String id) {
+        return AssemblyMachineRegistration.MACHINE_HULL_DEFINITIONS.get(id).block().get();
     }
 
     private AssemblyRecipes() {

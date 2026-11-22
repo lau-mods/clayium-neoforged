@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:clay_ore"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 2,
+      "id": "clayium:compressed_clay_shard"
+    }
+  ],
+  "processing_method": "clayium:grinder",
+  "processing_ticks": 3,
+  "required_tier": 0
+}

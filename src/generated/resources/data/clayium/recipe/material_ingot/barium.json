@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium:barium_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium:barium_ingot"
+  }
+}

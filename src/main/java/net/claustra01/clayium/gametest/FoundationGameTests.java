@@ -113,6 +113,15 @@ public final class FoundationGameTests {
         for (String idPath : MaterialRegistration.MATERIAL_BLOCKS.keySet()) {
             expectedBlocks.add(ClayiumMod.id(idPath));
         }
+        MaterialRegistration.METAL_BLOCKS.keySet().forEach(idPath -> {
+            expectedBlocks.add(ClayiumMod.id(idPath));
+            expectedItems.add(ClayiumMod.id(idPath));
+        });
+        MaterialRegistration.SILICONE_BLOCKS.keySet().forEach(idPath -> {
+            expectedBlocks.add(ClayiumMod.id(idPath));
+            expectedItems.add(ClayiumMod.id(idPath));
+        });
+        MaterialRegistration.SHARDS.keySet().forEach(idPath -> expectedItems.add(ClayiumMod.id(idPath)));
         for (String idPath : MaterialRegistration.COMPONENTS.keySet()) {
             expectedItems.add(ClayiumMod.id(idPath));
         }
@@ -126,6 +135,8 @@ public final class FoundationGameTests {
             expectedBlocks.add(id);
             expectedItems.add(id);
         }
+        FormingMachineRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
+        FormingMachineRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         AssemblyMachineRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         AssemblyMachineRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
         AutoCrafterRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
@@ -396,6 +407,12 @@ public final class FoundationGameTests {
             for (String id : MaterialRegistration.COMPONENTS.keySet()) {
                 expectedKeys.add("item.clayium." + id);
             }
+            MaterialRegistration.METAL_BLOCKS.keySet().forEach(id ->
+                    expectedKeys.add("block.clayium." + id));
+            MaterialRegistration.SILICONE_BLOCKS.keySet().forEach(id ->
+                    expectedKeys.add("block.clayium." + id));
+            MaterialRegistration.SHARDS.keySet().forEach(id ->
+                    expectedKeys.add("item.clayium." + id));
             expectedKeys.add("item.clayium.impure_osmium_ingot");
             expectedKeys.add("tooltip.clayium.ce_value");
             expectedKeys.add("tooltip.clayium.clay_units");
@@ -405,11 +422,12 @@ public final class FoundationGameTests {
             for (String id : FormingMachineRegistration.MACHINES.keySet()) {
                 expectedKeys.add("block.clayium." + id);
             }
+            expectedKeys.add("block.clayium.elemental_milling_machine");
             for (String id : AssemblyMachineRegistration.MACHINES.keySet()) {
                 expectedKeys.add("block.clayium." + id);
             }
-            AssemblyMachineRegistration.MACHINE_HULLS.values().forEach(hull ->
-                    expectedKeys.add("block.clayium." + hull.getId().getPath()));
+            AssemblyMachineRegistration.MACHINE_HULL_DEFINITIONS.keySet().forEach(id ->
+                    expectedKeys.add("block.clayium." + id));
             for (WaterWheelRegistration.WaterWheelDefinition definition : WaterWheelRegistration.DEFINITIONS) {
                 expectedKeys.add("block.clayium." + definition.id());
             }

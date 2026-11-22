@@ -7,6 +7,7 @@ import net.claustra01.clayium.registry.FormingMachineRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.machine.ClayMachineBlock;
 import net.claustra01.clayium.machine.environment.EnvironmentSeries;
+import net.claustra01.clayium.machine.series.ElementalMillingSeries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction;
@@ -30,6 +31,11 @@ public final class MachineBlockStateProvider extends BlockStateProvider {
                 machine(definition.id(), definition.tier(), definition.series().frontTexture(), definition.block().get()));
         FormingMachineRegistration.MACHINES.values().forEach(definition ->
                 machine(definition.id(), definition.tier(), definition.series().frontTexture(), definition.block().get()));
+        machine(
+                "elemental_milling_machine",
+                1,
+                ElementalMillingSeries.INSTANCE.frontTexture(),
+                FormingMachineRegistration.ELEMENTAL_MILLING_MACHINE.get());
         EnvironmentMachineRegistration.SALT_EXTRACTORS.values().forEach(definition ->
                 machine(definition.id(), definition.tier(),
                         EnvironmentSeries.SALT_EXTRACTOR.frontTexture(), definition.block().get()));

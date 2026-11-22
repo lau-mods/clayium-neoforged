@@ -21,12 +21,12 @@ public final class AssemblyMachineModels extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        AssemblyMachineRegistration.MACHINE_HULLS.forEach((tier, hull) ->
-                hull(hull.getId().getPath(), hull.get(), tier));
+        AssemblyMachineRegistration.MACHINE_HULL_DEFINITIONS.values().forEach(definition ->
+                hull(definition.id(), definition.block().get(), definition.texture()));
     }
 
-    private void hull(String id, Block block, int tier) {
-        ResourceLocation texture = ClayiumMod.id("block/machinehull-" + (tier - 1));
+    private void hull(String id, Block block, String textureName) {
+        ResourceLocation texture = ClayiumMod.id("block/" + textureName);
         ModelFile model = models().cubeAll(id, texture);
         simpleBlockWithItem(block, model);
     }

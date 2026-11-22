@@ -215,7 +215,7 @@ public final class FormingRecipes {
         machine(ClayiumRecipeMethod.MILLING_MACHINE, 0, 1L, 32)
                 .requires(material("dense_clay_plate"), 1)
                 .output(MaterialRegistration.COMPONENTS.get("clay_circuit_board").get(), 1)
-                .save(output, ClayiumMod.id("milling_machine/clay_circuit_board_from_dense_clay"));
+                .save(output, ClayiumMod.id("elemental_milling_machine/clay_circuit_board"));
         machine(ClayiumRecipeMethod.MILLING_MACHINE, 0, 1L, 1)
                 .requires(material("industrial_clay_plate"), 1)
                 .output(MaterialRegistration.COMPONENTS.get("clay_circuit_board").get(), 1)
@@ -227,6 +227,18 @@ public final class FormingRecipes {
     }
 
     private static void machineCrafting(RecipeOutput output) {
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        FormingMachineRegistration.ELEMENTAL_MILLING_MACHINE.get())
+                .define('P', material("dense_clay_plate"))
+                .define('0', material("dense_clay_cutting_head"))
+                .define('o', material("dense_clay_spindle"))
+                .define('#', WorkbenchRegistration.CLAY_MACHINE_HULL.get())
+                .define('*', material("dense_clay_gear"))
+                .pattern("P0P").pattern("o#o").pattern("P*P")
+                .unlockedBy("has_machine_hull", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        WorkbenchRegistration.CLAY_MACHINE_HULL.get()))
+                .save(output, ClayiumMod.id("forming_machine/elemental_milling_machine"));
         for (FormingMachineRegistration.MachineDefinition definition
                 : FormingMachineRegistration.MACHINES.values()) {
             ItemLike plate = machinePlate(definition.tier());

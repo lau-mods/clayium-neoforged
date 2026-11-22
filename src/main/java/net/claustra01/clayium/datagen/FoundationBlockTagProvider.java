@@ -3,6 +3,7 @@ package net.claustra01.clayium.datagen;
 import java.util.concurrent.CompletableFuture;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.AutoCrafterRegistration;
+import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FoundationBlockRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
@@ -40,9 +41,9 @@ public final class FoundationBlockTagProvider extends BlockTagsProvider {
                 WorkbenchRegistration.CLAY_CRAFTING_BOARD.get(),
                 WorkbenchRegistration.RAW_CLAY_MACHINE_HULL.get(),
                 WorkbenchRegistration.CLAY_MACHINE_HULL.get());
-        java.util.stream.Stream.concat(
-                MachineRegistration.BLOCKS.stream(), FormingMachineRegistration.BLOCKS.stream())
-                .forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
+        MachineRegistration.BLOCKS.forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
+        FormingMachineRegistration.BLOCKS.forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
+        AssemblyMachineRegistration.BLOCKS.forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(WorldgenRegistration.BLOCKS.stream()
                 .map(block -> block.get()).toArray(Block[]::new));
         tag(ClayToolProperties.CLAY_ORES).add(WorldgenRegistration.BLOCKS.stream()

@@ -4,8 +4,11 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.WorldgenRegistration;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Items;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
 
 public final class CondenserGrinderDecomposerRecipes {
     public static void buildRecipes(RecipeOutput output) {
@@ -15,6 +18,18 @@ public final class CondenserGrinderDecomposerRecipes {
     }
 
     private static void condenser(RecipeOutput output) {
+        shardRecipe(ClayiumRecipeMethod.CONDENSER, 3)
+                .requires(shard("compressed_clay_shard"), 4)
+                .output(compression("compressed_clay"), 1)
+                .save(output, ClayiumMod.id("condenser/compressed_clay_shard"));
+        shardRecipe(ClayiumRecipeMethod.CONDENSER, 6)
+                .requires(shard("industrial_clay_shard"), 4)
+                .output(compression("industrial_clay"), 1)
+                .save(output, ClayiumMod.id("condenser/industrial_clay_shard"));
+        shardRecipe(ClayiumRecipeMethod.CONDENSER, 9)
+                .requires(shard("advanced_industrial_clay_shard"), 4)
+                .output(compression("advanced_industrial_clay"), 1)
+                .save(output, ClayiumMod.id("condenser/advanced_industrial_clay_shard"));
         machine(ClayiumRecipeMethod.CONDENSER, 2, 20, 1.0D)
                 .requires(Items.CLAY_BALL, 4)
                 .output(Items.CLAY, 1)
@@ -38,6 +53,12 @@ public final class CondenserGrinderDecomposerRecipes {
     }
 
     private static void grinder(RecipeOutput output) {
+        oreShard(output, WorldgenRegistration.CLAY_ORE.get(), "compressed_clay_shard", 2, 3);
+        oreShard(output, WorldgenRegistration.DEEPSLATE_CLAY_ORE.get(), "compressed_clay_shard", 2, 3);
+        oreShard(output, WorldgenRegistration.DENSE_CLAY_ORE.get(), "industrial_clay_shard", 3, 6);
+        oreShard(output, WorldgenRegistration.DEEPSLATE_DENSE_CLAY_ORE.get(), "industrial_clay_shard", 3, 6);
+        oreShard(output, WorldgenRegistration.LARGE_DENSE_CLAY_ORE.get(), "advanced_industrial_clay_shard", 5, 9);
+        oreShard(output, WorldgenRegistration.DEEPSLATE_LARGE_DENSE_CLAY_ORE.get(), "advanced_industrial_clay_shard", 5, 9);
         machine(ClayiumRecipeMethod.GRINDER, 2, 20, 1.0D)
                 .requires(Items.CLAY, 1)
                 .output(material("clay_dust"), 4)
@@ -62,6 +83,19 @@ public final class CondenserGrinderDecomposerRecipes {
                 .requires(material("antimatter_block"), 1)
                 .output(material("antimatter_dust"), 9)
                 .save(output, ClayiumMod.id("grinder/antimatter_block"));
+    }
+
+    private static void oreShard(RecipeOutput output, Block ore, String shard, int count, int ticks) {
+        shardRecipe(ClayiumRecipeMethod.GRINDER, ticks)
+                .requires(ore, 1)
+                .output(shard(shard), count)
+                .save(output, ClayiumMod.id("grinder/" + BuiltInRegistries.BLOCK.getKey(ore).getPath() + "_to_" + shard));
+    }
+
+    private static ClayiumRecipeBuilder shardRecipe(ClayiumRecipeMethod method, int ticks) {
+        return ClayiumRecipeBuilder.machine(method, 0)
+                .clayEnergy(1L)
+                .processingTicks(ticks);
     }
 
     private static void decomposer(RecipeOutput output) {
@@ -92,6 +126,10 @@ public final class CondenserGrinderDecomposerRecipes {
 
     private static net.minecraft.world.level.ItemLike compression(String id) {
         return MaterialRegistration.COMPRESSION_BLOCKS.get(id).get();
+    }
+
+    private static net.minecraft.world.level.ItemLike shard(String id) {
+        return MaterialRegistration.SHARDS.get(id).get();
     }
 
     private CondenserGrinderDecomposerRecipes() {

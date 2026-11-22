@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium:thorium_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium:thorium_ingot"
+  }
+}

@@ -274,3 +274,86 @@ item.clayium.zk60_a_alloy_dust	ZK60A Alloy Dust	ZK60A 合金の粉
 item.clayium.zk60_a_alloy_ingot	ZK60A Alloy Ingot	ZK60A 合金インゴット
 item.clayium.zk60_a_alloy_plate	ZK60A Alloy Plate	ZK60A 合金プレート
 item.clayium.impure_osmium_ingot	Impure Osmium Ingot	不純なオスミウムインゴット
+block.clayium.actinium_block	Actinium Block	アクチニウムブロック
+block.clayium.americium_block	Americium Block	アメリシウムブロック
+block.clayium.antimony_block	Antimony Block	アンチモンブロック
+block.clayium.az91_d_alloy_block	AZ91D Alloy Block	AZ91D 合金ブロック
+block.clayium.az91_d_alloy_hull	AZ91D Alloy Hull	AZ91D 合金マシン筐体
+block.clayium.barium_block	Barium Block	バリウムブロック
+block.clayium.beryllium_block	Beryllium Block	ベリリウムブロック
+block.clayium.bismuth_block	Bismuth Block	ビスマスブロック
+block.clayium.black_silicone_block	Black Silicone Block	黒色のシリコーンブロック
+block.clayium.blue_silicone_block	Blue Silicone Block	青色のシリコーンブロック
+block.clayium.brass_block	Brass Block	ブラスブロック
+block.clayium.bronze_block	Bronze Block	ブロンズブロック
+block.clayium.brown_silicone_block	Brown Silicone Block	茶色のシリコーンブロック
+block.clayium.caesium_block	Caesium Block	セシウムブロック
+block.clayium.calcium_block	Calcium Block	カルシウムブロック
+block.clayium.cerium_block	Cerium Block	セリウムブロック
+block.clayium.chrome_block	Chrome Block	クロムブロック
+block.clayium.cobalt_block	Cobalt Block	コバルトブロック
+block.clayium.copper_block	Copper Block	銅ブロック
+block.clayium.curium_block	Curium Block	キュリウムブロック
+block.clayium.cyan_silicone_block	Cyan Silicone Block	水色のシリコーンブロック
+block.clayium.dense_clay_machine_hull	Dense Clay Machine Hull	高密度粘土マシン筐体
+block.clayium.electrum_block	Electrum Block	エレクトラムブロック
+block.clayium.elemental_milling_machine	Elemental Milling Machine	初期型フライス盤
+block.clayium.europium_block	Europium Block	ユーロピウムブロック
+block.clayium.francium_block	Francium Block	フランシウムブロック
+block.clayium.gray_silicone_block	Gray Silicone Block	灰色のシリコーンブロック
+block.clayium.green_silicone_block	Green Silicone Block	緑色のシリコーンブロック
+block.clayium.hafnium_block	Hafnium Block	ハフニウムブロック
+block.clayium.invar_block	Invar Block	インバーブロック
+block.clayium.iridium_block	Iridium Block	イリジウムブロック
+block.clayium.lanthanum_block	Lanthanum Block	ランタンブロック
+block.clayium.lead_block	Lead Block	鉛ブロック
+block.clayium.light_blue_silicone_block	Light Blue Silicone Block	空色のシリコーンブロック
+block.clayium.light_gray_silicone_block	Light Gray Silicone Block	薄灰色のシリコーンブロック
+block.clayium.lime_silicone_block	Lime Silicone Block	黄緑色のシリコーンブロック
+block.clayium.lithium_block	Lithium Block	リチウムブロック
+block.clayium.magenta_silicone_block	Magenta Silicone Block	赤紫色のシリコーンブロック
+block.clayium.magnesium_block	Magnesium Block	マグネシウムブロック
+block.clayium.manganese_block	Manganese Block	マンガンブロック
+block.clayium.molybdenum_block	Molybdenum Block	モリブデンブロック
+block.clayium.neodymium_block	Neodymium Block	ネオジムブロック
+block.clayium.neptunium_block	Neptunium Block	ネプツニウムブロック
+block.clayium.nickel_block	Nickel Block	ニッケルブロック
+block.clayium.oec_machine_hull	OEC Machine Hull	OEC マシン筐体
+block.clayium.opa_machine_hull	OPA Machine Hull	OPA マシン筐体
+block.clayium.orange_silicone_block	Orange Silicone Block	橙色のシリコーンブロック
+block.clayium.osmium_block	Osmium Block	オスミウムブロック
+block.clayium.palladium_block	Palladium Block	パラジウムブロック
+block.clayium.pink_silicone_block	Pink Silicone Block	桃色のシリコーンブロック
+block.clayium.platinum_block	Platinum Block	白金ブロック
+block.clayium.plutonium_block	Plutonium Block	プルトニウムブロック
+block.clayium.potassium_block	Potassium Block	カリウムブロック
+block.clayium.praseodymium_block	Praseodymium Block	プラセオジムブロック
+block.clayium.promethium_block	Promethium Block	プロメチウムブロック
+block.clayium.protactinium_block	Protactinium Block	プロトアクチニウムブロック
+block.clayium.pure_antimatter_machine_hull	Pure Antimatter Machine Hull	純反物質マシン筐体
+block.clayium.purple_silicone_block	Purple Silicone Block	紫色のシリコーンブロック
+block.clayium.radium_block	Radium Block	ラジウムブロック
+block.clayium.red_silicone_block	Red Silicone Block	赤色のシリコーンブロック
+block.clayium.rhenium_block	Rhenium Block	レニウムブロック
+block.clayium.rubidium_block	Rubidium Block	ルビジウムブロック
+block.clayium.samarium_block	Samarium Block	サマリウムブロック
+block.clayium.silver_block	Silver Block	銀ブロック
+block.clayium.sodium_block	Sodium Block	ナトリウムブロック
+block.clayium.steel_block	Steel Block	スチールブロック
+block.clayium.strontium_block	Strontium Block	ストロンチウムブロック
+block.clayium.tantalum_block	Tantalum Block	タンタルブロック
+block.clayium.thorium_block	Thorium Block	トリウムブロック
+block.clayium.tin_block	Tin Block	錫ブロック
+block.clayium.titanium_block	Titanium Block	チタンブロック
+block.clayium.tungsten_block	Tungsten Block	タングステンブロック
+block.clayium.uranium_block	Uranium Block	ウラニウムブロック
+block.clayium.vanadium_block	Vanadium Block	バナジウムブロック
+block.clayium.white_silicone_block	White Silicone Block	白色のシリコーンブロック
+block.clayium.yellow_silicone_block	Yellow Silicone Block	黄色のシリコーンブロック
+block.clayium.zinc_block	Zinc Block	亜鉛ブロック
+block.clayium.zirconium_block	Zirconium Block	ジルコニウムブロック
+block.clayium.zk60_a_alloy_block	ZK60A Alloy Block	ZK60A 合金ブロック
+block.clayium.zk60_a_alloy_hull	ZK60A Alloy Hull	ZK60A 合金マシン筐体
+item.clayium.advanced_industrial_clay_shard	Advanced Industrial Clay Shard	発展工業用粘土片
+item.clayium.compressed_clay_shard	Compressed Clay Shard	圧縮粘土片
+item.clayium.industrial_clay_shard	Industrial Clay Shard	工業用粘土片
