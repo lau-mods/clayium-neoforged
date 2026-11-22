@@ -52,6 +52,16 @@ public final class CaReactorCoreBlockEntity extends ClayMachineBlockEntity imple
     }
 
     @Override
+    protected void setState(MachineState newState) {
+        if (state() != newState) {
+            super.setState(newState);
+            if (level != null && !level.isClientSide) {
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+            }
+        }
+    }
+
+    @Override
     public void onLoad() {
         super.onLoad();
         if (level != null && !level.isClientSide) {

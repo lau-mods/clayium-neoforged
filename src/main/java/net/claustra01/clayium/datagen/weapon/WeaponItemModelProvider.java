@@ -27,7 +27,7 @@ public final class WeaponItemModelProvider extends ItemModelProvider {
                 ClayShooterSpecification.SNIPER_PRO,
                 ClayShooterSpecification.TELEPORTER)) {
             getBuilder(specification.id())
-                    .parent(new ModelFile.UncheckedModelFile("minecraft:item/generated"))
+                    .parent(new ModelFile.UncheckedModelFile("minecraft:item/handheld"))
                     .texture("layer0", ClayiumMod.id("item/" + specification.texture()));
         }
     }

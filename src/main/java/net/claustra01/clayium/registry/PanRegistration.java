@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.pan.PanBlock;
+import net.claustra01.clayium.pan.PanCableBlock;
 import net.claustra01.clayium.pan.PanBlockEntity;
 import net.claustra01.clayium.pan.PanMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -69,11 +70,14 @@ public final class PanRegistration {
             String id,
             PanBlock.Kind kind,
             int tier) {
-        DeferredBlock<PanBlock> block = ClayiumRegistries.BLOCKS.register(
-                id, () -> new PanBlock(BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.METAL)
-                        .strength(3.0F + tier * 0.25F, 5.0F + tier)
-                        .sound(SoundType.METAL), kind, tier));
+        DeferredBlock<PanBlock> block = ClayiumRegistries.BLOCKS.register(id, () -> {
+            BlockBehaviour.Properties properties = BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(3.0F + tier * 0.25F, 5.0F + tier)
+                    .sound(SoundType.METAL);
+            return kind == PanBlock.Kind.CABLE
+                    ? new PanCableBlock(properties, tier) : new PanBlock(properties, kind, tier);
+        });
         DeferredItem<FoundationBlockItem> item = ClayiumRegistries.ITEMS.register(
                 id, () -> new FoundationBlockItem(block.get(), new Item.Properties()
                         .component(FoundationDataComponentRegistration.TIER.get(), tier)));

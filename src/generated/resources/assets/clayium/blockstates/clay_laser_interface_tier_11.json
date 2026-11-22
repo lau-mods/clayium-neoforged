@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,linked=false": {
       "model": "clayium:block/clay_laser_interface_tier_11",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,linked=true": {
+      "model": "clayium:block/clay_laser_interface_tier_11_linked",
+      "y": 90
+    },
+    "facing=north,linked=false": {
       "model": "clayium:block/clay_laser_interface_tier_11"
     },
-    "facing=south": {
+    "facing=north,linked=true": {
+      "model": "clayium:block/clay_laser_interface_tier_11_linked"
+    },
+    "facing=south,linked=false": {
       "model": "clayium:block/clay_laser_interface_tier_11",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,linked=true": {
+      "model": "clayium:block/clay_laser_interface_tier_11_linked",
+      "y": 180
+    },
+    "facing=west,linked=false": {
       "model": "clayium:block/clay_laser_interface_tier_11",
+      "y": 270
+    },
+    "facing=west,linked=true": {
+      "model": "clayium:block/clay_laser_interface_tier_11_linked",
       "y": 270
     }
   }

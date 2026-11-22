@@ -21,6 +21,8 @@ public final class StorageScreenRegistration {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(
                 StorageRegistration.METAL_CHEST_BLOCK_ENTITY.get(), MetalChestRenderer::new);
+        event.registerBlockEntityRenderer(
+                StorageRegistration.STORAGE_CONTAINER_BLOCK_ENTITY.get(), StorageContainerRenderer::new);
     }
 
     private StorageScreenRegistration() {

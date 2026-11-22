@@ -8,6 +8,9 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -58,7 +61,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
             return false;
         }
         expanded = true;
-        setChanged();
+        syncVisual();
         if (level != null && !level.isClientSide) {
             level.setBlock(worldPosition, getBlockState().setValue(StorageContainerBlock.EXPANDED, true), 3);
         }
@@ -97,6 +100,22 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         } else if (!stored.isEmpty()) {
             stored.setCount(1);
         }
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        if (!stored.isEmpty()) {
+            tag.put("stored", stored.copyWithCount(1).save(registries));
+        }
+        tag.putLong("amount", amount);
+        tag.putBoolean("expanded", expanded);
+        return tag;
     }
 
     @Override
@@ -146,7 +165,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
                     stored = stack.copyWithCount(1);
                 }
                 amount += accepted;
-                setChanged();
+                syncVisual();
             }
             return accepted == stack.getCount() ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - accepted);
         }
@@ -163,7 +182,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
                 if (amount == 0L) {
                     stored = ItemStack.EMPTY;
                 }
-                setChanged();
+                syncVisual();
             }
             return result;
         }
@@ -178,6 +197,13 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
             return stored.isEmpty() || ItemStack.isSameItemSameComponents(stored, stack);
         }
 
+    }
+
+    private void syncVisual() {
+        setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
     }
 
     private final class StorageData implements ContainerData {

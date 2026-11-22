@@ -30,11 +30,6 @@ public final class AreaMarkerRenderer implements BlockEntityRenderer<AreaMarkerB
     }
 
     @Override
-    public boolean shouldRenderOffScreen(AreaMarkerBlockEntity marker) {
-        return true;
-    }
-
-    @Override
     public int getViewDistance() {
         return 128;
     }

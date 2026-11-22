@@ -5,6 +5,9 @@ import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -35,6 +38,7 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
         heatingTicks--;
         if (heatingTicks == 0) {
             updateStage(QuartzCrucibleStage.READY);
+            syncVisual();
         }
         setChanged();
     }
@@ -80,7 +84,7 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
         impureSilicon += inserted;
         heatingTicks += inserted * HEATING_TICKS_PER_INGOT;
         updateStage(QuartzCrucibleStage.HEATING);
-        setChanged();
+        syncVisual();
         return inserted;
     }
 
@@ -102,7 +106,7 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
             level.addFreshEntity(output);
         }
         updateStage(QuartzCrucibleStage.EMPTY);
-        setChanged();
+        syncVisual();
         return true;
     }
 
@@ -144,9 +148,29 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
         heatingTicks = tag.getInt("heating_ticks");
     }
 
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("impure_silicon", impureSilicon);
+        tag.putInt("heating_ticks", heatingTicks);
+        return tag;
+    }
+
     private void updateStage(QuartzCrucibleStage stage) {
         if (level != null && getBlockState().getValue(QuartzCrucibleBlock.STAGE) != stage) {
             level.setBlock(worldPosition, getBlockState().setValue(QuartzCrucibleBlock.STAGE, stage), 3);
+        }
+    }
+
+    private void syncVisual() {
+        setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 }

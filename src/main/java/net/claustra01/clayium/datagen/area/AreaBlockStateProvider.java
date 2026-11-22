@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 
@@ -50,18 +51,27 @@ public final class AreaBlockStateProvider extends BlockStateProvider {
         });
         AreaMachineRegistration.MACHINES.values().forEach(definition -> {
             AreaMachineType type = definition.type();
-            ModelFile model = models().getBuilder(type.id())
+            ModelFile model = machineModel(type.id(), type, false);
+            ModelFile active = machineModel(type.id() + "_active", type, true);
+            getVariantBuilder(definition.block().get()).forAllStates(state -> ConfiguredModel.builder()
+                    .modelFile(state.getValue(AreaMachineBlock.ACTIVE) ? active : model)
+                    .rotationY(((int)state.getValue(AreaMachineBlock.FACING).toYRot() + 180) % 360)
+                    .build());
+            simpleBlockItem(definition.block().get(), model);
+        });
+    }
+
+    private ModelFile machineModel(String id, AreaMachineType type, boolean active) {
+        String frontTexture = FRONTS.get(type) + (active ? "_1" : "");
+        return models().getBuilder(id)
                     .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                     .texture("hull", ClayiumMod.id("block/machinehull-" + (type.tier() - 1)))
-                    .texture("front", ClayiumMod.id("block/" + FRONTS.get(type)))
+                    .texture("front", ClayiumMod.id("block/" + frontTexture))
                     .texture("particle", "#hull")
                     .renderType("minecraft:cutout")
                     .element().from(0, 0, 0).to(16, 16, 16).cube("#hull").end()
                     .element().from(0, 0, -0.01F).to(16, 16, 0)
                     .face(Direction.NORTH).texture("#front").end().end();
-            horizontalBlock(definition.block().get(), model);
-            simpleBlockItem(definition.block().get(), model);
-        });
     }
 
     @Override

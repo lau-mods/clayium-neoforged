@@ -17,7 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-public final class PanBlock extends BaseEntityBlock {
+public class PanBlock extends BaseEntityBlock {
+
     private final Kind kind;
     private final int tier;
 
@@ -44,6 +45,7 @@ public final class PanBlock extends BaseEntityBlock {
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
+
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

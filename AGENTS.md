@@ -424,3 +424,10 @@ GameTest は `allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePath
 - レーザー本体と反射器の保存NBT `irradiation` は `total`、`history`、`target`、`target_block`、`target_distance` を含む。範囲装置の保存NBTは `activator_target`、`activator_ray_trace`、`activator_sneaking`、`ray_trace_memory` を含む。`clayium:area_machine_control` Payload の action 0 は対象モード、1 は視線判定、2 はスニーク、3 は視線記憶を変更する。
 
 GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndActivatorPreservePriorityProtectionAndInteraction`、`laserTransmitsConvertsAccumulatesAndHonorsProtection`、`crucibleAndFilterCopiesConsumeValidateAndPersistExactly`。外観 E2E は `tests/e2e/original-behaviors.mjs`。
+
+## M42 ワールド描画
+
+- PANケーブルだけが `down/up/north/south/west/east` の6接続BlockStateを持ち、設置時と隣接Block更新時にPANブロックへの接続を計算する。コア・アダプター・複製機には接続プロパティを持たせない。インターフェースの `linked` は同期・切断時に変更し、範囲機械の `active` は所有者・次元・CEを満たして稼働可能な間維持する。
+- `QuartzCrucibleRenderer` は中身の量・加熱段階をUV切り取りで表示し、描画距離64・描画領域1ブロック。`StorageContainerRenderer` は品目と保持数を描画距離64・描画領域1ブロックで表示する。`MetalChestRenderer` はサーバーの開閉イベントによる蓋アニメーションを描画距離64・描画領域1ブロックで表示する。`CaReactorCoreRenderer` は構造成立時の停止alpha 96、稼働時alpha 180±55の光彩を描画距離96・描画領域1ブロック付近で表示する。
+- BER用の更新タグはるつぼの `impure_silicon`・`heating_ticks`、ストレージの `stored`・`amount`・`expanded`、CAコアの `state`・`reactor_formed`・`reactor_coils`・`reactor_hulls`・`reactor_average_rank` を同期する。金属チェストの蓋は保存NBTではなくサーバーのブロックイベントで同期する。
+- GameTestは `panCableConnectionsRejectStoneAndRebuild`、`rendererDataSurvivesSaveReloadAndUpdateTags`、`visualConnectionStatesAreServerAuthoritative` と既存の `allOriginalPngHashesAndTintLayersRemainUnmodified` を使う。外観E2Eは `tests/e2e/world-rendering.mjs`、原作描画対応表は `tests/e2e/render-parity.json`。

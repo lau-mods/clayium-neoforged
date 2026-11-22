@@ -74,6 +74,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         }
         target = newTarget;
         owner = newOwner;
+        setLinkedState(true);
         setChangedAndSync();
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
@@ -85,6 +86,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
     public void disconnect() {
         target = null;
         owner = null;
+        setLinkedState(false);
         setChangedAndSync();
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
@@ -209,6 +211,16 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         setChanged();
         if (level != null && !level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    private void setLinkedState(boolean linked) {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        BlockState state = getBlockState();
+        if (state.getValue(InterfaceBlock.LINKED) != linked) {
+            level.setBlock(worldPosition, state.setValue(InterfaceBlock.LINKED, linked), 3);
         }
     }
 

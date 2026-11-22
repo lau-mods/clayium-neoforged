@@ -25,11 +25,6 @@ public final class AreaMachineRenderer implements BlockEntityRenderer<AreaMachin
     }
 
     @Override
-    public boolean shouldRenderOffScreen(AreaMachineBlockEntity machine) {
-        return true;
-    }
-
-    @Override
     public int getViewDistance() {
         return 128;
     }

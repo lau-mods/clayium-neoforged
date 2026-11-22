@@ -24,6 +24,7 @@ public final class MetalChestMenu extends AbstractContainerMenu {
         this.chest = chest;
         pos = chest.getBlockPos();
         type = chest.type();
+        chest.startOpen(playerInventory.player);
         int storageX = (imageWidth() - type.columns() * 18) / 2;
         for (int index = 0; index < type.slots(); index++) {
             int slotPage = index / type.pageSize();
@@ -93,5 +94,11 @@ public final class MetalChestMenu extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return !chest.isRemoved() && player.level().getBlockEntity(pos) == chest
                 && player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+    }
+
+    @Override
+    public void removed(Player player) {
+        super.removed(player);
+        chest.stopOpen(player);
     }
 }

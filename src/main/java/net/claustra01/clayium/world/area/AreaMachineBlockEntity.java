@@ -47,6 +47,7 @@ import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.EventHooks;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -111,11 +112,13 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         }
         if (machine.owner == null) {
             machine.status = OperationStatus.NO_OWNER;
+            machine.updateActiveState();
             return;
         }
         if (!machine.targetDimension.isEmpty()
                 && !machine.targetDimension.equals(level.dimension().location().toString())) {
             machine.status = OperationStatus.WRONG_DIMENSION;
+            machine.updateActiveState();
             return;
         }
         double factor = 1.0D + 4.0D * Math.log10(1.0D + (long)machine.pendingLaser.energy() / 1000L);
@@ -123,9 +126,10 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         long cost = (long)(machine.machineType().energyPerTick() * factor);
         if (!machine.energy.consume(ClayEnergy.ofInternal(cost), machine.inventory.getStackInSlot(FUEL_SLOT))) {
             machine.status = OperationStatus.NO_ENERGY;
+            machine.updateActiveState();
             return;
         }
-        machine.status = OperationStatus.IDLE;
+        machine.status = OperationStatus.WORKING;
         machine.progress += (long)(100.0D * factor);
         int operations = (int)Math.min(MAX_OPERATIONS_PER_TICK,
                 machine.progress / machine.machineType().progressPerJob());
@@ -133,17 +137,23 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
             machine.runOperationsNow(operations);
             machine.progress %= machine.machineType().progressPerJob();
         }
+        if (machine.status == OperationStatus.IDLE) {
+            machine.status = OperationStatus.WORKING;
+        }
         machine.setChanged();
+        machine.updateActiveState();
     }
 
     public int runOperationsNow(int maximumOperations) {
         status = OperationStatus.IDLE;
         if (!(level instanceof ServerLevel serverLevel) || owner == null) {
             status = OperationStatus.NO_OWNER;
+            updateActiveState();
             return 0;
         }
         if (!targetDimension.isEmpty() && !targetDimension.equals(serverLevel.dimension().location().toString())) {
             status = OperationStatus.WRONG_DIMENSION;
+            updateActiveState();
             return 0;
         }
         workArea = workArea.clampHeight(serverLevel);
@@ -155,6 +165,7 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
             status = OperationStatus.WORKING;
         }
         setChanged();
+        updateActiveState();
         return completed;
     }
 
@@ -582,6 +593,17 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         setChanged();
         if (level != null && !level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    private void updateActiveState() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        BlockState state = getBlockState();
+        boolean active = owner != null && status == OperationStatus.WORKING;
+        if (state.getValue(AreaMachineBlock.ACTIVE) != active) {
+            level.setBlock(worldPosition, state.setValue(AreaMachineBlock.ACTIVE, active), Block.UPDATE_CLIENTS);
         }
     }
 

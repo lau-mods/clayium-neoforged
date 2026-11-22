@@ -35,7 +35,7 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
         }
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS)
                 .apply(ClayiumMod.id("block/laser"));
-        VertexConsumer vertices = buffers.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
+        VertexConsumer vertices = buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
         LaserBeam beam = laser.visibleBeam();
         long maximum = Math.max(beam.blue(), Math.max(beam.green(), beam.red()));
         int red = (int)(255L * beam.red() / maximum);
@@ -44,10 +44,12 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
         double sum = Math.min(beam.blue(), 1_000L) + Math.min(beam.green(), 1_000L) + Math.min(beam.red(), 1_000L);
         float halfWidth = (float)Math.max(0.03125D, (1.0D - 14.0625D / (sum + 14.0D)) * 0.5D)
                 + laser.direction().getAxis().ordinal() * 0.0005F;
+        long gameTime = laser.getLevel() == null ? 0L : laser.getLevel().getGameTime();
+        int alpha = 208 + (int)(31.0D * Math.sin((gameTime + partialTick) * Math.PI / 4.0D));
 
         Direction direction = laser.direction();
         float startDistance = laser instanceof LaserReflectorBlockEntity ? 0.0F : 0.501F;
-        float endDistance = Math.max(startDistance, laser.laserLength() - 0.002F);
+        float endDistance = Math.max(startDistance, laser.laserLength() - 0.502F);
         float[] centerStart = point(direction, startDistance);
         float[] centerEnd = point(direction, endDistance);
         Direction.Axis axis = direction.getAxis();
@@ -63,10 +65,12 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
                 offset(centerEnd, first, second, halfWidth, halfWidth),
                 offset(centerEnd, first, second, -halfWidth, halfWidth)};
         PoseStack.Pose pose = poseStack.last();
-        face(vertices, pose, sprite, red, green, blue, corners, 0, 1, 5, 4);
-        face(vertices, pose, sprite, red, green, blue, corners, 1, 2, 6, 5);
-        face(vertices, pose, sprite, red, green, blue, corners, 2, 3, 7, 6);
-        face(vertices, pose, sprite, red, green, blue, corners, 3, 0, 4, 7);
+        face(vertices, pose, sprite, red, green, blue, alpha, corners, 0, 1, 5, 4);
+        face(vertices, pose, sprite, red, green, blue, alpha, corners, 1, 2, 6, 5);
+        face(vertices, pose, sprite, red, green, blue, alpha, corners, 2, 3, 7, 6);
+        face(vertices, pose, sprite, red, green, blue, alpha, corners, 3, 0, 4, 7);
+        face(vertices, pose, sprite, red, green, blue, alpha, corners, 0, 3, 2, 1);
+        face(vertices, pose, sprite, red, green, blue, alpha, corners, 4, 5, 6, 7);
     }
 
     @Override
@@ -74,7 +78,7 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
         return new AABB(laser.getBlockPos()).expandTowards(
                 laser.direction().getStepX() * laser.laserLength(),
                 laser.direction().getStepY() * laser.laserLength(),
-                laser.direction().getStepZ() * laser.laserLength());
+                laser.direction().getStepZ() * laser.laserLength()).inflate(0.51D);
     }
 
     @Override
@@ -86,7 +90,7 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
             Direction direction, PoseStack poseStack, MultiBufferSource buffers, int packedLight) {
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS)
                 .apply(ClayiumMod.id("block/laserreflector"));
-        VertexConsumer vertices = buffers.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
+        VertexConsumer vertices = buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
         float[] first = direction.getAxis() == Direction.Axis.Y
                 ? new float[]{1, 0, 0} : new float[]{0, 1, 0};
         float[] second = cross(direction, first);
@@ -98,25 +102,34 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
                 offset(base, first, second, -0.25F, 0.25F),
                 point(direction, 0.375F)};
         PoseStack.Pose pose = poseStack.last();
-        reflectorFace(vertices, pose, sprite, packedLight, corners, 0, 1, 2, 3);
+        reflectorFace(vertices, pose, sprite, packedLight, corners, 0, 3, 2, 1);
         for (int side = 0; side < 4; side++) {
             reflectorFace(vertices, pose, sprite, packedLight, corners,
-                    4, side, (side + 1) % 4, 4);
+                    4, side, (side + 1) % 4, (side + 1) % 4);
         }
     }
 
     private static void reflectorFace(
             VertexConsumer vertices, PoseStack.Pose pose, TextureAtlasSprite sprite,
             int packedLight, float[][] corners, int... indices) {
+        float[] a = corners[indices[0]];
+        float[] b = corners[indices[1]];
+        float[] c = corners[indices[2]];
+        float nx = (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]);
+        float ny = (b[2] - a[2]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[2] - a[2]);
+        float nz = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+        float length = (float)Math.sqrt(nx * nx + ny * ny + nz * nz);
         for (int vertex = 0; vertex < indices.length; vertex++) {
             float[] point = corners[indices[vertex]];
             vertices.addVertex(pose.pose(), point[0], point[1], point[2])
-                    .setColor(255, 255, 255, 225)
-                    .setUv(vertex == 0 || vertex == 3 ? sprite.getU0() : sprite.getU1(),
+                    .setColor(255, 255, 255, 255)
+                    .setUv(indices[0] == 4 ? (vertex == 0 ? (sprite.getU0() + sprite.getU1()) * 0.5F
+                            : vertex == 1 ? sprite.getU0() : sprite.getU1())
+                            : vertex == 0 || vertex == 3 ? sprite.getU0() : sprite.getU1(),
                             vertex < 2 ? sprite.getV1() : sprite.getV0())
                     .setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(packedLight)
-                    .setNormal(pose, 0.0F, 1.0F, 0.0F);
+                    .setNormal(pose, nx / length, ny / length, nz / length);
         }
     }
 
@@ -144,11 +157,11 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
 
     private static void face(
             VertexConsumer vertices, PoseStack.Pose pose, TextureAtlasSprite sprite,
-            int red, int green, int blue, float[][] corners, int... indices) {
+            int red, int green, int blue, int alpha, float[][] corners, int... indices) {
         for (int vertex = 0; vertex < indices.length; vertex++) {
             float[] point = corners[indices[vertex]];
             vertices.addVertex(pose.pose(), point[0], point[1], point[2])
-                    .setColor(red, green, blue, 225)
+                    .setColor(red, green, blue, alpha)
                     .setUv(vertex == 0 || vertex == 3 ? sprite.getU0() : sprite.getU1(),
                             vertex < 2 ? sprite.getV1() : sprite.getV0())
                     .setOverlay(OverlayTexture.NO_OVERLAY)

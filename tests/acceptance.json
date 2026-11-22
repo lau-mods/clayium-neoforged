@@ -875,6 +875,30 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "alloriginalpnghashesandtintlayersremainunmodified"
+    },
+    {
+      "acId": "AC-F048-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "pancableconnectionsrejectstoneandrebuild"
+    },
+    {
+      "acId": "AC-F048-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "visualconnectionstatesareserverauthoritative"
+    },
+    {
+      "acId": "AC-F048-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "rendererdatasurvivessavereloadandupdatetags"
+    },
+    {
+      "acId": "AC-F048-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alloriginalpnghashesandtintlayersremainunmodified"
     }
   ],
   "e2e": [
@@ -1085,6 +1109,18 @@
     {
       "acId": "AC-F043-004",
       "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F048-001",
+      "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F048-002",
+      "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F048-003",
+      "scenario": "tests/e2e/world-rendering.mjs"
     }
   ]
 }

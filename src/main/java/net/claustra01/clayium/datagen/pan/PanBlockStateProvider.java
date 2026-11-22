@@ -2,6 +2,7 @@ package net.claustra01.clayium.datagen.pan;
 
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.pan.PanBlock;
+import net.claustra01.clayium.pan.PanCableBlock;
 import net.claustra01.clayium.registry.PanRegistration;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
@@ -17,17 +18,12 @@ public final class PanBlockStateProvider
     @Override
     protected void registerStatesAndModels() {
         PanRegistration.DEFINITIONS.values().forEach(definition -> {
-            String texture = switch (definition.kind()) {
-                case CABLE -> "pancable";
-                case CORE -> "pancore";
-                case ADAPTER -> "panadapter";
-                case DUPLICATOR -> "panduplicator";
-            };
-            ModelFile model;
             if (definition.kind() == PanBlock.Kind.CABLE) {
-                model = models().cubeAll(definition.id(), ClayiumMod.id("block/" + texture));
+                registerCable();
             } else {
-                model = models().getBuilder(definition.id())
+                String texture = definition.kind() == PanBlock.Kind.CORE ? "pancore"
+                        : definition.kind() == PanBlock.Kind.ADAPTER ? "panadapter" : "panduplicator";
+                ModelFile model = models().getBuilder(definition.id())
                         .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                         .texture("casing", ClayiumMod.id("block/pancasing"))
                         .texture("front", ClayiumMod.id("block/" + texture))
@@ -35,10 +31,53 @@ public final class PanBlockStateProvider
                         .element().from(0, 0, 0).to(16, 16, 16).cube("#casing").end()
                         .element().from(0, 0, -0.01F).to(16, 16, 0)
                         .face(Direction.NORTH).texture("#front").end().end();
+                simpleBlock(definition.block().get(), model);
+                simpleBlockItem(definition.block().get(), model);
             }
-            simpleBlock(definition.block().get(), model);
-            simpleBlockItem(definition.block().get(), model);
         });
+    }
+
+    private void registerCable() {
+        ModelFile center = cableElement("pan_cable_center", 6, 6, 6, 10, 10, 10);
+        var multipart = getMultipartBuilder(PanRegistration.PAN_CABLE.get());
+        multipart.part().modelFile(center).addModel().end();
+        for (Direction direction : Direction.values()) {
+            float[] bounds = switch (direction) {
+                case DOWN -> new float[]{6, 0, 6, 10, 6, 10};
+                case UP -> new float[]{6, 10, 6, 10, 16, 10};
+                case NORTH -> new float[]{6, 6, 0, 10, 10, 6};
+                case SOUTH -> new float[]{6, 6, 10, 10, 10, 16};
+                case WEST -> new float[]{0, 6, 6, 6, 10, 10};
+                case EAST -> new float[]{10, 6, 6, 16, 10, 10};
+            };
+            ModelFile arm = cableElement("pan_cable_" + direction.getName(),
+                    bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
+            multipart.part().modelFile(arm).addModel()
+                    .condition(PanCableBlock.connectionProperty(direction), true).end();
+        }
+
+        var item = models().getBuilder("pan_cable_inventory")
+                .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
+                .texture("cable", ClayiumMod.id("block/pancable"))
+                .texture("particle", "#cable")
+                .element().from(6, 6, 6).to(10, 10, 10).cube("#cable").end()
+                .element().from(6, 0, 6).to(10, 6, 10).cube("#cable").end()
+                .element().from(6, 10, 6).to(10, 16, 10).cube("#cable").end()
+                .element().from(6, 6, 0).to(10, 10, 6).cube("#cable").end()
+                .element().from(6, 6, 10).to(10, 10, 16).cube("#cable").end()
+                .element().from(0, 6, 6).to(6, 10, 10).cube("#cable").end()
+                .element().from(10, 6, 6).to(16, 10, 10).cube("#cable").end();
+        simpleBlockItem(PanRegistration.PAN_CABLE.get(), item);
+    }
+
+    private ModelFile cableElement(
+            String name, float fromX, float fromY, float fromZ,
+            float toX, float toY, float toZ) {
+        return models().getBuilder(name)
+                .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
+                .texture("cable", ClayiumMod.id("block/pancable"))
+                .texture("particle", "#cable")
+                .element().from(fromX, fromY, fromZ).to(toX, toY, toZ).cube("#cable").end();
     }
 
     @Override
