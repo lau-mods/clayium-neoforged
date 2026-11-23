@@ -16,6 +16,7 @@ import net.claustra01.clayium.multiblock.MultiblockCapabilities;
 import net.claustra01.clayium.multiblock.careactor.CaReactorCapabilities;
 import net.claustra01.clayium.machine.miner.MinerCapabilities;
 import net.claustra01.clayium.network.MachineFaceModePayload;
+import net.claustra01.clayium.pan.PanScreenPayloads;
 import net.claustra01.clayium.logistics.BufferControlPayload;
 import net.claustra01.clayium.logistics.LogisticsCapabilities;
 import net.claustra01.clayium.registry.ClayiumRegistries;
@@ -78,6 +79,7 @@ public final class ClayiumMod {
         modEventBus.addListener(TradeSelectPayload::register);
         modEventBus.addListener(TradeSnapshotPayload::register);
         modEventBus.addListener(AreaMachineControlPayload::register);
+        modEventBus.addListener(PanScreenPayloads::register);
     }
 
     public static ResourceLocation id(String path) {

@@ -53,6 +53,7 @@ public final class PanRegistration {
                     () -> BlockEntityType.Builder.of(PanBlockEntity::new,
                                     DEFINITIONS.values().stream()
                                             .filter(definition -> definition.kind() == PanBlock.Kind.CORE
+                                                    || definition.kind() == PanBlock.Kind.ADAPTER
                                                     || definition.kind() == PanBlock.Kind.DUPLICATOR)
                                             .map(definition -> (Block)definition.block().get())
                                             .toArray(Block[]::new))

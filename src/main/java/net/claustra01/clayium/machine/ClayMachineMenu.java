@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
+import net.claustra01.clayium.multiblock.careactor.CaReactorCoreBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -56,13 +57,14 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     }
 
     private void addPlayerInventory(Inventory inventory) {
+        int inventoryY = machine instanceof CaReactorCoreBlockEntity ? 114 : 90;
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 90 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, inventoryY + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 148));
+            addSlot(new Slot(inventory, column, 8 + column * 18, inventoryY + 58));
         }
     }
 

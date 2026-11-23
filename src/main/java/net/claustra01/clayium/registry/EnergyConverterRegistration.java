@@ -7,6 +7,9 @@ import java.util.Map;
 import net.claustra01.clayium.energy.fe.EnergyConverterBlock;
 import net.claustra01.clayium.energy.fe.EnergyConverterBlockEntity;
 import net.claustra01.clayium.energy.fe.EnergyConverterSpecification;
+import net.claustra01.clayium.energy.fe.EnergyConverterMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
@@ -54,6 +57,11 @@ public final class EnergyConverterRegistration {
                                     BLOCKS.stream().map(DeferredBlock::get)
                                             .toArray(net.minecraft.world.level.block.Block[]::new))
                             .build(null));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<EnergyConverterMenu>> MENU =
+            ClayiumRegistries.MENU_TYPES.register("energy_converter",
+                    () -> IMenuTypeExtension.create((id, inventory, data) ->
+                            new EnergyConverterMenu(id, inventory, data.readBlockPos())));
 
     public record ConverterDefinition(
             EnergyConverterSpecification specification,

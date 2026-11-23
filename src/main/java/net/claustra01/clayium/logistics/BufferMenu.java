@@ -43,8 +43,8 @@ public final class BufferMenu extends AbstractContainerMenu {
                     }
                 });
             }
-            addSlot(new SlotItemHandler(buffer.filterInventory(), 0, 7, 77));
-            addSlot(new SlotItemHandler(buffer.exampleInventory(), 0, 7, 100));
+            addSlot(new SlotItemHandler(buffer.filterInventory(), 0, 7, 83));
+            addSlot(new SlotItemHandler(buffer.exampleInventory(), 0, 7, 106));
         }
         addPlayerInventory(playerInventory);
         addDataSlots(data);

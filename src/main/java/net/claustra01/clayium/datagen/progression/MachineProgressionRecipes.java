@@ -153,8 +153,15 @@ public final class MachineProgressionRecipes {
         for (String row : rows) {
             builder.pattern(row);
         }
+        char unlock = switch (path) {
+            case "progression/forming/clay_bending_machine",
+                    "progression/forming/lathe_tier_1",
+                    "progression/forming/pipe_drawing_machine_tier_1" -> '-';
+            case "progression/material/dense_clay_gear" -> 'o';
+            default -> '#';
+        };
         builder.unlockedBy("has_material", InventoryChangeTrigger.TriggerInstance.hasItems(
-                        ingredients.values().iterator().next()))
+                        ingredients.get(unlock)))
                 .save(output, ClayiumMod.id(path));
     }
 

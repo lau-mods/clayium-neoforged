@@ -49,7 +49,8 @@ public class PanBlock extends BaseEntityBlock {
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return kind == Kind.CORE || kind == Kind.DUPLICATOR ? new PanBlockEntity(pos, state) : null;
+        return kind == Kind.CORE || kind == Kind.ADAPTER || kind == Kind.DUPLICATOR
+                ? new PanBlockEntity(pos, state) : null;
     }
 
     @Nullable

@@ -3,9 +3,7 @@ package net.claustra01.clayium.client.screen.fluid;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.client.screen.logistics.LogisticsBackground;
-import net.claustra01.clayium.fluid.FluidTransportBlockEntity;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.fluid.FluidTransportControlPayload;
 import net.claustra01.clayium.fluid.FluidTransportMenu;
 import net.minecraft.client.Minecraft;
@@ -14,7 +12,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -22,8 +19,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class FluidTransportScreen extends AbstractContainerScreen<FluidTransportMenu> {
-    private static final ResourceLocation PLAYER_INVENTORY = ClayiumMod.id("textures/gui/gui_playerinventory.png");
-    private static final ResourceLocation SLOT = ClayiumMod.id("textures/gui/slot.png");
 
     private final Map<Direction, Button> faceButtons = new EnumMap<>(Direction.class);
     private Button redstoneButton;
@@ -32,7 +27,7 @@ public final class FluidTransportScreen extends AbstractContainerScreen<FluidTra
     public FluidTransportScreen(FluidTransportMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 194;
+        imageHeight = 201;
         inventoryLabelX = 8;
         inventoryLabelY = 104;
     }
@@ -55,10 +50,10 @@ public final class FluidTransportScreen extends AbstractContainerScreen<FluidTra
                 .bounds(leftPos + 116, topPos + 35, 53, 16).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.clayium.fluid.filter.set"), pressed -> send(
                         FluidTransportControlPayload.FILTER_CURRENT, 0))
-                .bounds(leftPos + 106, topPos + 73, 30, 14).build());
+                .bounds(leftPos + 98, topPos + 73, 36, 14).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.clayium.fluid.filter.clear"), pressed -> send(
                         FluidTransportControlPayload.FILTER_CLEAR, 0))
-                .bounds(leftPos + 138, topPos + 73, 31, 14).build());
+                .bounds(leftPos + 136, topPos + 73, 34, 14).build());
     }
 
     @Override
@@ -79,9 +74,9 @@ public final class FluidTransportScreen extends AbstractContainerScreen<FluidTra
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 104, 0, 0, 176, 86);
-        graphics.blit(SLOT, leftPos + 151, topPos + 53, 0, 0, 18, 18);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 104, 0, 0, 176, 86);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 151, topPos + 53, 0, 0, 18, 18);
         drawTank(graphics, menu.fluid());
     }
 

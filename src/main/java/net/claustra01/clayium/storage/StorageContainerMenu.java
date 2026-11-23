@@ -25,7 +25,7 @@ public final class StorageContainerMenu extends AbstractContainerMenu {
         this.storage = storage;
         this.pos = storage.getBlockPos();
         this.data = data;
-        addSlot(new ContainerInputSlot(storage.itemHandler(), 80, 35, playerInventory.player.level().isClientSide));
+        addSlot(new ContainerInputSlot(storage.itemHandler(), 44, 35, playerInventory.player.level().isClientSide));
         addPlayerInventory(playerInventory, 8, 84);
         addDataSlots(data);
     }

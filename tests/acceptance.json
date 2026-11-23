@@ -1,6 +1,36 @@
 {
   "gameTests": [
     {
+      "acId": "AC-F046-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "legacymenusexposeoriginalslotrelationships"
+    },
+    {
+      "acId": "AC-F046-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "panviewstateandprohibitionsurvivesave"
+    },
+    {
+      "acId": "AC-F046-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "prohibitedpansamplestopsconnectedduplicatoruntilpermitted"
+    },
+    {
+      "acId": "AC-F046-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "guipayloadsrejectwrongmenupositiondistanceandvalues"
+    },
+    {
+      "acId": "AC-F046-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalguipnghashesremainunmodified"
+    },
+    {
       "acId": "AC-F045-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -902,6 +932,22 @@
     }
   ],
   "e2e": [
+    {
+      "acId": "AC-F046-001",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F046-002",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F046-003",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F046-004",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
     {
       "acId": "AC-F045-001",
       "scenario": "tests/e2e/original-behaviors.mjs"

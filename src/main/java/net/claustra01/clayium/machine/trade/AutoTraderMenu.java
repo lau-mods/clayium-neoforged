@@ -37,10 +37,10 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
         this.pos = autoTrader == null ? BlockPos.ZERO : autoTrader.getBlockPos();
         this.viewer = inventory.player instanceof ServerPlayer serverPlayer ? serverPlayer : null;
         if (autoTrader != null) {
-            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.INPUT_A_SLOT, 44, 27));
-            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.INPUT_B_SLOT, 44, 49));
-            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.OUTPUT_SLOT, 116, 38));
-            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.FUEL_SLOT, 129, 77));
+            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.INPUT_A_SLOT, 36, 53));
+            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.INPUT_B_SLOT, 62, 53));
+            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.OUTPUT_SLOT, 120, 53));
+            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.FUEL_SLOT, 8, 53));
         }
         addPlayerInventory(inventory);
 
@@ -54,11 +54,11 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory inventory) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 140 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 116 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 198));
+            addSlot(new Slot(inventory, column, 8 + column * 18, 174));
         }
     }
 

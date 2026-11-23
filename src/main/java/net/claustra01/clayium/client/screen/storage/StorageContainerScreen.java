@@ -1,17 +1,13 @@
 package net.claustra01.clayium.client.screen.storage;
 
-import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.client.screen.logistics.LogisticsBackground;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.storage.StorageContainerMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class StorageContainerScreen extends AbstractContainerScreen<StorageContainerMenu> {
-    private static final ResourceLocation SLOT = ClayiumMod.id("textures/gui/slot.png");
-    private static final ResourceLocation PLAYER_INVENTORY = ClayiumMod.id("textures/gui/gui_playerinventory.png");
 
     public StorageContainerScreen(StorageContainerMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -23,9 +19,9 @@ public final class StorageContainerScreen extends AbstractContainerScreen<Storag
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(SLOT, leftPos + 79, topPos + 34, 0, 0, 18, 18);
-        graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 76, 0, 0, 176, 86);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 43, topPos + 34, 0, 0, 18, 18);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 76, 0, 0, 176, 86);
     }
 
     @Override

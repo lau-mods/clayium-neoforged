@@ -1,31 +1,27 @@
 package net.claustra01.clayium.client.screen.autocrafter;
 
 import java.util.Locale;
-import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.client.screen.logistics.LogisticsBackground;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.machine.autocrafter.AutoCrafterMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class AutoCrafterScreen extends AbstractContainerScreen<AutoCrafterMenu> {
-    private static final ResourceLocation PLAYER_INVENTORY = ClayiumMod.id("textures/gui/gui_playerinventory.png");
-    private static final ResourceLocation SLOT = ClayiumMod.id("textures/gui/slot.png");
 
     public AutoCrafterScreen(AutoCrafterMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 230;
-        imageHeight = 220;
+        imageHeight = 226;
         inventoryLabelX = 34;
         inventoryLabelY = 128;
     }
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(PLAYER_INVENTORY, leftPos + 26, topPos + 130, 0, 0, 176, 86);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos + 26, topPos + 130, 0, 0, 176, 86);
         slots(graphics, 7, 33, 3, 3);
         slots(graphics, 106, 33, 3, 3);
         slots(graphics, 173, 33, 2, 3);
@@ -44,7 +40,7 @@ public final class AutoCrafterScreen extends AbstractContainerScreen<AutoCrafter
     }
 
     private void slot(GuiGraphics graphics, int x, int y) {
-        graphics.blit(SLOT, leftPos + x, topPos + y, 0, 0, 18, 18);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + x, topPos + y, 0, 0, 18, 18);
     }
 
     @Override

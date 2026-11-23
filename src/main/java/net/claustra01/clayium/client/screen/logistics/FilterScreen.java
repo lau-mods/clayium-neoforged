@@ -1,19 +1,16 @@
 package net.claustra01.clayium.client.screen.logistics;
 
-import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.logistics.filter.FilterControlPayload;
 import net.claustra01.clayium.logistics.filter.FilterMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class FilterScreen extends AbstractContainerScreen<FilterMenu> {
-    private static final ResourceLocation INVENTORY = ClayiumMod.id("textures/gui/gui_playerinventory.png");
-    private static final ResourceLocation SLOT = ClayiumMod.id("textures/gui/slot.png");
     private Button mode;
     private Button type;
 
@@ -61,9 +58,10 @@ public final class FilterScreen extends AbstractContainerScreen<FilterMenu> {
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(INVENTORY, leftPos, topPos + 110, 0, 0, 176, 90);
-        graphics.blit(SLOT, leftPos + 7, topPos + 76, 0, 0, 18, 18);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 110,
+                0, 0, 176, 90, 256, 256);
+        LegacyGuiGraphics.slot(graphics, leftPos + 8, topPos + 77);
     }
 
     @Override

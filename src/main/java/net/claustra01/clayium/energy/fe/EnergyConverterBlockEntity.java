@@ -12,6 +12,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +30,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class EnergyConverterBlockEntity extends BlockEntity {
+public final class EnergyConverterBlockEntity extends BlockEntity implements MenuProvider {
     private final ClayEnergyStorage clayEnergy = new ClayEnergyStorage();
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
@@ -48,6 +54,43 @@ public final class EnergyConverterBlockEntity extends BlockEntity {
     private int outputThisTick;
     private long outputGameTime = Long.MIN_VALUE;
     private double overclockFactor = 1.0D;
+    private final ContainerData menuData = new ContainerData() {
+        @Override
+        public int get(int index) {
+            long ce = clayEnergy.stored().internalValue();
+            return switch (index) {
+                case 0, 1, 2, 3 -> (int)(ce >>> (index * 16) & 0xFFFFL);
+                case 4 -> storedFe & 0xFFFF;
+                case 5 -> storedFe >>> 16;
+                case 6 -> specification().generatedFe(overclockFactor) & 0xFFFF;
+                case 7 -> specification().generatedFe(overclockFactor) >>> 16;
+                case 8 -> specification().outputLimit(overclockFactor) & 0xFFFF;
+                case 9 -> specification().outputLimit(overclockFactor) >>> 16;
+                case 10 -> specification().capacity() & 0xFFFF;
+                case 11 -> specification().capacity() >>> 16;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int getCount() {
+            return 12;
+        }
+    };
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+        return new EnergyConverterMenu(id, inventory, this, menuData);
+    }
 
     public EnergyConverterBlockEntity(BlockPos pos, BlockState state) {
         super(EnergyConverterRegistration.BLOCK_ENTITY.get(), pos, state);

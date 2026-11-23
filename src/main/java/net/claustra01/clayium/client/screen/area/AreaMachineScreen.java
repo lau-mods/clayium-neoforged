@@ -1,6 +1,6 @@
 package net.claustra01.clayium.client.screen.area;
 
-import net.claustra01.clayium.client.screen.logistics.LogisticsBackground;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.world.area.AreaMachineMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -19,8 +19,8 @@ public final class AreaMachineScreen extends AbstractContainerScreen<AreaMachine
     public AreaMachineScreen(AreaMachineMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 230;
-        imageHeight = 182;
-        inventoryLabelY = 88;
+        imageHeight = 215;
+        inventoryLabelY = 121;
     }
 
     @Override
@@ -73,16 +73,40 @@ public final class AreaMachineScreen extends AbstractContainerScreen<AreaMachine
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         for (Slot slot : menu.slots) {
             int x = slot.x;
             int y = slot.y;
-            graphics.fill(leftPos + x - 1, topPos + y - 1, leftPos + x + 17, topPos + y + 17, 0xFF555555);
-            graphics.fill(leftPos + x, topPos + y, leftPos + x + 16, topPos + y + 16, 0xFFAAAAAA);
+            LegacyGuiGraphics.slot(graphics, leftPos + x, topPos + y);
         }
+        LegacyGuiGraphics.progress(graphics, leftPos + 180, topPos + 136,
+                menu.progress(), menu.requiredProgress());
         graphics.drawString(font, "H", leftPos + 13, topPos + 78, 0x404040, false);
         graphics.drawString(font, "F", leftPos + 31, topPos + 78, 0x404040, false);
         graphics.drawString(font, "S", leftPos + 49, topPos + 78, 0x404040, false);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawString(font, title, 7, 7, 0x404040, false);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+        int statusY = menu.isActivator() ? 99 : 27;
+        drawFitted(graphics, menu.status().name(), statusY);
+        drawFitted(graphics, String.format(java.util.Locale.ROOT, "%.3f CE", menu.storedEnergy() / 100_000.0D),
+                statusY + 11);
+        drawFitted(graphics, menu.progress() + "/" + menu.requiredProgress(), statusY + 22);
+        if (!menu.isActivator()) {
+            drawFitted(graphics, "Mode: " + menu.machineType().name(), 60);
+        }
+    }
+
+    private void drawFitted(GuiGraphics graphics, String value, int y) {
+        float scale = Math.min(1.0F, 95.0F / Math.max(1, font.width(value)));
+        graphics.pose().pushPose();
+        graphics.pose().translate(128, y, 0);
+        graphics.pose().scale(scale, scale, 1.0F);
+        graphics.drawString(font, value, 0, 0, 0x404040, false);
+        graphics.pose().popPose();
     }
 
     @Override

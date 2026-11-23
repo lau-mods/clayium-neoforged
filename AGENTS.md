@@ -425,6 +425,14 @@ GameTest は `allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePath
 
 GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndActivatorPreservePriorityProtectionAndInteraction`、`laserTransmitsConvertsAccumulatesAndHonorsProtection`、`crucibleAndFilterCopiesConsumeValidateAndPersistExactly`。外観 E2E は `tests/e2e/original-behaviors.mjs`。
 
+## M41 GUI原作同等性
+
+- 原作の20 GUIクラスと移植Screen/Menuの対応は `tests/e2e/gui-parity.json` に記録する。同ファイルは原作GUI PNG 19点のSHA-256も保持する。
+- `LegacyGuiGraphics` は原作 `GuiTemp` の4px九分割背景、スロット、プレイヤー在庫、24x16進捗バーを描画する。文字ボタンはバニラのウィジェットスプライトを使い、16pxアイコンアトラスの `button.png` を文字ボタンへ引き伸ばさない。
+- PANコアの候補一覧は6件単位のサーバー権威スナップショットで同期する。ID・原価・必要CEの並べ替え、逆順、ページ、選択、詳細、禁止指定を扱い、状態はコアNBTに保存する。禁止候補は複製機の処理対象外とする。
+- PANコアは原作の176×238画面とプレイヤー在庫Y=156を使用する。PANアダプターは176×190のステータス画面を開き、原作のレシピ格子との差分は表示台帳に記録する。
+- PAN操作Payloadは開いているMenu、BlockPos、距離、装置種別、actionと値域を検証する。GameTestはスロット配置、PAN状態保存、Payload拒否、PNGハッシュを検査し、E2Eは `tests/e2e/gui-parity.mjs` で代表画面と状態を撮影する。
+
 ## M42 ワールド描画
 
 - PANケーブルだけが `down/up/north/south/west/east` の6接続BlockStateを持ち、設置時と隣接Block更新時にPANブロックへの接続を計算する。コア・アダプター・複製機には接続プロパティを持たせない。インターフェースの `linked` は同期・切断時に変更し、範囲機械の `active` は所有者・次元・CEを満たして稼働可能な間維持する。

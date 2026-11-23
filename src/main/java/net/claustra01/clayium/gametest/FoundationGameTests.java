@@ -1,5 +1,7 @@
 package net.claustra01.clayium.gametest;
 
+import net.claustra01.clayium.datagen.waterwheel.WaterWheelLanguageEntries;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
@@ -355,6 +357,9 @@ public final class FoundationGameTests {
             var energyConverters = new HashMap<String, String>();
             EnergyConverterLanguageEntries.add(locale, energyConverters::put);
             expectedKeys.addAll(energyConverters.keySet());
+            var waterWheels = new HashMap<String, String>();
+            WaterWheelLanguageEntries.add(locale, waterWheels::put);
+            expectedKeys.addAll(waterWheels.keySet());
             var storage = new HashMap<String, String>();
             StorageLanguageEntries.add(locale, storage::put);
             expectedKeys.addAll(storage.keySet());

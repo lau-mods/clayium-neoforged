@@ -1,7 +1,11 @@
 package net.claustra01.clayium.pan;
 
+import java.util.List;
+import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.PanRegistration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -11,15 +15,24 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class PanMenu extends AbstractContainerMenu {
     private final PanBlockEntity pan;
     private final BlockPos position;
     private final ContainerData data;
     private final int machineSlots;
+    private final ServerPlayer viewer;
+    private List<PanScreenPayloads.Candidate> visibleCandidates = List.of();
+    private int candidatePage;
+    private int candidatePages = 1;
+    private int candidateSort;
+    private boolean candidateReverse;
+    private ResourceLocation selectedCandidate = ClayiumMod.id("none");
+    private long lastSnapshotHash = Long.MIN_VALUE;
 
     public PanMenu(int containerId, Inventory inventory, BlockPos position) {
-        this(containerId, inventory, panAt(inventory, position), new SimpleContainerData(14));
+        this(containerId, inventory, panAt(inventory, position), new SimpleContainerData(12));
     }
 
     public PanMenu(int containerId, Inventory inventory, PanBlockEntity pan, ContainerData data) {
@@ -27,6 +40,7 @@ public final class PanMenu extends AbstractContainerMenu {
         this.pan = pan;
         this.position = pan.getBlockPos();
         this.data = data;
+        viewer = inventory.player instanceof ServerPlayer serverPlayer ? serverPlayer : null;
         if (pan.kind() == PanBlock.Kind.DUPLICATOR) {
             addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.SAMPLE_SLOT, 35, 35));
             addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.ANTIMATTER_SLOT, 35, 57));
@@ -34,13 +48,20 @@ public final class PanMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.FUEL_SLOT, 35, 79));
         }
         machineSlots = slots.size();
+        int playerInventoryY = switch (pan.kind()) {
+            case CORE -> 156;
+            case ADAPTER -> 108;
+            case DUPLICATOR -> 119;
+            case CABLE -> 105;
+        };
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 105 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9,
+                        8 + column * 18, playerInventoryY + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 163));
+            addSlot(new Slot(inventory, column, 8 + column * 18, playerInventoryY + 58));
         }
         addDataSlots(data);
     }
@@ -90,6 +111,32 @@ public final class PanMenu extends AbstractContainerMenu {
                         position.getZ() + 0.5D) <= 64.0D;
     }
 
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+        if (viewer == null || pan.kind() != PanBlock.Kind.CORE) {
+            return;
+        }
+        PanScreenPayloads.Snapshot snapshot = PanScreenPayloads.snapshot(this);
+        long hash = snapshot.contentHash();
+        if (hash != lastSnapshotHash) {
+            lastSnapshotHash = hash;
+            PacketDistributor.sendToPlayer(viewer, snapshot);
+        }
+    }
+
+    public void applySnapshot(PanScreenPayloads.Snapshot snapshot) {
+        if (snapshot.containerId() != containerId) {
+            return;
+        }
+        candidatePage = snapshot.page();
+        candidatePages = snapshot.pages();
+        candidateSort = snapshot.sort();
+        candidateReverse = snapshot.reverse();
+        selectedCandidate = snapshot.selected();
+        visibleCandidates = snapshot.candidates();
+    }
+
     public long progress() {
         return read(0, 2);
     }
@@ -102,28 +149,57 @@ public final class PanMenu extends AbstractContainerMenu {
         return read(4, 4);
     }
 
-    public int candidates() {
+    public int nodes() {
         return data.get(8);
     }
 
-    public int nodes() {
+    public int adapters() {
         return data.get(9);
     }
 
-    public int adapters() {
-        return data.get(10);
-    }
-
     public PanBlock.Kind kind() {
-        return PanBlock.Kind.values()[data.get(11)];
+        return pan.kind();
     }
 
     public int tier() {
-        return data.get(12);
+        return data.get(10);
     }
 
     public boolean sampleReachable() {
-        return data.get(13) != 0;
+        return data.get(11) != 0;
+    }
+
+    public PanBlockEntity pan() {
+        return pan;
+    }
+
+    public BlockPos position() {
+        return position;
+    }
+
+    public List<PanScreenPayloads.Candidate> visibleCandidates() {
+        return viewer == null ? visibleCandidates : pan.visibleCandidates();
+    }
+
+    public int candidatePage() {
+        return viewer == null ? candidatePage : pan.candidatePage();
+    }
+
+    public int candidatePages() {
+        return viewer == null ? candidatePages : pan.candidatePages();
+    }
+
+    public int candidateSort() {
+        return viewer == null ? candidateSort : pan.candidateSort();
+    }
+
+    public boolean candidateReverse() {
+        return viewer == null ? candidateReverse : pan.candidateReverse();
+    }
+
+    public ResourceLocation selectedCandidate() {
+        return viewer == null ? selectedCandidate
+                : pan.selectedCandidate() == null ? ClayiumMod.id("none") : pan.selectedCandidate();
     }
 
     private long read(int start, int length) {

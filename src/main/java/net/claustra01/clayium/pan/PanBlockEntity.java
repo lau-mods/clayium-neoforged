@@ -1,5 +1,8 @@
 package net.claustra01.clayium.pan;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -16,6 +19,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -37,6 +43,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class PanBlockEntity extends BlockEntity implements MenuProvider {
+    public static final int CANDIDATES_PER_PAGE = 6;
     public static final int SAMPLE_SLOT = 0;
     public static final int ANTIMATTER_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
@@ -83,6 +90,12 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
     private long lastScanTick = Long.MIN_VALUE;
     private int nodeCount;
     private int adapterCount;
+    private final Set<ResourceLocation> prohibited = new HashSet<>();
+    private int candidateSort;
+    private boolean candidateReverse;
+    private int candidatePage;
+    private ResourceLocation selectedCandidate;
+    private List<PanScreenPayloads.Candidate> sortedCandidates;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -96,14 +109,11 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
                 case 5 -> (int)((requiredEnergy >>> 16) & 0xFFFFL);
                 case 6 -> (int)((requiredEnergy >>> 32) & 0xFFFFL);
                 case 7 -> (int)((requiredEnergy >>> 48) & 0xFFFFL);
-                case 8 -> kind() == PanBlock.Kind.DUPLICATOR && connectedCore() != null
-                        ? connectedCore().closure.costs().size() : closure.costs().size();
-                case 9 -> nodeCount;
-                case 10 -> adapterCount;
-                case 11 -> kind().ordinal();
-                case 12 -> tier();
-                case 13 -> connectedCore() != null && connectedCore().closure.consumption(
-                        inventory.getStackInSlot(SAMPLE_SLOT)) > 0L ? 1 : 0;
+                case 8 -> nodeCount;
+                case 9 -> adapterCount;
+                case 10 -> tier();
+                case 11 -> connectedCore() != null && !connectedCore().isProhibited(inventory.getStackInSlot(SAMPLE_SLOT))
+                        && connectedCore().closure.consumption(inventory.getStackInSlot(SAMPLE_SLOT)) > 0L ? 1 : 0;
                 default -> 0;
             };
         }
@@ -114,7 +124,7 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 14;
+            return 12;
         }
     };
 
@@ -145,6 +155,8 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         if (kind() == PanBlock.Kind.CORE && closureCalculation != null
                 && closureCalculation.advance(PanNetwork.NODES_PER_TICK)) {
             closure = closureCalculation.result();
+            sortedCandidates = null;
+            clampCandidatePage();
             closureCalculation = null;
             closureReady = true;
             setChanged();
@@ -197,7 +209,8 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
     private void tickDuplicator() {
         ItemStack sample = inventory.getStackInSlot(SAMPLE_SLOT);
         PanBlockEntity core = connectedCore();
-        long consumption = core == null || !core.closureReady ? 0L : core.closure.consumption(sample);
+        long consumption = core == null || !core.closureReady || core.isProhibited(sample)
+                ? 0L : core.closure.consumption(sample);
         ResourceLocation sampleId = sample.isEmpty() ? null : BuiltInRegistries.ITEM.getKey(sample.getItem());
         if (!java.util.Objects.equals(activeSample, sampleId)
                 || core != null && core.closureReady && activeConsumption != consumption) {
@@ -278,6 +291,105 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         return closure;
     }
 
+    public List<PanScreenPayloads.Candidate> visibleCandidates() {
+        List<PanScreenPayloads.Candidate> candidates = sortedCandidates();
+        int start = Math.min(candidates.size(), candidatePage * CANDIDATES_PER_PAGE);
+        return List.copyOf(candidates.subList(start,
+                Math.min(candidates.size(), start + CANDIDATES_PER_PAGE)));
+    }
+
+    private List<PanScreenPayloads.Candidate> sortedCandidates() {
+        if (sortedCandidates != null) {
+            return sortedCandidates;
+        }
+        List<PanScreenPayloads.Candidate> candidates = new ArrayList<>();
+        closure.costs().forEach((item, cost) -> candidates.add(new PanScreenPayloads.Candidate(
+                item, cost, closure.consumption().getOrDefault(item, cost), prohibited.contains(item))));
+        Comparator<PanScreenPayloads.Candidate> comparator = switch (candidateSort) {
+            case 1 -> Comparator.comparingLong(PanScreenPayloads.Candidate::cost)
+                    .thenComparing(candidate -> candidate.item().toString());
+            case 2 -> Comparator.comparingLong(PanScreenPayloads.Candidate::consumption)
+                    .thenComparing(candidate -> candidate.item().toString());
+            default -> Comparator.comparing(candidate -> candidate.item().toString());
+        };
+        candidates.sort(candidateReverse ? comparator.reversed() : comparator);
+        sortedCandidates = List.copyOf(candidates);
+        return sortedCandidates;
+    }
+
+    private void clampCandidatePage() {
+        int clamped = Math.clamp(candidatePage, 0, candidatePages() - 1);
+        if (candidatePage != clamped) {
+            candidatePage = clamped;
+            setChanged();
+        }
+    }
+
+    public int candidatePages() {
+        return Math.max(1, (closure.costs().size() + CANDIDATES_PER_PAGE - 1) / CANDIDATES_PER_PAGE);
+    }
+
+    public int candidateSort() {
+        return candidateSort;
+    }
+
+    public boolean candidateReverse() {
+        return candidateReverse;
+    }
+
+    public int candidatePage() {
+        return candidatePage;
+    }
+
+    @Nullable
+    public ResourceLocation selectedCandidate() {
+        return selectedCandidate;
+    }
+
+    public boolean isProhibited(ItemStack stack) {
+        return !stack.isEmpty() && prohibited.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+    }
+
+    public boolean isProhibited(ResourceLocation item) {
+        return prohibited.contains(item);
+    }
+
+    public void applyScreenControl(int action, int value) {
+        if (kind() != PanBlock.Kind.CORE) {
+            return;
+        }
+        switch (action) {
+            case PanScreenPayloads.SORT -> {
+                candidateSort = Math.clamp(value, 0, 2);
+                sortedCandidates = null;
+            }
+            case PanScreenPayloads.REVERSE -> {
+                candidateReverse = !candidateReverse;
+                sortedCandidates = null;
+            }
+            case PanScreenPayloads.PAGE -> candidatePage = Math.clamp(value, 0, candidatePages() - 1);
+            case PanScreenPayloads.SELECT -> {
+                List<PanScreenPayloads.Candidate> page = visibleCandidates();
+                if (value >= 0 && value < page.size()) {
+                    selectedCandidate = page.get(value).item();
+                }
+            }
+            case PanScreenPayloads.TOGGLE_PROHIBITED -> {
+                if (selectedCandidate != null && closure.costs().containsKey(selectedCandidate)) {
+                    if (!prohibited.remove(selectedCandidate)) {
+                        prohibited.add(selectedCandidate);
+                    }
+                    sortedCandidates = null;
+                }
+            }
+            default -> {
+                return;
+            }
+        }
+        clampCandidatePage();
+        setChanged();
+    }
+
     public int nodeCount() {
         return nodeCount;
     }
@@ -326,6 +438,16 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("energy", energy.serializeNBT(registries));
         tag.putLong("progress", progress);
         tag.putLong("active_consumption", activeConsumption);
+        tag.putInt("candidate_sort", candidateSort);
+        tag.putBoolean("candidate_reverse", candidateReverse);
+        tag.putInt("candidate_page", candidatePage);
+        if (selectedCandidate != null) {
+            tag.putString("selected_candidate", selectedCandidate.toString());
+        }
+        ListTag prohibitedItems = new ListTag();
+        prohibited.stream().map(ResourceLocation::toString).sorted()
+                .forEach(id -> prohibitedItems.add(StringTag.valueOf(id)));
+        tag.put("prohibited", prohibitedItems);
     }
 
     @Override
@@ -341,6 +463,18 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         activeSample = inventory.getStackInSlot(SAMPLE_SLOT).isEmpty() ? null
                 : BuiltInRegistries.ITEM.getKey(inventory.getStackInSlot(SAMPLE_SLOT).getItem());
         activeConsumption = Math.max(0L, tag.getLong("active_consumption"));
+        candidateSort = Math.clamp(tag.getInt("candidate_sort"), 0, 2);
+        candidateReverse = tag.getBoolean("candidate_reverse");
+        candidatePage = Math.max(0, tag.getInt("candidate_page"));
+        selectedCandidate = ResourceLocation.tryParse(tag.getString("selected_candidate"));
+        prohibited.clear();
+        ListTag prohibitedItems = tag.getList("prohibited", Tag.TAG_STRING);
+        for (int index = 0; index < prohibitedItems.size(); index++) {
+            ResourceLocation item = ResourceLocation.tryParse(prohibitedItems.getString(index));
+            if (item != null) {
+                prohibited.add(item);
+            }
+        }
         knownNetworkVersion = -1L;
         knownRecipeVersion = -1L;
         knownAdapters = Set.of();
@@ -351,5 +485,6 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         adapterCount = 0;
         closureReady = false;
         closure = new PanRecipeClosure.Result(Map.of(), Map.of());
+        sortedCandidates = null;
     }
 }

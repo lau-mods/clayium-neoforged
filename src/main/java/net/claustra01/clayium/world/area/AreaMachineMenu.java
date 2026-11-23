@@ -26,18 +26,23 @@ public final class AreaMachineMenu extends AbstractContainerMenu {
         super(AreaMachineRegistration.MENU.get(), containerId);
         this.machine = machine;
         position = machine == null ? BlockPos.ZERO : machine.getBlockPos();
-        activatorData = playerInventory.player.level().isClientSide ? new SimpleContainerData(3) : new ContainerData() {
+        activatorData = playerInventory.player.level().isClientSide ? new SimpleContainerData(12) : new ContainerData() {
             @Override public int get(int index) {
                 if (AreaMachineMenu.this.machine == null) return 0;
                 return switch (index) {
                     case 0 -> AreaMachineMenu.this.machine.activatorTarget().ordinal();
                     case 1 -> AreaMachineMenu.this.machine.activatorRayTrace() ? 1 : 0;
                     case 2 -> AreaMachineMenu.this.machine.activatorSneaking() ? 1 : 0;
+                    case 3 -> AreaMachineMenu.this.machine.status().ordinal();
+                    case 4, 5, 6, 7 -> (int)(AreaMachineMenu.this.machine.storedEnergy()
+                            >>> ((index - 4) * 16)) & 0xFFFF;
+                    case 8, 9, 10, 11 -> (int)(AreaMachineMenu.this.machine.progress()
+                            >>> ((index - 8) * 16)) & 0xFFFF;
                     default -> 0;
                 };
             }
             @Override public void set(int index, int value) { }
-            @Override public int getCount() { return 3; }
+            @Override public int getCount() { return 12; }
         };
         addDataSlots(activatorData);
         if (machine != null) {
@@ -58,11 +63,11 @@ public final class AreaMachineMenu extends AbstractContainerMenu {
         }
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(playerInventory, 9 + row * 9 + column, 8 + column * 18, 100 + row * 18));
+                addSlot(new Slot(playerInventory, 9 + row * 9 + column, 8 + column * 18, 133 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(playerInventory, column, 8 + column * 18, 158));
+            addSlot(new Slot(playerInventory, column, 8 + column * 18, 191));
         }
     }
 
@@ -115,6 +120,34 @@ public final class AreaMachineMenu extends AbstractContainerMenu {
 
     public boolean activatorSneaking() {
         return activatorData.get(2) != 0;
+    }
+
+    public AreaMachineBlockEntity.OperationStatus status() {
+        return AreaMachineBlockEntity.OperationStatus.values()[activatorData.get(3)];
+    }
+
+    public long storedEnergy() {
+        return readLong(4);
+    }
+
+    public long progress() {
+        return readLong(8);
+    }
+
+    private long readLong(int start) {
+        long value = 0L;
+        for (int index = 0; index < 4; index++) {
+            value |= (long)(activatorData.get(start + index) & 0xFFFF) << (index * 16);
+        }
+        return value;
+    }
+
+    public int requiredProgress() {
+        return machine == null ? 1 : machine.machineType().progressPerJob();
+    }
+
+    public AreaMachineType machineType() {
+        return machine == null ? AreaMachineType.MINER : machine.machineType();
     }
 
     @Override

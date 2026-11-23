@@ -2,7 +2,7 @@ package net.claustra01.clayium.client.screen.chunkloader;
 
 import java.util.List;
 import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.client.screen.logistics.LogisticsBackground;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderBlockEntity;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,7 +20,7 @@ public final class ChunkLoaderScreen extends AbstractContainerScreen<ChunkLoader
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         graphics.blit(
                 ClayiumMod.id("textures/block/machinehull-5.png"),
                 leftPos + 12, topPos + 30, 32, 32, 0, 0, 16, 16, 16, 16);

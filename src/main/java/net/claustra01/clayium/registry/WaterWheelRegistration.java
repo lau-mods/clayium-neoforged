@@ -4,6 +4,9 @@ import java.util.List;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.machine.waterwheel.WaterWheelBlock;
 import net.claustra01.clayium.machine.waterwheel.WaterWheelBlockEntity;
+import net.claustra01.clayium.machine.waterwheel.WaterWheelMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -30,6 +33,11 @@ public final class WaterWheelRegistration {
                                     BLOCKS.stream().map(DeferredBlock::get)
                                             .toArray(net.minecraft.world.level.block.Block[]::new))
                             .build(null));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<WaterWheelMenu>> MENU =
+            ClayiumRegistries.MENU_TYPES.register("water_wheel",
+                    () -> IMenuTypeExtension.create((id, inventory, data) ->
+                            new WaterWheelMenu(id, inventory, data.readBlockPos())));
 
     private static WaterWheelDefinition register(String id, int tier) {
         DeferredBlock<WaterWheelBlock> block = ClayiumRegistries.BLOCKS.register(

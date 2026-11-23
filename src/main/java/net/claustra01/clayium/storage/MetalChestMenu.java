@@ -25,17 +25,18 @@ public final class MetalChestMenu extends AbstractContainerMenu {
         pos = chest.getBlockPos();
         type = chest.type();
         chest.startOpen(playerInventory.player);
-        int storageX = (imageWidth() - type.columns() * 18) / 2;
+        int storageX = (imageWidth() - type.columns() * 18) / 2 + 1;
+        int storageY = 18;
         for (int index = 0; index < type.slots(); index++) {
             int slotPage = index / type.pageSize();
             int slotIndex = index % type.pageSize();
             addSlot(new SlotItemHandler(chest.inventory(), index,
-                    storageX + slotIndex % type.columns() * 18, 18 + slotIndex / type.columns() * 18) {
+                    storageX + slotIndex % type.columns() * 18, storageY + slotIndex / type.columns() * 18) {
                 @Override public boolean isActive() { return page == slotPage; }
             });
         }
-        int playerX = (imageWidth() - 162) / 2;
-        int playerY = 18 + type.rows() * 18 + 14;
+        int playerX = (imageWidth() - 176) / 2 + 8;
+        int playerY = imageHeight() - 82;
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 addSlot(new Slot(playerInventory, column + row * 9 + 9,
@@ -52,11 +53,11 @@ public final class MetalChestMenu extends AbstractContainerMenu {
     }
 
     public int imageWidth() {
-        return Math.max(176, type.columns() * 18 + 16);
+        return 176 + Math.max(0, type.columns() - 9) * 18 + (type.rows() > 6 ? 8 : 0);
     }
 
     public int imageHeight() {
-        return 18 + type.rows() * 18 + 14 + 76 + 7;
+        return type.rows() * 18 + 112;
     }
 
     public MetalChestType type() {

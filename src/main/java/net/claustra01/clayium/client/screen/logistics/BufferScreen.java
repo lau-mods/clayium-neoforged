@@ -1,10 +1,9 @@
 package net.claustra01.clayium.client.screen.logistics;
 
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import java.util.EnumMap;
 import java.util.Map;
-import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.energy.TierManager;
-import net.claustra01.clayium.logistics.BufferBlockEntity;
 import net.claustra01.clayium.logistics.BufferControlPayload;
 import net.claustra01.clayium.logistics.BufferMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,13 +11,10 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
-    private static final ResourceLocation PLAYER_INVENTORY = ClayiumMod.id("textures/gui/gui_playerinventory.png");
-    private static final ResourceLocation SLOT = ClayiumMod.id("textures/gui/slot.png");
 
     private final Map<Direction, Button> faceButtons = new EnumMap<>(Direction.class);
     private Button redstoneButton;
@@ -31,7 +27,7 @@ public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
     public BufferScreen(BufferMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 220;
-        imageHeight = 220;
+        imageHeight = 226;
         inventoryLabelX = 29;
         inventoryLabelY = 133;
     }
@@ -113,17 +109,17 @@ public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(PLAYER_INVENTORY, leftPos + 21, topPos + 132, 0, 0, 176, 86);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos + 21, topPos + 132, 0, 0, 176, 86);
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 10; column++) {
                 if (menu.page() * BufferMenu.PAGE_SIZE + row * 10 + column < BufferMenu.STORAGE_SLOTS) {
-                    graphics.blit(SLOT, leftPos + 28 + column * 18, topPos + 68 + row * 18, 0, 0, 18, 18);
+                    graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 28 + column * 18, topPos + 68 + row * 18, 0, 0, 18, 18);
                 }
             }
         }
-        graphics.blit(SLOT, leftPos + 6, topPos + 76, 0, 0, 18, 18);
-        graphics.blit(SLOT, leftPos + 6, topPos + 99, 0, 0, 18, 18);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 6, topPos + 82, 0, 0, 18, 18);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 6, topPos + 105, 0, 0, 18, 18);
     }
 
     @Override
@@ -136,7 +132,7 @@ public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
         Component tier = Component.literal("Tier " + menu.tier());
         graphics.drawString(font, tier, imageWidth - 7 - font.width(tier), 23, 0x404040, false);
         graphics.drawString(font, ruleSummary(), 60, 59, 0x404040, false);
-        graphics.drawString(font, Component.literal("F"), 7, 67, 0x505050, false);
+        graphics.drawString(font, Component.literal("F"), 7, 69, 0x505050, false);
         graphics.drawString(font, Component.literal((menu.page() + 1) + "/4"), 172, 128, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }

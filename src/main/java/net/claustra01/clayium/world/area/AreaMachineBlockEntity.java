@@ -445,6 +445,14 @@ public final class AreaMachineBlockEntity extends BlockEntity implements LaserRe
         return status;
     }
 
+    public long storedEnergy() {
+        return energy.stored().internalValue();
+    }
+
+    public long progress() {
+        return progress;
+    }
+
     public AreaMachineType machineType() {
         return ((AreaMachineBlock)getBlockState().getBlock()).machineType();
     }

@@ -1,7 +1,7 @@
 package net.claustra01.clayium.client.screen.iface;
 
 import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.client.screen.logistics.LogisticsBackground;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.machine.iface.InterfaceBlockEntity;
 import net.claustra01.clayium.machine.iface.InterfaceMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,7 +19,7 @@ public final class InterfaceScreen extends AbstractContainerScreen<InterfaceMenu
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         InterfaceBlockEntity blockEntity = menu.blockEntity();
         if (blockEntity != null) {
             ResourceLocation hull = ClayiumMod.id(

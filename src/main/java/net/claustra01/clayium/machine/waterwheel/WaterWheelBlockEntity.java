@@ -10,16 +10,52 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final class WaterWheelBlockEntity extends BlockEntity {
+public final class WaterWheelBlockEntity extends BlockEntity implements MenuProvider {
     public static final long PROGRESS_LIMIT = 20_000L;
 
     private long progress;
     private int efficiency;
     private int cachedFlowingWater;
     private long nextWaterScan;
+    private final ContainerData menuData = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> (int)progress;
+                case 1 -> efficiency;
+                case 2 -> flowingWaterCount();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    };
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+        return new WaterWheelMenu(id, inventory, this, menuData);
+    }
 
     public WaterWheelBlockEntity(BlockPos pos, BlockState state) {
         super(WaterWheelRegistration.WATER_WHEEL_BLOCK_ENTITY.get(), pos, state);

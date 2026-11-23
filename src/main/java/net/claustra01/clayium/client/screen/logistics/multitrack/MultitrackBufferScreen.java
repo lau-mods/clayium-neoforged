@@ -2,8 +2,7 @@ package net.claustra01.clayium.client.screen.logistics.multitrack;
 
 import java.util.EnumMap;
 import java.util.Map;
-import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.client.screen.logistics.LogisticsBackground;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
 import net.claustra01.clayium.logistics.multitrack.MultitrackBufferBlockEntity;
 import net.claustra01.clayium.logistics.multitrack.MultitrackBufferMenu;
@@ -13,13 +12,10 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class MultitrackBufferScreen extends AbstractContainerScreen<MultitrackBufferMenu> {
-    private static final ResourceLocation PLAYER_INVENTORY = ClayiumMod.id("textures/gui/gui_playerinventory.png");
-    private static final ResourceLocation SLOT = ClayiumMod.id("textures/gui/slot.png");
     private final Map<Direction, Button> faceButtons = new EnumMap<>(Direction.class);
 
     public MultitrackBufferScreen(MultitrackBufferMenu menu, Inventory inventory, Component title) {
@@ -67,11 +63,11 @@ public final class MultitrackBufferScreen extends AbstractContainerScreen<Multit
     }
 
     @Override protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LogisticsBackground.draw(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(PLAYER_INVENTORY, leftPos + 27, topPos + 132, 0, 0, 176, 86);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos + 27, topPos + 132, 0, 0, 176, 86);
         for (int row = 0; row < 3; row++) for (int column = 0; column < 3; column++)
-            graphics.blit(SLOT, leftPos + 61 + column * 18, topPos + 60 + row * 18, 0, 0, 18, 18);
-        graphics.blit(SLOT, leftPos + 125, topPos + 78, 0, 0, 18, 18);
+            graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 61 + column * 18, topPos + 60 + row * 18, 0, 0, 18, 18);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 125, topPos + 78, 0, 0, 18, 18);
         int color = net.minecraft.world.item.DyeColor.byId(menu.selectedTrack()).getTextureDiffuseColor() | 0xFF000000;
         graphics.fill(leftPos + 34, topPos + 24, leftPos + 46, topPos + 35, color);
     }

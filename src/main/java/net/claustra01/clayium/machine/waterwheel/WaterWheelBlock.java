@@ -6,6 +6,10 @@ import net.claustra01.clayium.registry.WaterWheelRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -63,6 +67,16 @@ public final class WaterWheelBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new WaterWheelBlockEntity(pos, state);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hit) {
+        if (player instanceof ServerPlayer serverPlayer
+                && level.getBlockEntity(pos) instanceof WaterWheelBlockEntity wheel) {
+            serverPlayer.openMenu(wheel, pos);
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Nullable

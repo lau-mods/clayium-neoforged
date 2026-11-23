@@ -20,6 +20,10 @@ public final class EnergyConverterLanguageEntries {
         for (int index = 0; index < EnergyConverterSpecification.VALUES.size(); index++) {
             add.accept("block.clayium." + EnergyConverterSpecification.VALUES.get(index).id(), names.get(index));
         }
+        add.accept("gui.clayium.converter.stored_ce", locale.equals("ja_jp") ? "蓄積 %s CE" : "Stored %s CE");
+        add.accept("gui.clayium.converter.stored_fe", locale.equals("ja_jp") ? "FE %s / %s" : "FE %s / %s");
+        add.accept("gui.clayium.converter.generation", locale.equals("ja_jp") ? "生成 %s FE/t" : "+%s FE/t");
+        add.accept("gui.clayium.converter.output", locale.equals("ja_jp") ? "出力 %s FE/t" : "Out %s FE/t");
     }
 
     private EnergyConverterLanguageEntries() {

@@ -1,6 +1,7 @@
 package net.claustra01.clayium.client.screen.workbench;
 
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.workbench.ClayCraftingBoardMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -9,10 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class ClayCraftingBoardScreen extends AbstractContainerScreen<ClayCraftingBoardMenu> {
-    private static final ResourceLocation BACKGROUND = ClayiumMod.id("textures/gui/back.png");
     private static final ResourceLocation CRAFTING = ClayiumMod.id("textures/gui/claycraftingtable.png");
-    private static final ResourceLocation PLAYER_INVENTORY = ClayiumMod.id("textures/gui/playerinventory.png");
-    private static final ResourceLocation SLOT = ClayiumMod.id("textures/gui/slot.png");
 
     public ClayCraftingBoardScreen(ClayCraftingBoardMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -32,7 +30,7 @@ public final class ClayCraftingBoardScreen extends AbstractContainerScreen<ClayC
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        graphics.blit(BACKGROUND, leftPos, topPos, 0, 0, 176, 181, 256, 256);
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         graphics.blit(CRAFTING, leftPos, topPos, 0, 0, 176, 80, 256, 256);
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
@@ -42,10 +40,11 @@ public final class ClayCraftingBoardScreen extends AbstractContainerScreen<ClayC
         for (int slot = 0; slot < menu.adjacentSlotCount(); slot++) {
             drawSlot(graphics, 7 + slot % 9 * 18, 83 + slot / 9 * 18);
         }
-        graphics.blit(PLAYER_INVENTORY, leftPos, topPos + 140, 0, 0, 176, 94, 256, 256);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 140,
+                0, 0, 176, 90, 256, 256);
     }
 
     private void drawSlot(GuiGraphics graphics, int x, int y) {
-        graphics.blit(SLOT, leftPos + x, topPos + y, 0, 0, 18, 18, 256, 256);
+        LegacyGuiGraphics.slot(graphics, leftPos + x + 1, topPos + y + 1);
     }
 }
