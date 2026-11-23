@@ -1,7 +1,9 @@
 {
-  "parent": "minecraft:block/orientable",
+  "parent": "clayium:block/hull_with_overlays",
+  "render_type": "minecraft:translucent",
   "textures": {
     "front": "clayium:block/storagecontainerex",
+    "hull": "clayium:block/az91dhull",
     "side": "clayium:block/storagecontainerside",
     "top": "clayium:block/storagecontainertop"
   }

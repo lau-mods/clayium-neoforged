@@ -3,7 +3,7 @@ package net.claustra01.clayium.datagen.storage;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.StorageRegistration;
 import net.claustra01.clayium.storage.StorageContainerBlock;
-import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
@@ -20,13 +20,20 @@ public final class StorageBlockStateProvider extends BlockStateProvider {
         return "Storage Block States: " + ClayiumMod.MOD_ID;
     }
 
+    private ModelFile containerModel(String name, ResourceLocation side, ResourceLocation front, ResourceLocation top) {
+        return models().withExistingParent(name, modLoc("block/hull_with_overlays"))
+                .renderType("minecraft:translucent")
+                .texture("hull", modLoc("block/az91dhull"))
+                .texture("side", side).texture("front", front).texture("top", top);
+    }
+
     @Override
     protected void registerStatesAndModels() {
-        ModelFile storage = models().orientable("storage_container",
+        ModelFile storage = containerModel("storage_container",
                 ClayiumMod.id("block/storagecontainerside"),
                 ClayiumMod.id("block/storagecontainer"),
                 ClayiumMod.id("block/storagecontainertop"));
-        ModelFile expanded = models().orientable("storage_container_expanded",
+        ModelFile expanded = containerModel("storage_container_expanded",
                 ClayiumMod.id("block/storagecontainerside"),
                 ClayiumMod.id("block/storagecontainerex"),
                 ClayiumMod.id("block/storagecontainertop"));
@@ -36,7 +43,7 @@ public final class StorageBlockStateProvider extends BlockStateProvider {
                 .build());
         simpleBlockItem(StorageRegistration.STORAGE_CONTAINER.get(), storage);
 
-        ModelFile voidModel = models().orientable("void_container",
+        ModelFile voidModel = containerModel("void_container",
                 ClayiumMod.id("block/vacuumcontainerside"),
                 ClayiumMod.id("block/vacuumcontainer"),
                 ClayiumMod.id("block/vacuumcontainertop"));

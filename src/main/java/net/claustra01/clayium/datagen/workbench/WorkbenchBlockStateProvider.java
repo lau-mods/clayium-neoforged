@@ -34,15 +34,18 @@ public final class WorkbenchBlockStateProvider extends BlockStateProvider {
                 .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                 .texture("top", texture("claycraftingtable"))
                 .texture("side", texture("clayworktable_side"))
-                .texture("particle", "#top")
+                .texture("particle", "#side")
+                .renderType("minecraft:cutout")
                 .element().from(0, 0, 0).to(16, 4, 16)
                 .face(Direction.DOWN).texture("#side").uvs(0, 12, 16, 16).cullface(Direction.DOWN).end()
-                .face(Direction.UP).texture("#top").end()
+                .face(Direction.UP).texture("#side").end()
                 .face(Direction.NORTH).texture("#side").uvs(0, 12, 16, 16).cullface(Direction.NORTH).end()
                 .face(Direction.SOUTH).texture("#side").uvs(0, 12, 16, 16).cullface(Direction.SOUTH).end()
                 .face(Direction.WEST).texture("#side").uvs(0, 12, 16, 16).cullface(Direction.WEST).end()
                 .face(Direction.EAST).texture("#side").uvs(0, 12, 16, 16).cullface(Direction.EAST).end()
-                .end();
+                .end()
+                .element().from(0, 4.01F, 0).to(16, 4.01F, 16)
+                .face(Direction.UP).texture("#top").end().end();
         simpleBlock(WorkbenchRegistration.CLAY_CRAFTING_BOARD.get(), board);
         simpleBlockItem(WorkbenchRegistration.CLAY_CRAFTING_BOARD.get(), board);
 

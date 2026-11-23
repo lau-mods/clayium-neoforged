@@ -25,11 +25,15 @@ public final class PanBlockStateProvider
                         : definition.kind() == PanBlock.Kind.ADAPTER ? "panadapter" : "panduplicator";
                 ModelFile model = models().getBuilder(definition.id())
                         .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
+                        .texture("hull", modLoc("block/machinehull-" + (definition.tier() - 1)))
                         .texture("casing", ClayiumMod.id("block/pancasing"))
                         .texture("front", ClayiumMod.id("block/" + texture))
-                        .texture("particle", "#casing")
-                        .element().from(0, 0, 0).to(16, 16, 16).cube("#casing").end()
-                        .element().from(0, 0, -0.01F).to(16, 16, 0)
+                        .texture("particle", "#hull")
+                        .renderType("minecraft:cutout")
+                        .element().from(0, 0, 0).to(16, 16, 16).cube("#hull").end()
+                        .element().from(-0.01F, -0.01F, -0.01F).to(16.01F, 16.01F, 16.01F)
+                        .allFaces((direction, face) -> face.texture("#casing").uvs(0, 0, 16, 16)).end()
+                        .element().from(0, 0, -0.02F).to(16, 16, 0)
                         .face(Direction.NORTH).texture("#front").end().end();
                 simpleBlock(definition.block().get(), model);
                 simpleBlockItem(definition.block().get(), model);
@@ -60,6 +64,7 @@ public final class PanBlockStateProvider
                 .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                 .texture("cable", ClayiumMod.id("block/pancable"))
                 .texture("particle", "#cable")
+                .renderType("minecraft:translucent")
                 .element().from(6, 6, 6).to(10, 10, 10).cube("#cable").end()
                 .element().from(6, 0, 6).to(10, 6, 10).cube("#cable").end()
                 .element().from(6, 10, 6).to(10, 16, 10).cube("#cable").end()
@@ -77,6 +82,7 @@ public final class PanBlockStateProvider
                 .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                 .texture("cable", ClayiumMod.id("block/pancable"))
                 .texture("particle", "#cable")
+                .renderType("minecraft:translucent")
                 .element().from(fromX, fromY, fromZ).to(toX, toY, toZ).cube("#cable").end();
     }
 

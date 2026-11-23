@@ -26,7 +26,7 @@
           "texture": "#side"
         },
         "up": {
-          "texture": "#top"
+          "texture": "#side"
         },
         "west": {
           "cullface": "west",
@@ -43,10 +43,28 @@
         4,
         16
       ]
+    },
+    {
+      "faces": {
+        "up": {
+          "texture": "#top"
+        }
+      },
+      "from": [
+        0,
+        4.01,
+        0
+      ],
+      "to": [
+        16,
+        4.01,
+        16
+      ]
     }
   ],
+  "render_type": "minecraft:cutout",
   "textures": {
-    "particle": "#top",
+    "particle": "#side",
     "side": "clayium:block/clayworktable_side",
     "top": "clayium:block/claycraftingtable"
   }

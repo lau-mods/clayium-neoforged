@@ -35,7 +35,7 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
         }
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS)
                 .apply(ClayiumMod.id("block/laser"));
-        VertexConsumer vertices = buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
+        VertexConsumer vertices = buffers.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
         LaserBeam beam = laser.visibleBeam();
         long maximum = Math.max(beam.blue(), Math.max(beam.green(), beam.red()));
         int red = (int)(255L * beam.red() / maximum);
@@ -90,7 +90,7 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
             Direction direction, PoseStack poseStack, MultiBufferSource buffers, int packedLight) {
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS)
                 .apply(ClayiumMod.id("block/laserreflector"));
-        VertexConsumer vertices = buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
+        VertexConsumer vertices = buffers.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
         float[] first = direction.getAxis() == Direction.Axis.Y
                 ? new float[]{1, 0, 0} : new float[]{0, 1, 0};
         float[] second = cross(direction, first);
