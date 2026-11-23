@@ -27,6 +27,7 @@ await scenario(async ({ clients }) => {
   const layout = await mct(client, 'gui', 'layout');
   const inputSlot = layout.slots.find(entry => entry.slot === 0);
   if (!inputSlot) throw new Error('Machine input slot is missing');
+  await mct(client, 'input', 'click', String(inputSlot.centerX + 108), String(inputSlot.centerY - 32));
   await mct(client, 'input', 'click', String(inputSlot.centerX - 35), String(inputSlot.centerY - 32));
   await mct(client, 'wait', '--ticks', '3');
   screenshot(client, 'AC-F007-003', 'idle-gui-and-validated-face-change');

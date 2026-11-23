@@ -1,6 +1,7 @@
 package net.claustra01.clayium.client.screen.workbench;
 
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.client.screen.RecipeViewerNavigation;
 import net.claustra01.clayium.workbench.ClayWorkTableMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -23,11 +24,13 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
     @Override
     protected void init() {
         super.init();
+        addRenderableWidget(RecipeViewerNavigation.button(leftPos, topPos,
+                net.claustra01.clayium.recipe.ClayiumRecipeMethod.CLAY_WORK_TABLE.location()));
         for (int action = 1; action <= 6; action++) {
             int selectedAction = action;
             Component description = Component.translatable("button.clayium.work_action." + action);
             AbstractButton button = new AbstractButton(
-                    leftPos + 37 + (action - 1) * 16, topPos + 55, 16, 16, description) {
+                    leftPos + 40 + (action - 1) * 16, topPos + 52, 16, 16, description) {
                 @Override
                 public void onPress() {
                     minecraft.gameMode.handleInventoryButtonClick(menu.containerId, selectedAction);
@@ -53,11 +56,17 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
-        int progress = menu.scaledProgress(78);
+        int progress = menu.scaledProgress(80);
         if (progress > 0) {
-            graphics.blit(TEXTURE, leftPos + 49, topPos + 27, 176, 0, progress, 16, 256, 256);
+            graphics.blit(TEXTURE, leftPos + 48, topPos + 29, 176, 0, progress, 16, 256, 256);
         }
     }
 

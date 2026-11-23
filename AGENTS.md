@@ -15,6 +15,8 @@
 - Harness が自 Mod の JAR を server と client の `mods/` に配置し、クライアントへ operator 権限を付与する。client には MC Pilot の `mct-client-mod-neoforge-1.21.1.jar` も必要。
 - JEI 19.64.0.455（Minecraft 1.21.1 NeoForge 版）を server と client の `mods/` に配置する。配布元は BlameJared Maven の `mezz.jei:jei-1.21.1-neoforge:19.64.0.455`。再構築時も同じ JAR を両側へ配置する。
 - Gradle の JEI バージョンは `gradle.properties` の `jei_version` が正本。`localRuntime` で開発起動時に読み込み、配布 Mod の必須依存にはしない。
+- レシピViewerのE2EはJEI単独とEMI単独で別々に実行し、同じclientへ同時導入しない。EMI版は`gradle.properties`の`emi_version`を正本とし、Gradleでは`-Precipe_viewer=emi`で切り替える。
+- `tests/e2e/recipe-viewers.mjs`はJEI構成、`tests/e2e/recipe-viewers-emi.mjs`はEMI構成で実行する。後者は `.harness-config.json` の `recipeViewerProfiles.emi` を使い、専用のserver・client・worldを生成してEMIのみで起動する。EMI JARは `.harness-state/runtime/` にキャッシュする。
 - runtime 本体、キャッシュ、ログ、撮影画像は Git 管理外。設定の正本は `.harness-config.json`。
 
 MC Pilot を手動実行するときも Harness と同じ環境を使用する。
@@ -156,7 +158,7 @@ GameTest は `metalSeparatorPreservesWeightsTimeEnergyAndFullOutput` と `chemic
 
 ## M07 手動製作
 
-`clay_work_table`、`clay_crafting_board`、`raw_clay_machine_hull`、`clay_machine_hull` を Block と Item に登録する。最初の2種類は同名の BlockEntity と Menu を持つ。`clay_work_table` レシピの `required_tier` は工具操作番号1～6を表す。操作1・2は工具不要、3は `clay_rolling_pin`、4・6は `clay_slicer` または `clay_spatula`、5は `clay_spatula` を要する。工具は完了時に1耐久を消費する。
+`clay_work_table`、`clay_crafting_board`、`raw_clay_machine_hull`、`clay_machine_hull` を Block と Item に登録する。最初の2種類は同名の BlockEntity と Menu を持つ。`clay_work_table` レシピの `required_tier` は工具操作番号1～6を表す。操作1・2は工具不要、3は `clay_rolling_pin`、4・6は `clay_slicer` または `clay_spatula`、5は `clay_spatula` を要する。工具は完了時に1耐久を消費する。工具枠は焼成済みのめん棒・スライサー・へらだけを1個受け入れ、Shiftクリックでも工具枠へ移す。
 
 原作台帳の工具品種 `raw_clay_rolling_pin`、`raw_clay_slicer`、`raw_clay_spatula` は Tier 0 で耐久なし。焼成後の `clay_rolling_pin`、`clay_slicer` は Tier 1・耐久60、`clay_spatula` は Tier 1・耐久36。`clay_io_configurator`、`clay_piping_configurator` は Tier 1・耐久128、`memory_card` と `direction_memory_card` は Tier 1・耐久なし。既存の `clay_wrench` も初期製作対象。機械への設定複写・回転は後続の装置実装で扱う。
 
@@ -428,7 +430,7 @@ GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndA
 ## M41 GUI原作同等性
 
 - 原作の20 GUIクラスと移植Screen/Menuの対応は `tests/e2e/gui-parity.json` に記録する。同ファイルは原作GUI PNG 19点のSHA-256も保持する。
-- `LegacyGuiGraphics` は原作 `GuiTemp` の4px九分割背景、スロット、プレイヤー在庫、24x16進捗バーを描画する。文字ボタンはバニラのウィジェットスプライトを使い、16pxアイコンアトラスの `button.png` を文字ボタンへ引き伸ばさない。
+- `LegacyGuiGraphics` は原作 `GuiTemp` の4px九分割背景、スロット、プレイヤー在庫、24×17進捗バー（原作PNGの上段が背景、v=17が進捗）を描画する。文字ボタンはバニラのウィジェットスプライトを使い、16pxアイコンアトラスの `button.png` を文字ボタンへ引き伸ばさない。
 - PANコアの候補一覧は6件単位のサーバー権威スナップショットで同期する。ID・原価・必要CEの並べ替え、逆順、ページ、選択、詳細、禁止指定を扱い、状態はコアNBTに保存する。禁止候補は複製機の処理対象外とする。
 - PANコアは原作の176×238画面とプレイヤー在庫Y=156を使用する。PANアダプターは176×190のステータス画面を開き、原作のレシピ格子との差分は表示台帳に記録する。
 - PAN操作Payloadは開いているMenu、BlockPos、距離、装置種別、actionと値域を検証する。GameTestはスロット配置、PAN状態保存、Payload拒否、PNGハッシュを検査し、E2Eは `tests/e2e/gui-parity.mjs` で代表画面と状態を撮影する。
@@ -439,3 +441,12 @@ GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndA
 - `QuartzCrucibleRenderer` は中身の量・加熱段階をUV切り取りで表示し、描画距離64・描画領域1ブロック。`StorageContainerRenderer` は品目と保持数を描画距離64・描画領域1ブロックで表示する。`MetalChestRenderer` はサーバーの開閉イベントによる蓋アニメーションを描画距離64・描画領域1ブロックで表示する。`CaReactorCoreRenderer` は構造成立時の停止alpha 96、稼働時alpha 180±55の光彩を描画距離96・描画領域1ブロック付近で表示する。
 - BER用の更新タグはるつぼの `impure_silicon`・`heating_ticks`、ストレージの `stored`・`amount`・`expanded`、CAコアの `state`・`reactor_formed`・`reactor_coils`・`reactor_hulls`・`reactor_average_rank` を同期する。金属チェストの蓋は保存NBTではなくサーバーのブロックイベントで同期する。
 - GameTestは `panCableConnectionsRejectStoneAndRebuild`、`rendererDataSurvivesSaveReloadAndUpdateTags`、`visualConnectionStatesAreServerAuthoritative` と既存の `allOriginalPngHashesAndTintLayersRemainUnmodified` を使う。外観E2Eは `tests/e2e/world-rendering.mjs`、原作描画対応表は `tests/e2e/render-parity.json`。
+
+## M43 機械GUIとレシピビューア
+
+- 共通加工GUIは旧 main の pre-alpha.3 と同じタイトル位置 (6,6)、単独の入出力に26×26の枠、加工矢印 (76,35) を使う。2入力・2出力には原作の色別スロットを使い、矢印で装置のカテゴリを開ける。I/Oボタンで6面の設定を開く。燃料スロットは (44,57)。作業台は原作と同じ (40,52) から6操作を並べ、(48,29) に80×16の進捗を描く。
+- 金属チェストは `ContainerNormalInventory` の7行以上の分岐を維持する。ユウロピウムチェストの13列×8行ウィンドウは256×236、最初のスロットは (12,6)。単一ページではページボタンを表示しない。
+- 原作 hotfix2 の `NEITemp` から、加工レシピの166×65領域、背景 `nei.png` (5,11)、入力 (52−17i,21)、出力 (98+17i,21)、矢印 (71,21)、Tier (6,43)、CE式 (6,52) を取得した。金属分離は原作と同じく鉱物ごとにページを分け、表示中の鉱物の確率を (69,10) に描き、ツールチップに重みと合計を示す。既定レシピの合計は488。流体はタンクに直接描き、ツールチップにmB量を表示する。
+- `NEIClayWorkTable` の専用背景は `clayworktable.png`。材料 (12,19)、工具 (75,6)、生成物 (138,19)/(138,44)、進捗 (43,18)、操作選択 (35+16i,41)、押下回数は選択ボタンの上。作業台の「?」は手動加工、作業板の「?」はバニラ製作を開く。工具スロットには焼成済みのめん棒・スライサー・へらを1個装備でき、Shiftクリックも同じ場所へ送る。JEIとEMIのレシピ転送は各Menuの実スロットを使う。
+- 特殊説明は `cobblestone_generator`、`salt_extractor`、`quartz_crucible`、`solar_clay_fabricator`、`clay_tree`。機種・Tierに対応する触媒から利用経路を検索できる。Tier 13 `energetic_clay_decomposer` はOPA筐体とCA反応炉コイルMk IVから組み立て、原作の粘土ブロックと圧縮13段階の逆変換を `ec_decomposer` に登録する。原作の0 tickは現行Recipe Codecの最低1 tickで表現する。
+- `tests/acceptance.json` が4件の受入条件をGameTestと両ビューアの実機シナリオに結び付ける。実画面比較はPython 3、Pillow、原作JAR `.tmp/clayium-0.4.6.36.hotfix2.jar` を使い、スクリーンショット内のスロットの縁を原作PNGに合わせて比較画像を出力する。

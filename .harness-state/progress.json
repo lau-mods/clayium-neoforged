@@ -1,5 +1,5 @@
 {
-  "status": "running",
+  "status": "idle",
   "active": [],
   "completed": [
     "M01",
@@ -43,8 +43,9 @@
     "M39",
     "M40",
     "M42",
-    "M41"
+    "M41",
+    "M43"
   ],
-  "lastCheckpoint": "9222c51b7916cbed403b8f21d0ec26664ca63bdb",
+  "lastCheckpoint": "ef2bfb3c77c8d5a493d8e4acb4a6cda3f38f5a73",
   "fatal": null
 }

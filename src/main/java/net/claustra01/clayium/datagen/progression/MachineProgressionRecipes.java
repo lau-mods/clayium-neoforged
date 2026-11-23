@@ -26,6 +26,13 @@ public final class MachineProgressionRecipes {
                 .clayEnergy(ClayiumRecipeEnergy.e(1.0D, 6)).processingTicks(40)
                 .save(output, ClayiumMod.id("progression/machines/chemical_metal_separator"));
         for (var definition : MachineRegistration.MACHINES.values()) {
+            if (definition.series().recipeMethod() == ClayiumRecipeMethod.EC_DECOMPOSER) {
+                ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.ASSEMBLER, 10)
+                        .requires(item("opa_machine_hull"), 1).requires(item("ca_reactor_coil_mk_iv"), 1)
+                        .output(definition.block().get(), 1).clayEnergy(ClayiumRecipeEnergy.e(1.0D, 13))
+                        .processingTicks(120).save(output, ClayiumMod.id("progression/machines/" + definition.id()));
+                continue;
+            }
             if (definition.id().equals("chemical_metal_separator")) {
                 continue;
             }

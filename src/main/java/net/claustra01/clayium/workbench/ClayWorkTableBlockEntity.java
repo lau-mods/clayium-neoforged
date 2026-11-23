@@ -38,7 +38,10 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
     private final ItemStackHandler inventory = new ItemStackHandler(5) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return slot == INPUT_SLOT || slot == TOOL_SLOT;
+            return slot == INPUT_SLOT || slot == TOOL_SLOT && (
+                    stack.is(WorkbenchRegistration.CLAY_ROLLING_PIN.get())
+                            || stack.is(WorkbenchRegistration.CLAY_SLICER.get())
+                            || stack.is(WorkbenchRegistration.CLAY_SPATULA.get()));
         }
 
         @Override

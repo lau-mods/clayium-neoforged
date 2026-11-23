@@ -1,6 +1,36 @@
 {
   "gameTests": [
     {
+      "acId": "AC-F047-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalneicoordinatesdriveeverymachineviewerlayout"
+    },
+    {
+      "acId": "AC-F047-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyrecipemethodandoriginaldescriptionpageiscovered"
+    },
+    {
+      "acId": "AC-F047-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "worktoolsandmetalprobabilitiesuseserverrecipeinputs"
+    },
+    {
+      "acId": "AC-F047-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "loadeddatapackvaluesremainthesingleviewersource"
+    },
+    {
+      "acId": "AC-F047-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "datapackreloadreplacescacheandskipsmissingexternalitem"
+    },
+    {
       "acId": "AC-F046-001",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
@@ -932,6 +962,38 @@
     }
   ],
   "e2e": [
+    {
+      "acId": "AC-F047-001",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F047-002",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F047-003",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F047-004",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F047-001",
+      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
+    },
+    {
+      "acId": "AC-F047-002",
+      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
+    },
+    {
+      "acId": "AC-F047-003",
+      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
+    },
+    {
+      "acId": "AC-F047-004",
+      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
+    },
     {
       "acId": "AC-F046-001",
       "scenario": "tests/e2e/gui-parity.mjs"

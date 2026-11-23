@@ -167,6 +167,11 @@ public final class MachineRecipeGameTests {
         require(ClayiumRecipeCache.find(manager, type, iron, helper.getLevel()).isEmpty(),
                 "Added recipe exists before reload");
 
+        var richId = ClayiumMod.id("gametest/machine_recipe");
+        var initialRich = (ClayiumMachineRecipe)manager.byKey(richId).orElseThrow().value();
+        require(initialRich.fluidInputs().getFirst().getAmount() == 250
+                        && initialRich.randomOutputs().getFirst().chance() == 0.25F,
+                "Unexpected initial viewer fixture");
         AtomicInteger notifications = new AtomicInteger();
         Consumer<ClayiumRecipesReloadedEvent> listener = event -> {
             if (event.recipeManager() == server.getRecipeManager()
@@ -181,6 +186,13 @@ public final class MachineRecipeGameTests {
         try {
             Path recipes = pack.resolve("data/clayium/recipe/gametest");
             Files.createDirectories(recipes);
+            JsonObject rich = ClayiumMachineRecipe.CODEC.codec().encodeStart(JsonOps.INSTANCE, initialRich)
+                    .getOrThrow().getAsJsonObject();
+            rich.addProperty("type", "clayium:machine");
+            rich.getAsJsonArray("fluid_inputs").get(0).getAsJsonObject().addProperty("amount", 700);
+            rich.getAsJsonArray("random_outputs").get(0).getAsJsonObject().addProperty("chance", 0.75F);
+            Files.writeString(recipes.resolve("machine_recipe.json"), rich.toString());
+
             Files.writeString(pack.resolve("pack.mcmeta"),
                     "{\"pack\":{\"pack_format\":48,\"description\":\"Clayium GameTest reload\"}}");
             writeRecipe(recipes.resolve("reload_changed.json"), simpleRecipe(80, 900_000L, Items.CLAY));
@@ -216,9 +228,22 @@ public final class MachineRecipeGameTests {
                     .isPresent(), "Changed values are stale in cache");
             ClayiumMachineRecipe changed = (ClayiumMachineRecipe)current.byKey(changedId).orElseThrow().value();
             var display = net.claustra01.clayium.compat.RecipeViewerData.from(changed);
+            var layout = net.claustra01.clayium.compat.RecipeViewerLayout.machine(changed);
             require(display.processingTicks() == 80 && display.clayEnergy() == 72_000_000L
-                            && display.formattedClayEnergy().equals("720"),
+                            && display.formattedClayEnergy().equals("720")
+                            && layout.text().getFirst().value().getString().contains("4")
+                            && layout.text().get(1).value().getString().contains("80")
+                            && current.byKey(removedId).isEmpty()
+                            && current.byKey(addedId).isPresent(),
                     "Viewer values did not update with the reloaded recipe");
+            var reloaded = (ClayiumMachineRecipe)current.byKey(richId).orElseThrow().value();
+            var richLayout = net.claustra01.clayium.compat.RecipeViewerLayout.machine(reloaded);
+            require(richLayout.slots().stream().anyMatch(slot -> slot.kind()
+                            == net.claustra01.clayium.compat.RecipeViewerLayout.SlotKind.FLUID_INPUT
+                            && reloaded.fluidInputs().get(slot.sourceIndex()).getAmount() == 700)
+                            && net.claustra01.clayium.compat.RecipeViewerLayout.randomOutputPercent(
+                                    reloaded, reloaded.randomOutputs().getFirst()) == 75.0,
+                    "The new server fluid amount and weighted probability must reach the viewer");
             NeoForge.EVENT_BUS.unregister(listener);
             removeTestPack(server, pack);
         });

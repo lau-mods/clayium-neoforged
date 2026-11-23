@@ -133,12 +133,16 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
 
-    // JEI is available in development runs without becoming a published dependency.
+    // One recipe viewer is available in development runs without becoming a published dependency.
     if (!gradle.startParameter.taskNames.any { it.toLowerCase().contains('gametest') }) {
-        localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+        if (recipe_viewer == 'emi') {
+            localRuntime "dev.emi:emi-neoforge:${emi_version}"
+        } else if (recipe_viewer == 'jei') {
+            localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+        }
     }
 
-    // EMI's API is compile-time only so Clayium can run without EMI installed.
+    // Viewer APIs are compile-time only so Clayium can run without either viewer installed.
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository

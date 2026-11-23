@@ -69,11 +69,11 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     }
 
     public static int inputX(int inputSlots, int input) {
-        return inputSlots == 1 ? 44 : 35 + input * 18;
+        return inputSlots == 1 ? 44 : 32 + input * 18;
     }
 
     public static int outputX(int outputSlots, int output) {
-        return outputSlots <= 2 ? 116 + output * 18 : 132 + output % 2 * 18;
+        return outputSlots == 1 ? 116 : outputSlots == 2 ? 110 + output * 18 : 132 + output % 2 * 18;
     }
 
     public static int outputY(int outputSlots, int output) {

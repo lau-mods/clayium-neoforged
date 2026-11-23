@@ -161,9 +161,7 @@ public final class StandardCompatibilityGameTests {
                         && fluidRecipe.itemInputs().getFirst().count() == 2
                         && fluidRecipe.itemOutputs().getFirst().getCount() == 1
                         && fluidRecipe.fluidInputs().getFirst().getAmount() == 250
-                        && fluidRecipe.fluidOutputs().getFirst().getAmount() == 125
-                        && RecipeViewerData.formattedFluidAmounts(fluidRecipe.fluidInputs()).equals("250")
-                        && RecipeViewerData.formattedFluidAmounts(fluidRecipe.fluidOutputs()).equals("125"),
+                        && fluidRecipe.fluidOutputs().getFirst().getAmount() == 125,
                 "Viewer data differs from the loaded item, fluid, time, tier, or CE recipe values");
         require(fluidDisplay.formattedClayEnergy().equals("300"),
                 "Viewer CE was not converted from internal energy to CE");
@@ -187,7 +185,7 @@ public final class StandardCompatibilityGameTests {
                 .getAllRecipesFor(RecipeRegistration.type(ClayiumRecipeMethod.CLAY_WORK_TABLE));
         require(work.stream().anyMatch(holder -> {
             RecipeViewerData data = RecipeViewerData.from(holder.value());
-            return data.requiredTier() == 3 && data.workTool().equals("rolling_pin")
+            return data.requiredTier() == 3 && data.workToolItems().getFirst().is(net.claustra01.clayium.registry.WorkbenchRegistration.CLAY_ROLLING_PIN.get())
                     && data.processingTicks() == holder.value().processingTicks() && data.clayEnergy() == 0L;
         }), "Work table operation, tool, or clicks are wrong");
         var ca = helper.getLevel().getRecipeManager()

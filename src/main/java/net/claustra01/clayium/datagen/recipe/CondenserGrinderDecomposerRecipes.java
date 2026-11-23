@@ -1,6 +1,8 @@
 package net.claustra01.clayium.datagen.recipe;
 
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.material.CompressionTier;
+import net.minecraft.world.level.ItemLike;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.MaterialRegistration;
@@ -15,6 +17,19 @@ public final class CondenserGrinderDecomposerRecipes {
         condenser(output);
         grinder(output);
         decomposer(output);
+        ItemLike previous = Items.CLAY;
+        energeticDecomposition(output, "clay_block", Items.CLAY, Items.CLAY_BALL, 4);
+        for (CompressionTier tier : CompressionTier.values()) {
+            ItemLike block = compression(tier.id());
+            energeticDecomposition(output, tier.id(), block, previous, 9);
+            previous = block;
+        }
+    }
+
+    private static void energeticDecomposition(RecipeOutput output, String id, ItemLike input, ItemLike result, int count) {
+        ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.EC_DECOMPOSER, 13)
+                .requires(input, 1).output(result, count).clayEnergy(1L).processingTicks(1)
+                .save(output, ClayiumMod.id("ec_decomposer/" + id));
     }
 
     private static void condenser(RecipeOutput output) {

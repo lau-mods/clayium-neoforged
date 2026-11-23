@@ -29,6 +29,7 @@ public final class MachineLanguageEntries {
                     String name = switch (definition.method()) {
                         case "condenser" -> locale.equals("ja_jp") ? "凝縮機" : "Condenser";
                         case "grinder" -> locale.equals("ja_jp") ? "粉砕機" : "Grinder";
+                        case "ec_decomposer" -> locale.equals("ja_jp") ? "エネルギー粘土分解機" : "Energetic Clay Decomposer";
                         case "decomposer" -> locale.equals("ja_jp") ? "分解機" : "Decomposer";
                         case "bending_machine" -> locale.equals("ja_jp") ? "プレート作成機" : "Bending Machine";
                         case "wire_drawing_machine" -> locale.equals("ja_jp") ? "ワイヤー圧延機" : "Wire Drawing Machine";
@@ -48,7 +49,7 @@ public final class MachineLanguageEntries {
                         case "matter_transformer" -> matterTransformerName(locale, definition.tier());
                         default -> throw new IllegalStateException(definition.method());
                     };
-                    if (definition.method().equals("smelter") || definition.method().equals("alloy_smelter")
+                    if (definition.method().equals("ec_decomposer") || definition.method().equals("smelter") || definition.method().equals("alloy_smelter")
                             || definition.method().equals("electrolysis_reactor")
                             || definition.method().equals("chemical_reactor")
                             || definition.method().equals("chemical_metal_separator")
@@ -75,6 +76,7 @@ public final class MachineLanguageEntries {
         add.accept("gui.clayium.machine.state.output_full", locale.equals("ja_jp") ? "出力満杯" : "Output full");
         add.accept("gui.clayium.machine.state.waiting_for_energy", locale.equals("ja_jp") ? "CE不足" : "Waiting for CE");
         add.accept("gui.clayium.machine.state.recipe_changed", locale.equals("ja_jp") ? "レシピ更新待ち" : "Recipe changed");
+        add.accept("gui.clayium.machine.faces", locale.equals("ja_jp") ? "面の入出力設定" : "Configure input and output faces");
         add.accept("gui.clayium.machine.required_energy", locale.equals("ja_jp") ? "消費 %s" : "Use %s");
         add.accept("gui.clayium.machine.inventory", locale.equals("ja_jp") ? "持ち物" : "Inventory");
         add.accept("gui.clayium.machine.empty", locale.equals("ja_jp") ? "空" : "Empty");

@@ -8,6 +8,8 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import java.util.List;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.compat.RecipeViewerData;
+import net.claustra01.clayium.compat.RecipeViewerLayout;
+import net.claustra01.clayium.compat.RecipeViewerRenderer;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -49,23 +51,23 @@ final class EmiPanDuplicationRecipe implements EmiRecipe {
 
     @Override
     public int getDisplayWidth() {
-        return 176;
+        return RecipeViewerLayout.WIDTH;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 82;
+        return RecipeViewerLayout.HEIGHT;
     }
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
-        widgets.addSlot(inputs.get(0), 2, 2);
-        widgets.addSlot(inputs.get(1), 22, 2);
-        widgets.addSlot(outputs.getFirst(), 158, 2).recipeContext(this);
-        widgets.addText(Component.translatable("gui.clayium.recipe.pan_rate", tier,
-                RecipeViewerData.panEnergyPerTick(tier) / 100_000D), 2, 27, 0x404040, false);
-        widgets.addText(Component.translatable("gui.clayium.recipe.pan_sample"), 2, 39, 0x404040, false);
-        widgets.addText(Component.translatable("gui.clayium.recipe.pan_energy"), 2, 51, 0x404040, false);
-        widgets.addText(Component.translatable("gui.clayium.recipe.pan_ticks"), 2, 63, 0x404040, false);
+        RecipeViewerLayout layout = RecipeViewerLayout.pan(tier);
+        widgets.addDrawable(0, 0, layout.width(), layout.height(),
+                (graphics, mouseX, mouseY, delta) -> RecipeViewerRenderer.draw(graphics, layout));
+        widgets.addSlot(inputs.get(0), layout.slots().get(0).x() - 1, layout.slots().get(0).y() - 1).drawBack(false);
+        widgets.addSlot(inputs.get(1), layout.slots().get(1).x() - 1, layout.slots().get(1).y() - 1).drawBack(false);
+        widgets.addSlot(outputs.getFirst(), layout.slots().get(2).x() - 1, layout.slots().get(2).y() - 1)
+                .drawBack(false)
+                .recipeContext(this);
     }
 }

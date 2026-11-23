@@ -9,24 +9,25 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.claustra01.clayium.compat.RecipeViewerCatalysts;
 import net.claustra01.clayium.compat.RecipeViewerData;
+import net.claustra01.clayium.compat.RecipeViewerLayout;
+import net.claustra01.clayium.compat.RecipeViewerRenderer;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.claustra01.clayium.compat.RecipeViewerPage;
 
-final class MachineRecipeCategory implements IRecipeCategory<RecipeHolder<ClayiumMachineRecipe>> {
-    private static final int WIDTH = 176;
-    private static final int HEIGHT = 103;
+
+
+final class MachineRecipeCategory implements IRecipeCategory<RecipeViewerPage> {
     private final ClayiumRecipeMethod method;
-    private final RecipeType<RecipeHolder<ClayiumMachineRecipe>> recipeType;
+    private final RecipeType<RecipeViewerPage> recipeType;
     private final IDrawable icon;
 
     MachineRecipeCategory(
             ClayiumRecipeMethod method,
-            RecipeType<RecipeHolder<ClayiumMachineRecipe>> recipeType,
+            RecipeType<RecipeViewerPage> recipeType,
             IGuiHelper gui) {
         this.method = method;
         this.recipeType = recipeType;
@@ -35,8 +36,13 @@ final class MachineRecipeCategory implements IRecipeCategory<RecipeHolder<Clayiu
     }
 
     @Override
-    public RecipeType<RecipeHolder<ClayiumMachineRecipe>> getRecipeType() {
+    public RecipeType<RecipeViewerPage> getRecipeType() {
         return recipeType;
+    }
+
+    @Override
+    public net.minecraft.resources.ResourceLocation getRegistryName(RecipeViewerPage page) {
+        return page.id();
     }
 
     @Override
@@ -46,12 +52,12 @@ final class MachineRecipeCategory implements IRecipeCategory<RecipeHolder<Clayiu
 
     @Override
     public int getWidth() {
-        return WIDTH;
+        return RecipeViewerLayout.WIDTH;
     }
 
     @Override
     public int getHeight() {
-        return HEIGHT;
+        return RecipeViewerLayout.HEIGHT;
     }
 
     @Override
@@ -62,86 +68,69 @@ final class MachineRecipeCategory implements IRecipeCategory<RecipeHolder<Clayiu
     @Override
     public void setRecipe(
             IRecipeLayoutBuilder builder,
-            RecipeHolder<ClayiumMachineRecipe> holder,
+            RecipeViewerPage page,
             IFocusGroup focuses) {
-        ClayiumMachineRecipe recipe = holder.value();
-        for (int index = 0; index < recipe.itemInputs().size(); index++) {
-            var input = recipe.itemInputs().get(index);
-            builder.addInputSlot(2 + index * 20, 2)
-                    .setStandardSlotBackground()
-                    .addItemStacks(java.util.Arrays.stream(input.ingredient().getItems())
-                            .map(stack -> stack.copyWithCount(input.count())).toList());
+        ClayiumMachineRecipe recipe = page.holder().value();
+        RecipeViewerData data = RecipeViewerData.from(recipe);
+        RecipeViewerLayout layout = page.layout();
+        for (RecipeViewerLayout.Slot slot : layout.slots()) {
+            switch (slot.kind()) {
+                case ITEM_INPUT -> {
+                    var input = recipe.itemInputs().get(slot.sourceIndex());
+                    builder.addInputSlot(slot.x(), slot.y())
+                            .addItemStacks(java.util.Arrays.stream(input.ingredient().getItems())
+                                    .map(stack -> stack.copyWithCount(input.count())).toList());
+                }
+                case FLUID_INPUT -> addFluid(builder.addInputSlot(slot.x(), slot.y()),
+                        recipe.fluidInputs().get(slot.sourceIndex()));
+                case TOOL -> builder.addInputSlot(slot.x(), slot.y())
+                        .addItemStacks(data.workToolItems());
+                case ITEM_OUTPUT -> builder.addOutputSlot(slot.x(), slot.y())
+                        .addItemStack(recipe.itemOutputs().get(slot.sourceIndex()));
+                case FLUID_OUTPUT -> addFluid(builder.addOutputSlot(slot.x(), slot.y()),
+                        recipe.fluidOutputs().get(slot.sourceIndex()));
+                case RANDOM_OUTPUT -> addRandomOutput(
+                        builder.addOutputSlot(slot.x(), slot.y()),
+                        recipe, recipe.randomOutputs().get(slot.sourceIndex()));
+                case WEIGHTED_OUTPUTS -> addRandomOutput(builder.addOutputSlot(slot.x(), slot.y()),
+                        recipe, recipe.randomOutputs().get(page.outcome()));
+            }
         }
-        for (int index = 0; index < recipe.fluidInputs().size(); index++) {
-            var fluid = recipe.fluidInputs().get(index);
-            builder.addInputSlot(2 + index * 20, 22)
-                    .setStandardSlotBackground()
-                    .setFluidRenderer(Math.max(1_000, fluid.getAmount()), true, 16, 16)
-                    .addFluidStack(fluid.getFluid(), fluid.getAmount(), fluid.getComponentsPatch())
-                    .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.literal(fluid.getAmount() + " mB")));
-        }
-        for (int index = 0; index < recipe.itemOutputs().size(); index++) {
-            builder.addOutputSlot(158 - index * 20, 2)
-                    .setStandardSlotBackground()
-                    .addItemStack(recipe.itemOutputs().get(index));
-        }
-        for (int index = 0; index < recipe.randomOutputs().size(); index++) {
-            var output = recipe.randomOutputs().get(index);
-            builder.addOutputSlot(158 - (recipe.itemOutputs().size() + index) * 20, 2)
-                    .setStandardSlotBackground()
-                    .addItemStack(output.stack())
-                    .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.literal(
-                            Math.round(output.chance() * 100.0F) + "% / weight " + output.weight())));
-        }
-        for (int index = 0; index < recipe.fluidOutputs().size(); index++) {
-            var fluid = recipe.fluidOutputs().get(index);
-            builder.addOutputSlot(158 - index * 20, 22)
-                    .setStandardSlotBackground()
-                    .setFluidRenderer(Math.max(1_000, fluid.getAmount()), true, 16, 16)
-                    .addFluidStack(fluid.getFluid(), fluid.getAmount(), fluid.getComponentsPatch())
-                    .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.literal(fluid.getAmount() + " mB")));
-        }
+    }
+
+    private static void addFluid(
+            mezz.jei.api.gui.builder.IRecipeSlotBuilder slot,
+            net.neoforged.neoforge.fluids.FluidStack fluid) {
+        slot.setFluidRenderer(Math.max(1_000, fluid.getAmount()), false, 16, 16)
+                .addFluidStack(fluid.getFluid(), fluid.getAmount(), fluid.getComponentsPatch());
+    }
+
+    private static void addRandomOutput(
+            mezz.jei.api.gui.builder.IRecipeSlotBuilder slot,
+            ClayiumMachineRecipe recipe,
+            ClayiumMachineRecipe.RandomOutput output) {
+        slot.addItemStack(output.stack())
+                .addRichTooltipCallback((view, tooltip) -> addProbabilityTooltip(tooltip, recipe, output));
+    }
+
+    private static void addProbabilityTooltip(
+            mezz.jei.api.gui.builder.ITooltipBuilder tooltip,
+            ClayiumMachineRecipe recipe,
+            ClayiumMachineRecipe.RandomOutput output) {
+        tooltip.add(Component.translatable(
+                "gui.clayium.recipe.probability_weight",
+                RecipeViewerLayout.formattedRandomOutputPercent(recipe, output),
+                output.weight(),
+                RecipeViewerLayout.totalRandomWeight(recipe)));
     }
 
     @Override
     public void draw(
-            RecipeHolder<ClayiumMachineRecipe> holder,
+            RecipeViewerPage page,
             IRecipeSlotsView slots,
             GuiGraphics graphics,
             double mouseX,
             double mouseY) {
-        ClayiumMachineRecipe recipe = holder.value();
-        RecipeViewerData data = RecipeViewerData.from(recipe);
-        var font = Minecraft.getInstance().font;
-        if (method == ClayiumRecipeMethod.CLAY_WORK_TABLE) {
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.work_operation", data.requiredTier()),
-                    2, 45, 0x404040, false);
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.work_tool." + data.workTool()),
-                    2, 56, 0x404040, false);
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.work_clicks", data.processingTicks()),
-                    2, 67, 0x404040, false);
-        } else {
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.tier", data.requiredTier()),
-                    2, 45, 0x404040, false);
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.time",
-                    data.requiredTier(), data.processingTicks()), 2, 56, 0x404040, false);
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.energy",
-                    data.requiredTier(), data.formattedClayEnergy()), 2, 67, 0x404040, false);
-        }
-        int fluidLine = 78;
-        if (!recipe.fluidInputs().isEmpty()) {
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.fluid_input",
-                    RecipeViewerData.formattedFluidAmounts(recipe.fluidInputs())),
-                    2, fluidLine, 0x404040, false);
-            fluidLine += 11;
-        }
-        if (!recipe.fluidOutputs().isEmpty()) {
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.fluid_output",
-                    RecipeViewerData.formattedFluidAmounts(recipe.fluidOutputs())),
-                    2, fluidLine, 0x404040, false);
-        } else if (recipe.fluidInputs().isEmpty() && data.structureDependent()) {
-            graphics.drawString(font, Component.translatable("gui.clayium.recipe.structure"),
-                    2, 78, 0x404040, false);
-        }
+        RecipeViewerRenderer.drawPage(graphics, page);
     }
 }

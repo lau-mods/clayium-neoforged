@@ -47,6 +47,12 @@
       }
     }
   },
+  "recipeViewerProfiles": {
+    "emi": {
+      "directory": "profiles/emi",
+      "address": "127.0.0.1:25595"
+    }
+  },
   "runtime": {
     "command": ".harness-state/runtime/pilot/node_modules/.bin/mct",
     "server": {

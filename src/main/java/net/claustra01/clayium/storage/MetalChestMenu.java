@@ -26,7 +26,7 @@ public final class MetalChestMenu extends AbstractContainerMenu {
         type = chest.type();
         chest.startOpen(playerInventory.player);
         int storageX = (imageWidth() - type.columns() * 18) / 2 + 1;
-        int storageY = 18;
+        int storageY = storageY();
         for (int index = 0; index < type.slots(); index++) {
             int slotPage = index / type.pageSize();
             int slotIndex = index % type.pageSize();
@@ -56,8 +56,12 @@ public final class MetalChestMenu extends AbstractContainerMenu {
         return 176 + Math.max(0, type.columns() - 9) * 18 + (type.rows() > 6 ? 8 : 0);
     }
 
+    public int storageY() {
+        return type.rows() > 6 ? 6 : 18;
+    }
+
     public int imageHeight() {
-        return type.rows() * 18 + 112;
+        return type.rows() * 18 + 112 - (type.rows() > 6 ? 20 : 0);
     }
 
     public MetalChestType type() {

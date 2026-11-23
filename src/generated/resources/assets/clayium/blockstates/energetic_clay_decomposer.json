@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium:block/energetic_clay_decomposer",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium:block/energetic_clay_decomposer"
+    },
+    "facing=south": {
+      "model": "clayium:block/energetic_clay_decomposer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium:block/energetic_clay_decomposer",
+      "y": 270
+    }
+  }
+}

@@ -5,13 +5,14 @@ import java.util.List;
 import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 public record RecipeViewerData(
         int requiredTier,
         long processingTicks,
+        long clayEnergyPerTick,
         long clayEnergy,
         boolean structureDependent,
         List<SizedIngredient> itemInputs,
@@ -19,7 +20,7 @@ public record RecipeViewerData(
     public static RecipeViewerData from(ClayiumMachineRecipe recipe) {
         List<ItemStack> outputs = recipe.itemOutputs().stream().map(ItemStack::copy).toList();
         if (recipe.processingMethod() == ClayiumRecipeMethod.CLAY_WORK_TABLE) {
-            return new RecipeViewerData(recipe.requiredTier(), recipe.processingTicks(), 0L, false,
+            return new RecipeViewerData(recipe.requiredTier(), recipe.processingTicks(), 0L, 0L, false,
                     List.copyOf(recipe.itemInputs()), outputs);
         }
         TierManager.ProcessingParameters parameters = TierManager.calculate(
@@ -27,6 +28,7 @@ public record RecipeViewerData(
         return new RecipeViewerData(
                 recipe.requiredTier(),
                 parameters.requiredProgress(),
+                parameters.energyPerProgress().internalValue(),
                 parameters.totalEnergy().internalValue(),
                 recipe.processingMethod() == ClayiumRecipeMethod.CA_REACTOR,
                 List.copyOf(recipe.itemInputs()), outputs);
@@ -43,28 +45,31 @@ public record RecipeViewerData(
     }
 
     public String formattedClayEnergy() {
-        return BigDecimal.valueOf(clayEnergy, 5).stripTrailingZeros().toPlainString();
+        return formatEnergy(clayEnergy);
+    }
+
+    public String formattedClayEnergyPerTick() {
+        return formatEnergy(clayEnergyPerTick);
+    }
+
+    private static String formatEnergy(long internalEnergy) {
+        return BigDecimal.valueOf(internalEnergy, 5).stripTrailingZeros().toPlainString();
     }
 
     public static long panEnergyPerTick(int tier) {
         return Math.max(1L, (long)(100_000L * TierManager.general(tier).energyMultiplier()));
     }
 
-    public String workTool() {
+    public List<ItemStack> workToolItems() {
         return switch (requiredTier) {
-            case 1, 2 -> "none";
-            case 3 -> "rolling_pin";
-            case 4, 6 -> "slicer_or_spatula";
-            case 5 -> "spatula";
+            case 1, 2 -> List.of();
+            case 3 -> List.of(new ItemStack(WorkbenchRegistration.CLAY_ROLLING_PIN.get()));
+            case 4, 6 -> List.of(
+                    new ItemStack(WorkbenchRegistration.CLAY_SLICER.get()),
+                    new ItemStack(WorkbenchRegistration.CLAY_SPATULA.get()));
+            case 5 -> List.of(new ItemStack(WorkbenchRegistration.CLAY_SPATULA.get()));
             default -> throw new IllegalArgumentException("Unknown work operation: " + requiredTier);
         };
-    }
-
-    public static String formattedFluidAmounts(List<FluidStack> fluids) {
-        return fluids.stream()
-                .map(fluid -> Integer.toString(fluid.getAmount()))
-                .reduce((left, right) -> left + " + " + right)
-                .orElse("0");
     }
 
 }

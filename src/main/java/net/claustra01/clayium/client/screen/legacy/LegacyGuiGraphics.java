@@ -53,10 +53,10 @@ public final class LegacyGuiGraphics {
     }
 
     public static void progress(GuiGraphics graphics, int x, int y, long value, long maximum) {
-        graphics.blit(PROGRESS, x, y, 0, 0, 24, 16, 256, 256);
+        graphics.blit(PROGRESS, x, y, 0, 0, 24, 17, 256, 256);
         if (value > 0L && maximum > 0L) {
-            int width = Math.max(1, (int)Math.min(24L, 24L * value / maximum));
-            graphics.blit(PROGRESS, x, y, 0, 16, width, 16, 256, 256);
+            int width = Math.max(1, (int)Math.min(24L, (long)(24.0 * value / maximum)));
+            graphics.blit(PROGRESS, x, y, 0, 17, width, 17, 256, 256);
         }
     }
 

@@ -8,6 +8,9 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import java.util.ArrayList;
 import java.util.List;
 import net.claustra01.clayium.compat.RecipeViewerData;
+import net.claustra01.clayium.compat.RecipeViewerLayout;
+import net.claustra01.clayium.compat.RecipeViewerRenderer;
+import net.claustra01.clayium.compat.RecipeViewerPage;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.minecraft.network.chat.Component;
@@ -16,26 +19,35 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 
 final class EmiMachineRecipe implements EmiRecipe {
     private final EmiRecipeCategory category;
-    private final RecipeHolder<ClayiumMachineRecipe> holder;
+    private final RecipeViewerPage page;
     private final List<EmiIngredient> inputs;
     private final List<EmiStack> outputs;
 
-    EmiMachineRecipe(EmiRecipeCategory category, RecipeHolder<ClayiumMachineRecipe> holder) {
+    EmiMachineRecipe(EmiRecipeCategory category, RecipeViewerPage page) {
         this.category = category;
-        this.holder = holder;
-        ClayiumMachineRecipe recipe = holder.value();
+        this.page = page;
+        ClayiumMachineRecipe recipe = page.holder().value();
         List<EmiIngredient> recipeInputs = new ArrayList<>();
         recipe.itemInputs().forEach(input -> recipeInputs.add(EmiIngredient.of(input.ingredient(), input.count())));
         recipe.fluidInputs().forEach(fluid -> recipeInputs.add(EmiStack.of(
                 fluid.getFluid(), fluid.getComponentsPatch(), fluid.getAmount())));
+        if (recipe.processingMethod() == ClayiumRecipeMethod.CLAY_WORK_TABLE) {
+            List<EmiStack> tools = RecipeViewerData.from(recipe).workToolItems().stream()
+                    .map(EmiStack::of)
+                    .toList();
+            if (!tools.isEmpty()) {
+                recipeInputs.add(EmiIngredient.of(tools));
+            }
+        }
         inputs = List.copyOf(recipeInputs);
 
         List<EmiStack> recipeOutputs = new ArrayList<>();
         recipe.itemOutputs().forEach(stack -> recipeOutputs.add(EmiStack.of(stack, stack.getCount())));
         recipe.fluidOutputs().forEach(fluid -> recipeOutputs.add(EmiStack.of(
                 fluid.getFluid(), fluid.getComponentsPatch(), fluid.getAmount())));
-        recipe.randomOutputs().forEach(output -> recipeOutputs.add(
-                EmiStack.of(output.stack(), output.stack().getCount()).setChance(output.chance())));
+        page.randomOutputs().forEach(output -> recipeOutputs.add(
+                EmiStack.of(output.stack(), output.stack().getCount())
+                        .setChance((float)(RecipeViewerLayout.randomOutputPercent(recipe, output) / 100.0D))));
         outputs = List.copyOf(recipeOutputs);
     }
 
@@ -46,7 +58,7 @@ final class EmiMachineRecipe implements EmiRecipe {
 
     @Override
     public ResourceLocation getId() {
-        return holder.id();
+        return page.id();
     }
 
     @Override
@@ -61,76 +73,81 @@ final class EmiMachineRecipe implements EmiRecipe {
 
     @Override
     public int getDisplayWidth() {
-        return 176;
+        return RecipeViewerLayout.WIDTH;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 103;
+        return RecipeViewerLayout.HEIGHT;
     }
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
-        ClayiumMachineRecipe recipe = holder.value();
-        int inputIndex = 0;
-        for (var input : recipe.itemInputs()) {
-            widgets.addSlot(EmiIngredient.of(input.ingredient(), input.count()), 2 + inputIndex++ * 20, 2);
-        }
-        for (var fluid : recipe.fluidInputs()) {
-            widgets.addTank(EmiStack.of(fluid.getFluid(), fluid.getComponentsPatch(), fluid.getAmount()),
-                    2 + (inputIndex++ - recipe.itemInputs().size()) * 20, 22, 18, 18,
-                    Math.max(1_000, fluid.getAmount()));
-        }
-        int outputIndex = 0;
-        for (var output : recipe.itemOutputs()) {
-            widgets.addSlot(EmiStack.of(output, output.getCount()), 158 - outputIndex++ * 20, 2).recipeContext(this);
-        }
-        for (var output : recipe.randomOutputs()) {
-            widgets.addSlot(EmiStack.of(output.stack(), output.stack().getCount()).setChance(output.chance()),
-                    158 - outputIndex++ * 20, 2).recipeContext(this)
-                    .appendTooltip(Component.literal("Weight " + output.weight()));
-        }
-        int fluidOutputIndex = 0;
-        for (var fluid : recipe.fluidOutputs()) {
-            widgets.addTank(EmiStack.of(fluid.getFluid(), fluid.getComponentsPatch(), fluid.getAmount()),
-                    158 - fluidOutputIndex++ * 20, 22, 18, 18, Math.max(1_000, fluid.getAmount()))
-                    .recipeContext(this);
-        }
-
+        ClayiumMachineRecipe recipe = page.holder().value();
+        RecipeViewerLayout layout = page.layout();
         RecipeViewerData data = RecipeViewerData.from(recipe);
-        if (recipe.processingMethod() == ClayiumRecipeMethod.CLAY_WORK_TABLE) {
-            widgets.addText(Component.translatable("gui.clayium.recipe.work_operation", data.requiredTier()),
-                    2, 45, 0x404040, false);
-            widgets.addText(Component.translatable("gui.clayium.recipe.work_tool." + data.workTool()),
-                    2, 56, 0x404040, false);
-            widgets.addText(Component.translatable("gui.clayium.recipe.work_clicks", data.processingTicks()),
-                    2, 67, 0x404040, false);
-        } else {
-            widgets.addText(Component.translatable("gui.clayium.recipe.tier", data.requiredTier()),
-                    2, 45, 0x404040, false);
-            widgets.addText(Component.translatable("gui.clayium.recipe.time",
-                    data.requiredTier(), data.processingTicks()), 2, 56, 0x404040, false);
-            widgets.addText(Component.translatable("gui.clayium.recipe.energy",
-                    data.requiredTier(), data.formattedClayEnergy()), 2, 67, 0x404040, false);
+        widgets.addDrawable(0, 0, layout.width(), layout.height(),
+                (graphics, mouseX, mouseY, delta) ->
+                        RecipeViewerRenderer.drawPage(graphics, page));
+        for (RecipeViewerLayout.Slot slot : layout.slots()) {
+            switch (slot.kind()) {
+                case ITEM_INPUT -> {
+                    var input = recipe.itemInputs().get(slot.sourceIndex());
+                    widgets.addSlot(EmiIngredient.of(input.ingredient(), input.count()), slot.x() - 1, slot.y() - 1)
+                            .drawBack(false);
+                }
+                case FLUID_INPUT -> addFluidTank(widgets, recipe.fluidInputs().get(slot.sourceIndex()),
+                        slot.x() - 1, slot.y() - 1, false);
+                case TOOL -> widgets.addSlot(
+                        EmiIngredient.of(data.workToolItems().stream().map(EmiStack::of).toList()),
+                        slot.x() - 1, slot.y() - 1).drawBack(false);
+                case ITEM_OUTPUT -> widgets.addSlot(
+                                EmiStack.of(recipe.itemOutputs().get(slot.sourceIndex())), slot.x() - 1, slot.y() - 1)
+                        .drawBack(false)
+                        .recipeContext(this);
+                case FLUID_OUTPUT -> addFluidTank(widgets, recipe.fluidOutputs().get(slot.sourceIndex()),
+                        slot.x() - 1, slot.y() - 1, true);
+                case RANDOM_OUTPUT -> addRandomOutput(
+                        widgets, recipe, recipe.randomOutputs().get(slot.sourceIndex()), slot.x() - 1, slot.y() - 1);
+                case WEIGHTED_OUTPUTS -> addRandomOutput(widgets, recipe, recipe.randomOutputs().get(page.outcome()),
+                        slot.x() - 1, slot.y() - 1);
+            }
         }
-        int fluidLine = 78;
-        if (!recipe.fluidInputs().isEmpty()) {
-            widgets.addText(Component.translatable("gui.clayium.recipe.fluid_input",
-                    RecipeViewerData.formattedFluidAmounts(recipe.fluidInputs())),
-                    2, fluidLine, 0x404040, false);
-            fluidLine += 11;
+    }
+
+    private void addFluidTank(
+            WidgetHolder widgets,
+            net.neoforged.neoforge.fluids.FluidStack fluid,
+            int x,
+            int y,
+            boolean output) {
+        var tank = widgets.addTank(
+                        EmiStack.of(fluid.getFluid(), fluid.getComponentsPatch(), fluid.getAmount()),
+                        x, y, 18, 18, Math.max(1_000, fluid.getAmount()))
+                .drawBack(false);
+        if (output) {
+            tank.recipeContext(this);
         }
-        if (!recipe.fluidOutputs().isEmpty()) {
-            widgets.addText(Component.translatable("gui.clayium.recipe.fluid_output",
-                    RecipeViewerData.formattedFluidAmounts(recipe.fluidOutputs())),
-                    2, fluidLine, 0x404040, false);
-        } else if (recipe.fluidInputs().isEmpty() && data.structureDependent()) {
-            widgets.addText(Component.translatable("gui.clayium.recipe.structure"), 2, 78, 0x404040, false);
-        }
+    }
+
+    private void addRandomOutput(
+            WidgetHolder widgets,
+            ClayiumMachineRecipe recipe,
+            ClayiumMachineRecipe.RandomOutput output,
+            int x,
+            int y) {
+        widgets.addSlot(EmiStack.of(output.stack()).setChance(
+                        (float)(RecipeViewerLayout.randomOutputPercent(recipe, output) / 100.0D)), x, y)
+                .drawBack(false)
+                .recipeContext(this)
+                .appendTooltip(Component.translatable(
+                        "gui.clayium.recipe.weight",
+                        output.weight(),
+                        RecipeViewerLayout.totalRandomWeight(recipe)));
     }
 
     @Override
     public RecipeHolder<?> getBackingRecipe() {
-        return holder;
+        return page.holder();
     }
 }

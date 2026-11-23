@@ -10,6 +10,7 @@ import net.claustra01.clayium.machine.ClayMachineBlock;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
 import net.claustra01.clayium.machine.series.MachineSeries;
+import net.claustra01.clayium.machine.series.EnergeticClayDecomposerSeries;
 import net.claustra01.clayium.machine.series.ChemicalSeries;
 import net.claustra01.clayium.machine.series.ProcessingSeries;
 import net.claustra01.clayium.machine.series.SmeltingSeries;
@@ -37,6 +38,7 @@ public final class MachineRegistration {
         Collections.addAll(seriesList, ProcessingSeries.values());
         Collections.addAll(seriesList, SmeltingSeries.values());
         Collections.addAll(seriesList, ChemicalSeries.values());
+        seriesList.add(EnergeticClayDecomposerSeries.INSTANCE);
         for (MachineSeries series : seriesList) {
             for (int tier : series.tiers()) {
                 String id = series.registrationId(tier);

@@ -3,7 +3,7 @@ package net.claustra01.clayium.client.screen;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import net.claustra01.clayium.ClayiumMod;
+import net.minecraft.client.gui.components.Tooltip;
 import net.claustra01.clayium.client.screen.legacy.LegacyButton;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +26,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachineMenu> {
     private final Map<Direction, LegacyButton> faceButtons = new EnumMap<>(Direction.class);
 
+    private boolean configuringFaces;
+
     public ClayMachineScreen(ClayMachineMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageHeight = menu.machine() instanceof CaReactorCoreBlockEntity ? 196 : 172;
@@ -35,11 +37,19 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
     @Override
     protected void init() {
         super.init();
+        faceButtons.clear();
+        LegacyButton toggle = addRenderableWidget(new LegacyButton(leftPos + 149, topPos + 4, 23, 14,
+                Component.literal("I/O"), () -> {
+                    configuringFaces = !configuringFaces;
+                    faceButtons.values().forEach(button -> button.visible = configuringFaces);
+                }));
+        toggle.setTooltip(Tooltip.create(Component.translatable("gui.clayium.machine.faces")));
         int index = 0;
         for (Direction direction : Direction.values()) {
             LegacyButton faceButton = addRenderableWidget(new LegacyButton(
-                    leftPos + 4 + index * 28, topPos + 4, 26, 14,
+                    leftPos + 4 + index * 24, topPos + 4, 23, 14,
                     faceButtonText(direction), () -> cycleFace(direction)));
+            faceButton.visible = configuringFaces;
             faceButtons.put(direction, faceButton);
             index++;
         }
@@ -65,32 +75,47 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + inventoryLabelY,
-                0, 0, 176, 90, 256, 256);
+                0, 0, 176, 94, 256, 256);
         int inputSlots = menu.machine() == null ? 1 : menu.machine().inputSlots();
         for (int input = 0; input < inputSlots; input++) {
-            LegacyGuiGraphics.slot(graphics,
-                    leftPos + ClayMachineMenu.inputX(inputSlots, input), topPos + 35);
+            drawMachineSlot(graphics, ClayMachineMenu.inputX(inputSlots, input), 35, inputSlots, input, 32);
         }
         int outputSlots = menu.machine() == null ? 1 : Math.min(menu.machine().outputSlots(), 4);
         for (int output = 0; output < outputSlots; output++) {
-            LegacyGuiGraphics.slot(graphics,
-                    leftPos + ClayMachineMenu.outputX(outputSlots, output),
-                    topPos + ClayMachineMenu.outputY(outputSlots, output));
+            drawMachineSlot(graphics, ClayMachineMenu.outputX(outputSlots, output),
+                    ClayMachineMenu.outputY(outputSlots, output), outputSlots, output, 64);
         }
         LegacyGuiGraphics.slot(graphics, leftPos + 44, topPos + 57);
-        ClayMachineBlockEntity machine = menu.machine();
-        if (machine != null) {
-            ResourceLocation hull = ClayiumMod.id("textures/block/machinehull-" + Math.max(0, machine.tier() - 1) + ".png");
-            ResourceLocation front = ClayiumMod.id("textures/block/" + machine.series().frontTexture() + ".png");
-            graphics.blit(hull, leftPos + 72, topPos + 35, 0, 0, 16, 16, 16, 16);
-            graphics.blit(front, leftPos + 72, topPos + 35, 0, 0, 16, 16, 16, 16);
+        if (!configuringFaces && menu.machine() != null) {
+            graphics.renderItem(new ItemStack(menu.machine().getBlockState().getBlock()), leftPos + 131, topPos + 4);
         }
-        LegacyGuiGraphics.progress(graphics, leftPos + 89, topPos + 36,
+        LegacyGuiGraphics.progress(graphics, leftPos + 76, topPos + 35,
                 menu.progress(), menu.requiredProgress());
         if (menu.machine() != null && menu.machine().series().recipeMethod().id().equals("chemical_reactor")) {
             drawFluidGauge(graphics, menu.inputFluid(), 20);
             drawFluidGauge(graphics, menu.outputFluid(), 160);
         }
+    }
+
+    private void drawMachineSlot(GuiGraphics graphics, int x, int y, int count, int index, int pairU) {
+        if (count == 1) {
+            graphics.blit(LegacyGuiGraphics.SLOT, leftPos + x - 5, topPos + y - 5, 0, 32, 26, 26, 256, 256);
+        } else if (count == 2) {
+            graphics.blit(LegacyGuiGraphics.SLOT, leftPos + x - 1, topPos + y - 1, pairU,
+                    index * 32, 18, 18, 256, 256);
+        } else {
+            LegacyGuiGraphics.slot(graphics, leftPos + x, topPos + y);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
+        if (button == 0 && menu.machine() != null && x >= leftPos + 76 && x < leftPos + 100
+                && y >= topPos + 35 && y < topPos + 52
+                && RecipeViewerNavigation.open(menu.machine().series().recipeMethod().location())) {
+            return true;
+        }
+        return super.mouseClicked(x, y, button);
     }
 
     private void drawFluidGauge(GuiGraphics graphics, FluidStack fluid, int x) {
@@ -117,6 +142,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
         if (menu.machine() == null || !menu.machine().series().recipeMethod().id().equals("chemical_reactor")) {
             return;
         }
@@ -133,19 +159,21 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        int titleWidth = menu.machine() != null && menu.machine().outputSlots() > 1 ? 120 : imageWidth - 14;
-        float titleScale = Math.min(1.0F, (float)titleWidth / font.width(title));
-        graphics.pose().pushPose();
-        graphics.pose().scale(titleScale, titleScale, 1.0F);
-        graphics.drawString(font, title, (int)(7 / titleScale), (int)(21 / titleScale), 0x404040, false);
-        graphics.pose().popPose();
+        if (!configuringFaces) {
+            float scale = Math.min(1.0F, 122.0F / font.width(title));
+            graphics.pose().pushPose();
+            graphics.pose().translate(6, 6, 0);
+            graphics.pose().scale(scale, scale, 1);
+            graphics.drawString(font, title, 0, 0, 0x404040, false);
+            graphics.pose().popPose();
+        }
         Component tier = Component.literal("Tier " + menu.tier());
         graphics.drawString(font, tier, 40 - font.width(tier), 58, 0x404040, false);
         graphics.drawString(font, Component.translatable("gui.clayium.machine.state." + menu.state().name().toLowerCase()),
-                80, 58, stateColor(), false);
+                65, 58, stateColor(), false);
         graphics.drawString(font, Component.translatable(
                         "gui.clayium.machine.required_energy", formatEnergy(menu.requiredEnergy())),
-                80, 69, 0x404040, false);
+                65, 68, 0x404040, false);
         ClayMachineBlockEntity machine = menu.machine();
         if (machine instanceof CaReactorCoreBlockEntity) {
             Component structure = Component.translatable(

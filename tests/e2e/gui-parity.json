@@ -125,8 +125,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         },
         "WaterWheelScreen": {
@@ -140,10 +140,10 @@
           "screenshot": "water-wheel-flow-efficiency-and-progress"
         },
         "MetalChestScreen": {
-          "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112",
-          "slots": "storage x=(width-18*columns)/2+1+18*i, y=18+18*j; player x=(width-176)/2+8, y=height-82",
+          "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112-(20 if rows>6)",
+          "slots": "storage x=(width-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(width-176)/2+8, y=height-82",
           "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16; server clickMenuButton",
-          "text": "title 4,5; page (playerX+162,machineY+32); #404040",
+          "text": "title 6,6 and player label when rows <= 6; page (playerX+162,machineY+32) when pages > 1; #404040",
           "screenshot": "multipage-europium-chest-page-two",
           "allowedDifference": "Named material variants replace metadata; large-chest slot geometry now matches original ContainerNormalInventory."
         }
@@ -177,8 +177,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         }
       }
@@ -213,8 +213,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         },
         "ClayProductionScreen": {
@@ -223,7 +223,7 @@
             180
           ],
           "slots": "input 44,46; output 116,46; fuel 44,68; optional limit 66,68; player 8,100",
-          "progress": "88,47 24x16",
+          "progress": "88,47 24x17",
           "screenshot": "clay-production-progress"
         },
         "EnergyConverterScreen": {
@@ -241,8 +241,8 @@
       "original": "GuiClayMachines",
       "ported": "ClayMachineScreen",
       "window": "176x166 for default machineY=72",
-      "parts": "input 44,35; output 116,35; fuel 44,57; player inventory 8,90; 24x16 progress; Tier and CE",
-      "allowedDifference": "The 176x172 window moves player slots from Y=84 to Y=90 to fit six capability face controls and server state/required-CE labels above inventory. The 24x16 progress crop starts at (89,36) instead of the original 24x17 bar at (76,35).",
+      "parts": "input 44,35; output 116,35; fuel 44,57; player inventory 8,90; 24x17 progress; Tier and CE",
+      "allowedDifference": "The 176x172 window moves player slots from Y=84 to Y=90 to fit the fuel slot and synchronized state/CE labels. The I/O toggle opens the six face controls in the header.",
       "originalLayout": {
         "source": "mods.clayium.gui.client.GuiClayMachines + mods.clayium.gui.container.ContainerClayMachines",
         "window": "176x166 for default machineY=72",
@@ -265,8 +265,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         }
       }
@@ -307,7 +307,7 @@
       "original": "GuiClayCraftingTable",
       "ported": "ClayCraftingBoardScreen / ClayCraftingBoardMenu",
       "window": "176 x (machineY+94); machineY derived from adjacent inventory maxY+2",
-      "parts": "3x3 pattern at 30,17; result 124,35; nearby slots start 8,84; player inventory starts 8,151",
+      "parts": "3x3 pattern at 30,17; result 124,35; nearby slots start 8,73; player inventory starts 8,machineY+12",
       "allowedDifference": "IItemHandler replaces legacy IInventory",
       "originalLayout": {
         "source": "mods.clayium.gui.client.GuiClayCraftingTable + mods.clayium.gui.container.ContainerClayCraftingTable",
@@ -328,9 +328,9 @@
         "ClayCraftingBoardScreen": {
           "window": [
             176,
-            234
+            166
           ],
-          "slots": "pattern 30,17 3x3; result 124,35; nearby 8,84; player 8,151",
+          "slots": "standalone 176x166; adjacent rows expand to 176x222; pattern 30,17; result 124,35; nearby 8,73; player 8,machineY+12",
           "screenshot": "clay-crafting-board-pattern-and-adjacent-slots"
         }
       }
@@ -397,8 +397,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         }
       }
@@ -431,8 +431,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         }
       }
@@ -465,8 +465,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         }
       }
@@ -499,8 +499,8 @@
             172
           ],
           "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-          "progress": "89,36 24x16",
-          "text": "title 7,6; CE and Tier in upper machine area",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
           "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
         }
       }
@@ -589,7 +589,7 @@
       "originalLayout": {
         "source": "mods.clayium.gui.client.GuiMultipageContainer + mods.clayium.gui.container.ContainerNormalInventory",
         "window": "machineX=176+18*max(columns-9,0)+8 if large callback; machineY=rows*18+18-(20 if rows>6); totalY=machineY+94",
-        "slots": "storage x=(machineX-18*columns)/2+1+18*i, y=18+18*j; player x=(machineX-176)/2+8, y=machineY+12",
+        "slots": "storage x=(machineX-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(machineX-176)/2+8, y=machineY+12",
         "progress": "none",
         "energy": "none",
         "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16",
@@ -603,10 +603,10 @@
       ],
       "portedLayout": {
         "MetalChestScreen": {
-          "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112",
-          "slots": "storage x=(width-18*columns)/2+1+18*i, y=18+18*j; player x=(width-176)/2+8, y=height-82",
+          "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112-(20 if rows>6)",
+          "slots": "storage x=(width-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(width-176)/2+8, y=height-82",
           "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16; server clickMenuButton",
-          "text": "title 4,5; page (playerX+162,machineY+32); #404040",
+          "text": "title 6,6 and player label when rows <= 6; page (playerX+162,machineY+32) when pages > 1; #404040",
           "screenshot": "multipage-europium-chest-page-two",
           "allowedDifference": "Named material variants replace metadata; large-chest slot geometry now matches original ContainerNormalInventory."
         }
@@ -854,8 +854,8 @@
         172
       ],
       "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
-      "progress": "89,36 24x16",
-      "text": "title 7,6; CE and Tier in upper machine area",
+      "progress": "76,35 24x17",
+      "text": "title 6,6; CE and Tier in upper machine area",
       "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
     },
     "ClayWorkTableScreen": {
@@ -973,10 +973,10 @@
       "screenshot": "area-target-raytrace-sneak-and-three-filters"
     },
     "MetalChestScreen": {
-      "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112",
-      "slots": "storage x=(width-18*columns)/2+1+18*i, y=18+18*j; player x=(width-176)/2+8, y=height-82",
+      "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112-(20 if rows>6)",
+      "slots": "storage x=(width-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(width-176)/2+8, y=height-82",
       "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16; server clickMenuButton",
-      "text": "title 4,5; page (playerX+162,machineY+32); #404040",
+      "text": "title 6,6 and player label when rows <= 6; page (playerX+162,machineY+32) when pages > 1; #404040",
       "screenshot": "multipage-europium-chest-page-two",
       "allowedDifference": "Named material variants replace metadata; large-chest slot geometry now matches original ContainerNormalInventory."
     },
@@ -1020,7 +1020,7 @@
         180
       ],
       "slots": "input 44,46; output 116,46; fuel 44,68; optional limit 66,68; player 8,100",
-      "progress": "88,47 24x16",
+      "progress": "88,47 24x17",
       "screenshot": "clay-production-progress"
     },
     "PanScreen core": {
@@ -1042,7 +1042,7 @@
         185
       ],
       "slots": "sample 35,35; antimatter 35,57; output 125,35; fuel 35,79; player 8,105",
-      "progress": "84,36 24x16",
+      "progress": "84,36 24x17",
       "screenshot": "pan-duplicator-sample-and-ce"
     },
     "PanScreen adapter": {

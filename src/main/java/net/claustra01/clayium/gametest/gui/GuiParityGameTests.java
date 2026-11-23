@@ -163,10 +163,10 @@ public final class GuiParityGameTests {
         MetalChestBlockEntity chest = new MetalChestBlockEntity(helper.absolutePos(new BlockPos(1, 1, 1)),
                 definition.block().get().defaultBlockState());
         MetalChestMenu chestMenu = new MetalChestMenu(5, player.getInventory(), chest);
-        require(chestMenu.imageWidth() == 256 && chestMenu.imageHeight() == 256
+        require(chestMenu.imageWidth() == 256 && chestMenu.imageHeight() == 236
                         && chestMenu.type().pages() == 8,
                 "The 13-column original multipage window dimensions changed");
-        slot(chestMenu.slots.get(0), 12, 18, "metal chest first slot");
+        slot(chestMenu.slots.get(0), 12, 6, "metal chest first slot");
         require(chestMenu.clickMenuButton(player, 7) && chestMenu.slots.get(728).isActive()
                         && !chestMenu.slots.get(0).isActive(),
                 "The original multipage slot relationship is not server authoritative");
@@ -217,6 +217,8 @@ public final class GuiParityGameTests {
         slot(boardMenu.slots.get(0), 124, 35, "crafting board result");
         slot(boardMenu.slots.get(1), 30, 17, "crafting board pattern");
         int boardPlayerSlot = 10 + boardMenu.adjacentSlotCount();
+        slot(boardMenu.slots.get(boardPlayerSlot), 8, 84, "standalone crafting board inventory");
+        slot(boardMenu.slots.get(boardPlayerSlot + 27), 8, 142, "standalone crafting board hotbar");
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
         require(!boardMenu.quickMoveStack(player, boardPlayerSlot).isEmpty()
                         && boardMenu.slots.get(1).getItem().is(Items.COBBLESTONE)

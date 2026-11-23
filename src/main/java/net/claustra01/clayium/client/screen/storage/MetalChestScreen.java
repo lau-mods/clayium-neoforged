@@ -23,6 +23,7 @@ public final class MetalChestScreen extends AbstractContainerScreen<MetalChestMe
     @Override
     protected void init() {
         super.init();
+        if (menu.type().pages() == 1) return;
         previous = addRenderableWidget(Button.builder(Component.literal("◀"), button -> changePage(menu.page() - 1))
                 .bounds(leftPos + inventoryLabelX + 162, topPos + inventoryLabelY + 12, 16, 16).build());
         next = addRenderableWidget(Button.builder(Component.literal("▶"), button -> changePage(menu.page() + 1))
@@ -32,6 +33,7 @@ public final class MetalChestScreen extends AbstractContainerScreen<MetalChestMe
     @Override
     protected void containerTick() {
         super.containerTick();
+        if (menu.type().pages() == 1) return;
         previous.active = menu.page() > 0;
         next.active = menu.page() + 1 < menu.type().pages();
     }
@@ -46,30 +48,31 @@ public final class MetalChestScreen extends AbstractContainerScreen<MetalChestMe
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         int storageX = leftPos + (imageWidth - menu.type().columns() * 18) / 2 + 1;
-        int storageY = 18;
+        int storageY = menu.storageY();
         for (int row = 0; row < menu.type().rows(); row++) {
             for (int column = 0; column < menu.type().columns(); column++) {
                 graphics.blit(LegacyGuiGraphics.SLOT, storageX + column * 18 - 1, topPos + storageY - 1 + row * 18, 0, 0, 18, 18);
             }
         }
-        int playerX = leftPos + inventoryLabelX;
-        int playerY = topPos + imageHeight - 82;
-        for (int row = 0; row < 4; row++) {
-            for (int column = 0; column < 9; column++) {
-                int slotY = playerY + (row == 3 ? 58 : row * 18);
-                graphics.blit(LegacyGuiGraphics.SLOT, playerX + column * 18 - 1, slotY - 1, 0, 0, 18, 18);
-            }
-        }
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos + inventoryLabelX - 8,
+                topPos + inventoryLabelY, 0, 0, 176, 94, 256, 256);
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        String name = title.getString();
-        int limit = imageWidth - 72;
-        if (font.width(name) > limit) name = font.plainSubstrByWidth(name, limit - font.width("…")) + "…";
-        graphics.drawString(font, name, 4, 5, 0x404040, false);
-        String page = (menu.page() + 1) + "/" + menu.type().pages();
-        graphics.drawString(font, page, inventoryLabelX + 162, inventoryLabelY + 32, 0x404040, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+        if (menu.type().rows() <= 6) {
+            graphics.drawString(font, title, 6, 6, 0x404040, false);
+            graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+        }
+        if (menu.type().pages() > 1) {
+            String page = (menu.page() + 1) + "/" + menu.type().pages();
+            graphics.drawString(font, page, inventoryLabelX + 162, inventoryLabelY + 32, 0x404040, false);
+        }
     }
 }

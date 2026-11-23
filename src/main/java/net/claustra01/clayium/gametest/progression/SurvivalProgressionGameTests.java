@@ -517,7 +517,8 @@ public final class SurvivalProgressionGameTests {
     private static List<ResourceLocation> candidateRecipeIds() {
         List<ResourceLocation> ids = new ArrayList<>();
         MachineRegistration.MACHINES.values().stream()
-                .filter(definition -> !definition.id().equals("chemical_metal_separator"))
+                .filter(definition -> !definition.id().equals("chemical_metal_separator")
+                        && !definition.id().equals("energetic_clay_decomposer"))
                 .forEach(definition -> ids.add(ClayiumMod.id("progression/machines/" + definition.id())));
         LogisticsRegistration.BUFFERS.values().forEach(definition ->
                 ids.add(ClayiumMod.id("progression/logistics/" + definition.id())));

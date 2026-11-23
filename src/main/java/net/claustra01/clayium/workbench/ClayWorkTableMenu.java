@@ -101,8 +101,12 @@ public final class ClayWorkTableMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(original, TABLE_SLOT_COUNT, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(original, 0, 2, false)) {
-            return ItemStack.EMPTY;
+        } else {
+            int target = slots.get(ClayWorkTableBlockEntity.TOOL_SLOT).mayPlace(original)
+                    ? ClayWorkTableBlockEntity.TOOL_SLOT : ClayWorkTableBlockEntity.INPUT_SLOT;
+            if (!moveItemStackTo(original, target, target + 1, false)) {
+                return ItemStack.EMPTY;
+            }
         }
         if (original.isEmpty()) {
             slot.setByPlayer(ItemStack.EMPTY);

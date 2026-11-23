@@ -104,16 +104,16 @@ public final class ClayCraftingBoardMenu extends AbstractContainerMenu {
         adjacentState = foundState;
         adjacent = foundHandler == null ? new ItemStackHandler(slotCount) : foundHandler;
         for (int slot = 0; slot < adjacentSlotCount; slot++) {
-            addSlot(new SlotItemHandler(adjacent, slot, 8 + slot % 9 * 18, 84 + slot / 9 * 18));
+            addSlot(new SlotItemHandler(adjacent, slot, 8 + slot % 9 * 18, 73 + slot / 9 * 18));
         }
         playerSlotStart = CRAFT_SLOT_END + adjacentSlotCount;
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 151 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, machineHeight() + 12 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 209));
+            addSlot(new Slot(inventory, column, 8 + column * 18, machineHeight() + 70));
         }
     }
 
@@ -198,6 +198,11 @@ public final class ClayCraftingBoardMenu extends AbstractContainerMenu {
                         board.getBlockPos().getX() + 0.5,
                         board.getBlockPos().getY() + 0.5,
                         board.getBlockPos().getZ() + 0.5) <= 64.0;
+    }
+
+    public int machineHeight() {
+        int rows = (adjacentSlotCount + 8) / 9;
+        return rows == 0 ? 72 : 74 + rows * 18;
     }
 
     public int adjacentSlotCount() {
