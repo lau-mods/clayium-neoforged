@@ -107,6 +107,15 @@ public final class OriginalRegistryCatalog {
         if (family.legacyName().equals("BendingMachine") && tier == 1) {
             return "clay_bending_machine";
         }
+        if (family.legacyName().equals("CAReactorCore")) {
+            return "ca_reactor_core_mk_" + switch (tier) {
+                case 10 -> "i";
+                case 11 -> "ii";
+                case 12 -> "iii";
+                case 13 -> "iv";
+                default -> throw new IllegalArgumentException("Unsupported CA reactor core tier: " + tier);
+            };
+        }
         return family.namedIdStem() + "_tier_" + tier;
     }
 

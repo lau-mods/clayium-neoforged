@@ -5,14 +5,20 @@ import net.claustra01.clayium.datagen.recipe.ClayiumRecipeBuilder;
 import net.claustra01.clayium.multiblock.MultiblockMachineType;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition.Option;
 import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MultiblockRegistration;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public final class MultiblockRecipes {
     public static void buildRecipes(RecipeOutput output) {
@@ -29,6 +35,12 @@ public final class MultiblockRecipes {
             dust(output, material, 8, 4.0D, 2_000);
         }
         dust(output, "chrome", 9, 4.0D, 2_000);
+        ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BLAST_FURNACE, 11)
+                .requires(material("impure_osmium_ingot"))
+                .output(material("osmium_ingot"), 1)
+                .clayEnergy(ClayiumRecipeEnergy.e(4.0D, 11)).processingTicks(100)
+                .when(new ConfigEnabledCondition(Option.HARDCORE_OSMIUM))
+                .save(output, ClayiumMod.id("blast_furnace/osmium_from_impure_osmium"));
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BLAST_FURNACE, 6)
                 .requires(Items.IRON_INGOT).requires(Items.COAL, 2)
                 .output(material("steel_ingot"), 1)
@@ -72,10 +84,17 @@ public final class MultiblockRecipes {
 
     private static void dust(RecipeOutput output, String material, int tier, double energy, int ticks) {
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.BLAST_FURNACE, tier)
-                .requires(material(material + "_dust"))
+                .requires(usesOriginalOreDictionary(material)
+                        ? Ingredient.of(TagKey.create(Registries.ITEM,
+                                ResourceLocation.fromNamespaceAndPath("c", "dusts/" + material)))
+                        : Ingredient.of(material(material + "_dust")), 1)
                 .output(material(material + "_ingot"), 1)
                 .clayEnergy(ClayiumRecipeEnergy.e(energy, tier)).processingTicks(ticks)
                 .save(output, ClayiumMod.id("blast_furnace/" + material));
+    }
+
+    private static boolean usesOriginalOreDictionary(String material) {
+        return material.equals("hafnium") || material.equals("strontium") || material.equals("barium");
     }
 
     private MultiblockRecipes() {

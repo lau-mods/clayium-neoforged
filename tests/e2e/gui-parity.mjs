@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { attestVisualRun } from './visual-run-attestation.mjs';
 
 if (!path.isAbsolute(process.env.HARNESS_MCT)) {
   process.env.HARNESS_MCT = path.resolve(process.env.MCT_HOME, '../../..', process.env.HARNESS_MCT);
@@ -198,3 +199,4 @@ await scenario(async ({ clients }) => {
   await screenshot(client, 'AC-F046-001', 'gadget-holder-original-slot-grid');
   await close(client);
 });
+attestVisualRun('tests/e2e/gui-parity.mjs');

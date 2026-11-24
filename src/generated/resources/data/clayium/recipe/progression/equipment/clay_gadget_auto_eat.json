@@ -1,13 +1,4 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "equipment",
-  "ingredients": [
-    {
-      "item": "clayium:clay_gadget_economical_auto_eat"
-    }
-  ],
-  "result": {
-    "count": 1,
-    "id": "clayium:clay_gadget_auto_eat"
-  }
+  "type": "clayium:nbt_preserving_auto_eat",
+  "category": "misc"
 }

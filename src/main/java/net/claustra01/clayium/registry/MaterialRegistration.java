@@ -21,6 +21,8 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 public final class MaterialRegistration {
+    public static final DeferredBlock<Block> OEC_BLOCK;
+    public static final DeferredItem<FoundationBlockItem> OEC_BLOCK_ITEM;
     public static final List<ComponentDefinition> COMPONENT_DEFINITIONS = List.of(
             component("clay_circuit", "claycircuit", 1),
             component("clay_circuit_board", "claycircuitboard", 1),
@@ -118,6 +120,15 @@ public final class MaterialRegistration {
                 creativeTabItems.add(item);
             }
         }
+
+        // The original blockMaterial metadata 9 OEC block is distinct from the
+        // blockCompressedClay metadata 12 material shape.
+        DeferredBlock<Block> oecBlock = registerBlock("oec_block", 15.0F);
+        DeferredItem<FoundationBlockItem> oecBlockItem = registerBlockItem("oec_block", oecBlock, 12);
+        OEC_BLOCK = oecBlock;
+        OEC_BLOCK_ITEM = oecBlockItem;
+        materialOwnedBlocks.add(oecBlock);
+        creativeTabItems.add(oecBlockItem);
 
         DeferredItem<FoundationItem> impureOsmium = ClayiumRegistries.ITEMS.register(
                 "impure_osmium_ingot", () -> new FoundationItem(itemProperties(-1)));

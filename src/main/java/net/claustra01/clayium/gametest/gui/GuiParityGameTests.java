@@ -254,6 +254,8 @@ public final class GuiParityGameTests {
         StorageContainerMenu storageMenu = new StorageContainerMenu(12, player.getInventory(), storage,
                 new net.minecraft.world.inventory.SimpleContainerData(9));
         slot(storageMenu.slots.get(0), 44, 35, "storage input");
+        slot(storageMenu.slots.get(1), 116, 35, "storage output");
+        slot(storageMenu.slots.get(2), 142, 18, "storage memory");
         BlockPos voidPos = new BlockPos(22, 2, 2);
         helper.setBlock(voidPos, StorageRegistration.VOID_CONTAINER.get());
         VoidContainerBlockEntity voidContainer = helper.getBlockEntity(voidPos);
@@ -272,8 +274,12 @@ public final class GuiParityGameTests {
         PanBlockEntity adapter = helper.getBlockEntity(adapterPos);
         PanMenu adapterMenu = new PanMenu(22, player.getInventory(), adapter,
                 new net.minecraft.world.inventory.SimpleContainerData(12));
-        require(adapterMenu.slots.size() == 36, "PAN adapter status has no machine inventory");
-        slot(adapterMenu.slots.get(0), 8, 108, "PAN adapter player inventory");
+        require(adapterMenu.machineSlots() == 27 && adapterMenu.slots.size() == 63,
+                "PAN adapter does not expose 9 pattern, 9 result and 9 sub-item slots");
+        slot(adapterMenu.slots.get(0), 32, 18, "PAN adapter first pattern");
+        slot(adapterMenu.slots.get(9), 92, 18, "PAN adapter first result");
+        slot(adapterMenu.slots.get(18), 8, 74, "PAN adapter first sub-item");
+        slot(adapterMenu.slots.get(27), 8, 108, "PAN adapter player inventory");
         FilterMenu filterMenu = new FilterMenu(15, player.getInventory());
         slot(filterMenu.slots.get(0), 8, 77, "filter example");
         slot(filterMenu.slots.get(1), 8, 118, "filter player inventory");

@@ -542,8 +542,8 @@
       "original": "GuiStorageContainer",
       "ported": "StorageContainerScreen and VoidContainerScreen",
       "window": "176x166 default machineY=72",
-      "parts": "single item slot, count/capacity and player inventory",
-      "allowedDifference": "The port keeps one insert slot at (44,35). Original extract (116,35) and memory (142,18) slots are absent; the current direct-capability storage path handles extraction and item identity. This is a remaining visual/operation difference.",
+      "parts": "insert, extract and memory slots, count/capacity and player inventory",
+      "allowedDifference": "The memory slot is implemented as a server-authoritative ghost sample so selecting an item does not consume it; extraction remains backed by the direct NeoForge item capability.",
       "originalLayout": {
         "source": "mods.clayium.gui.client.GuiStorageContainer + mods.clayium.gui.container.ContainerStorageContainer",
         "window": "176x166 default machineY=72",
@@ -566,9 +566,9 @@
             176,
             168
           ],
-          "slots": "single input (44,35); player (8,84)",
+          "slots": "insert (44,35), extract (116,35), memory ghost (142,18); player (8,84)",
           "screenshot": "storage-count-and-capacity",
-          "allowedDifference": "Single direct-capability slot replaces legacy insert/extract/memory slots; capacity remains server authoritative."
+          "operation": "memory sample is copied at count 1 without consuming the cursor; insert rejects nonmatching item, damage or components; extract is output-only"
         },
         "VoidContainerScreen": {
           "window": [
@@ -757,10 +757,10 @@
     },
     {
       "original": "GuiPANAdapter",
-      "ported": "Interface-style PAN adapter status plus PanScreen",
+      "ported": "Paged PAN adapter pattern/result grid plus PanScreen",
       "window": "176x190; ContainerPANAdapter machineY=96",
-      "parts": "network and connected recipe capability",
-      "allowedDifference": "The PAN adapter uses the current recipe capability and machine status display; original 3x3 adapter input/output and page buttons are not exposed. This is a remaining operation difference.",
+      "parts": "page-specific 3x3 pattern, 3x3 derived result, 9 real sub-item slots and connected recipe capability",
+      "allowedDifference": "Page arrows use the current widget sprites while preserving the original page count, slot coordinates and server-authoritative operation.",
       "originalLayout": {
         "source": "mods.clayium.gui.client.GuiPANAdapter + mods.clayium.gui.container.ContainerPANAdapter",
         "window": "176x190; ContainerPANAdapter machineY=96",
@@ -782,12 +782,12 @@
             176,
             190
           ],
-          "slots": "no machine slots; player (8,108), hotbar (8,166)",
+          "slots": "pattern ghost 3x3 at x=32..68, result ghost 3x3 at x=92..128, sub-items x=8..152 y=74; player (8,108), hotbar (8,166)",
           "progress": "none",
-          "buttons": "none",
-          "text": "title (7,6), network (7,27), inventory (8,97); #404040",
-          "scroll": "none",
-          "tooltip": "player inventory slot tooltips",
+          "buttons": "previous (4,36), next (156,36), server-validated",
+          "text": "title (7,6), page and network state, inventory (8,97); #404040",
+          "scroll": "Tier 10/11/12/13 expose 1/2/4/8 pages",
+          "tooltip": "pattern, result, sub-item and player inventory slot tooltips",
           "screenshot": "pan-adapter-status-layout",
           "allowedDifference": "Recipe inspection is server-side; original adapter 3x3 recipe slots and paging are not exposed in the port."
         }

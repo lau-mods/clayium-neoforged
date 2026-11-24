@@ -50,24 +50,34 @@ public final class MultiblockGameTests {
                 "A blast furnace made from under-tier hulls started processing");
 
         MultiblockControllerBlockEntity misplaced = build(
-                helper, MultiblockMachineType.BLAST_FURNACE, 6, true, true, true);
-        IItemHandler misplacedRoute = interfaceAt(helper, CONTROLLER.relative(FACING.getOpposite()).offset(1, 1, 1))
-                .itemHandler(null);
+                helper, MultiblockMachineType.BLAST_FURNACE, 6, true, true, false);
+        BlockPos misplacedPosition = CONTROLLER.relative(FACING.getOpposite()).offset(1, 1, 1);
+        tick(misplaced);
+        SynchronizedTarget expectedTarget = SynchronizedTarget.at(
+                helper.getLevel(), helper.absolutePos(CONTROLLER));
+        require(expectedTarget.equals(interfaceAt(helper, misplacedPosition).target()),
+                "The position-independent item interface was not auto-linked");
+        require(expectedTarget.equals(interfaceAt(helper, redstoneInterfacePosition()).target()),
+                "The redstone interface was not auto-linked");
+        IItemHandler misplacedRoute = interfaceAt(helper, misplacedPosition).itemHandler(null);
         require(misplacedRoute.insertItem(0, new ItemStack(material("industrial_clay_dust"), 2), false).isEmpty(),
                 "The misplaced interface did not route its input");
         misplacedRoute.insertItem(1, new ItemStack(material("impure_manganese_dust")), false);
         misplaced.receiveClayEnergy(ClayEnergy.ofInternal(1_000_000_000L));
         tick(misplaced);
-        require(!misplaced.isFormed() && misplaced.activeRecipe() == null,
-                "A blast furnace accepted an item interface outside its required face");
+        require(misplaced.isFormed() && misplaced.activeRecipe() != null,
+                "The original position-independent item interface did not auto-link to the furnace");
         helper.succeed();
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID, timeoutTicks = 100)
     public static void blastFurnaceProcessesOnlyThroughItsSynchronizedInterface(GameTestHelper helper) {
         MultiblockControllerBlockEntity furnace = build(
-                helper, MultiblockMachineType.BLAST_FURNACE, 6, true, false, true);
+                helper, MultiblockMachineType.BLAST_FURNACE, 6, true, false, false);
         InterfaceBlockEntity itemInterface = interfaceAt(helper, itemInterfacePosition());
+        tick(furnace);
+        require(SynchronizedTarget.at(helper.getLevel(), helper.absolutePos(CONTROLLER)).equals(itemInterface.target()),
+                "The original structure scan did not auto-link its item interface");
         IItemHandler routed = itemInterface.itemHandler(null);
         require(routed.insertItem(0, new ItemStack(material("industrial_clay_dust"), 2), false).isEmpty()
                         && routed.insertItem(1, new ItemStack(material("impure_manganese_dust")), false).isEmpty(),
@@ -132,9 +142,10 @@ public final class MultiblockGameTests {
 
         furnace = build(helper, MultiblockMachineType.BLAST_FURNACE, 6, true, false, true);
         tick(furnace);
-        helper.setBlock(itemInterfacePosition(), Blocks.AIR);
+        helper.setBlock(itemInterfacePosition(), hull(6));
         tick(furnace);
-        require(!furnace.isFormed(), "Removing an item interface did not invalidate the structure");
+        require(furnace.isFormed(),
+                "Replacing the original optional item interface with a hull invalidated the structure");
         helper.succeed();
     }
 
@@ -181,6 +192,37 @@ public final class MultiblockGameTests {
                         && reactor.inventory().getStackInSlot(0).getCount() == 6
                         && reactor.inventory().getStackInSlot(1).getCount() == 1,
                 "The broken reactor advanced or failed to return its reserved inputs");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID, timeoutTicks = 100)
+    public static void reactorRequiresOnlyItsLaserAndProcessesWithoutSynchronizer(GameTestHelper helper) {
+        MultiblockControllerBlockEntity reactor = build(
+                helper, MultiblockMachineType.REACTOR, 7, true, false, false);
+        helper.setBlock(laserInterfacePosition(), hull(7));
+        tick(reactor);
+        require(!reactor.isFormed(), "A clay reactor formed without its required laser interface");
+
+        reactor = build(helper, MultiblockMachineType.REACTOR, 7, true, false, false);
+        helper.setBlock(itemInterfacePosition(), hull(7));
+        helper.setBlock(redstoneInterfacePosition(), hull(7));
+        tick(reactor);
+        InterfaceBlockEntity laserInterface = interfaceAt(helper, laserInterfacePosition());
+        require(reactor.isFormed(),
+                "A clay reactor without optional item/redstone interfaces did not form");
+        require(SynchronizedTarget.at(helper.getLevel(), helper.absolutePos(CONTROLLER))
+                        .equals(laserInterface.target()),
+                "The required laser interface was not auto-linked during structure inspection");
+
+        require(reactor.inventory().insertItem(
+                        0, new ItemStack(component("integrated_circuit"), 6), false).isEmpty()
+                        && reactor.inventory().insertItem(
+                                1, new ItemStack(material("excited_clay_dust")), false).isEmpty(),
+                "The reactor did not accept direct GUI-equivalent input without an item interface");
+        reactor.receiveClayEnergy(ClayEnergy.ofInternal(10_000_000_000L));
+        tick(reactor);
+        require(reactor.activeRecipe() != null,
+                "The reactor did not start manual processing without a synchronizer");
         helper.succeed();
     }
 

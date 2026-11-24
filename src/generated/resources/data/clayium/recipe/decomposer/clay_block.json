@@ -16,6 +16,6 @@
     }
   ],
   "processing_method": "clayium:decomposer",
-  "processing_ticks": 20,
-  "required_tier": 2
+  "processing_ticks": 3,
+  "required_tier": 0
 }

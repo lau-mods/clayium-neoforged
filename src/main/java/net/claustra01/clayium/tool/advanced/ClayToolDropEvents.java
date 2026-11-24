@@ -1,6 +1,7 @@
 package net.claustra01.clayium.tool.advanced;
 
 import java.util.List;
+import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.AdvancedToolRegistration;
 import net.minecraft.core.registries.Registries;
@@ -27,12 +28,15 @@ public final class ClayToolDropEvents {
         } else if (tool.is(AdvancedToolRegistration.CLAY_SHOVEL.get())) {
             factor = 3;
         } else {
-            return;
+            factor = 0;
         }
         List<ItemEntity> clayDrops = event.getDrops().stream()
                 .filter(drop -> drop.getItem().is(Items.CLAY_BALL))
                 .toList();
         if (clayDrops.isEmpty()) {
+            return;
+        }
+        if (factor == 0 && Double.compare(ClayiumConfig.progressionRate(), 1.0D) == 0) {
             return;
         }
         var enchantments = event.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
@@ -42,10 +46,14 @@ public final class ClayToolDropEvents {
     }
 
     public static int correctedDropCount(RandomSource random, int fortune, int factor) {
-        int baseCount = 4 + random.nextInt(5) * random.nextInt(4);
-        int effectiveFortune = (fortune + 1) * factor;
+        int baseCount = progressionScaledBaseDrop(4 + random.nextInt(5) * random.nextInt(4));
+        int effectiveFortune = factor == 0 ? fortune : (fortune + 1) * factor;
         int bonus = Math.max(0, random.nextInt(effectiveFortune + 2) - 1);
         return baseCount * (bonus + 1);
+    }
+
+    public static int progressionScaledBaseDrop(int baseCount) {
+        return ClayiumConfig.multiplyProgressionCount(baseCount);
     }
 
     private ClayToolDropEvents() {

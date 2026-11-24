@@ -129,6 +129,7 @@ public final class WorkbenchRegistration {
                         new Item.Properties()
                                 .durability(durability)
                                 .component(FoundationDataComponentRegistration.TIER.get(), 1),
+                        durability,
                         brokenClayBalls));
     }
 

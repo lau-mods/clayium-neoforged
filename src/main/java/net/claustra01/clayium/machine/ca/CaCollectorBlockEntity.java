@@ -1,6 +1,7 @@
 package net.claustra01.clayium.machine.ca;
 
 import javax.annotation.Nullable;
+import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.machine.augment.AugmentScanner;
 import net.claustra01.clayium.registry.CaRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
@@ -32,7 +33,6 @@ public final class CaCollectorBlockEntity extends BlockEntity {
         }
     };
     private long progress;
-    private double progressRemainder;
     private double resonance = 1.0D;
     private boolean resonanceDirty = true;
 
@@ -56,9 +56,9 @@ public final class CaCollectorBlockEntity extends BlockEntity {
         if (resonance <= 1.0D || outputRoom() == 0) {
             return;
         }
-        double accumulated = progressRemainder + resonance - 1.0D;
-        long wholeProgress = (long)Math.floor(accumulated);
-        progressRemainder = accumulated - wholeProgress;
+        // TileCACollector.proceedCraft in hotfix2 converts the scaled delta to long on every
+        // tick.  Fractional resonance is intentionally discarded rather than accumulated.
+        long wholeProgress = (long)((resonance - 1.0D) * ClayiumConfig.progressionRate());
         progress = saturatedAdd(progress, wholeProgress);
         int produced = (int)Math.min(Math.min(progress / BASE_CRAFT_TIME, 64L), outputRoom());
         if (produced > 0) {
@@ -132,7 +132,6 @@ public final class CaCollectorBlockEntity extends BlockEntity {
         super.saveAdditional(tag, registries);
         tag.put("inventory", output.serializeNBT(registries));
         tag.putLong("progress", progress);
-        tag.putDouble("progress_remainder", progressRemainder);
     }
 
     @Override
@@ -142,7 +141,6 @@ public final class CaCollectorBlockEntity extends BlockEntity {
             output.deserializeNBT(registries, tag.getCompound("inventory"));
         }
         progress = Math.max(0L, tag.getLong("progress"));
-        progressRemainder = Math.max(0.0D, tag.getDouble("progress_remainder"));
         resonanceDirty = true;
     }
 }

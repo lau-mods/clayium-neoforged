@@ -21,6 +21,8 @@ public final class StorageContainerScreen extends AbstractContainerScreen<Storag
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 43, topPos + 34, 0, 0, 18, 18);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 115, topPos + 34, 0, 0, 18, 18);
+        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 141, topPos + 17, 0, 0, 18, 18);
         graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 76, 0, 0, 176, 86);
     }
 

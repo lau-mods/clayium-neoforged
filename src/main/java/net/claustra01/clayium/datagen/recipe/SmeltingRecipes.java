@@ -4,6 +4,8 @@ import java.util.List;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition.Option;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -15,6 +17,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
 public final class SmeltingRecipes {
     private static final List<SmeltingRecipe> SMELTING = List.of(
@@ -56,6 +59,11 @@ public final class SmeltingRecipes {
                 .requires(common("dusts/" + recipe.material()), 1)
                 .output(material(recipe.material() + "_ingot"), 1)
                 .save(output, ClayiumMod.id("smelter/" + recipe.material())));
+        machine(ClayiumRecipeMethod.SMELTER, 5, 0.5D, 200)
+                .requires(material("impure_aluminium_dust"), 1)
+                .output(material("impure_aluminium_ingot"), 1)
+                .when(new ConfigEnabledCondition(Option.HARDCORE_ALUMINIUM))
+                .save(output, ClayiumMod.id("smelter/impure_aluminium"));
         for (String material : List.of("impure_silicon", "silicon", "iron", "gold", "lead",
                 "copper", "bronze", "brass", "electrum", "invar")) {
             SimpleCookingRecipeBuilder.smelting(common("dusts/" + material), RecipeCategory.MISC,
@@ -101,23 +109,23 @@ public final class SmeltingRecipes {
                 .output(material("zk60_a_alloy_ingot"), 20)
                 .save(output, ClayiumMod.id("alloy_smelter/zk60_a_alloy"));
         alloy(4, 1.0D, 40)
-                .requires(common("ingots/copper"), 3)
-                .requires(common("ingots/tin"), 1)
+                .requires(ingotOrDust("copper"), 3)
+                .requires(ingotOrDust("tin"), 1)
                 .output(material("bronze_ingot"), 4)
                 .save(output, ClayiumMod.id("alloy_smelter/bronze"));
         alloy(4, 1.0D, 40)
-                .requires(common("ingots/copper"), 3)
-                .requires(common("ingots/zinc"), 1)
+                .requires(ingotOrDust("copper"), 3)
+                .requires(ingotOrDust("zinc"), 1)
                 .output(material("brass_ingot"), 4)
                 .save(output, ClayiumMod.id("alloy_smelter/brass"));
         alloy(4, 1.0D, 40)
-                .requires(common("ingots/gold"), 1)
-                .requires(common("ingots/silver"), 1)
+                .requires(ingotOrDust("gold"), 1)
+                .requires(ingotOrDust("silver"), 1)
                 .output(material("electrum_ingot"), 2)
                 .save(output, ClayiumMod.id("alloy_smelter/electrum"));
         alloy(4, 1.0D, 40)
-                .requires(common("ingots/iron"), 2)
-                .requires(common("ingots/nickel"), 1)
+                .requires(ingotOrDust("iron"), 2)
+                .requires(ingotOrDust("nickel"), 1)
                 .output(material("invar_ingot"), 3)
                 .save(output, ClayiumMod.id("alloy_smelter/invar"));
     }
@@ -140,6 +148,10 @@ public final class SmeltingRecipes {
 
     private static Ingredient common(String path) {
         return Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", path)));
+    }
+
+    private static Ingredient ingotOrDust(String material) {
+        return CompoundIngredient.of(common("ingots/" + material), common("dusts/" + material));
     }
 
     private static ItemLike material(String id) {

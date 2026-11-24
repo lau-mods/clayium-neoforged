@@ -4,15 +4,25 @@
   "item_inputs": [
     {
       "count": 1,
-      "ingredient": {
-        "tag": "c:ingots/gold"
-      }
+      "ingredient": [
+        {
+          "tag": "c:ingots/gold"
+        },
+        {
+          "tag": "c:dusts/gold"
+        }
+      ]
     },
     {
       "count": 1,
-      "ingredient": {
-        "tag": "c:ingots/silver"
-      }
+      "ingredient": [
+        {
+          "tag": "c:ingots/silver"
+        },
+        {
+          "tag": "c:dusts/silver"
+        }
+      ]
     }
   ],
   "item_outputs": [

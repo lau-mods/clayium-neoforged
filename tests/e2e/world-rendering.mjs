@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import { attestVisualRun } from './visual-run-attestation.mjs';
 
 if (!path.isAbsolute(process.env.HARNESS_MCT)) {
   process.env.HARNESS_MCT = path.resolve(process.env.MCT_HOME, '../../..', process.env.HARNESS_MCT);
@@ -180,3 +181,4 @@ await scenario(async ({ clients }) => {
     screenshot(second, 'AC-F048-003', 'second-client-same-server-state');
   }
 });
+attestVisualRun('tests/e2e/world-rendering.mjs');

@@ -13,11 +13,13 @@ import net.claustra01.clayium.machine.ca.CaMachineRules;
 import net.claustra01.clayium.machine.ca.CaSeries;
 import net.claustra01.clayium.machine.series.MachineSeries;
 import net.claustra01.clayium.machine.series.SmeltingSeries;
+import net.claustra01.clayium.logistics.BufferBlockEntity;
 import net.claustra01.clayium.machine.iface.RedstoneControlReceiver;
 import net.claustra01.clayium.multiblock.careactor.CaReactorCoreBlockEntity;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeCache;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ProgressionRateRules;
 import net.claustra01.clayium.recipe.ClayiumRecipesReloadedEvent;
 import net.claustra01.clayium.recipe.ClayiumRecipeInput;
 import net.claustra01.clayium.registry.MachineRegistration;
@@ -57,6 +59,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -98,6 +102,7 @@ public class ClayMachineBlockEntity extends BlockEntity
     private final FluidTank fluidOutput = tank();
     private final IFluidHandler fluidHandler = new MachineFluidHandler();
     private final ContainerData menuData = new MachineContainerData();
+    private EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborItemCaches;
 
     private MachineState state = MachineState.IDLE;
     private ResourceLocation activeRecipe;
@@ -113,6 +118,10 @@ public class ClayMachineBlockEntity extends BlockEntity
     private double activeProgressMultiplier = 1.0D;
     private boolean validateRecipeOnLoad;
     private long lastRemoteRedstoneTick = Long.MIN_VALUE;
+    private int autoInsertTick;
+    private int autoExtractTick;
+    private int nextInputDirection;
+    private int nextOutputDirection;
 
     public ClayMachineBlockEntity(BlockPos pos, BlockState state) {
         this(MachineRegistration.MACHINE_BLOCK_ENTITY.get(), pos, state);
@@ -171,6 +180,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+        tickAutomaticItemTransfer(serverLevel);
         if (!canProcess()) {
             setState(MachineState.IDLE);
             return;
@@ -230,6 +240,95 @@ public class ClayMachineBlockEntity extends BlockEntity
         }
     }
 
+    private void tickAutomaticItemTransfer(ServerLevel serverLevel) {
+        TierManager.TransportParameters parameters = TierManager.machineTransport(tier());
+        autoInsertTick++;
+        autoExtractTick++;
+        boolean insertDue = autoInsertTick >= parameters.insertIntervalTicks();
+        boolean extractDue = autoExtractTick >= parameters.extractIntervalTicks();
+        if (!insertDue && !extractDue) {
+            return;
+        }
+        if (insertDue) {
+            autoInsertTick = 0;
+        }
+        if (extractDue) {
+            autoExtractTick = 0;
+        }
+        ensureNeighborItemCaches(serverLevel);
+        if (extractDue) {
+            pushOutputItems(parameters.maximumExtractItems());
+        }
+        if (insertDue) {
+            pullInputItems(parameters.maximumInsertItems());
+        }
+    }
+
+    private void ensureNeighborItemCaches(ServerLevel serverLevel) {
+        if (neighborItemCaches != null) {
+            return;
+        }
+        neighborItemCaches = new EnumMap<>(Direction.class);
+        for (Direction direction : Direction.values()) {
+            neighborItemCaches.put(direction, BlockCapabilityCache.create(
+                    Capabilities.ItemHandler.BLOCK,
+                    serverLevel,
+                    worldPosition.relative(direction),
+                    direction.getOpposite(),
+                    () -> !isRemoved(),
+                    () -> {}));
+        }
+    }
+
+    private void pushOutputItems(int maximum) {
+        int remaining = maximum;
+        int start = nextOutputDirection;
+        for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
+            int index = (start + offset) % Direction.values().length;
+            Direction direction = Direction.values()[index];
+            if (faceModes.get(direction) != FaceMode.OUTPUT) {
+                continue;
+            }
+            IItemHandler target = neighborItemCaches.get(direction).getCapability();
+            if (target == null) {
+                continue;
+            }
+            int moved = BufferBlockEntity.moveItems(
+                    sidedHandlers.get(direction), target, stack -> true, remaining, this::dropTransferRemainder);
+            if (moved > 0) {
+                remaining -= moved;
+                nextOutputDirection = (index + 1) % Direction.values().length;
+            }
+        }
+    }
+
+    private void pullInputItems(int maximum) {
+        int remaining = maximum;
+        int start = nextInputDirection;
+        for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
+            int index = (start + offset) % Direction.values().length;
+            Direction direction = Direction.values()[index];
+            if (faceModes.get(direction) != FaceMode.INPUT) {
+                continue;
+            }
+            IItemHandler source = neighborItemCaches.get(direction).getCapability();
+            if (source == null) {
+                continue;
+            }
+            int moved = BufferBlockEntity.moveItems(
+                    source, sidedHandlers.get(direction), stack -> true, remaining, this::dropTransferRemainder);
+            if (moved > 0) {
+                remaining -= moved;
+                nextInputDirection = (index + 1) % Direction.values().length;
+            }
+        }
+    }
+
+    private void dropTransferRemainder(ItemStack stack) {
+        Containers.dropItemStack(level, worldPosition.getX() + 0.5D, worldPosition.getY() + 0.5D,
+                worldPosition.getZ() + 0.5D, stack);
+    }
+
     private void tryStart(ServerLevel serverLevel) {
         List<ItemStack> inputs = inputStacks();
         if ((!series().canStartWithoutItemInput() && inputs.stream().allMatch(ItemStack::isEmpty))
@@ -250,14 +349,15 @@ public class ClayMachineBlockEntity extends BlockEntity
             return;
         }
         ClayiumMachineRecipe recipe = match.get().recipe();
-        List<ItemStack> fixedOutputs = fixedOutputs(recipe);
+        List<ItemStack> fixedOutputs = ProgressionRateRules.adjustedRecipeOutputs(
+                match.get().id(), fixedOutputs(recipe));
         if (!canAcceptOutputs(fixedOutputs)
                 || !canAcceptFluidOutputs(recipe.fluidOutputs())
                 || !allRandomOutputsFit(fixedOutputs, recipe.randomOutputs())) {
             setState(MachineState.OUTPUT_FULL);
             return;
         }
-        TierManager.ProcessingParameters parameters = processingParameters(recipe);
+        TierManager.ProcessingParameters parameters = processingParameters(match.get().id(), recipe);
         if (parameters == null) {
             setState(MachineState.IDLE);
             return;
@@ -301,7 +401,8 @@ public class ClayMachineBlockEntity extends BlockEntity
                 serverLevel.getRecipeManager(), RecipeRegistration.type(series.recipeMethod()), input, serverLevel);
         if (machineRecipe.isPresent()) {
             RecipeHolder<ClayiumMachineRecipe> holder = machineRecipe.get();
-            return Optional.of(new SelectedRecipe(holder.id(), holder.value(), false));
+            return Optional.of(new SelectedRecipe(
+                    holder.id(), ProgressionRateRules.adjustedRecipe(holder.id(), holder.value()), false));
         }
         if (series != SmeltingSeries.SMELTER || input.items().size() != 1) {
             return Optional.empty();
@@ -593,7 +694,7 @@ public class ClayMachineBlockEntity extends BlockEntity
                 .filter(recipe -> recipe.processingMethod() == series().recipeMethod())
                 .filter(recipe -> recipe.requiredTier() <= tier())
                 .filter(recipe -> activeRecipeValue == null || activeVanillaSmeltingRecipe
-                        || activeRecipeValue == recipe)
+                        || activeRecipeValue.equals(recipe))
                 .filter(this::matchesReservedInputs)
                 .isPresent();
     }
@@ -602,7 +703,8 @@ public class ClayMachineBlockEntity extends BlockEntity
         if (!activeVanillaSmeltingRecipe) {
             return manager.byKey(activeRecipe)
                     .filter(holder -> holder.value() instanceof ClayiumMachineRecipe)
-                    .map(holder -> (ClayiumMachineRecipe)holder.value());
+                    .map(holder -> ProgressionRateRules.adjustedRecipe(
+                            activeRecipe, (ClayiumMachineRecipe)holder.value()));
         }
         ItemStack reserved = inventory.getStackInSlot(reservedSlot);
         if (!(level instanceof ServerLevel serverLevel) || reserved.isEmpty()) {
@@ -745,9 +847,13 @@ public class ClayMachineBlockEntity extends BlockEntity
     }
 
     @Nullable
-    protected TierManager.ProcessingParameters processingParameters(ClayiumMachineRecipe recipe) {
+    protected TierManager.ProcessingParameters processingParameters(
+            ResourceLocation recipeId, ClayiumMachineRecipe recipe) {
         return TierManager.calculate(
-                series().parameters(tier()), recipe.processingTicks(), recipe.clayEnergy(), overclockFactor());
+                series().parameters(tier()),
+                ProgressionRateRules.adjustedRecipeTicks(
+                        recipeId, recipe.processingMethod(), recipe.processingTicks()),
+                recipe.clayEnergy(), overclockFactor());
     }
 
     public int fuelLimit() {
@@ -920,6 +1026,10 @@ public class ClayMachineBlockEntity extends BlockEntity
         tag.putDouble("progress_remainder", progressRemainder);
         tag.putDouble("progress_per_tick", progressPerTick);
         tag.putDouble("active_progress_multiplier", activeProgressMultiplier);
+        tag.putInt("auto_insert_tick", autoInsertTick);
+        tag.putInt("auto_extract_tick", autoExtractTick);
+        tag.putInt("next_input_direction", nextInputDirection);
+        tag.putInt("next_output_direction", nextOutputDirection);
         CompoundTag faces = new CompoundTag();
         faceModes.forEach((direction, mode) -> faces.putString(direction.getName(), mode.name()));
         tag.put("faces", faces);
@@ -957,6 +1067,10 @@ public class ClayMachineBlockEntity extends BlockEntity
         progressPerTick = tag.contains("progress_per_tick") ? tag.getDouble("progress_per_tick") : 1.0D;
         activeProgressMultiplier = tag.contains("active_progress_multiplier")
                 ? tag.getDouble("active_progress_multiplier") : 1.0D;
+        autoInsertTick = Math.max(0, tag.getInt("auto_insert_tick"));
+        autoExtractTick = Math.max(0, tag.getInt("auto_extract_tick"));
+        nextInputDirection = Math.floorMod(tag.getInt("next_input_direction"), Direction.values().length);
+        nextOutputDirection = Math.floorMod(tag.getInt("next_output_direction"), Direction.values().length);
         validateRecipeOnLoad = activeRecipe != null;
         CompoundTag faces = tag.getCompound("faces");
         for (Direction direction : Direction.values()) {

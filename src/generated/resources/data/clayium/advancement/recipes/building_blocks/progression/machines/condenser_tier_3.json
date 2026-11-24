@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "clayium:dense_clay_plate"
+            "items": "clayium:simple_machine_hull"
           }
         ]
       },

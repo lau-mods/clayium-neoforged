@@ -8,6 +8,7 @@ import net.claustra01.clayium.laser.LaserBeam;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.iface.LaserReceiver;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
+import net.claustra01.clayium.recipe.ProgressionRateRules;
 import net.claustra01.clayium.registry.CaReactorRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.core.Direction;
@@ -17,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Inventory;
@@ -140,13 +142,16 @@ public final class CaReactorCoreBlockEntity extends ClayMachineBlockEntity imple
     }
 
     @Override
-    protected TierManager.ProcessingParameters processingParameters(ClayiumMachineRecipe recipe) {
+    protected TierManager.ProcessingParameters processingParameters(
+            ResourceLocation recipeId, ClayiumMachineRecipe recipe) {
         CaReactorFormula formula = structure.formula().orElse(null);
         if (formula == null) {
             return null;
         }
         CaReactorFormula.ScaledProcess scaled = formula.scale(
-                recipe.processingTicks(), recipe.clayEnergy()).orElse(null);
+                ProgressionRateRules.adjustedRecipeTicks(
+                        recipeId, recipe.processingMethod(), recipe.processingTicks()),
+                recipe.clayEnergy()).orElse(null);
         if (scaled == null) {
             return null;
         }

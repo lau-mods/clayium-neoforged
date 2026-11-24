@@ -341,7 +341,7 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 `clay_blast_furnace` と `clay_reactor` は制御 Block/Item、`clayium:multiblock_controller` は共通 BlockEntity。Tier 7～9 の `clay_steel_machine_hull`、`clayium_machine_hull`、`ultimate_machine_hull` は `AssemblyMachineRegistration.MACHINE_HULLS` に置く。Tier 3～6、10 の既存筐体も同じ登録表から参照する。
 
-構造は制御ブロックを前面中央に置いた中空3×3×3。中心は空気、背面中央は同期済みアイテムインターフェース、上面中央は同期済み赤石インターフェース、反応炉のみ下面中央は同期済みレーザーインターフェースとする。ほかの外殻は筐体。高炉は各部材 Tier 6 以上、反応炉は Tier 7 以上とし、構造 Tier は全構成部材の最低 Tier。ブロック変更とインターフェース同期変更時に再判定し、結果をキャッシュする。制御ブロックの `FORMED` BlockState と BlockEntity NBT の `formed`、`structure_tier` を保存・同期する。構造破損時には予約入力を戻して処理を止める。
+構造は制御ブロックを前面中央に置いた中空3×3×3とし、中心を空気、ほかの外殻を筐体または同等Tier以上のアイテム／赤石インターフェースとする。反応炉だけは下面中央のレーザーインターフェースを必須とする。高炉は各部材 Tier 6 以上、反応炉は Tier 7 以上とし、構造 Tier は全構成部材の最低 Tier。原作 `TileClayReactor.isConstructed` と同じく、構造走査時に外殻のインターフェースを制御ブロックへ自動結線し、シンクロナイザーを構造成立または手動加工の前提にしない。ブロック変更とインターフェース同期変更時に再判定し、結果をキャッシュする。制御ブロックの `FORMED` BlockState と BlockEntity NBT の `formed`、`structure_tier` を保存・同期する。構造破損時には予約入力を戻して処理を止める。
 
 原作 hotfix2 JAR の `mods.clayium.util.crafting.CRecipes.recipeBlastFurnace` にある合金レシピは次の3件。CEは内部値で、括弧内の `e(値,Tier)` は原作 `CRecipes.e` と同値。
 
@@ -359,7 +359,7 @@ GameTest は `blastFurnaceRejectsMissingLowTierAndMisplacedInterfaces`、`blastF
 
 ## M34 CA機械・共鳴と拡張
 
-`CaRegistration` は `ca_condenser_tier_{9,10,11}`、`ca_injector_tier_{9,10,11,12,13}` を同名 Block/Item と共通 `processing_machine` BlockEntity/Menu で登録する。`ca_resonating_collector` は Tier 10、専用 BlockEntity で、出力9スロットと保存 NBT `inventory`、`progress`、`progress_remainder` を持つ。共鳴が1以下では停止し、出力満杯時には進捗を消費しない。
+`CaRegistration` は `ca_condenser_tier_{9,10,11}`、`ca_injector_tier_{9,10,11,12,13}` を同名 Block/Item と共通 `processing_machine` BlockEntity/Menu で登録する。`ca_resonating_collector` は Tier 10、専用 BlockEntity で、出力9スロットと保存 NBT `inventory`、`progress` を持つ。共鳴が1以下では停止し、出力満杯時には進捗を消費しない。原作 `TileCACollector.proceedCraft` と同じく、各tickの共鳴差分へ `ProgressionRate` を掛けてlongへ変換し、小数部をtick間で蓄積しない。
 
 拡張 Block/Item は素材名 `antimatter`、`pure_antimatter`、`oec`、`opa` に `_resonator`、`_overclocker`、`_energy_storage_upgrade` を付けた12 ID。共鳴倍率は順に1.08/1.10/2.0/20.0、中心を含む各軸±2の5×5×5で積を取る。オーバークロッカーは6面隣接だけを対象に1.5/2.3/3.5/5.0を乗算する。一般機械の積をF、GをF>10ならF/10、それ以外は1として、時間は基本値/G、CEは基本値×G^1.5、進捗はF/G。FE変換器は専用指数1.0で線形に計算する。ストレージ拡張は6面隣接で燃料枠に+1/+3/+7/+63、合計上限64。撤去後の余剰はアイテムとして落とす。
 
@@ -432,7 +432,8 @@ GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndA
 - 原作の20 GUIクラスと移植Screen/Menuの対応は `tests/e2e/gui-parity.json` に記録する。同ファイルは原作GUI PNG 19点のSHA-256も保持する。
 - `LegacyGuiGraphics` は原作 `GuiTemp` の4px九分割背景、スロット、プレイヤー在庫、24×17進捗バー（原作PNGの上段が背景、v=17が進捗）を描画する。文字ボタンはバニラのウィジェットスプライトを使い、16pxアイコンアトラスの `button.png` を文字ボタンへ引き伸ばさない。
 - PANコアの候補一覧は6件単位のサーバー権威スナップショットで同期する。ID・原価・必要CEの並べ替え、逆順、ページ、選択、詳細、禁止指定を扱い、状態はコアNBTに保存する。禁止候補は複製機の処理対象外とする。
-- PANコアは原作の176×238画面とプレイヤー在庫Y=156を使用する。PANアダプターは176×190のステータス画面を開き、原作のレシピ格子との差分は表示台帳に記録する。
+- PANコアは原作の176×238画面とプレイヤー在庫Y=156を使用する。PANアダプターはTier 10～13で1/2/4/8ページを持ち、各ページに消費しない3×3の記憶見本と3×3の導出結果、共通の実在庫9スロットを表示する。ページ選択と記憶見本はサーバー権威Payloadで更新し、隣接機械の全レシピではなく選択した変換だけをPAN閉包へ公開する。
+- Storage Containerは挿入、抽出、任意ItemStackを1個だけ記憶する非消費フィルターの3スロットを持つ。フィルターはItem、damage、Data Componentの完全一致で挿入を制限し、通常クリックとShiftクリックの双方で実在庫、カーソル、プレイヤー在庫の総数を保存する。
 - PAN操作Payloadは開いているMenu、BlockPos、距離、装置種別、actionと値域を検証する。GameTestはスロット配置、PAN状態保存、Payload拒否、PNGハッシュを検査し、E2Eは `tests/e2e/gui-parity.mjs` で代表画面と状態を撮影する。
 
 ## M42 ワールド描画
@@ -450,3 +451,15 @@ GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndA
 - `NEIClayWorkTable` の専用背景は `clayworktable.png`。材料 (12,19)、工具 (75,6)、生成物 (138,19)/(138,44)、進捗 (43,18)、操作選択 (35+16i,41)、押下回数は選択ボタンの上。作業台の「?」は手動加工、作業板の「?」はバニラ製作を開く。工具スロットには焼成済みのめん棒・スライサー・へらを1個装備でき、Shiftクリックも同じ場所へ送る。JEIとEMIのレシピ転送は各Menuの実スロットを使う。
 - 特殊説明は `cobblestone_generator`、`salt_extractor`、`quartz_crucible`、`solar_clay_fabricator`、`clay_tree`。機種・Tierに対応する触媒から利用経路を検索できる。Tier 13 `energetic_clay_decomposer` はOPA筐体とCA反応炉コイルMk IVから組み立て、原作の粘土ブロックと圧縮13段階の逆変換を `ec_decomposer` に登録する。原作の0 tickは現行Recipe Codecの最低1 tickで表現する。
 - `tests/acceptance.json` が4件の受入条件をGameTestと両ビューアの実機シナリオに結び付ける。実画面比較はPython 3、Pillow、原作JAR `.tmp/clayium-0.4.6.36.hotfix2.jar` を使い、スクリーンショット内のスロットの縁を原作PNGに合わせて比較画像を出力する。
+
+## M44 最終原作対応ゲート
+
+`scripts/generate-parity-ledger.mjs` は SHA-256 が `c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2` の hotfix2 JAR を入力とし、`data/clayium/parity_ledger.tsv` を再生成する。生成時にJAR内の英日言語キー、`CMaterials.class` の材料・形状、416 PNGの実バイト、renderer classの実在を独立に検査する。`scripts/extract-original-recipe-calls.mjs` はJARの `CRecipes` と `ClayWorkTableRecipes` を `javap` で読み、登録method、命令位置、ソース行を原作から独立抽出する。`scripts/verify-recipe-parity.mjs` は655件の型付きM39対応に対する移植版884 JSONの方法、Tier、tick、CE、入力、出力、確率フィールドを検査する。この検査は移植側台帳とJSONの整合を証明するもので、原作命令引数の意味比較を代替しない。台帳は登録品種992、レシピ674、GUI 20、GUI PNG 19、renderer 25、原作PNG 416、機械系列33、金属チェスト57、設定と除外方針を機能単位で記録する。証拠のない項目は `未確認`、未実装は `欠落` とし、件数を合わせるために `同等` へ変更してはならない。
+
+原作レシピ意味比較は `scripts/extract-original-recipe-semantics.mjs` の原作側展開値と `scripts/map-original-recipe-semantics.mjs` の移植JSON比較を使用する。全必須フィールドと全経路が一致した Registry ID だけを `同等` とし、比較済み差異は `欠落`、未対応経路は `未確認` とする。GUI・renderer は、`build/reports/m44/visual-parity.json` に原作JAR SHA-256、相異なる2クライアント、試験した移植JARのパスとSHA-256、台帳 `unitId`、対象に対応する正規E2Eシナリオ、判定 `同等`、差分画素数0、原作画像・移植画像・比較artifactの各相対パスとSHA-256が揃う場合だけ検証候補とする。生成器は全ファイルの実在とハッシュ、PNGの形式と寸法、復号後の全画素一致まで検査してから `同等` へ昇格する。E2E名、スクリーンショット予定名、自己申告した判定だけを実行証拠として扱わない。
+
+視覚比較の正規経路では、`gui-parity.mjs` と `world-rendering.mjs` がHarness結果へシナリオソース、証拠生成ヘルパー、移植JAR、2クライアント、各撮影画像のSHA-256を追記する。原作環境で取得した画像と対応表は `reference/original/visual/` 以下に置き、`scripts/build-visual-parity-report.mjs --run <Harness result.json> --run <Harness result.json> --baseline <original manifest> --port-jar build/libs/clayium-0.1.0.jar --output build/reports/m44/visual-parity.json` で画素比較と入力ハッシュに結合された差分artifactを生成する。台帳生成器はHarness結果、実行したシナリオソース、移植JAR、撮影画像、原作画像、差分artifactの全結合を再検証する。
+
+設定は原作名と既定値を保持し、一般機械・Smelter・CA Condenserの時間とCE倍率、通常機械・Bufferの搬入／搬出周期と上限、LaserQualityを実処理で参照する。`ProgressionRate` は原作の各作用箇所で個別に適用し、一律のTier倍率へ変換しない。HardcoreAluminium、HardcoreOsmium、EnableInjectorRecipeOfInterfaceはデータパック条件として扱う。UtilityMode、液体カプセル、流体数値ID、旧BlockEntity別名、数値Entity ID、PacketSendingRateは復元しない。
+
+GameTest は `ParityLedgerGameTests` と `ConfigParityGameTests` を使用する。`parityLedgerCoversIndependentOriginalInventories` は台帳の集合と証拠列を検査し、`parityLedgerHasNoMissingOrUnverifiedEntries` は正式受入時に `欠落` と `未確認` が0件でなければ失敗する。`allTierMachineAndChestLedgersCloseWithoutExternalDependencies` は33系列168機種と57金属チェストの登録を検査し、`removedLegacyFeaturesRemainAbsentAndCeToFeIsInitiallyReachable` は除外機能と初期CE→FE経路を検査する。専用サーバーと2クライアントの状態保持検査は `tests/e2e/release-gate.mjs` を使用する。M44を完了扱いにする条件は、台帳ゲート、全GameTest、全既存E2E、release gate、`./gradlew build` のすべてが合格した場合に限る。

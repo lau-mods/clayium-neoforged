@@ -78,7 +78,8 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
     private EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches;
     private RedstoneCondition redstoneCondition = RedstoneCondition.IGNORE;
     private int transferLimit;
-    private int transferTick;
+    private int insertTick;
+    private int extractTick;
     private int nextOutputDirection;
     private int nextInputDirection;
     private ItemFilterRule.MatchType selectedRuleType = ItemFilterRule.MatchType.FUZZY;
@@ -116,19 +117,33 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
         TierManager.TransportParameters parameters = TierManager.bufferTransport(tier());
-        transferTick++;
-        if (transferTick < parameters.intervalTicks()) {
+        insertTick++;
+        extractTick++;
+        boolean insertDue = insertTick >= parameters.insertIntervalTicks();
+        boolean extractDue = extractTick >= parameters.extractIntervalTicks();
+        if (!insertDue && !extractDue) {
             return;
         }
-        transferTick = 0;
+        if (insertDue) {
+            insertTick = 0;
+        }
+        if (extractDue) {
+            extractTick = 0;
+        }
         if (!redstoneCondition.allows(serverLevel.hasNeighborSignal(worldPosition))) {
             return;
         }
         ensureCaches(serverLevel);
-        int maximum = transferLimit == 0
-                ? parameters.maximumItems() : Math.min(transferLimit, parameters.maximumItems());
-        pushItems(maximum);
-        if (acceptsInput()) {
+        if (extractDue) {
+            int maximum = transferLimit == 0
+                    ? parameters.maximumExtractItems()
+                    : Math.min(transferLimit, parameters.maximumExtractItems());
+            pushItems(maximum);
+        }
+        if (insertDue && acceptsInput()) {
+            int maximum = transferLimit == 0
+                    ? parameters.maximumInsertItems()
+                    : Math.min(transferLimit, parameters.maximumInsertItems());
             pullItems(maximum);
         }
     }
@@ -439,7 +454,8 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("faces", faces);
         tag.putString("redstone_condition", redstoneCondition.name());
         tag.putInt("transfer_limit", transferLimit);
-        tag.putInt("transfer_tick", transferTick);
+        tag.putInt("insert_tick", insertTick);
+        tag.putInt("extract_tick", extractTick);
         tag.putInt("next_output_direction", nextOutputDirection);
         tag.putInt("next_input_direction", nextInputDirection);
         tag.putString("selected_rule_type", selectedRuleType.name());
@@ -468,7 +484,9 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         redstoneCondition = parseEnum(
                 RedstoneCondition.class, tag.getString("redstone_condition"), RedstoneCondition.IGNORE);
         transferLimit = Math.max(0, tag.getInt("transfer_limit"));
-        transferTick = Math.max(0, tag.getInt("transfer_tick"));
+        int legacyTransferTick = Math.max(0, tag.getInt("transfer_tick"));
+        insertTick = Math.max(0, tag.contains("insert_tick") ? tag.getInt("insert_tick") : legacyTransferTick);
+        extractTick = Math.max(0, tag.contains("extract_tick") ? tag.getInt("extract_tick") : legacyTransferTick);
         nextOutputDirection = Math.floorMod(tag.getInt("next_output_direction"), Direction.values().length);
         nextInputDirection = Math.floorMod(tag.getInt("next_input_direction"), Direction.values().length);
         selectedRuleType = parseEnum(

@@ -3,11 +3,13 @@ package net.claustra01.clayium.gametest.storage;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.StorageRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.recipe.StorageContainerExpansionRecipe;
 import net.claustra01.clayium.storage.StorageContainerBlock;
 import net.claustra01.clayium.storage.StorageContainerMenu;
 import net.claustra01.clayium.storage.VoidContainerMenu;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.Direction;
@@ -33,6 +35,38 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 @GameTestHolder(ClayiumMod.MOD_ID)
 @PrefixGameTestTemplate(false)
 public final class StorageGameTests {
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void clayCoreCraftingExpandsStorageAndPreservesContents(GameTestHelper helper) {
+        ItemStack basic = new ItemStack(StorageRegistration.STORAGE_CONTAINER_ITEM.get());
+        CompoundTag contents = new CompoundTag();
+        contents.put("stored", new ItemStack(Items.DIAMOND).save(helper.getLevel().registryAccess()));
+        contents.putLong("amount", 65_536L);
+        contents.putBoolean("expanded", false);
+        basic.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                net.minecraft.world.item.component.CustomData.of(contents));
+        ItemStack core = new ItemStack(MaterialRegistration.COMPONENTS.get("clay_core").get());
+        CraftingInput input = CraftingInput.of(2, 1, java.util.List.of(basic, core));
+        StorageContainerExpansionRecipe recipe = (StorageContainerExpansionRecipe)helper.getLevel().getRecipeManager()
+                .byKey(ClayiumMod.id("storage_container_expansion")).orElseThrow().value();
+        require(recipe.matches(input, helper.getLevel()),
+                "The original Storage Container and Clay Core shapeless route is missing");
+        ItemStack result = recipe.assemble(input, helper.getLevel().registryAccess());
+        require(result.is(StorageRegistration.STORAGE_CONTAINER_ITEM.get()) && result.getCount() == 1,
+                "Storage expansion did not return exactly one Storage Container");
+        CompoundTag resultData = result.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+        require(resultData.getBoolean("expanded") && resultData.getLong("amount") == 65_536L
+                        && resultData.contains("stored"),
+                "Storage expansion did not preserve contents at the 65,536 boundary");
+
+        ItemStack expandedAgain = result.copy();
+        CraftingInput invalid = CraftingInput.of(2, 1, java.util.List.of(expandedAgain, core));
+        require(!recipe.matches(invalid, helper.getLevel())
+                        && recipe.assemble(invalid, helper.getLevel().registryAccess()).isEmpty(),
+                "An already expanded Storage Container accepted a second Clay Core");
+        helper.succeed();
+    }
+
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void storageCapacityExpansionOverflowPersistenceAndVoidAreExact(GameTestHelper helper) {
         BlockPos storagePos = helper.absolutePos(new BlockPos(1, 1, 1));
@@ -76,15 +110,27 @@ public final class StorageGameTests {
         require(storageMenu.getCarried().isEmpty() && storage.amount() == 65_608L,
                 "Clicking a partly filled storage slot lost items");
         player.getInventory().setItem(9, new ItemStack(Items.CLAY_BALL, 8));
-        storageMenu.quickMoveStack(player, 1);
+        storageMenu.quickMoveStack(player, 3);
         require(storage.amount() == 65_616L && player.getInventory().getItem(9).isEmpty(),
                 "Shift insertion did not update the stored amount");
-        ItemStack menuTaken = storageMenu.slots.get(0).safeTake(16, 16, player);
+        ItemStack menuTaken = storageMenu.slots.get(1).safeTake(16, 16, player);
         require(menuTaken.getCount() == 16 && storage.amount() == 65_600L,
                 "Storage GUI extraction did not lower the long count");
         storage.itemHandler().insertItem(0, menuTaken, false);
-        storageMenu.quickMoveStack(player, 0);
-        require(storage.amount() == 65_552L && player.getInventory().countItem(Items.CLAY_BALL) == 64,
+        long beforeNormalClick = storage.amount() + player.getInventory().countItem(Items.CLAY_BALL)
+                + storageMenu.getCarried().getCount();
+        storageMenu.clicked(1, 0, ClickType.PICKUP, player);
+        require(storageMenu.getCarried().getCount() == 64 && storage.amount() == 65_552L
+                        && storage.amount() + player.getInventory().countItem(Items.CLAY_BALL)
+                                + storageMenu.getCarried().getCount() == beforeNormalClick,
+                "Normal Storage output click did not conserve stored and cursor items");
+        storageMenu.clicked(0, 0, ClickType.PICKUP, player);
+        require(storageMenu.getCarried().isEmpty() && storage.amount() == 65_616L,
+                "Returning a normally extracted stack did not restore Storage contents");
+        long beforeShiftClick = storage.amount() + player.getInventory().countItem(Items.CLAY_BALL);
+        storageMenu.quickMoveStack(player, 1);
+        require(storage.amount() == 65_552L && player.getInventory().countItem(Items.CLAY_BALL) == 64
+                        && storage.amount() + player.getInventory().countItem(Items.CLAY_BALL) == beforeShiftClick,
                 "Shift extraction duplicated or lost a normal stack");
         storageMenu.quickMoveStack(player, storageMenu.slots.size() - 1);
         require(storage.amount() == 65_616L && player.getInventory().countItem(Items.CLAY_BALL) == 0,
@@ -131,6 +177,47 @@ public final class StorageGameTests {
         require(voidMenu.getCarried().isEmpty(), "Clicking the void slot did not discard the offered stack");
         require(voidContainer.itemHandler().extractItem(0, 64, false).isEmpty(),
                 "The void container produced an item that was never inserted");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void storageMemoryIsAComponentExactNonConsumingGhostFilter(GameTestHelper helper) {
+        BlockPos pos = helper.absolutePos(new BlockPos(1, 1, 1));
+        helper.getLevel().setBlockAndUpdate(pos, StorageRegistration.STORAGE_CONTAINER.get().defaultBlockState());
+        StorageContainerBlockEntity storage = (StorageContainerBlockEntity)helper.getLevel().getBlockEntity(pos);
+        require(storage != null, "Storage container block entity was not created");
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        StorageContainerMenu menu = new StorageContainerMenu(3, player.getInventory(), storage,
+                new net.minecraft.world.inventory.SimpleContainerData(9));
+
+        ItemStack namedDiamond = new ItemStack(Items.DIAMOND, 32);
+        namedDiamond.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
+                net.minecraft.network.chat.Component.literal("remembered"));
+        menu.setCarried(namedDiamond.copy());
+        menu.clicked(2, 0, ClickType.PICKUP, player);
+        require(menu.getCarried().getCount() == 32
+                        && storage.memoryInventory().getStackInSlot(0).getCount() == 1,
+                "Setting the Storage memory consumed the cursor stack or retained its count");
+        require(storage.itemHandler().insertItem(0, new ItemStack(Items.DIAMOND), false).getCount() == 1,
+                "Storage memory ignored DataComponents while filtering");
+        ItemStack accepted = namedDiamond.copyWithCount(7);
+        require(storage.itemHandler().insertItem(0, accepted, false).isEmpty() && storage.amount() == 7,
+                "A component-identical item did not pass the Storage memory filter");
+        require(menu.slots.get(2).safeTake(1, 1, player).isEmpty()
+                        && menu.quickMoveStack(player, 2).isEmpty(),
+                "The ghost memory stack was extractable");
+
+        CompoundTag saved = storage.saveWithFullMetadata(helper.getLevel().registryAccess());
+        StorageContainerBlockEntity loaded = new StorageContainerBlockEntity(pos, storage.getBlockState());
+        loaded.loadWithComponents(saved, helper.getLevel().registryAccess());
+        ItemStack loadedMemory = loaded.memoryInventory().getStackInSlot(0);
+        require(loadedMemory.getCount() == 1 && ItemStack.isSameItemSameComponents(loadedMemory, namedDiamond),
+                "Storage memory did not preserve its component-exact ghost across reload");
+
+        menu.setCarried(ItemStack.EMPTY);
+        menu.clicked(2, 0, ClickType.PICKUP, player);
+        require(storage.memoryInventory().getStackInSlot(0).isEmpty(),
+                "An empty cursor did not clear the Storage memory");
         helper.succeed();
     }
 

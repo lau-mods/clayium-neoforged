@@ -14,10 +14,14 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class PanMenu extends AbstractContainerMenu {
+    private static final int ADAPTER_GHOST_SLOTS = PanBlockEntity.ADAPTER_PAGE_SIZE * 2;
+
     private final PanBlockEntity pan;
     private final BlockPos position;
     private final ContainerData data;
@@ -30,6 +34,7 @@ public final class PanMenu extends AbstractContainerMenu {
     private boolean candidateReverse;
     private ResourceLocation selectedCandidate = ClayiumMod.id("none");
     private long lastSnapshotHash = Long.MIN_VALUE;
+    private int adapterPage;
 
     public PanMenu(int containerId, Inventory inventory, BlockPos position) {
         this(containerId, inventory, panAt(inventory, position), new SimpleContainerData(12));
@@ -46,6 +51,24 @@ public final class PanMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.ANTIMATTER_SLOT, 35, 57));
             addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.OUTPUT_SLOT, 125, 35));
             addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.FUEL_SLOT, 35, 79));
+        } else if (pan.kind() == PanBlock.Kind.ADAPTER) {
+            IItemHandler patterns = new AdapterPageHandler(pan.adapterPatterns());
+            IItemHandler results = new AdapterPageHandler(pan.adapterResults());
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 3; column++) {
+                    int slot = column + row * 3;
+                    addSlot(new GhostSlot(patterns, slot, 32 + column * 18, 18 + row * 18));
+                }
+            }
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 3; column++) {
+                    int slot = column + row * 3;
+                    addSlot(new GhostSlot(results, slot, 92 + column * 18, 18 + row * 18));
+                }
+            }
+            for (int slot = 0; slot < PanBlockEntity.ADAPTER_PAGE_SIZE; slot++) {
+                addSlot(new SlotItemHandler(pan.adapterSubItems(), slot, 8 + slot * 18, 74));
+            }
         }
         machineSlots = slots.size();
         int playerInventoryY = switch (pan.kind()) {
@@ -73,6 +96,10 @@ public final class PanMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        if (index < 0 || index >= slots.size()
+                || (pan.kind() == PanBlock.Kind.ADAPTER && index < ADAPTER_GHOST_SLOTS)) {
+            return ItemStack.EMPTY;
+        }
         Slot slot = slots.get(index);
         if (!slot.hasItem()) {
             return ItemStack.EMPTY;
@@ -81,6 +108,10 @@ public final class PanMenu extends AbstractContainerMenu {
         ItemStack moving = slot.getItem();
         if (index < machineSlots) {
             if (!moveItemStackTo(moving, machineSlots, slots.size(), true)) {
+                return ItemStack.EMPTY;
+            }
+        } else if (pan.kind() == PanBlock.Kind.ADAPTER) {
+            if (!moveItemStackTo(moving, ADAPTER_GHOST_SLOTS, machineSlots, false)) {
                 return ItemStack.EMPTY;
             }
         } else {
@@ -202,11 +233,100 @@ public final class PanMenu extends AbstractContainerMenu {
                 : pan.selectedCandidate() == null ? ClayiumMod.id("none") : pan.selectedCandidate();
     }
 
+    public int adapterPage() {
+        return adapterPage;
+    }
+
+    public int adapterPages() {
+        return pan.kind() == PanBlock.Kind.ADAPTER ? pan.adapterPages() : 1;
+    }
+
+    public boolean setAdapterPage(int page) {
+        if (pan.kind() != PanBlock.Kind.ADAPTER || page < 0 || page >= adapterPages()) {
+            return false;
+        }
+        adapterPage = page;
+        broadcastChanges();
+        return true;
+    }
+
+    public int machineSlots() {
+        return machineSlots;
+    }
+
     private long read(int start, int length) {
         long value = 0L;
         for (int index = 0; index < length; index++) {
             value |= (long)(data.get(start + index) & 0xFFFF) << index * 16;
         }
         return value;
+    }
+
+    private final class AdapterPageHandler implements IItemHandlerModifiable {
+        private final IItemHandlerModifiable delegate;
+
+        private AdapterPageHandler(IItemHandlerModifiable delegate) {
+            this.delegate = delegate;
+        }
+
+        private int actual(int slot) {
+            return adapterPage * PanBlockEntity.ADAPTER_PAGE_SIZE + slot;
+        }
+
+        @Override
+        public int getSlots() {
+            return PanBlockEntity.ADAPTER_PAGE_SIZE;
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return delegate.getStackInSlot(actual(slot));
+        }
+
+        @Override
+        public void setStackInSlot(int slot, ItemStack stack) {
+            delegate.setStackInSlot(actual(slot), stack);
+        }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            return delegate.insertItem(actual(slot), stack, simulate);
+        }
+
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return delegate.extractItem(actual(slot), amount, simulate);
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return delegate.getSlotLimit(actual(slot));
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return delegate.isItemValid(actual(slot), stack);
+        }
+    }
+
+    private static final class GhostSlot extends SlotItemHandler {
+        private GhostSlot(IItemHandler handler, int slot, int x, int y) {
+            super(handler, slot, x, y);
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return false;
+        }
+
+        @Override
+        public boolean mayPickup(Player player) {
+            return false;
+        }
+
+        @Override
+        public ItemStack remove(int amount) {
+            return ItemStack.EMPTY;
+        }
     }
 }

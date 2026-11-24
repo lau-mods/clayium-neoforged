@@ -8,7 +8,6 @@ import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
 import net.claustra01.clayium.machine.series.ProcessingSeries;
 import net.claustra01.clayium.network.MachineFaceModePayload;
-import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.core.BlockPos;
@@ -209,9 +208,9 @@ public final class ClayMachineGameTests {
             machine.receiveClayEnergy(ClayEnergy.ofInternal(1_000_000_000_000_000L));
             tick(helper, machine);
             long requiredTicks = TierManager.calculate(TierManager.general(tier), example.ticks(),
-                    ClayiumRecipeEnergy.e(1.0D, tier), 1.0D).requiredProgress();
+                    example.energy(), 1.0D).requiredProgress();
             long energyPerTick = TierManager.calculate(TierManager.general(tier), example.ticks(),
-                    ClayiumRecipeEnergy.e(1.0D, tier), 1.0D).energyPerProgress().internalValue();
+                    example.energy(), 1.0D).energyPerProgress().internalValue();
             require(machine.activeRecipe() != null && machine.requiredProgress() == requiredTicks,
                     definition.id() + " did not start its own-tier recipe with the expected time");
             runUntilIdle(helper, machine, (int)requiredTicks + 2);
@@ -230,7 +229,7 @@ public final class ClayMachineGameTests {
                     lowerTier = registeredTier;
                 }
             }
-            if (lowerTier != 0) {
+            if (lowerTier != 0 && series != ProcessingSeries.DECOMPOSER) {
                 ClayMachineBlockEntity lower = machine(helper, series, lowerTier);
                 lower.inventory().setStackInSlot(0, example.input().copy());
                 lower.receiveClayEnergy(ClayEnergy.ofInternal(1_000_000_000_000_000L));
@@ -245,26 +244,26 @@ public final class ClayMachineGameTests {
     private static RecipeExample example(ProcessingSeries series, int tier) {
         return switch (series) {
             case CONDENSER -> switch (tier) {
-                case 2 -> new RecipeExample(new ItemStack(Items.CLAY_BALL, 4), Items.CLAY, 1, 20);
-                case 3 -> new RecipeExample(new ItemStack(material("dense_clay_dust"), 9), compression("dense_clay"), 1, 20);
-                case 4 -> new RecipeExample(new ItemStack(material("industrial_clay_dust"), 9), compression("industrial_clay"), 1, 20);
-                case 5 -> new RecipeExample(new ItemStack(material("silicon_dust"), 9), material("silicon_block"), 1, 20);
-                case 10 -> new RecipeExample(new ItemStack(material("antimatter_dust"), 9), material("antimatter_block"), 1, 20);
+                case 2 -> new RecipeExample(new ItemStack(Items.CLAY_BALL, 4), Items.CLAY, 1, 20, 1);
+                case 3 -> new RecipeExample(new ItemStack(material("dense_clay_dust"), 9), compression("dense_clay"), 1, 20, 10);
+                case 4 -> new RecipeExample(new ItemStack(material("industrial_clay_dust"), 9), compression("industrial_clay"), 1, 20, 100);
+                case 5 -> new RecipeExample(new ItemStack(material("silicon_dust"), 9), material("silicon_block"), 1, 20, 1_000);
+                case 10 -> new RecipeExample(new ItemStack(material("antimatter_dust"), 9), material("antimatter_block"), 1, 20, 100_000_000);
                 default -> throw new IllegalArgumentException();
             };
             case GRINDER -> switch (tier) {
-                case 2 -> new RecipeExample(new ItemStack(Items.CLAY), material("clay_dust"), 4, 20);
-                case 3 -> new RecipeExample(new ItemStack(Items.QUARTZ), material("quartz_dust"), 1, 40);
-                case 4 -> new RecipeExample(new ItemStack(Items.IRON_INGOT), material("iron_dust"), 1, 40);
-                case 5 -> new RecipeExample(new ItemStack(material("aluminium_ingot")), material("aluminium_dust"), 1, 40);
-                case 6 -> new RecipeExample(new ItemStack(material("clay_steel_ingot")), material("clay_steel_dust"), 1, 40);
-                case 10 -> new RecipeExample(new ItemStack(material("antimatter_block")), material("antimatter_dust"), 9, 40);
+                case 2 -> new RecipeExample(new ItemStack(Items.CLAY), material("clay_dust"), 4, 20, 1);
+                case 3 -> new RecipeExample(new ItemStack(Items.QUARTZ), material("quartz_dust"), 1, 40, 10);
+                case 4 -> new RecipeExample(new ItemStack(Items.IRON_INGOT), material("iron_dust"), 1, 40, 100);
+                case 5 -> new RecipeExample(new ItemStack(material("aluminium_ingot")), material("aluminium_dust"), 1, 40, 1_000);
+                case 6 -> new RecipeExample(new ItemStack(material("clay_steel_ingot")), material("clay_steel_dust"), 1, 40, 10_000);
+                case 10 -> new RecipeExample(new ItemStack(material("antimatter_block")), material("antimatter_dust"), 9, 40, 100_000_000);
                 default -> throw new IllegalArgumentException();
             };
             case DECOMPOSER -> switch (tier) {
-                case 2 -> new RecipeExample(new ItemStack(Items.CLAY), Items.CLAY_BALL, 4, 20);
-                case 3 -> new RecipeExample(new ItemStack(compression("compressed_clay")), compression("dense_clay"), 9, 20);
-                case 4 -> new RecipeExample(new ItemStack(compression("industrial_clay")), compression("compressed_clay"), 9, 20);
+                case 2 -> new RecipeExample(new ItemStack(Items.CLAY), Items.CLAY_BALL, 4, 3, 1);
+                case 3 -> new RecipeExample(new ItemStack(compression("compressed_clay")), compression("dense_clay"), 9, 3, 1);
+                case 4 -> new RecipeExample(new ItemStack(compression("industrial_clay")), compression("compressed_clay"), 9, 10, 1);
                 default -> throw new IllegalArgumentException();
             };
         };
@@ -278,7 +277,7 @@ public final class ClayMachineGameTests {
         return MaterialRegistration.COMPRESSION_BLOCKS.get(id).get();
     }
 
-    private record RecipeExample(ItemStack input, ItemLike output, int outputCount, int ticks) {
+    private record RecipeExample(ItemStack input, ItemLike output, int outputCount, int ticks, long energy) {
     }
 
     private static void assertStateMachine(

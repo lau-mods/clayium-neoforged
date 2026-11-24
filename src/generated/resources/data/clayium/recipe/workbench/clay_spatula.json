@@ -1,8 +1,8 @@
 {
   "type": "minecraft:smelting",
   "category": "misc",
-  "cookingtime": 100,
-  "experience": 0.2,
+  "cookingtime": 200,
+  "experience": 0.1,
   "ingredient": {
     "item": "clayium:raw_clay_spatula"
   },

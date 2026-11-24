@@ -2,6 +2,7 @@ package net.claustra01.clayium.client.renderer.laser;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.laser.LaserBeam;
 import net.claustra01.clayium.laser.LaserVisual;
@@ -55,22 +56,23 @@ public final class LaserBlockEntityRenderer<T extends BlockEntity & LaserVisual>
         Direction.Axis axis = direction.getAxis();
         float[] first = axis == Direction.Axis.Y ? new float[]{1, 0, 0} : new float[]{0, 1, 0};
         float[] second = cross(direction, first);
-        float[][] corners = {
-                offset(centerStart, first, second, -halfWidth, -halfWidth),
-                offset(centerStart, first, second, halfWidth, -halfWidth),
-                offset(centerStart, first, second, halfWidth, halfWidth),
-                offset(centerStart, first, second, -halfWidth, halfWidth),
-                offset(centerEnd, first, second, -halfWidth, -halfWidth),
-                offset(centerEnd, first, second, halfWidth, -halfWidth),
-                offset(centerEnd, first, second, halfWidth, halfWidth),
-                offset(centerEnd, first, second, -halfWidth, halfWidth)};
         PoseStack.Pose pose = poseStack.last();
-        face(vertices, pose, sprite, red, green, blue, alpha, corners, 0, 1, 5, 4);
-        face(vertices, pose, sprite, red, green, blue, alpha, corners, 1, 2, 6, 5);
-        face(vertices, pose, sprite, red, green, blue, alpha, corners, 2, 3, 7, 6);
-        face(vertices, pose, sprite, red, green, blue, alpha, corners, 3, 0, 4, 7);
-        face(vertices, pose, sprite, red, green, blue, alpha, corners, 0, 3, 2, 1);
-        face(vertices, pose, sprite, red, green, blue, alpha, corners, 4, 5, 6, 7);
+        int quality = ClayiumConfig.laserQuality();
+        int planeAlpha = Math.max(1, Math.min(255, alpha * 8 / quality));
+        for (int plane = 0; plane < quality; plane++) {
+            double angle = Math.PI * plane / quality;
+            float[] radial = {
+                    (float)(first[0] * Math.cos(angle) + second[0] * Math.sin(angle)),
+                    (float)(first[1] * Math.cos(angle) + second[1] * Math.sin(angle)),
+                    (float)(first[2] * Math.cos(angle) + second[2] * Math.sin(angle))};
+            float[][] corners = {
+                    offset(centerStart, radial, second, -halfWidth, 0.0F),
+                    offset(centerStart, radial, second, halfWidth, 0.0F),
+                    offset(centerEnd, radial, second, halfWidth, 0.0F),
+                    offset(centerEnd, radial, second, -halfWidth, 0.0F)};
+            face(vertices, pose, sprite, red, green, blue, planeAlpha, corners, 0, 1, 2, 3);
+            face(vertices, pose, sprite, red, green, blue, planeAlpha, corners, 3, 2, 1, 0);
+        }
     }
 
     @Override

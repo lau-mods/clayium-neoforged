@@ -1,9 +1,14 @@
 package net.claustra01.clayium.datagen.progression;
 
+import java.util.Comparator;
+import java.util.List;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.recipe.ClayiumRecipeBuilder;
+import net.claustra01.clayium.machine.iface.InterfaceType;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition.Option;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FluidRegistration;
 import net.claustra01.clayium.registry.InterfaceRegistration;
@@ -52,6 +57,9 @@ public final class TransportProgressionRecipes {
                         item("buffer_tier_6"), 1);
             }
         }
+        for (InterfaceType type : InterfaceType.values()) {
+            injectorInterfaceUpgrades(output, type);
+        }
         for (var definition : FluidRegistration.MACHINES.values()) {
             int tier = definition.specification().tier();
             String id = definition.specification().id();
@@ -63,6 +71,29 @@ public final class TransportProgressionRecipes {
                 machine(output, "fluid/" + id, definition.block().get(),
                         4, tier, 40, 1, item("buffer_tier_" + tier), 1, Items.BUCKET, 4);
             }
+        }
+    }
+
+    private static void injectorInterfaceUpgrades(RecipeOutput output, InterfaceType type) {
+        List<InterfaceRegistration.InterfaceDefinition> definitions = InterfaceRegistration.INTERFACES.values()
+                .stream().filter(definition -> definition.type() == type)
+                .sorted(Comparator.comparingInt(InterfaceRegistration.InterfaceDefinition::tier))
+                .toList();
+        for (int index = 1; index < definitions.size(); index++) {
+            InterfaceRegistration.InterfaceDefinition previous = definitions.get(index - 1);
+            InterfaceRegistration.InterfaceDefinition current = definitions.get(index);
+            int gems = 0;
+            for (int tier = previous.tier() + 1; tier <= current.tier(); tier++) {
+                gems = Math.min(64, (int)(gems + Math.pow(1.3F, tier)));
+            }
+            ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.CA_INJECTOR, current.tier())
+                    .requires(previous.block().get())
+                    .requires(ProgressionRecipeSupport.material("antimatter"), gems)
+                    .output(current.block().get(), 1)
+                    .clayEnergy(ClayiumRecipeEnergy.e(3.0D, current.tier()))
+                    .processingTicks(4_000)
+                    .when(new ConfigEnabledCondition(Option.INJECTOR_INTERFACE))
+                    .save(output, ClayiumMod.id("progression/ca_injector/interface/" + current.id()));
         }
     }
 

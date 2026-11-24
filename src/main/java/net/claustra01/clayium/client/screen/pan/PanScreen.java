@@ -44,6 +44,16 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
     @Override
     protected void init() {
         super.init();
+        if (menu.kind() == PanBlock.Kind.ADAPTER) {
+            if (menu.adapterPages() > 1) {
+                previous = addRenderableWidget(new LegacyButton(leftPos + 4, topPos + 36, 16, 16,
+                        Component.literal("<"), () -> changeAdapterPage(menu.adapterPage() - 1)));
+                next = addRenderableWidget(new LegacyButton(leftPos + 156, topPos + 36, 16, 16,
+                        Component.literal(">"), () -> changeAdapterPage(menu.adapterPage() + 1)));
+            }
+            updateButtons();
+            return;
+        }
         if (menu.kind() != PanBlock.Kind.CORE) {
             return;
         }
@@ -76,6 +86,11 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
 
     private void updateButtons() {
         if (previous == null) {
+            return;
+        }
+        if (menu.kind() == PanBlock.Kind.ADAPTER) {
+            previous.active = menu.adapterPage() > 0;
+            next.active = menu.adapterPage() + 1 < menu.adapterPages();
             return;
         }
         previous.active = menu.candidatePage() > 0;
@@ -111,6 +126,12 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
         PacketDistributor.sendToServer(new PanScreenPayloads.Control(menu.position(), action, value));
     }
 
+    private void changeAdapterPage(int page) {
+        if (page >= 0 && page < menu.adapterPages() && menu.setAdapterPage(page)) {
+            PacketDistributor.sendToServer(new PanScreenPayloads.AdapterPage(menu.position(), page));
+        }
+    }
+
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
@@ -137,6 +158,16 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             int sliderY = menu.candidatePages() <= 1 ? 32
                     : 32 + menu.candidatePage() * 89 / (menu.candidatePages() - 1);
             LegacyGuiGraphics.slider(graphics, leftPos + 170, topPos + 32, topPos + sliderY);
+        } else if (menu.kind() == PanBlock.Kind.ADAPTER) {
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 3; column++) {
+                    LegacyGuiGraphics.slot(graphics, leftPos + 32 + column * 18, topPos + 18 + row * 18);
+                    LegacyGuiGraphics.slot(graphics, leftPos + 92 + column * 18, topPos + 18 + row * 18);
+                }
+            }
+            for (int slot = 0; slot < PanBlockEntity.ADAPTER_PAGE_SIZE; slot++) {
+                LegacyGuiGraphics.slot(graphics, leftPos + 8 + slot * 18, topPos + 74);
+            }
         }
     }
 
@@ -154,6 +185,14 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (menu.kind() == PanBlock.Kind.ADAPTER && button == 0 && hoveredSlot != null
+                && hoveredSlot.index < 2 * PanBlockEntity.ADAPTER_PAGE_SIZE) {
+            if (hoveredSlot.index < PanBlockEntity.ADAPTER_PAGE_SIZE) {
+                PacketDistributor.sendToServer(new PanScreenPayloads.AdapterPattern(
+                        menu.position(), menu.adapterPage(), hoveredSlot.index, menu.getCarried().isEmpty()));
+            }
+            return true;
+        }
         if (menu.kind() == PanBlock.Kind.CORE && button == 0 && sliderAt(mouseX, mouseY)) {
             moveSlider(mouseY);
             return true;
@@ -193,8 +232,13 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
                     menu.nodes(), menu.adapters()), 7, 130, 162, 0x405060);
         } else if (menu.kind() == PanBlock.Kind.ADAPTER) {
+            if (menu.adapterPages() > 1) {
+                String page = (menu.adapterPage() + 1) + "/" + menu.adapterPages();
+                graphics.drawString(font, page, 169 - font.width(page), 64,
+                        LegacyGuiGraphics.TEXT_COLOR, false);
+            }
             drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
-                    menu.nodes(), menu.adapters()), 7, 27, 162, 0x405060);
+                    menu.nodes(), menu.adapters()), 7, 64, 120, 0x405060);
         } else {
             graphics.drawString(font, Component.translatable("gui.clayium.pan.tier", menu.tier()), 7, 18,
                     LegacyGuiGraphics.TEXT_COLOR, false);

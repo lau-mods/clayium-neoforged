@@ -2,16 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "P": {
-      "item": "clayium:clay_plate"
+    "B": {
+      "item": "clayium:clay_blade"
     },
     "S": {
-      "item": "clayium:clay_stick"
+      "item": "clayium:short_clay_stick"
     }
   },
   "pattern": [
-    "PP",
-    " S"
+    "SB"
   ],
   "result": {
     "count": 1,

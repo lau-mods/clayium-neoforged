@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_gadget": {
+    "has_dense_clay_blade": {
       "conditions": {
         "items": [
           {
-            "items": "clayium:clay_gadget_economical_auto_eat"
+            "items": "clayium:dense_clay_blade"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "clayium:progression/equipment/clay_gadget_auto_eat"
+        "recipe": "clayium:forming_parts/clay_wrench_original"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_gadget"
+      "has_dense_clay_blade"
     ]
   ],
   "rewards": {
     "recipes": [
-      "clayium:progression/equipment/clay_gadget_auto_eat"
+      "clayium:forming_parts/clay_wrench_original"
     ]
   }
 }

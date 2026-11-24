@@ -115,6 +115,8 @@ public final class FoundationGameTests {
         for (String idPath : MaterialRegistration.MATERIAL_BLOCKS.keySet()) {
             expectedBlocks.add(ClayiumMod.id(idPath));
         }
+        expectedBlocks.add(MaterialRegistration.OEC_BLOCK.getId());
+        expectedItems.add(MaterialRegistration.OEC_BLOCK_ITEM.getId());
         MaterialRegistration.METAL_BLOCKS.keySet().forEach(idPath -> {
             expectedBlocks.add(ClayiumMod.id(idPath));
             expectedItems.add(ClayiumMod.id(idPath));
@@ -418,6 +420,7 @@ public final class FoundationGameTests {
                     expectedKeys.add("block.clayium." + id));
             MaterialRegistration.SHARDS.keySet().forEach(id ->
                     expectedKeys.add("item.clayium." + id));
+            expectedKeys.add("block.clayium.oec_block");
             expectedKeys.add("item.clayium.impure_osmium_ingot");
             expectedKeys.add("tooltip.clayium.ce_value");
             expectedKeys.add("tooltip.clayium.clay_units");

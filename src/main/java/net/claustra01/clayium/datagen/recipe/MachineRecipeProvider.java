@@ -17,9 +17,11 @@ import net.claustra01.clayium.datagen.ca.CaRecipes;
 import net.claustra01.clayium.datagen.careactor.CaReactorRecipes;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.StorageContainerExpansionRecipe;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.datagen.workbench.WorkbenchRecipeProvider;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
@@ -35,6 +37,8 @@ public final class MachineRecipeProvider extends RecipeProvider {
     protected void buildRecipes(RecipeOutput recipeOutput) {
         MaterialRecipeProvider.buildRecipes(recipeOutput);
         WorkbenchRecipeProvider.buildWorkbenchRecipes(recipeOutput);
+        SpecialRecipeBuilder.special(StorageContainerExpansionRecipe::new)
+                .save(recipeOutput, ClayiumMod.id("storage_container_expansion"));
         CondenserGrinderDecomposerRecipes.buildRecipes(recipeOutput);
         VanillaCompatRecipes.buildRecipes(recipeOutput);
         ClayProductionRecipes.buildRecipes(recipeOutput);

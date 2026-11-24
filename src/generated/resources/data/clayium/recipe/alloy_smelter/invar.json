@@ -4,15 +4,25 @@
   "item_inputs": [
     {
       "count": 2,
-      "ingredient": {
-        "tag": "c:ingots/iron"
-      }
+      "ingredient": [
+        {
+          "tag": "c:ingots/iron"
+        },
+        {
+          "tag": "c:dusts/iron"
+        }
+      ]
     },
     {
       "count": 1,
-      "ingredient": {
-        "tag": "c:ingots/nickel"
-      }
+      "ingredient": [
+        {
+          "tag": "c:ingots/nickel"
+        },
+        {
+          "tag": "c:dusts/nickel"
+        }
+      ]
     }
   ],
   "item_outputs": [

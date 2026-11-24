@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -36,6 +37,40 @@ public final class PanScreenPayloads {
                 ByteBufCodecs.VAR_INT, Control::action,
                 ByteBufCodecs.VAR_INT, Control::value,
                 Control::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record AdapterPage(BlockPos pos, int page) implements CustomPacketPayload {
+        public static final Type<AdapterPage> TYPE = new Type<>(ClayiumMod.id("pan_adapter_page"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, AdapterPage> STREAM_CODEC = StreamCodec.composite(
+                BlockPos.STREAM_CODEC, AdapterPage::pos,
+                ByteBufCodecs.VAR_INT, AdapterPage::page,
+                AdapterPage::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
+    public record AdapterPattern(BlockPos pos, int page, int slot, boolean clear)
+            implements CustomPacketPayload {
+        public static final Type<AdapterPattern> TYPE = new Type<>(ClayiumMod.id("pan_adapter_pattern"));
+        private record Values(int page, int slot, boolean clear) {
+        }
+        private static final StreamCodec<RegistryFriendlyByteBuf, Values> VALUES_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Values::page,
+                ByteBufCodecs.VAR_INT, Values::slot,
+                ByteBufCodecs.BOOL, Values::clear,
+                Values::new);
+        public static final StreamCodec<RegistryFriendlyByteBuf, AdapterPattern> STREAM_CODEC = StreamCodec.composite(
+                BlockPos.STREAM_CODEC, AdapterPattern::pos,
+                VALUES_CODEC, payload -> new Values(payload.page, payload.slot, payload.clear),
+                (pos, values) -> new AdapterPattern(pos, values.page, values.slot, values.clear));
 
         @Override
         public Type<? extends CustomPacketPayload> type() {
@@ -93,8 +128,12 @@ public final class PanScreenPayloads {
     }
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").playToServer(Control.TYPE, Control.STREAM_CODEC, PanScreenPayloads::handleControl);
-        event.registrar("1").playToClient(Snapshot.TYPE, Snapshot.STREAM_CODEC, PanScreenPayloads::handleSnapshot);
+        var registrar = event.registrar("1");
+        registrar.playToServer(Control.TYPE, Control.STREAM_CODEC, PanScreenPayloads::handleControl);
+        registrar.playToServer(AdapterPage.TYPE, AdapterPage.STREAM_CODEC, PanScreenPayloads::handleAdapterPage);
+        registrar.playToServer(AdapterPattern.TYPE, AdapterPattern.STREAM_CODEC,
+                PanScreenPayloads::handleAdapterPattern);
+        registrar.playToClient(Snapshot.TYPE, Snapshot.STREAM_CODEC, PanScreenPayloads::handleSnapshot);
     }
 
     private static void handleControl(Control payload, IPayloadContext context) {
@@ -121,6 +160,46 @@ public final class PanScreenPayloads {
             return;
         }
         menu.pan().applyScreenControl(payload.action(), payload.value());
+    }
+
+    private static void handleAdapterPage(AdapterPage payload, IPayloadContext context) {
+        if (context.player() instanceof ServerPlayer player) apply(player, payload);
+    }
+
+    public static void apply(Player player, AdapterPage payload) {
+        if (adapterMenu(player, payload.pos()) instanceof PanMenu menu) {
+            menu.setAdapterPage(payload.page());
+        }
+    }
+
+    private static void handleAdapterPattern(AdapterPattern payload, IPayloadContext context) {
+        if (context.player() instanceof ServerPlayer player) apply(player, payload);
+    }
+
+    public static void apply(Player player, AdapterPattern payload) {
+        if (!(adapterMenu(player, payload.pos()) instanceof PanMenu menu)
+                || payload.page() != menu.adapterPage()
+                || payload.slot() < 0 || payload.slot() >= PanBlockEntity.ADAPTER_PAGE_SIZE) {
+            return;
+        }
+        ItemStack carried = menu.getCarried();
+        if (payload.clear() ? !carried.isEmpty() : carried.isEmpty() || !PanRecipeClosure.isPlain(carried)) {
+            return;
+        }
+        if (menu.pan().setAdapterPattern(payload.page(), payload.slot(),
+                payload.clear() ? ItemStack.EMPTY : carried)) {
+            menu.broadcastChanges();
+        }
+    }
+
+    private static PanMenu adapterMenu(Player player, BlockPos pos) {
+        if (player.containerMenu instanceof PanMenu menu
+                && menu.position().equals(pos)
+                && menu.stillValid(player)
+                && menu.kind() == PanBlock.Kind.ADAPTER) {
+            return menu;
+        }
+        return null;
     }
 
     private static void handleSnapshot(Snapshot payload, IPayloadContext context) {

@@ -42,6 +42,20 @@ public final class PanRecipeClosure {
         return new Calculation(baseCosts(), holders, registries, machineTiers);
     }
 
+    public static Calculation beginSelected(Collection<Edge> edges) {
+        return new Calculation(baseCosts(), edges);
+    }
+
+    public static List<Edge> edgesForSelectedRecipe(Recipe<?> recipe, HolderLookup.Provider registries) {
+        List<Edge> edges = new ArrayList<>();
+        if (recipe instanceof ClayiumMachineRecipe machine) {
+            addMachine(edges, machine);
+        } else {
+            addVanilla(edges, recipe, registries);
+        }
+        return List.copyOf(edges);
+    }
+
     public static Result calculate(Map<ResourceLocation, Long> bases, Collection<Edge> edges) {
         Calculation calculation = new Calculation(bases, edges);
         while (!calculation.advance(Integer.MAX_VALUE)) {
@@ -151,7 +165,7 @@ public final class PanRecipeClosure {
             for (ItemStack output : recipe.itemOutputs()) {
                 if (isPlain(output)) {
                     edges.add(new Edge(inputs, BuiltInRegistries.ITEM.getKey(output.getItem()),
-                            output.getCount(), recipe.clayEnergy()));
+                    output.getCount(), saturatedMultiply(recipe.clayEnergy(), recipe.processingTicks())));
                 }
             }
         }

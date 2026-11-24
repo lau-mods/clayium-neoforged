@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_clay_plate": {
+    "has_clay_blade": {
       "conditions": {
         "items": [
           {
-            "items": "clayium:clay_plate"
+            "items": "clayium:clay_blade"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_clay_plate"
+      "has_clay_blade"
     ]
   ],
   "rewards": {

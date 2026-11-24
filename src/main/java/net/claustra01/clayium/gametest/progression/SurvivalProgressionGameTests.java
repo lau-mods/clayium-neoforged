@@ -17,8 +17,10 @@ import net.claustra01.clayium.compat.RecipeViewerData;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.gadget.GadgetType;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
+import net.claustra01.clayium.machine.iface.InterfaceType;
 import net.claustra01.clayium.pan.PanBlock;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
+import net.claustra01.clayium.recipe.NbtPreservingAutoEatRecipe;
 import net.claustra01.clayium.registry.AdvancedToolRegistration;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.CaRegistration;
@@ -34,6 +36,7 @@ import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
+import net.claustra01.clayium.registry.OriginalRegistryCatalog;
 import net.claustra01.clayium.registry.PanRegistration;
 import net.claustra01.clayium.registry.StorageRegistration;
 import net.claustra01.clayium.registry.WeaponRegistration;
@@ -170,7 +173,8 @@ public final class SurvivalProgressionGameTests {
                 "progression/storage/void_container");
         Set<net.minecraft.world.item.Item> reachable = new HashSet<>();
         BuiltInRegistries.ITEM.forEach(item -> {
-            if (BuiltInRegistries.ITEM.getKey(item).getNamespace().equals("minecraft")) {
+            if (BuiltInRegistries.ITEM.getKey(item).getNamespace().equals("minecraft")
+                    && isSurvivalVanillaSeed(item)) {
                 reachable.add(item);
             }
         });
@@ -182,9 +186,15 @@ public final class SurvivalProgressionGameTests {
         do {
             changed = false;
             for (RecipeHolder<?> holder : helper.getLevel().getRecipeManager().getRecipes()) {
+                if (holder.id().getNamespace().equals(ClayiumMod.MOD_ID)
+                        && holder.id().getPath().startsWith("gametest/")) {
+                    continue;
+                }
                 if (holder.value() instanceof ClayiumMachineRecipe recipe) {
                     if (!recipe.itemInputs().stream().allMatch(input ->
                                     reachableIngredient(input.ingredient(), reachable))
+                            || !recipe.fluidInputs().isEmpty()
+                            || !survivalEnvironmentAvailable(recipe.environment())
                             || !processingMachineAvailable(recipe, reachable)) {
                         continue;
                     }
@@ -207,8 +217,34 @@ public final class SurvivalProgressionGameTests {
         } while (changed);
         for (ResourceLocation recipeId : candidateRecipeIds()) {
             String id = recipeId.getPath().substring(recipeId.getPath().lastIndexOf('/') + 1);
-            require(reachable.contains(BuiltInRegistries.ITEM.get(ClayiumMod.id(id))),
-                    id + " is unreachable from world resources and obtainable machines");
+            if (!reachable.contains(BuiltInRegistries.ITEM.get(ClayiumMod.id(id)))) {
+                RecipeHolder<?> holder = helper.getLevel().getRecipeManager().byKey(recipeId).orElseThrow();
+                String blockedBy = holder.value() instanceof ClayiumMachineRecipe recipe
+                        ? "inputs=" + recipe.itemInputs().stream()
+                                .map(input -> input.count() + "*" + ingredientSignature(input.ingredient())
+                                        + ":" + reachableIngredient(input.ingredient(), reachable))
+                                .toList()
+                                + ";method=" + recipe.processingMethod().id()
+                                + ";machine=" + processingMachineAvailable(recipe, reachable)
+                                + ";caMachines=" + CaRegistration.MACHINES.values().stream()
+                                        .filter(machine -> machine.series().recipeMethod().id()
+                                                .equals(recipe.processingMethod().id()))
+                                        .map(machine -> machine.id() + ":"
+                                                + reachable.contains(machine.block().get().asItem()))
+                                        .toList()
+                                + ";caTier9Inputs=" + List.of(
+                                        "ultimate_machine_hull", "clay_reactor", "assembler_tier_6",
+                                        "clay_laser_interface_tier_7").stream()
+                                        .map(key -> key + ":" + reachable.contains(
+                                                BuiltInRegistries.ITEM.get(ClayiumMod.id(key))))
+                                        .toList()
+                        : "ingredients=" + holder.value().getIngredients().stream()
+                                .map(input -> ingredientSignature(input) + ":"
+                                        + reachableIngredient(input, reachable))
+                                .toList();
+                throw new GameTestAssertException(id
+                        + " is unreachable from world resources and obtainable machines; " + blockedBy);
+            }
         }
         for (String path : representativePaths) {
             RecipeHolder<?> holder = helper.getLevel().getRecipeManager().byKey(ClayiumMod.id(path)).orElseThrow();
@@ -222,6 +258,21 @@ public final class SurvivalProgressionGameTests {
                         id + " is listed as restored but has no survival dependency path");
             }
         }
+        int machineVariants = 0;
+        for (OriginalRegistryCatalog.MachineFamily family : OriginalRegistryCatalog.MACHINE_FAMILIES) {
+            for (int tier : family.tiers()) {
+                machineVariants++;
+                String id = OriginalRegistryCatalog.machineId(family, tier);
+                require(reachable.contains(BuiltInRegistries.ITEM.get(ClayiumMod.id(id))),
+                        id + " is registered but unreachable from the survival dependency closure");
+            }
+        }
+        require(machineVariants == 168, "The survival closure did not inspect all 168 machine variants");
+        for (MetalChestType chest : MetalChestType.ALL) {
+            require(reachable.contains(BuiltInRegistries.ITEM.get(ClayiumMod.id(chest.id()))),
+                    chest.id() + " is registered but unreachable from the survival dependency closure");
+        }
+        require(MetalChestType.ALL.size() == 57, "The survival closure did not inspect all 57 metal chests");
 
         ShapelessRecipe wheel = (ShapelessRecipe)helper.getLevel().getRecipeManager()
                 .byKey(ClayiumMod.id("progression/power/clay_water_wheel")).orElseThrow().value();
@@ -269,6 +320,36 @@ public final class SurvivalProgressionGameTests {
         return java.util.Arrays.stream(ingredient.getItems()).anyMatch(stack -> reachable.contains(stack.getItem()));
     }
 
+    private static boolean survivalEnvironmentAvailable(
+            ClayiumMachineRecipe.EnvironmentCondition condition) {
+        if (condition.dimension().isPresent()
+                && !condition.dimension().get().equals(net.minecraft.world.level.Level.OVERWORLD.location())) {
+            return false;
+        }
+        int minimum = condition.minimumY().orElse(-64);
+        int maximum = condition.maximumY().orElse(319);
+        return minimum <= maximum && maximum >= -64 && minimum <= 319;
+    }
+
+    private static boolean isSurvivalVanillaSeed(net.minecraft.world.item.Item item) {
+        return !Set.of(
+                Items.AIR,
+                Items.BARRIER,
+                Items.BEDROCK,
+                Items.COMMAND_BLOCK,
+                Items.CHAIN_COMMAND_BLOCK,
+                Items.REPEATING_COMMAND_BLOCK,
+                Items.STRUCTURE_BLOCK,
+                Items.STRUCTURE_VOID,
+                Items.JIGSAW,
+                Items.DEBUG_STICK,
+                Items.KNOWLEDGE_BOOK,
+                Items.LIGHT,
+                Items.END_PORTAL_FRAME,
+                Items.PETRIFIED_OAK_SLAB,
+                Items.REINFORCED_DEEPSLATE).contains(item);
+    }
+
     private static boolean processingMachineAvailable(
             ClayiumMachineRecipe recipe, Set<net.minecraft.world.item.Item> reachable) {
         String method = recipe.processingMethod().id();
@@ -281,12 +362,20 @@ public final class SurvivalProgressionGameTests {
                     ClayiumMod.id(method.equals("reactor") ? "clay_reactor" : "clay_blast_furnace")))
                     && AssemblyMachineRegistration.MACHINE_HULLS.entrySet().stream()
                             .anyMatch(entry -> entry.getKey() >= tier
-                                    && reachable.contains(entry.getValue().get().asItem()));
+                                    && reachable.contains(entry.getValue().get().asItem()))
+                    && (!method.equals("reactor") || interfaceAvailable(InterfaceType.LASER, tier, reachable));
         }
         if (method.equals("ca_reactor")) {
             return CaReactorRegistration.CORES.values().stream()
                     .anyMatch(core -> core.tier() >= tier
-                            && reachable.contains(core.block().get().asItem()));
+                            && reachable.contains(core.block().get().asItem())
+                            && reachable.contains(CaReactorRegistration.COILS.get(core.tier()).block().get().asItem())
+                            && CaReactorRegistration.HULLS.values().stream()
+                                    .anyMatch(hull -> hull.rank() <= core.tier() - 3
+                                            && reachable.contains(hull.block().get().asItem()))
+                            && interfaceAvailable(InterfaceType.ITEM, core.tier(), reachable)
+                            && interfaceAvailable(InterfaceType.LASER, core.tier(), reachable)
+                    );
         }
         if (AssemblyMachineRegistration.MACHINES.values().stream()
                 .anyMatch(machine -> machine.series().recipeMethod().id().equals(method)
@@ -310,6 +399,13 @@ public final class SurvivalProgressionGameTests {
         }
         return method.equals("milling_machine") && tier <= 1
                 && reachable.contains(FormingMachineRegistration.ELEMENTAL_MILLING_MACHINE.get().asItem());
+    }
+
+    private static boolean interfaceAvailable(
+            InterfaceType type, int minimumTier, Set<net.minecraft.world.item.Item> reachable) {
+        return InterfaceRegistration.INTERFACES.values().stream()
+                .anyMatch(definition -> definition.type() == type && definition.tier() >= minimumTier
+                        && reachable.contains(definition.item().get()));
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
@@ -373,7 +469,9 @@ public final class SurvivalProgressionGameTests {
             require(row != null && List.of(row[3].split("\\|")).contains(recipeId.toString()),
                     id + " has no source recipe in the individual equipment ledger");
             require(row[4].equals("clayium:assembler") || row[4].equals("minecraft:crafting_shaped")
-                            || row[4].equals("minecraft:crafting_shapeless"),
+                            || row[4].equals("minecraft:crafting_shapeless")
+                            || id.equals("clay_gadget_auto_eat")
+                                    && row[4].equals("clayium:nbt_preserving_auto_eat"),
                     id + " has an unexpected equipment method in the ledger");
             require(BuiltInRegistries.ITEM.getKey(holder.get().value()
                             .getResultItem(helper.getLevel().registryAccess()).getItem()).toString().equals(row[1]),
@@ -424,6 +522,10 @@ public final class SurvivalProgressionGameTests {
                                 && shapeless.getIngredients().getFirst().test(new ItemStack(
                                         BuiltInRegistries.ITEM.get(ResourceLocation.parse(row[8])))),
                         id + " differs from the original shapeless ingredient");
+            } else if (holder.get().value() instanceof NbtPreservingAutoEatRecipe) {
+                require(id.equals("clay_gadget_auto_eat")
+                                && row[4].equals("clayium:nbt_preserving_auto_eat"),
+                        id + " differs from the original component-preserving conversion");
             } else {
                 throw new GameTestAssertException(id + " has an unexpected recipe type");
             }

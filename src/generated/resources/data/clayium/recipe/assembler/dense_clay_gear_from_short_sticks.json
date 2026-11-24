@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 10,
+  "item_inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium:short_dense_clay_stick"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:dense_clay_gear"
+    }
+  ],
+  "processing_method": "clayium:assembler",
+  "processing_ticks": 20,
+  "required_tier": 3
+}

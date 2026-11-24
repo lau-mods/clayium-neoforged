@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class PanBlock extends BaseEntityBlock {
@@ -82,12 +83,23 @@ public class PanBlock extends BaseEntityBlock {
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof PanBlockEntity pan && kind == Kind.DUPLICATOR) {
-                Containers.dropContents(level, pos, pan.dropInventory());
+            if (level.getBlockEntity(pos) instanceof PanBlockEntity pan) {
+                if (kind == Kind.DUPLICATOR) Containers.dropContents(level, pos, pan.dropInventory());
+                if (kind == Kind.ADAPTER) Containers.dropContents(level, pos, pan.dropAdapterSubItems());
             }
             PanNetwork.invalidate(level);
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock,
+            BlockPos neighborPos, boolean movedByPiston) {
+        super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
+        if (!level.isClientSide && kind == Kind.ADAPTER
+                && level.getBlockEntity(pos) instanceof PanBlockEntity pan) {
+            pan.adapterNeighborChanged();
+        }
     }
 
     public enum Kind {

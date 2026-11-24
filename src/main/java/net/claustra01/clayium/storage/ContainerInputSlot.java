@@ -46,13 +46,11 @@ public final class ContainerInputSlot extends SlotItemHandler {
 
     @Override
     public ItemStack remove(int amount) {
-        if (clientSide) return clientStack.split(amount);
-        return getItemHandler().extractItem(0, amount, false);
+        return ItemStack.EMPTY;
     }
 
     @Override
     public boolean mayPickup(Player player) {
-        if (clientSide) return !clientStack.isEmpty();
-        return !getItemHandler().extractItem(0, 1, true).isEmpty();
+        return false;
     }
 }

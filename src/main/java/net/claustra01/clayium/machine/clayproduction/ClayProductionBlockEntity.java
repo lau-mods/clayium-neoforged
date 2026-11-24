@@ -1,5 +1,6 @@
 package net.claustra01.clayium.machine.clayproduction;
 
+import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.registry.ClayProductionRegistration;
@@ -236,7 +237,8 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
             inventory.setStackInSlot(RESERVED_SLOT, inventory.extractItem(INPUT_SLOT, 1, false));
             activeInputLevel = inputLevel;
             progress = 0L;
-            requiredProgress = ClayProductionRules.solarTicks(type(), inputLevel);
+            requiredProgress = ClayiumConfig.divideProgressionTicks(
+                    ClayProductionRules.solarTicks(type(), inputLevel));
             energyPerTick = 0L;
             displayedCePerTick = (ClayProductionRules.clayEnergyValue(inputLevel + 1)
                     - ClayProductionRules.clayEnergyValue(inputLevel)) / requiredProgress;
@@ -269,7 +271,8 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
             inventory.setStackInSlot(RESERVED_SLOT, sample.copy());
             activeInputLevel = inputLevel;
             progress = 0L;
-            requiredProgress = ClayProductionRules.fabricatorTicks(type(), inputLevel, sample.getCount());
+            requiredProgress = ClayiumConfig.divideProgressionTicks(
+                    ClayProductionRules.fabricatorTicks(type(), inputLevel, sample.getCount()));
             energyPerTick = 0L;
             displayedCePerTick = ClayProductionRules.clayEnergyValue(inputLevel) * sample.getCount() / requiredProgress;
         }

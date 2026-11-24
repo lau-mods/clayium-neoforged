@@ -1,6 +1,8 @@
 package net.claustra01.clayium.registry;
 
+import com.mojang.serialization.MapCodec;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
@@ -12,7 +14,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public final class ClayiumRegistries {
@@ -36,6 +40,11 @@ public final class ClayiumRegistries {
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, ClayiumMod.MOD_ID);
     public static final DeferredRegister<Feature<?>> FEATURES =
             DeferredRegister.create(Registries.FEATURE, ClayiumMod.MOD_ID);
+    public static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS =
+            DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, ClayiumMod.MOD_ID);
+    public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<ConfigEnabledCondition>>
+            CONFIG_ENABLED_CONDITION = CONDITION_CODECS.register(
+                    "config_enabled", () -> ConfigEnabledCondition.CODEC);
 
     public static void register(IEventBus modEventBus) {
         FoundationBlockRegistration.ALL.size();
@@ -83,6 +92,8 @@ public final class ClayiumRegistries {
         FoundationDataComponentRegistration.TIER.getId();
         FoundationCreativeTabRegistration.MAIN.getId();
         RecipeRegistration.MACHINE_SERIALIZER.getId();
+        RecipeRegistration.STORAGE_CONTAINER_EXPANSION_SERIALIZER.getId();
+        RecipeRegistration.NBT_PRESERVING_AUTO_EAT_SERIALIZER.getId();
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITY_TYPES.register(modEventBus);
@@ -94,6 +105,7 @@ public final class ClayiumRegistries {
         DATA_COMPONENT_TYPES.register(modEventBus);
         ATTACHMENT_TYPES.register(modEventBus);
         FEATURES.register(modEventBus);
+        CONDITION_CODECS.register(modEventBus);
     }
 
     private ClayiumRegistries() {

@@ -6,9 +6,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class StorageContainerMenu extends AbstractContainerMenu {
     private final BlockPos pos;
@@ -26,6 +28,8 @@ public final class StorageContainerMenu extends AbstractContainerMenu {
         this.pos = storage.getBlockPos();
         this.data = data;
         addSlot(new ContainerInputSlot(storage.itemHandler(), 44, 35, playerInventory.player.level().isClientSide));
+        addSlot(new ContainerOutputSlot(storage.itemHandler(), 116, 35, playerInventory.player.level().isClientSide));
+        addSlot(new MemorySlot(storage.memoryInventory(), 142, 18));
         addPlayerInventory(playerInventory, 8, 84);
         addDataSlots(data);
     }
@@ -53,9 +57,13 @@ public final class StorageContainerMenu extends AbstractContainerMenu {
         Slot slot = slots.get(index);
         ItemStack original = slot.getItem().copy();
         if (index == 0) {
+            return ItemStack.EMPTY;
+        } else if (index == 1) {
             ItemStack moving = storage.itemHandler().extractItem(0, original.getCount(), true);
-            if (!moveItemStackTo(moving, 1, slots.size(), true)) return ItemStack.EMPTY;
+            if (!moveItemStackTo(moving, 3, slots.size(), true)) return ItemStack.EMPTY;
             storage.itemHandler().extractItem(0, original.getCount() - moving.getCount(), false);
+        } else if (index == 2) {
+            return ItemStack.EMPTY;
         } else {
             ItemStack source = slot.getItem();
             ItemStack remainder = storage.itemHandler().insertItem(0, source, false);
@@ -63,6 +71,24 @@ public final class StorageContainerMenu extends AbstractContainerMenu {
             slot.set(remainder);
         }
         return original;
+    }
+
+    @Override
+    public void clicked(int slotId, int button, ClickType clickType, Player player) {
+        if (slotId == 0 && clickType == ClickType.PICKUP && !getCarried().isEmpty()) {
+            ItemStack remainder = storage.itemHandler().insertItem(0, getCarried(), false);
+            setCarried(remainder);
+            broadcastChanges();
+            return;
+        }
+        if (slotId == 2 && clickType == ClickType.PICKUP) {
+            ItemStack carried = getCarried();
+            storage.memoryInventory().setStackInSlot(0,
+                    carried.isEmpty() ? ItemStack.EMPTY : carried.copyWithCount(1));
+            broadcastChanges();
+            return;
+        }
+        super.clicked(slotId, button, clickType, player);
     }
 
     public long amount() {
@@ -87,5 +113,21 @@ public final class StorageContainerMenu extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return !storage.isRemoved() && player.level().getBlockEntity(pos) == storage
                 && player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+    }
+
+    private static final class MemorySlot extends SlotItemHandler {
+        private MemorySlot(net.neoforged.neoforge.items.IItemHandler handler, int x, int y) {
+            super(handler, 0, x, y);
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return false;
+        }
+
+        @Override
+        public boolean mayPickup(Player player) {
+            return false;
+        }
     }
 }

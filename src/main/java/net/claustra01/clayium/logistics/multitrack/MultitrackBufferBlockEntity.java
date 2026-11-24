@@ -36,7 +36,8 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
     private final Track[] tracks = new Track[TRACKS];
     private final int[] faceTracks = new int[Direction.values().length];
     private EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches;
-    private int transferTick;
+    private int insertTick;
+    private int extractTick;
 
     public MultitrackBufferBlockEntity(BlockPos pos, BlockState state) {
         super(MultitrackRegistration.MULTITRACK_BUFFER_BLOCK_ENTITY.get(), pos, state);
@@ -57,15 +58,27 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             return;
         }
         TierManager.TransportParameters parameters = TierManager.bufferTransport(tier());
-        transferTick++;
-        if (transferTick < parameters.intervalTicks()) {
+        insertTick++;
+        extractTick++;
+        boolean insertDue = insertTick >= parameters.insertIntervalTicks();
+        boolean extractDue = extractTick >= parameters.extractIntervalTicks();
+        if (!insertDue && !extractDue) {
             return;
         }
-        transferTick = 0;
+        if (insertDue) {
+            insertTick = 0;
+        }
+        if (extractDue) {
+            extractTick = 0;
+        }
         ensureCaches(serverLevel);
         for (int trackIndex = 0; trackIndex < trackCount(); trackIndex++) {
-            pushTrack(serverLevel, trackIndex, parameters.maximumItems());
-            pullTrack(serverLevel, trackIndex, parameters.maximumItems());
+            if (extractDue) {
+                pushTrack(serverLevel, trackIndex, parameters.maximumExtractItems());
+            }
+            if (insertDue) {
+                pullTrack(serverLevel, trackIndex, parameters.maximumInsertItems());
+            }
         }
     }
 
@@ -258,7 +271,8 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         }
         tag.put("tracks", trackData);
         tag.putIntArray("face_tracks", faceTracks);
-        tag.putInt("transfer_tick", transferTick);
+        tag.putInt("insert_tick", insertTick);
+        tag.putInt("extract_tick", extractTick);
     }
 
     @Override
@@ -287,7 +301,9 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         for (int index = 0; index < Math.min(savedFaceTracks.length, faceTracks.length); index++) {
             faceTracks[index] = savedFaceTracks[index];
         }
-        transferTick = tag.getInt("transfer_tick");
+        int legacyTransferTick = Math.max(0, tag.getInt("transfer_tick"));
+        insertTick = Math.max(0, tag.contains("insert_tick") ? tag.getInt("insert_tick") : legacyTransferTick);
+        extractTick = Math.max(0, tag.contains("extract_tick") ? tag.getInt("extract_tick") : legacyTransferTick);
     }
 
     public final class Track {

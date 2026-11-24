@@ -5,6 +5,7 @@ import net.claustra01.clayium.datagen.recipe.ClayiumRecipeBuilder;
 import net.claustra01.clayium.gadget.GadgetType;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.NbtPreservingAutoEatRecipe;
 import net.claustra01.clayium.registry.AdvancedToolRegistration;
 import net.claustra01.clayium.registry.CaRegistration;
 import net.claustra01.clayium.registry.FluidRegistration;
@@ -17,6 +18,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
@@ -93,10 +95,7 @@ public final class EquipmentProgressionRecipes {
         machine(output, GadgetType.ECONOMICAL_AUTO_EAT.id(), gadget(GadgetType.ECONOMICAL_AUTO_EAT),
                 4, ClayiumRecipeEnergy.e(1.0D, 7), 120,
                 gadget(GadgetType.TEMPLATE), 1, circuit(7), 2);
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, gadget(GadgetType.AUTO_EAT))
-                .requires(gadget(GadgetType.ECONOMICAL_AUTO_EAT))
-                .unlockedBy("has_gadget", InventoryChangeTrigger.TriggerInstance.hasItems(
-                        gadget(GadgetType.ECONOMICAL_AUTO_EAT)))
+        SpecialRecipeBuilder.special(NbtPreservingAutoEatRecipe::new)
                 .save(output, ClayiumMod.id("progression/equipment/" + GadgetType.AUTO_EAT.id()));
         machine(output, GadgetType.REPEATED_ATTACK.id(), gadget(GadgetType.REPEATED_ATTACK),
                 10, ClayiumRecipeEnergy.e(1.0D, 10), 120,

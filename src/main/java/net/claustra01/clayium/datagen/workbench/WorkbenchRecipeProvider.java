@@ -23,6 +23,7 @@ public final class WorkbenchRecipeProvider {
         ItemLike plate = material("clay_plate");
         ItemLike stick = material("clay_stick");
         ItemLike shortStick = material("short_clay_stick");
+        ItemLike blade = material("clay_blade");
         ItemLike cylinder = material("clay_cylinder");
         ItemLike pipe = material("clay_pipe");
 
@@ -48,9 +49,9 @@ public final class WorkbenchRecipeProvider {
                 .unlockedBy("has_clay_part", has(shortStick))
                 .save(output, ClayiumMod.id("workbench/raw_clay_slicer"));
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, WorkbenchRegistration.RAW_CLAY_SPATULA.get())
-                .define('P', plate).define('S', stick)
-                .pattern("PP").pattern(" S")
-                .unlockedBy("has_clay_plate", has(plate))
+                .define('S', shortStick).define('B', blade)
+                .pattern("SB")
+                .unlockedBy("has_clay_blade", has(blade))
                 .save(output, ClayiumMod.id("workbench/raw_clay_spatula"));
 
         smeltTool(output, WorkbenchRegistration.RAW_CLAY_ROLLING_PIN.get(),
@@ -117,7 +118,7 @@ public final class WorkbenchRecipeProvider {
     }
 
     private static void smeltTool(RecipeOutput output, ItemLike raw, ItemLike fired, String id) {
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(raw), RecipeCategory.TOOLS, fired, 0.2F, 100)
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(raw), RecipeCategory.TOOLS, fired, 0.1F, 200)
                 .unlockedBy("has_raw_tool", has(raw))
                 .save(output, ClayiumMod.id("workbench/" + id));
     }

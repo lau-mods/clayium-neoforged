@@ -19,6 +19,7 @@ public final class MaterialBlockStateProvider extends BlockStateProvider {
             Map.entry("antimatter_block", "antimatter"),
                         Map.entry("clay_steel_block", "claysteel"),
             Map.entry("impure_silicon_block", "impuresilicon"),
+            Map.entry("oec_block", "oec"),
                                     Map.entry("opa_block", "opa"),
             Map.entry("pure_antimatter_block", "pureantimatter"),
             Map.entry("silicon_block", "silicon"),
@@ -44,6 +45,7 @@ public final class MaterialBlockStateProvider extends BlockStateProvider {
                     MaterialRegistration.COMPRESSION_BLOCKS.get(compressionTier.id()).get(),
                     ClayiumMod.id("block/compressedclay-" + compressionTier.originalMetadata()));
         }
+        cubeAll(MaterialRegistration.OEC_BLOCK.get(), ClayiumMod.id("block/oec"));
         for (var entry : MaterialRegistration.MATERIAL_BLOCKS.entrySet()) {
             if (CompressionTier.fromId(entry.getKey()).isPresent() || entry.getKey().equals("clayium_block")) {
                 continue;

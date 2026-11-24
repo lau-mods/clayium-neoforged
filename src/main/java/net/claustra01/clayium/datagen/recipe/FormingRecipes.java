@@ -6,7 +6,10 @@ import net.claustra01.clayium.material.ClayMaterials;
 import net.claustra01.clayium.material.MaterialShape;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition;
+import net.claustra01.clayium.recipe.ConfigEnabledCondition.Option;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
+import net.claustra01.clayium.registry.FoundationItemRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -96,6 +99,16 @@ public final class FormingRecipes {
                     .requires(material(id), 4).output(material(largePlate), 1)
                     .save(output, ClayiumMod.id("bending_machine/" + largePlate));
         }
+        machine(ClayiumRecipeMethod.BENDING_MACHINE, 4, ClayiumRecipeEnergy.e(1.0D, 4), 20)
+                .requires(material("impure_aluminium_ingot"))
+                .output(material("impure_aluminium_plate"), 1)
+                .when(new ConfigEnabledCondition(Option.HARDCORE_ALUMINIUM))
+                .save(output, ClayiumMod.id("bending_machine/impure_aluminium_plate"));
+        machine(ClayiumRecipeMethod.BENDING_MACHINE, 4, ClayiumRecipeEnergy.e(1.0D, 4), 40)
+                .requires(material("impure_aluminium_plate"), 4)
+                .output(material("large_impure_aluminium_plate"), 1)
+                .when(new ConfigEnabledCondition(Option.HARDCORE_ALUMINIUM))
+                .save(output, ClayiumMod.id("bending_machine/large_impure_aluminium_plate"));
         String[] highInputs = {"antimatter", "pure_antimatter",
             "octuple_compressed_energetic_clay", "octuple_compressed_pure_antimatter"};
         String[] highPlates = {"antimatter_plate", "pure_antimatter_plate",
@@ -256,6 +269,20 @@ public final class FormingRecipes {
     }
 
     private static void clayParts(RecipeOutput output) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, FoundationItemRegistration.CLAY_WRENCH.get())
+                .define('#', material("dense_clay_blade"))
+                .define('o', material("dense_clay_spindle"))
+                .define('|', material("dense_clay_stick"))
+                .pattern("# #").pattern(" o ").pattern(" | ")
+                .unlockedBy("has_dense_clay_blade", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        material("dense_clay_blade")))
+                .save(output, ClayiumMod.id("forming_parts/clay_wrench_original"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material("large_clay_plate"))
+                .define('#', material("clay_plate"))
+                .pattern("###").pattern("###").pattern("###")
+                .unlockedBy("has_clay_plate", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        material("clay_plate")))
+                .save(output, ClayiumMod.id("forming_parts/large_clay_plate"));
         for (String prefix : new String[] {"clay", "dense_clay"}) {
             ItemLike ball = Items.CLAY_BALL;
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material(prefix + "_cutting_head"))

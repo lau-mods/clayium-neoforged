@@ -26,7 +26,16 @@ public final class ClayiumRecipeCache {
         Map<RecipeType<?>, TypeIndex> managerCache = CACHES.computeIfAbsent(manager, ignored -> new IdentityHashMap<>());
         TypeIndex index = managerCache.computeIfAbsent(type, ignored -> build(manager, type));
         return index.candidates(input).stream()
-                .filter(holder -> holder.value().matches(input, level))
+                .filter(holder -> {
+                    ClayiumMachineRecipe adjusted = ProgressionRateRules.adjustedRecipe(holder.id(), holder.value());
+                    if (!adjusted.matches(input, level)) {
+                        return false;
+                    }
+                    return !ProgressionRateRules.requiresExactItemCount(holder.id())
+                            || input.items().stream().mapToInt(ItemStack::getCount).sum()
+                                    == adjusted.itemInputs().stream().mapToInt(
+                                            net.neoforged.neoforge.common.crafting.SizedIngredient::count).sum();
+                })
                 .findFirst();
     }
 

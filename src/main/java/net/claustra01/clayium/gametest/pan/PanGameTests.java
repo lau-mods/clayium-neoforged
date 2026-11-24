@@ -6,6 +6,8 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.pan.PanBlockEntity;
 import net.claustra01.clayium.pan.PanNetwork;
 import net.claustra01.clayium.pan.PanRecipeClosure;
+import net.claustra01.clayium.pan.PanMenu;
+import net.claustra01.clayium.pan.PanScreenPayloads;
 import net.claustra01.clayium.recipe.ClayiumRecipesReloadedEvent;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.PanRegistration;
@@ -15,11 +17,14 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -141,11 +146,16 @@ public final class PanGameTests {
         helper.setBlock(corePos.east(), PanRegistration.DEFINITIONS.get("pan_adapter_tier_10").block().get());
         helper.setBlock(corePos.east(2), net.minecraft.world.level.block.Blocks.CRAFTING_TABLE);
         PanBlockEntity core = helper.getBlockEntity(corePos);
+        PanBlockEntity adapter = helper.getBlockEntity(corePos.east());
+        require(adapter.setAdapterPattern(0, 0, new ItemStack(Items.OAK_LOG)),
+                "The adapter rejected its selected crafting pattern");
         var manager = helper.getLevel().getRecipeManager();
         List<RecipeHolder<?>> original = List.copyOf(manager.getRecipes());
         helper.runAfterDelay(100, () -> {
             require(core.closure().costs().containsKey(id(Items.OAK_PLANKS)),
                     "Connected crafting table did not make planks reachable from the base log");
+            require(!core.closure().costs().containsKey(id(Items.STICK)),
+                    "The adapter published an unselected crafting-table recipe");
             manager.replaceRecipes(original.stream().filter(holder ->
                     holder.value().getType() != RecipeType.CRAFTING).toList());
             NeoForge.EVENT_BUS.post(new ClayiumRecipesReloadedEvent(manager));
@@ -172,6 +182,9 @@ public final class PanGameTests {
         helper.setBlock(adapterPos.east(), net.minecraft.world.level.block.Blocks.CRAFTING_TABLE);
         helper.setBlock(duplicatorPos, PanRegistration.DEFINITIONS.get("pan_duplicator_tier_13").block().get());
         PanBlockEntity core = helper.getBlockEntity(corePos);
+        PanBlockEntity adapter = helper.getBlockEntity(adapterPos);
+        require(adapter.setAdapterPattern(0, 0, new ItemStack(Items.OAK_LOG)),
+                "The adapter rejected its selected crafting pattern");
         PanBlockEntity duplicator = helper.getBlockEntity(duplicatorPos);
         helper.runAfterDelay(100, () -> {
             require(core.adapterCount() == 1 && core.closure().costs().containsKey(id(Items.OAK_PLANKS)),
@@ -229,7 +242,13 @@ public final class PanGameTests {
         }
         helper.setBlock(new BlockPos(14, 3, 4),
                 PanRegistration.DEFINITIONS.get("pan_adapter_tier_10").block().get());
-        helper.setBlock(new BlockPos(14, 3, 5), net.minecraft.world.level.block.Blocks.CRAFTING_TABLE);
+        helper.setBlock(new BlockPos(14, 3, 5),
+                net.claustra01.clayium.registry.MachineRegistration.MACHINES
+                        .get("chemical_metal_separator").block().get());
+        PanBlockEntity adapter = helper.getBlockEntity(new BlockPos(14, 3, 4));
+        require(adapter.setAdapterPattern(0, 0,
+                        new ItemStack(MaterialRegistration.MATERIAL_ITEMS.get("industrial_clay_dust").get())),
+                "PAN adapter rejected the selected chemical separator input");
         PanBlockEntity core = helper.getBlockEntity(corePos);
         for (int tier = 4; tier <= 13; tier++) {
             helper.setBlock(new BlockPos(tier, 3, 2),
@@ -265,6 +284,137 @@ public final class PanGameTests {
             });
         }
         helper.runAfterDelay(1_190, helper::succeed);
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void adapterPagesAreServerAuthoritativeGhostConversionsAndPersistSubItems(GameTestHelper helper) {
+        BlockPos adapterPos = new BlockPos(3, 3, 3);
+        helper.setBlock(adapterPos, PanRegistration.DEFINITIONS.get("pan_adapter_tier_11").block().get());
+        helper.setBlock(adapterPos.east(), net.minecraft.world.level.block.Blocks.CRAFTING_TABLE);
+        PanBlockEntity adapter = helper.getBlockEntity(adapterPos);
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.moveTo(adapter.getBlockPos().getX() + 0.5D, adapter.getBlockPos().getY() + 0.5D,
+                adapter.getBlockPos().getZ() + 0.5D);
+        PanMenu menu = new PanMenu(17, player.getInventory(), adapter, new SimpleContainerData(12));
+        player.containerMenu = menu;
+
+        require(menu.adapterPages() == 2 && menu.adapterPage() == 0 && menu.machineSlots() == 27,
+                "Tier 11 PAN Adapter did not expose two pages and 9+9+9 machine slots");
+        require(menu.slots.get(0).x == 32 && menu.slots.get(0).y == 18
+                        && menu.slots.get(8).x == 68 && menu.slots.get(8).y == 54
+                        && menu.slots.get(9).x == 92 && menu.slots.get(9).y == 18
+                        && menu.slots.get(18).x == 8 && menu.slots.get(18).y == 74,
+                "PAN Adapter slot geometry differs from the original 3x3/3x3/9 layout");
+
+        menu.setCarried(new ItemStack(Items.OAK_LOG, 16));
+        PanScreenPayloads.apply(player, new PanScreenPayloads.AdapterPattern(adapter.getBlockPos(), 0, 0, false));
+        require(menu.getCarried().getCount() == 16 && adapter.adapterPattern(0, 0).getCount() == 1,
+                "Setting an adapter memory cell consumed the cursor or retained its count");
+        PanScreenPayloads.apply(player, new PanScreenPayloads.AdapterPage(adapter.getBlockPos(), 1));
+        require(menu.adapterPage() == 1, "The server rejected a valid adapter page");
+        menu.setCarried(new ItemStack(Items.OAK_PLANKS, 32));
+        for (int slot : new int[]{0, 1, 3, 4}) {
+            PanScreenPayloads.apply(player,
+                    new PanScreenPayloads.AdapterPattern(adapter.getBlockPos(), 1, slot, false));
+        }
+        PanScreenPayloads.apply(player, new PanScreenPayloads.AdapterPage(adapter.getBlockPos(), 2));
+        require(menu.adapterPage() == 1, "The server accepted an out-of-range adapter page");
+        ItemStack named = new ItemStack(Items.DIAMOND);
+        named.set(DataComponents.CUSTOM_NAME, Component.literal("component-bearing"));
+        menu.setCarried(named);
+        PanScreenPayloads.apply(player, new PanScreenPayloads.AdapterPattern(adapter.getBlockPos(), 1, 8, false));
+        require(adapter.adapterPattern(1, 8).isEmpty(),
+                "The server accepted a component-bearing PAN pattern");
+
+        adapter.refreshAdapterResults();
+        require(adapter.adapterResult(0, 0).is(Items.OAK_PLANKS)
+                        && adapter.adapterResult(1, 0).is(Items.CRAFTING_TABLE),
+                "Page-specific PAN patterns did not produce their selected conversion results");
+        require(menu.slots.get(0).safeTake(1, 1, player).isEmpty()
+                        && menu.slots.get(9).safeTake(1, 1, player).isEmpty(),
+                "PAN pattern or result ghost slots were extractable");
+
+        adapter.adapterSubItems().setStackInSlot(0, new ItemStack(Items.REDSTONE, 9));
+        CompoundTag saved = adapter.saveWithFullMetadata(helper.getLevel().registryAccess());
+        PanBlockEntity loaded = new PanBlockEntity(helper.absolutePos(adapterPos), adapter.getBlockState());
+        loaded.loadWithComponents(saved, helper.getLevel().registryAccess());
+        require(loaded.adapterPattern(0, 0).is(Items.OAK_LOG)
+                        && loaded.adapterPattern(1, 4).is(Items.OAK_PLANKS)
+                        && loaded.adapterSubItems().getStackInSlot(0).getCount() == 9,
+                "PAN patterns or real sub-item inventory changed across save and load");
+        var dropped = adapter.dropAdapterSubItems();
+        require(dropped.getItem(0).getCount() == 9 && adapter.adapterSubItems().getStackInSlot(0).isEmpty(),
+                "Breaking a PAN Adapter did not conserve and clear its real sub-item inventory");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void adapterShiftMoveUsesOnlyRealInventoryAndConservesItems(GameTestHelper helper) {
+        BlockPos adapterPos = new BlockPos(3, 3, 3);
+        helper.setBlock(adapterPos, PanRegistration.DEFINITIONS.get("pan_adapter_tier_10").block().get());
+        helper.setBlock(adapterPos.east(), net.minecraft.world.level.block.Blocks.CRAFTING_TABLE);
+        PanBlockEntity adapter = helper.getBlockEntity(adapterPos);
+        require(adapter.setAdapterPattern(0, 0, new ItemStack(Items.OAK_LOG)),
+                "The adapter rejected the shift-move test pattern");
+        adapter.refreshAdapterResults();
+        ItemStack patternBefore = adapter.adapterPattern(0, 0).copy();
+        ItemStack resultBefore = adapter.adapterResult(0, 0).copy();
+        require(resultBefore.is(Items.OAK_PLANKS),
+                "The shift-move test did not establish a non-empty result ghost slot");
+
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.moveTo(adapter.getBlockPos().getX() + 0.5D, adapter.getBlockPos().getY() + 0.5D,
+                adapter.getBlockPos().getZ() + 0.5D);
+        PanMenu menu = new PanMenu(18, player.getInventory(), adapter, new SimpleContainerData(12));
+        player.containerMenu = menu;
+        adapter.adapterSubItems().setStackInSlot(0, new ItemStack(Items.REDSTONE, 9));
+
+        require(menu.quickMoveStack(player, 0).isEmpty()
+                        && menu.quickMoveStack(player, PanBlockEntity.ADAPTER_PAGE_SIZE).isEmpty()
+                        && ItemStack.isSameItemSameComponents(patternBefore, adapter.adapterPattern(0, 0))
+                        && patternBefore.getCount() == adapter.adapterPattern(0, 0).getCount()
+                        && ItemStack.isSameItemSameComponents(resultBefore, adapter.adapterResult(0, 0))
+                        && resultBefore.getCount() == adapter.adapterResult(0, 0).getCount(),
+                "Shift-moving changed or extracted a PAN Adapter ghost slot");
+
+        ItemStack movedToPlayer = menu.quickMoveStack(player, PanBlockEntity.ADAPTER_PAGE_SIZE * 2);
+        require(movedToPlayer.is(Items.REDSTONE) && movedToPlayer.getCount() == 9
+                        && adapter.adapterSubItems().getStackInSlot(0).isEmpty()
+                        && playerItemCount(player, Items.REDSTONE) == 9,
+                "Shift-moving did not transfer the real adapter inventory to the player exactly once");
+        int playerMenuSlot = -1;
+        for (int index = menu.machineSlots(); index < menu.slots.size(); index++) {
+            if (menu.slots.get(index).getItem().is(Items.REDSTONE)) {
+                playerMenuSlot = index;
+                break;
+            }
+        }
+        require(playerMenuSlot >= menu.machineSlots(),
+                "The shifted adapter stack was not present in a player menu slot");
+        ItemStack movedToAdapter = menu.quickMoveStack(player, playerMenuSlot);
+        require(movedToAdapter.is(Items.REDSTONE) && movedToAdapter.getCount() == 9
+                        && playerItemCount(player, Items.REDSTONE) == 0
+                        && adapter.adapterSubItems().getStackInSlot(0).is(Items.REDSTONE)
+                        && adapter.adapterSubItems().getStackInSlot(0).getCount() == 9,
+                "Shift-moving did not return the player stack to the real adapter inventory exactly once");
+        require(ItemStack.isSameItemSameComponents(patternBefore, adapter.adapterPattern(0, 0))
+                        && patternBefore.getCount() == adapter.adapterPattern(0, 0).getCount()
+                        && ItemStack.isSameItemSameComponents(resultBefore, adapter.adapterResult(0, 0))
+                        && resultBefore.getCount() == adapter.adapterResult(0, 0).getCount(),
+                "Real-inventory shift movement changed a PAN Adapter ghost slot");
+        helper.succeed();
+    }
+
+    private static int playerItemCount(net.minecraft.world.entity.player.Player player,
+            net.minecraft.world.item.Item item) {
+        int count = 0;
+        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+            ItemStack stack = player.getInventory().getItem(slot);
+            if (stack.is(item)) {
+                count += stack.getCount();
+            }
+        }
+        return count;
     }
 
     private static ResourceLocation id(net.minecraft.world.item.Item item) {

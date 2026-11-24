@@ -19,8 +19,6 @@ public record MultiblockStructure(boolean formed, int tier) {
             return invalid(machineType);
         }
 
-        BlockPos itemInterface = center.relative(facing.getOpposite());
-        BlockPos redstoneInterface = center.above();
         BlockPos laserInterface = center.below();
         int structureTier = Integer.MAX_VALUE;
         for (int x = -1; x <= 1; x++) {
@@ -37,14 +35,14 @@ public record MultiblockStructure(boolean formed, int tier) {
                         }
                         continue;
                     }
-                    InterfaceType expectedInterface = componentPos.equals(itemInterface)
-                            ? InterfaceType.ITEM
-                            : componentPos.equals(redstoneInterface) ? InterfaceType.REDSTONE
-                            : machineType.requiresLaserInterface() && componentPos.equals(laserInterface)
-                                    ? InterfaceType.LASER : null;
                     int componentTier;
-                    if (expectedInterface != null) {
-                        componentTier = interfaceTier(level, componentPos, controllerPos, expectedInterface);
+                    if (machineType.requiresLaserInterface() && componentPos.equals(laserInterface)) {
+                        componentTier = interfaceTier(level, componentPos, controllerPos, InterfaceType.LASER);
+                    } else if (level.getBlockEntity(componentPos) instanceof InterfaceBlockEntity blockEntity
+                            && (blockEntity.interfaceType() == InterfaceType.ITEM
+                                    || blockEntity.interfaceType() == InterfaceType.REDSTONE)) {
+                        componentTier = interfaceTier(
+                                level, componentPos, controllerPos, blockEntity.interfaceType());
                     } else {
                         componentTier = MultiblockRegistration.hullTier(level.getBlockState(componentPos).getBlock());
                     }
@@ -67,11 +65,11 @@ public record MultiblockStructure(boolean formed, int tier) {
                 || blockEntity.interfaceType() != expectedType) {
             return -1;
         }
-        SynchronizedTarget target = blockEntity.target();
-        return target != null
-                        && target.dimension().equals(level.dimension())
-                        && target.pos().equals(controllerPos)
-                ? blockEntity.tier() : -1;
+        SynchronizedTarget expectedTarget = SynchronizedTarget.at(level, controllerPos);
+        if (!expectedTarget.equals(blockEntity.target())) {
+            blockEntity.synchronize(expectedTarget, null);
+        }
+        return blockEntity.tier();
     }
 
     private static MultiblockStructure invalid(MultiblockMachineType machineType) {

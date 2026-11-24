@@ -5,7 +5,9 @@ import net.claustra01.clayium.machine.series.AssemblySeries;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
+import net.claustra01.clayium.registry.FoundationItemRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -18,6 +20,7 @@ public final class AssemblyRecipes {
     public static void buildRecipes(RecipeOutput output) {
         circuits(output);
         assemblyParts(output);
+        originalToolAndClayPartRoutes(output);
         centrifuge(output);
         machineHulls(output);
         machines(output);
@@ -104,6 +107,53 @@ public final class AssemblyRecipes {
                 .requires(material("large_dense_clay_plate")).requires(Items.CLAY_BALL, 8)
                 .output(material("dense_clay_spindle"), 1)
                 .save(output, ClayiumMod.id("assembler/dense_clay_spindle"));
+    }
+
+    private static void originalToolAndClayPartRoutes(RecipeOutput output) {
+        machine(ClayiumRecipeMethod.ASSEMBLER, 6, ClayiumRecipeEnergy.e(1.0D, 6), 20)
+                .requires(WorkbenchRegistration.CLAY_ROLLING_PIN.get())
+                .requires(WorkbenchRegistration.CLAY_SLICER.get())
+                .output(WorkbenchRegistration.CLAY_IO_CONFIGURATOR.get(), 1)
+                .save(output, ClayiumMod.id("assembler/clay_io_configurator"));
+        machine(ClayiumRecipeMethod.ASSEMBLER, 6, ClayiumRecipeEnergy.e(1.0D, 6), 20)
+                .requires(WorkbenchRegistration.CLAY_SPATULA.get())
+                .requires(FoundationItemRegistration.CLAY_WRENCH.get())
+                .output(WorkbenchRegistration.CLAY_PIPING_CONFIGURATOR.get(), 1)
+                .save(output, ClayiumMod.id("assembler/clay_piping_configurator"));
+        machine(ClayiumRecipeMethod.ASSEMBLER, 6, ClayiumRecipeEnergy.e(1.0D, 6), 20)
+                .requires(WorkbenchRegistration.CLAY_IO_CONFIGURATOR.get())
+                .requires(component("precision_circuit"), 2)
+                .output(WorkbenchRegistration.MEMORY_CARD.get(), 1)
+                .save(output, ClayiumMod.id("assembler/memory_card"));
+        machine(ClayiumRecipeMethod.ASSEMBLER, 6, ClayiumRecipeEnergy.e(1.0D, 6), 20)
+                .requires(material("dense_clay_spindle"))
+                .requires(component("precision_circuit"), 2)
+                .output(WorkbenchRegistration.DIRECTION_MEMORY_CARD.get(), 1)
+                .save(output, ClayiumMod.id("assembler/direction_memory_card"));
+
+        clayPart(output, "clay_spindle", 10L, material("large_clay_plate"), 1, Items.CLAY_BALL, 8);
+        clayPart(output, "clay_grinding_head", 10L, material("large_clay_plate"), 1, Items.CLAY, 8);
+        clayPart(output, "clay_cutting_head", 10L, material("large_clay_plate"), 1,
+                material("clay_plate"), 8);
+        clayPart(output, "dense_clay_gear_from_sticks", 10L, material("dense_clay_stick"), 5, null, 0);
+        clayPart(output, "dense_clay_gear_from_short_sticks", 10L,
+                material("short_dense_clay_stick"), 9, null, 0);
+        clayPart(output, "dense_clay_grinding_head", 100L, material("large_dense_clay_plate"), 1,
+                material("dense_clay"), 8);
+        clayPart(output, "dense_clay_cutting_head", 100L, material("large_dense_clay_plate"), 1,
+                material("dense_clay_plate"), 8);
+    }
+
+    private static void clayPart(RecipeOutput output, String id, long energy,
+            ItemLike first, int firstCount, ItemLike second, int secondCount) {
+        String outputId = id.startsWith("dense_clay_gear") ? "dense_clay_gear" : id;
+        ClayiumRecipeBuilder builder = machine(ClayiumRecipeMethod.ASSEMBLER, 3, energy, 20)
+                .requires(first, firstCount);
+        if (second != null) {
+            builder.requires(second, secondCount);
+        }
+        builder.output(material(outputId), 1)
+                .save(output, ClayiumMod.id("assembler/" + id));
     }
 
     private static void centrifuge(RecipeOutput output) {

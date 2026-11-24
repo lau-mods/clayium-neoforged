@@ -115,10 +115,20 @@ public final class CaMachineGameTests {
         require(collector.progress() == 0L && collector.output().getStackInSlot(0).isEmpty(),
                 "The collector advanced without resonance");
 
+        helper.setBlock(collectorPosition.offset(2, 2, 2), augment("antimatter_resonator"));
+        collector.invalidateResonance();
+        for (int tick = 0; tick < 20; tick++) {
+            CaCollectorBlockEntity.serverTick(
+                    helper.getLevel(), collector.getBlockPos(), collector.getBlockState(), collector);
+        }
+        require(collector.progress() == 0L,
+                "The collector accumulated fractional progress discarded by the original implementation");
+
         CompoundTag saved = collector.saveWithFullMetadata(helper.getLevel().registryAccess());
         saved.putLong("progress", CaCollectorBlockEntity.BASE_CRAFT_TIME - 1L);
         collector.loadWithComponents(saved, helper.getLevel().registryAccess());
         helper.setBlock(collectorPosition.offset(2, 2, 2), augment("opa_resonator"));
+        collector.invalidateResonance();
         CaCollectorBlockEntity.serverTick(
                 helper.getLevel(), collector.getBlockPos(), collector.getBlockState(), collector);
         require(collector.output().getStackInSlot(0).is(

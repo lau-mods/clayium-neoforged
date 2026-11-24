@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:advanced_industrial_clay_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 28,
+      "id": "clayium:energized_clay_dust"
+    }
+  ],
+  "processing_method": "clayium:decomposer",
+  "processing_ticks": 60,
+  "required_tier": 4
+}

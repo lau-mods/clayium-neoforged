@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -14,7 +13,8 @@ import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.PanRegistration;
 import net.claustra01.clayium.machine.ClayMachineBlock;
-import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ClayiumRecipeCache;
+import net.claustra01.clayium.recipe.ClayiumRecipeInput;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -39,6 +39,10 @@ import net.minecraft.world.level.block.BlastFurnaceBlock;
 import net.minecraft.world.level.block.SmokerBlock;
 import net.minecraft.world.level.block.CraftingTableBlock;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -48,6 +52,8 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
     public static final int ANTIMATTER_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
     public static final int FUEL_SLOT = 3;
+    public static final int ADAPTER_PAGE_SIZE = 9;
+    public static final int MAX_ADAPTER_PAGES = 8;
 
     private final ItemStackHandler inventory = new ItemStackHandler(4) {
         @Override
@@ -72,6 +78,39 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
+    private boolean loadingAdapterInventory;
+    private boolean adapterResultsDirty = true;
+    private final ItemStackHandler adapterPatterns = new ItemStackHandler(ADAPTER_PAGE_SIZE * MAX_ADAPTER_PAGES) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            if (!loadingAdapterInventory) adapterPatternChanged();
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return slot >= 0 && slot < adapterPages() * ADAPTER_PAGE_SIZE && PanRecipeClosure.isPlain(stack);
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return 1;
+        }
+    };
+    private final ItemStackHandler adapterResults = new ItemStackHandler(ADAPTER_PAGE_SIZE * MAX_ADAPTER_PAGES) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return false;
+        }
+    };
+    private final ItemStackHandler adapterSubItems = new ItemStackHandler(ADAPTER_PAGE_SIZE) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            if (loadingAdapterInventory) return;
+            adapterResultsDirty = true;
+            setChanged();
+            if (level != null) PanNetwork.invalidate(level);
+        }
+    };
     private PanNetwork.Scan scan;
     private PanRecipeClosure.Calculation closureCalculation;
     private PanRecipeClosure.Result closure = new PanRecipeClosure.Result(Map.of(), Map.of());
@@ -84,8 +123,7 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
     private long knownNetworkVersion = -1L;
     private long knownRecipeVersion = -1L;
     private Set<BlockPos> knownAdapters = Set.of();
-    private Set<RecipeType<?>> knownVanillaTypes = Set.of();
-    private Map<ClayiumRecipeMethod, Integer> knownMachineTiers = Map.of();
+    private List<PanRecipeClosure.Edge> knownAdapterEdges = List.of();
     private boolean closureReady;
     private long lastScanTick = Long.MIN_VALUE;
     private int nodeCount;
@@ -163,6 +201,9 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         }
         if (kind() == PanBlock.Kind.DUPLICATOR) {
             tickDuplicator();
+        } else if (kind() == PanBlock.Kind.ADAPTER) {
+            if (knownRecipeVersion != PanNetwork.recipeVersion()) adapterResultsDirty = true;
+            if (adapterResultsDirty) refreshAdapterResults();
         }
     }
 
@@ -178,32 +219,24 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void beginClosure(PanNetwork.Scan finished) {
-        Set<RecipeType<?>> vanillaTypes = new HashSet<>();
-        Map<ClayiumRecipeMethod, Integer> machineTiers = new EnumMap<>(ClayiumRecipeMethod.class);
+        List<PanRecipeClosure.Edge> edges = new ArrayList<>();
         for (BlockPos adapter : finished.adapters()) {
-            for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
-                var block = level.getBlockState(adapter.relative(direction)).getBlock();
-                if (block instanceof CraftingTableBlock) vanillaTypes.add(RecipeType.CRAFTING);
-                if (block instanceof FurnaceBlock) vanillaTypes.add(RecipeType.SMELTING);
-                if (block instanceof BlastFurnaceBlock) vanillaTypes.add(RecipeType.BLASTING);
-                if (block instanceof SmokerBlock) vanillaTypes.add(RecipeType.SMOKING);
-                if (block instanceof ClayMachineBlock machine) {
-                    machineTiers.merge(machine.series().recipeMethod(), machine.tier(), Math::max);
-                }
+            if (level.getBlockEntity(adapter) instanceof PanBlockEntity pan
+                    && pan.kind() == PanBlock.Kind.ADAPTER) {
+                edges.addAll(pan.adapterConversionEdges());
             }
         }
         Set<BlockPos> adapters = Set.copyOf(finished.adapters());
+        List<PanRecipeClosure.Edge> selectedEdges = List.copyOf(edges);
         long recipeVersion = PanNetwork.recipeVersion();
-        if (adapters.equals(knownAdapters) && vanillaTypes.equals(knownVanillaTypes)
-                && machineTiers.equals(knownMachineTiers) && recipeVersion == knownRecipeVersion) {
+        if (adapters.equals(knownAdapters) && selectedEdges.equals(knownAdapterEdges)
+                && recipeVersion == knownRecipeVersion) {
             return;
         }
         knownAdapters = adapters;
-        knownVanillaTypes = Set.copyOf(vanillaTypes);
-        knownMachineTiers = Map.copyOf(machineTiers);
+        knownAdapterEdges = selectedEdges;
         knownRecipeVersion = recipeVersion;
-        closureCalculation = PanRecipeClosure.begin(level.getRecipeManager(), level.registryAccess(),
-                vanillaTypes, machineTiers);
+        closureCalculation = PanRecipeClosure.beginSelected(selectedEdges);
     }
 
     private void tickDuplicator() {
@@ -281,6 +314,189 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler inventory() {
         return inventory;
+    }
+
+    public int adapterPages() {
+        return switch (tier()) {
+            case 11 -> 2;
+            case 12 -> 4;
+            case 13 -> 8;
+            default -> 1;
+        };
+    }
+
+    public ItemStackHandler adapterPatterns() {
+        return adapterPatterns;
+    }
+
+    public ItemStackHandler adapterResults() {
+        return adapterResults;
+    }
+
+    public ItemStackHandler adapterSubItems() {
+        return adapterSubItems;
+    }
+
+    public ItemStack adapterPattern(int page, int slot) {
+        if (!validAdapterCell(page, slot)) return ItemStack.EMPTY;
+        return adapterPatterns.getStackInSlot(page * ADAPTER_PAGE_SIZE + slot).copy();
+    }
+
+    public ItemStack adapterResult(int page, int slot) {
+        if (!validAdapterCell(page, slot)) return ItemStack.EMPTY;
+        return adapterResults.getStackInSlot(page * ADAPTER_PAGE_SIZE + slot).copy();
+    }
+
+    public boolean setAdapterPattern(int page, int slot, ItemStack sample) {
+        if (kind() != PanBlock.Kind.ADAPTER || !validAdapterCell(page, slot)
+                || !sample.isEmpty() && !PanRecipeClosure.isPlain(sample)) {
+            return false;
+        }
+        adapterPatterns.setStackInSlot(page * ADAPTER_PAGE_SIZE + slot,
+                sample.isEmpty() ? ItemStack.EMPTY : sample.copyWithCount(1));
+        return true;
+    }
+
+    private boolean validAdapterCell(int page, int slot) {
+        return page >= 0 && page < adapterPages() && slot >= 0 && slot < ADAPTER_PAGE_SIZE;
+    }
+
+    private void adapterPatternChanged() {
+        adapterResultsDirty = true;
+        setChanged();
+        if (level != null) PanNetwork.invalidate(level);
+    }
+
+    public void refreshAdapterResults() {
+        if (kind() != PanBlock.Kind.ADAPTER || level == null || level.isClientSide) return;
+        List<AdapterConversion> conversions = adapterConversions();
+        loadingAdapterInventory = true;
+        try {
+            for (int page = 0; page < MAX_ADAPTER_PAGES; page++) {
+                AdapterConversion conversion = page < conversions.size() ? conversions.get(page) : null;
+                List<ItemStack> outputs = conversion == null ? List.of() : conversion.outputs();
+                for (int slot = 0; slot < ADAPTER_PAGE_SIZE; slot++) {
+                    adapterResults.setStackInSlot(page * ADAPTER_PAGE_SIZE + slot,
+                            slot < outputs.size() ? outputs.get(slot).copy() : ItemStack.EMPTY);
+                }
+            }
+        } finally {
+            loadingAdapterInventory = false;
+        }
+        adapterResultsDirty = false;
+        knownRecipeVersion = PanNetwork.recipeVersion();
+        setChanged();
+    }
+
+    public void adapterNeighborChanged() {
+        if (kind() != PanBlock.Kind.ADAPTER) return;
+        adapterResultsDirty = true;
+        if (level != null) PanNetwork.invalidate(level);
+    }
+
+    public List<PanRecipeClosure.Edge> adapterConversionEdges() {
+        if (kind() != PanBlock.Kind.ADAPTER || level == null) return List.of();
+        List<PanRecipeClosure.Edge> edges = new ArrayList<>();
+        for (AdapterConversion conversion : adapterConversions()) {
+            if (conversion != null) edges.addAll(conversion.edges());
+        }
+        return List.copyOf(edges);
+    }
+
+    private List<AdapterConversion> adapterConversions() {
+        List<AdapterConversion> conversions = new ArrayList<>();
+        for (int page = 0; page < adapterPages(); page++) conversions.add(null);
+        net.minecraft.core.Direction connected = null;
+        search:
+        for (int page = 0; page < adapterPages(); page++) {
+            for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
+                AdapterConversion conversion = adapterConversion(page, direction);
+                if (conversion != null) {
+                    connected = direction;
+                    break search;
+                }
+            }
+        }
+        if (connected == null) return conversions;
+        for (int page = 0; page < adapterPages(); page++) {
+            conversions.set(page, adapterConversion(page, connected));
+        }
+        return conversions;
+    }
+
+    @Nullable
+    private AdapterConversion adapterConversion(int page, net.minecraft.core.Direction direction) {
+        List<ItemStack> pattern = new ArrayList<>(ADAPTER_PAGE_SIZE);
+        boolean any = false;
+        for (int slot = 0; slot < ADAPTER_PAGE_SIZE; slot++) {
+            ItemStack stack = adapterPattern(page, slot);
+            pattern.add(stack);
+            any |= !stack.isEmpty();
+        }
+        if (!any) return null;
+        BlockPos target = worldPosition.relative(direction);
+        BlockState state = level.getBlockState(target);
+        Recipe<?> recipe = null;
+        List<ItemStack> outputs = List.of();
+        if (state.getBlock() instanceof CraftingTableBlock) {
+            CraftingInput input = CraftingInput.of(3, 3, pattern);
+            var match = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
+            if (match.isPresent()) {
+                recipe = match.get().value();
+                ItemStack result = match.get().value().assemble(input, level.registryAccess());
+                if (!result.isEmpty()) outputs = List.of(result);
+            }
+        } else {
+            List<ItemStack> nonEmpty = pattern.stream().filter(stack -> !stack.isEmpty()).toList();
+            if (nonEmpty.size() == 1) {
+                SingleRecipeInput input = new SingleRecipeInput(nonEmpty.getFirst());
+                if (state.getBlock() instanceof BlastFurnaceBlock) {
+                    var match = level.getRecipeManager().getRecipeFor(RecipeType.BLASTING, input, level);
+                    if (match.isPresent()) {
+                        recipe = match.get().value();
+                        ItemStack result = match.get().value().assemble(input, level.registryAccess());
+                        if (!result.isEmpty()) outputs = List.of(result);
+                    }
+                } else if (state.getBlock() instanceof SmokerBlock) {
+                    var match = level.getRecipeManager().getRecipeFor(RecipeType.SMOKING, input, level);
+                    if (match.isPresent()) {
+                        recipe = match.get().value();
+                        ItemStack result = match.get().value().assemble(input, level.registryAccess());
+                        if (!result.isEmpty()) outputs = List.of(result);
+                    }
+                } else if (state.getBlock() instanceof FurnaceBlock) {
+                    var match = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, input, level);
+                    if (match.isPresent()) {
+                        recipe = match.get().value();
+                        ItemStack result = match.get().value().assemble(input, level.registryAccess());
+                        if (!result.isEmpty()) outputs = List.of(result);
+                    }
+                }
+            }
+        }
+        if (recipe == null && state.getBlock() instanceof ClayMachineBlock machine) {
+            ClayiumRecipeInput input = new ClayiumRecipeInput(
+                    pattern.stream().filter(stack -> !stack.isEmpty()).toList(), List.<FluidStack>of(),
+                    machine.tier(), Long.MAX_VALUE, target);
+            var match = ClayiumRecipeCache.find(level.getRecipeManager(),
+                    net.claustra01.clayium.registry.RecipeRegistration.type(machine.series().recipeMethod()),
+                    input, level);
+            if (match.isPresent()) {
+                recipe = match.get().value();
+                outputs = match.get().value().itemOutputs().stream().map(ItemStack::copy).toList();
+            }
+        }
+        if (recipe == null || outputs.isEmpty()) return null;
+        List<ItemStack> limited = List.copyOf(outputs.subList(0, Math.min(ADAPTER_PAGE_SIZE, outputs.size())));
+        return new AdapterConversion(limited,
+                PanRecipeClosure.edgesForSelectedRecipe(recipe, level.registryAccess()));
+    }
+
+    private record AdapterConversion(List<ItemStack> outputs, List<PanRecipeClosure.Edge> edges) {
+        private AdapterConversion {
+            outputs = outputs.stream().map(ItemStack::copy).toList();
+            edges = List.copyOf(edges);
+        }
     }
 
     public ClayEnergyStorage energy() {
@@ -415,6 +631,15 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         return container;
     }
 
+    public Container dropAdapterSubItems() {
+        SimpleContainer container = new SimpleContainer(adapterSubItems.getSlots());
+        for (int slot = 0; slot < adapterSubItems.getSlots(); slot++) {
+            container.setItem(slot, adapterSubItems.getStackInSlot(slot).copy());
+            adapterSubItems.setStackInSlot(slot, ItemStack.EMPTY);
+        }
+        return container;
+    }
+
     @Override
     public Component getDisplayName() {
         return getBlockState().getBlock().getName();
@@ -435,6 +660,10 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.put("inventory", inventory.serializeNBT(registries));
+        if (kind() == PanBlock.Kind.ADAPTER) {
+            tag.put("adapter_patterns", adapterPatterns.serializeNBT(registries));
+            tag.put("adapter_sub_items", adapterSubItems.serializeNBT(registries));
+        }
         tag.put("energy", energy.serializeNBT(registries));
         tag.putLong("progress", progress);
         tag.putLong("active_consumption", activeConsumption);
@@ -456,6 +685,24 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         if (tag.contains("inventory")) {
             inventory.deserializeNBT(registries, tag.getCompound("inventory"));
         }
+        loadingAdapterInventory = true;
+        try {
+            clearHandler(adapterPatterns);
+            clearHandler(adapterSubItems);
+            if (kind() == PanBlock.Kind.ADAPTER && tag.contains("adapter_patterns")
+                    && validHandlerSize(tag.getCompound("adapter_patterns"),
+                            ADAPTER_PAGE_SIZE * MAX_ADAPTER_PAGES)) {
+                adapterPatterns.deserializeNBT(registries, tag.getCompound("adapter_patterns"));
+            }
+            if (kind() == PanBlock.Kind.ADAPTER && tag.contains("adapter_sub_items")
+                    && validHandlerSize(tag.getCompound("adapter_sub_items"), ADAPTER_PAGE_SIZE)) {
+                adapterSubItems.deserializeNBT(registries, tag.getCompound("adapter_sub_items"));
+            }
+            sanitizeAdapterInventory();
+        } finally {
+            loadingAdapterInventory = false;
+        }
+        adapterResultsDirty = true;
         if (tag.contains("energy")) {
             energy.deserializeNBT(registries, tag.getCompound("energy"));
         }
@@ -486,5 +733,26 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         closureReady = false;
         closure = new PanRecipeClosure.Result(Map.of(), Map.of());
         sortedCandidates = null;
+    }
+
+    private void sanitizeAdapterInventory() {
+        for (int slot = 0; slot < adapterPatterns.getSlots(); slot++) {
+            ItemStack stack = adapterPatterns.getStackInSlot(slot);
+            if (slot >= adapterPages() * ADAPTER_PAGE_SIZE || !stack.isEmpty() && !PanRecipeClosure.isPlain(stack)) {
+                adapterPatterns.setStackInSlot(slot, ItemStack.EMPTY);
+            } else if (stack.getCount() > 1) {
+                adapterPatterns.setStackInSlot(slot, stack.copyWithCount(1));
+            }
+        }
+    }
+
+    private static void clearHandler(ItemStackHandler handler) {
+        for (int slot = 0; slot < handler.getSlots(); slot++) {
+            handler.setStackInSlot(slot, ItemStack.EMPTY);
+        }
+    }
+
+    private static boolean validHandlerSize(CompoundTag tag, int expected) {
+        return !tag.contains("Size") || tag.getInt("Size") == expected;
     }
 }

@@ -959,6 +959,96 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "alloriginalpnghashesandtintlayersremainunmodified"
+    },
+    {
+      "acId": "AC-F049-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "parityledgercoversindependentoriginalinventories"
+    },
+    {
+      "acId": "AC-F049-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "parityledgerhasnomissingorunverifiedentries"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "resonatingcollectorstopswithoutresonanceandneverconsumeswhenfull"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originaldefaultsandremovedoptionsareexact"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tierandrenderoverridesaffectruntimelookups"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "progressionrateaffectsonlyoriginalcallsites"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "optionalrecipeswitchesdriveconditions"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "machinetransportsettingsdriveautomatictransfers"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "removedlegacyfeaturesremainabsentandcetofeisinitiallyreachable"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltiermachineandchestledgersclosewithoutexternaldependencies"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "survivaldependencygraphreachesnontiercapanandcontainerswithouttierleap"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnaceprocessesonlythroughitssynchronizedinterface"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactorlaseracceleratesandstructuredamagestopsprocessing"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactoracceptsonlycoveredtiermatchedringsandinvalidatesitscache"
+    },
+    {
+      "acId": "AC-F049-007",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "parityledgerhasnomissingorunverifiedentries"
     }
   ],
   "e2e": [
@@ -1229,6 +1319,22 @@
     {
       "acId": "AC-F048-003",
       "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "scenario": "tests/e2e/release-gate.mjs"
+    },
+    {
+      "acId": "AC-F049-003",
+      "scenario": "tests/e2e/release-gate.mjs"
+    },
+    {
+      "acId": "AC-F049-006",
+      "scenario": "tests/e2e/release-gate.mjs"
+    },
+    {
+      "acId": "AC-F049-007",
+      "scenario": "tests/e2e/release-gate.mjs"
     }
   ]
 }

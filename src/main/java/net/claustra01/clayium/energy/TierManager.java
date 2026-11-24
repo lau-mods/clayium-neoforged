@@ -1,63 +1,42 @@
 package net.claustra01.clayium.energy;
 
+import net.claustra01.clayium.ClayiumConfig;
+
 public final class TierManager {
     public static final int MIN_TIER = 0;
     public static final int MAX_TIER = 13;
 
-    private static final MachineParameters DEFAULT_MACHINE = new MachineParameters(1.0D, 1.0D);
-    private static final MachineParameters[] GENERAL = machineTable();
-    private static final MachineParameters[] SMELTER = machineTable();
-    private static final MachineParameters[] CA_CONDENSER = machineTable();
-    private static final TransportParameters[] MACHINE_TRANSPORT = new TransportParameters[MAX_TIER + 1];
-    private static final TransportParameters[] BUFFER_TRANSPORT = new TransportParameters[MAX_TIER + 1];
     private static final double[] OVERCLOCKER_FACTORS = {1.5D, 2.3D, 3.5D, 5.0D};
 
-    static {
-        GENERAL[5] = new MachineParameters(0.25D, 5.0D);
-        GENERAL[6] = new MachineParameters(0.0625D, 25.0D);
-        GENERAL[10] = new MachineParameters(0.01D, 250.0D);
-
-        SMELTER[4] = new MachineParameters(2.0D, 1.0D);
-        SMELTER[5] = new MachineParameters(0.5D, 14.0D);
-        SMELTER[6] = new MachineParameters(0.125D, 200.0D);
-        SMELTER[7] = new MachineParameters(0.03D, 2_800.0D);
-        SMELTER[8] = new MachineParameters(0.01D, 40_000.0D);
-        SMELTER[9] = new MachineParameters(0.0025D, 560_000.0D);
-
-        CA_CONDENSER[10] = new MachineParameters(0.1D, 10.0D);
-        CA_CONDENSER[11] = new MachineParameters(0.01D, 100.0D);
-
-        for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
-            MACHINE_TRANSPORT[tier] = tier <= 4
-                    ? new TransportParameters(20, 8)
-                    : tier == 5 ? new TransportParameters(2, 16) : new TransportParameters(1, 64);
-        }
-
-        int[] bufferIntervals = {8, 8, 8, 8, 8, 4, 2, 1, 1, 1, 1, 1, 1, 1};
-        int[] bufferAmounts = {1, 1, 1, 1, 1, 4, 16, 64, 128, 192, 256, 512, 1_024, 6_400};
-        for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
-            BUFFER_TRANSPORT[tier] = new TransportParameters(bufferIntervals[tier], bufferAmounts[tier]);
-        }
-    }
-
     public static MachineParameters general(int tier) {
-        return GENERAL[tier];
+        checkTier(tier);
+        return new MachineParameters(
+                ClayiumConfig.GENERAL_MACHINE.craftTime(tier),
+                ClayiumConfig.GENERAL_MACHINE.energy(tier));
     }
 
     public static MachineParameters smelter(int tier) {
-        return SMELTER[tier];
+        checkTier(tier);
+        return new MachineParameters(
+                ClayiumConfig.SMELTER_MACHINE.craftTime(tier),
+                ClayiumConfig.SMELTER_MACHINE.energy(tier));
     }
 
     public static MachineParameters caCondenser(int tier) {
-        return CA_CONDENSER[tier];
+        checkTier(tier);
+        return new MachineParameters(
+                ClayiumConfig.CA_CONDENSER_MACHINE.craftTime(tier),
+                ClayiumConfig.CA_CONDENSER_MACHINE.energy(tier));
     }
 
     public static TransportParameters machineTransport(int tier) {
-        return MACHINE_TRANSPORT[tier];
+        checkTier(tier);
+        return transport(ClayiumConfig.MACHINE_TRANSPORT, tier);
     }
 
     public static TransportParameters bufferTransport(int tier) {
-        return BUFFER_TRANSPORT[tier];
+        checkTier(tier);
+        return transport(ClayiumConfig.BUFFER_TRANSPORT, tier);
     }
 
     public static long recipeEnergy(double value, int tier) {
@@ -104,10 +83,18 @@ public final class TierManager {
                 progressPerTick);
     }
 
-    private static MachineParameters[] machineTable() {
-        MachineParameters[] table = new MachineParameters[MAX_TIER + 1];
-        java.util.Arrays.fill(table, DEFAULT_MACHINE);
-        return table;
+    private static TransportParameters transport(ClayiumConfig.TransportBalance balance, int tier) {
+        return new TransportParameters(
+                balance.insertInterval(tier),
+                balance.extractInterval(tier),
+                balance.maximumInsert(tier),
+                balance.maximumExtract(tier));
+    }
+
+    private static void checkTier(int tier) {
+        if (tier < MIN_TIER || tier > MAX_TIER) {
+            throw new IllegalArgumentException("Tier must be from 0 through 13: " + tier);
+        }
     }
 
     private static long floorWithMinimum(double value) {
@@ -127,7 +114,22 @@ public final class TierManager {
     public record MachineParameters(double craftTimeMultiplier, double energyMultiplier) {
     }
 
-    public record TransportParameters(int intervalTicks, int maximumItems) {
+    public record TransportParameters(
+            int insertIntervalTicks,
+            int extractIntervalTicks,
+            int maximumInsertItems,
+            int maximumExtractItems) {
+        public TransportParameters(int intervalTicks, int maximumItems) {
+            this(intervalTicks, intervalTicks, maximumItems, maximumItems);
+        }
+
+        public int intervalTicks() {
+            return Math.min(insertIntervalTicks, extractIntervalTicks);
+        }
+
+        public int maximumItems() {
+            return Math.max(maximumInsertItems, maximumExtractItems);
+        }
     }
 
     public record ProcessingParameters(

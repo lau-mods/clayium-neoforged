@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class StorageContainerBlockEntity extends BlockEntity implements MenuProvider {
     public static final long BASIC_CAPACITY = 65_536L;
@@ -30,6 +31,22 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
     private long amount;
     private boolean expanded;
     private final IItemHandler handler = new LongItemHandler();
+    private final ItemStackHandler memoryInventory = new ItemStackHandler(1) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            syncVisual();
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return true;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return 1;
+        }
+    };
     private final ContainerData menuData = new StorageData();
 
     public StorageContainerBlockEntity(BlockPos pos, BlockState state) {
@@ -54,6 +71,10 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
 
     public IItemHandler itemHandler() {
         return handler;
+    }
+
+    public ItemStackHandler memoryInventory() {
+        return memoryInventory;
     }
 
     public boolean applyClayCore() {
@@ -87,6 +108,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         }
         tag.putLong("amount", amount);
         tag.putBoolean("expanded", expanded);
+        tag.put("memory", memoryInventory.serializeNBT(registries));
     }
 
     @Override
@@ -95,6 +117,11 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         stored = tag.contains("stored") ? ItemStack.parseOptional(registries, tag.getCompound("stored")) : ItemStack.EMPTY;
         expanded = tag.getBoolean("expanded");
         amount = tag.getLong("amount");
+        memoryInventory.setStackInSlot(0, ItemStack.EMPTY);
+        if (tag.contains("memory") && validHandlerSize(tag.getCompound("memory"), 1)) {
+            memoryInventory.deserializeNBT(registries, tag.getCompound("memory"));
+        }
+        sanitizeMemory();
         if (amount == 0L) {
             stored = ItemStack.EMPTY;
         } else if (!stored.isEmpty()) {
@@ -115,6 +142,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         }
         tag.putLong("amount", amount);
         tag.putBoolean("expanded", expanded);
+        tag.put("memory", memoryInventory.serializeNBT(registries));
         return tag;
     }
 
@@ -125,6 +153,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         if (!stored.isEmpty()) contents.put("stored", stored.copyWithCount(1).save(level.registryAccess()));
         contents.putLong("amount", amount);
         contents.putBoolean("expanded", expanded);
+        contents.put("memory", memoryInventory.serializeNBT(level.registryAccess()));
         components.set(DataComponents.CUSTOM_DATA, CustomData.of(contents));
     }
 
@@ -137,6 +166,11 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         stored = contents.contains("stored") ? ItemStack.parseOptional(level.registryAccess(), contents.getCompound("stored")) : ItemStack.EMPTY;
         amount = contents.getLong("amount");
         expanded = contents.getBoolean("expanded");
+        memoryInventory.setStackInSlot(0, ItemStack.EMPTY);
+        if (contents.contains("memory") && validHandlerSize(contents.getCompound("memory"), 1)) {
+            memoryInventory.deserializeNBT(level.registryAccess(), contents.getCompound("memory"));
+        }
+        sanitizeMemory();
     }
 
     private final class LongItemHandler implements IItemHandler {
@@ -153,7 +187,8 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            if (stack.isEmpty() || !stored.isEmpty() && !ItemStack.isSameItemSameComponents(stored, stack)) {
+            if (stack.isEmpty() || !memoryMatches(stack)
+                    || !stored.isEmpty() && !ItemStack.isSameItemSameComponents(stored, stack)) {
                 return stack;
             }
             int accepted = (int)Math.min((long)stack.getCount(), capacity() - amount);
@@ -194,9 +229,26 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return stored.isEmpty() || ItemStack.isSameItemSameComponents(stored, stack);
+            return memoryMatches(stack)
+                    && (stored.isEmpty() || ItemStack.isSameItemSameComponents(stored, stack));
         }
 
+    }
+
+    private boolean memoryMatches(ItemStack stack) {
+        ItemStack memory = memoryInventory.getStackInSlot(0);
+        return memory.isEmpty() || ItemStack.isSameItemSameComponents(memory, stack);
+    }
+
+    private void sanitizeMemory() {
+        ItemStack memory = memoryInventory.getStackInSlot(0);
+        if (!memory.isEmpty() && memory.getCount() != 1) {
+            memoryInventory.setStackInSlot(0, memory.copyWithCount(1));
+        }
+    }
+
+    private static boolean validHandlerSize(CompoundTag tag, int expected) {
+        return !tag.contains("Size") || tag.getInt("Size") == expected;
     }
 
     private void syncVisual() {

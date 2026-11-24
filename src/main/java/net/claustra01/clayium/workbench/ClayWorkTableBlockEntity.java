@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeInput;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ProgressionRateRules;
 import net.claustra01.clayium.registry.RecipeRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.claustra01.clayium.tool.ClayCraftingToolItem;
@@ -113,6 +114,8 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
         }
 
         ClayiumMachineRecipe value = recipe.get().value();
+        long requiredTicks = ProgressionRateRules.adjustedRecipeTicks(
+                recipe.get().id(), value.processingMethod(), value.processingTicks());
         if (activeRecipe == null) {
             if (!canStoreOutputs(value.itemOutputs(), action)) {
                 return false;
@@ -125,10 +128,10 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
             progress = 0;
         }
 
-        if (progress < value.processingTicks()) {
+        if (progress < requiredTicks) {
             progress++;
         }
-        if (progress < value.processingTicks()) {
+        if (progress < requiredTicks) {
             setChanged();
             return true;
         }
@@ -183,8 +186,9 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
         }
         return level.getRecipeManager().byKey(activeRecipe).stream()
                 .filter(holder -> holder.value() instanceof ClayiumMachineRecipe)
-                .map(holder -> (ClayiumMachineRecipe) holder.value())
-                .map(ClayiumMachineRecipe::processingTicks)
+                .map(holder -> ProgressionRateRules.adjustedRecipeTicks(
+                        holder.id(), ClayiumRecipeMethod.CLAY_WORK_TABLE,
+                        ((ClayiumMachineRecipe)holder.value()).processingTicks()))
                 .findFirst()
                 .orElse(0L);
     }
@@ -226,7 +230,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
         java.util.ArrayList<ItemStack> allOutputs = new java.util.ArrayList<>(outputs);
         ItemStack tool = inventory.getStackInSlot(TOOL_SLOT);
         if (action > 2 && tool.getItem() instanceof ClayCraftingToolItem craftingTool
-                && tool.getDamageValue() + 1 >= tool.getMaxDamage()) {
+                && craftingTool.willBreak(tool)) {
             allOutputs.add(craftingTool.getCraftingRemainingItem(tool));
         }
         for (ItemStack output : allOutputs) {

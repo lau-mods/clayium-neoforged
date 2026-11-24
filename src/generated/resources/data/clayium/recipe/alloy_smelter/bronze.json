@@ -4,15 +4,25 @@
   "item_inputs": [
     {
       "count": 3,
-      "ingredient": {
-        "tag": "c:ingots/copper"
-      }
+      "ingredient": [
+        {
+          "tag": "c:ingots/copper"
+        },
+        {
+          "tag": "c:dusts/copper"
+        }
+      ]
     },
     {
       "count": 1,
-      "ingredient": {
-        "tag": "c:ingots/tin"
-      }
+      "ingredient": [
+        {
+          "tag": "c:ingots/tin"
+        },
+        {
+          "tag": "c:dusts/tin"
+        }
+      ]
     }
   ],
   "item_outputs": [

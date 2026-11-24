@@ -50,6 +50,21 @@
       "address": "127.0.0.1:25595"
     }
   },
+  "releaseGateProfile": {
+    "clients": [
+      "clayium-a",
+      "clayium-b"
+    ],
+    "secondary": {
+      "name": "clayium-b",
+      "account": "clayium_b",
+      "version": "1.21.1",
+      "loader": "neoforge",
+      "wsPort": 25596,
+      "width": 1280,
+      "height": 720
+    }
+  },
   "runtime": {
     "command": ".harness-state/runtime/pilot/node_modules/.bin/mct",
     "server": {

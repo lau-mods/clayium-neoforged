@@ -1,5 +1,6 @@
 package net.claustra01.clayium.machine.environment;
 
+import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.registry.EnvironmentMachineRegistration;
 import net.claustra01.clayium.util.WaterDetection;
 import net.minecraft.core.BlockPos;
@@ -77,7 +78,11 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity {
     }
 
     public int intervalTicks() {
-        return switch (tier()) {
+        return intervalTicks(tier());
+    }
+
+    public static int intervalTicks(int tier) {
+        int baseInterval = switch (tier) {
             case 1 -> 40;
             case 2 -> 20;
             case 3 -> 10;
@@ -85,6 +90,7 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity {
             case 5 -> 2;
             default -> 1;
         };
+        return (int)ClayiumConfig.divideProgressionTicks(baseInterval);
     }
 
     public int tier() {

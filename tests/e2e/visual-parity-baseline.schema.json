@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "originalJarSha256", "comparisons"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "originalJarSha256": {
+      "const": "c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2"
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["unitId", "scenario", "label", "originalImage", "originalImageSha256"],
+        "properties": {
+          "unitId": { "type": "string", "pattern": "^(gui|renderer):" },
+          "scenario": {
+            "enum": ["tests/e2e/gui-parity.mjs", "tests/e2e/world-rendering.mjs"]
+          },
+          "label": { "type": "string", "minLength": 1 },
+          "originalImage": {
+            "type": "string",
+            "pattern": "^reference/original/visual/"
+          },
+          "originalImageSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    }
+  }
+}

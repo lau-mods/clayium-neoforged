@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 10000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:clay_rolling_pin"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:clay_slicer"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:clay_io_configurator"
+    }
+  ],
+  "processing_method": "clayium:assembler",
+  "processing_ticks": 20,
+  "required_tier": 6
+}
