@@ -7,24 +7,20 @@
   },
   "agents": {
     "plan": {
+      "type": "claude",
       "command": "claude",
       "model": "claude-opus-5-5",
       "effort": "high"
     },
     "implementation": {
+      "type": "codex",
       "command": "codex",
-      "initial": {
-        "model": "gpt-5.6-sol",
-        "effort": "high"
-      },
-      "retry": {
-        "model": "gpt-6-sol",
-        "effort": "medium"
-      },
-      "fast": false,
-      "provider": null
+      "model": "gpt-5.6-sol",
+      "effort": "high",
+      "fast": false
     },
     "codeReview": {
+      "type": "claude",
       "command": "claude",
       "initial": {
         "model": "claude-opus-5-5",
@@ -36,6 +32,7 @@
       }
     },
     "e2eReview": {
+      "type": "claude",
       "command": "claude",
       "initial": {
         "model": "claude-opus-5-5",

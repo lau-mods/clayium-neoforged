@@ -1503,7 +1503,7 @@ Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件で�
 | 旧原作の原典 | JAR内の`mods.clayium.*`クラス、`assets/clayium/*`、`mcmod.info` |
 | 1.12.2移植版の参考ソース | https://github.com/TRCDevelopers/Clayium 、参考リビジョン`1355bdcd48eff93949e3cfc0a65a6e8e360b2c69` |
 | 1.12.2移植版の変更点 | https://trcdevelopers.github.io/Clayium/introduction/changes-from-original.html |
-| 使用するハーネス | https://github.com/lau-mods/modding-harness 、確認済みリビジョン`2bf8738b61927767bc15bfa5859ad9e3a6f53a81` |
+| 使用するハーネス | https://github.com/lau-mods/modding-harness 、確認済みリビジョン`942b7d83fbd9f38b6b8ee650868e919a61ac5314` |
 | 1.21.1 ModDevGradle MDK | https://github.com/NeoForgeMDKs/MDK-1.21.1-ModDevGradle |
 | NeoForge 1.21.1の技術仕様 | https://docs.neoforged.net/docs/1.21.1/ |
 
