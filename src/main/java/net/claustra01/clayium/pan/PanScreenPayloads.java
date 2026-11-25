@@ -44,6 +44,20 @@ public final class PanScreenPayloads {
         }
     }
 
+    public record ToggleProhibited(BlockPos pos, ResourceLocation item) implements CustomPacketPayload {
+        public static final Type<ToggleProhibited> TYPE = new Type<>(ClayiumMod.id("pan_toggle_prohibited"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, ToggleProhibited> STREAM_CODEC =
+                StreamCodec.composite(
+                        BlockPos.STREAM_CODEC, ToggleProhibited::pos,
+                        ResourceLocation.STREAM_CODEC, ToggleProhibited::item,
+                        ToggleProhibited::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
     public record AdapterPage(BlockPos pos, int page) implements CustomPacketPayload {
         public static final Type<AdapterPage> TYPE = new Type<>(ClayiumMod.id("pan_adapter_page"));
         public static final StreamCodec<RegistryFriendlyByteBuf, AdapterPage> STREAM_CODEC = StreamCodec.composite(
@@ -130,6 +144,8 @@ public final class PanScreenPayloads {
     public static void register(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar("1");
         registrar.playToServer(Control.TYPE, Control.STREAM_CODEC, PanScreenPayloads::handleControl);
+        registrar.playToServer(ToggleProhibited.TYPE, ToggleProhibited.STREAM_CODEC,
+                PanScreenPayloads::handleToggleProhibited);
         registrar.playToServer(AdapterPage.TYPE, AdapterPage.STREAM_CODEC, PanScreenPayloads::handleAdapterPage);
         registrar.playToServer(AdapterPattern.TYPE, AdapterPattern.STREAM_CODEC,
                 PanScreenPayloads::handleAdapterPattern);
@@ -160,6 +176,21 @@ public final class PanScreenPayloads {
             return;
         }
         menu.pan().applyScreenControl(payload.action(), payload.value());
+    }
+
+    private static void handleToggleProhibited(ToggleProhibited payload, IPayloadContext context) {
+        if (context.player() instanceof ServerPlayer player) {
+            apply(player, payload);
+        }
+    }
+
+    public static void apply(Player player, ToggleProhibited payload) {
+        if (player.containerMenu instanceof PanMenu menu
+                && menu.position().equals(payload.pos())
+                && menu.stillValid(player)
+                && menu.pan().kind() == PanBlock.Kind.CORE) {
+            menu.pan().toggleProhibited(payload.item());
+        }
     }
 
     private static void handleAdapterPage(AdapterPage payload, IPayloadContext context) {
@@ -212,7 +243,7 @@ public final class PanScreenPayloads {
         PanBlockEntity pan = menu.pan();
         ResourceLocation selected = pan.selectedCandidate() == null ? Snapshot.NONE : pan.selectedCandidate();
         return new Snapshot(menu.containerId, pan.candidatePage(), pan.candidatePages(), pan.candidateSort(),
-                pan.candidateReverse(), selected, pan.visibleCandidates());
+                pan.candidateReverse(), selected, pan.allCandidates());
     }
 
     private PanScreenPayloads() {

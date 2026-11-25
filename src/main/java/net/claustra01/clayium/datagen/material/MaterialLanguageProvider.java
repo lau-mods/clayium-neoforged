@@ -67,7 +67,8 @@ public final class MaterialLanguageProvider extends LanguageProvider {
                     if (columns.length != 3) {
                         throw new IllegalStateException("Invalid original material translation: " + line);
                     }
-                    if (!foundation.containsKey(columns[0])) {
+                    if (!foundation.containsKey(columns[0])
+                            && !columns[0].equals("item.clayium.copper_ingot")) {
                         add(columns[0], columns[locale.equals("ja_jp") ? 2 : 1]);
                     }
 

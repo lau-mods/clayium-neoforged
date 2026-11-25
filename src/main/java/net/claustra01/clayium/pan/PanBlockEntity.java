@@ -559,6 +559,10 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider, C
                 Math.min(candidates.size(), start + CANDIDATES_PER_PAGE)));
     }
 
+    public List<PanScreenPayloads.Candidate> allCandidates() {
+        return sortedCandidates();
+    }
+
     private List<PanScreenPayloads.Candidate> sortedCandidates() {
         if (sortedCandidates != null) {
             return sortedCandidates;
@@ -613,6 +617,18 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider, C
 
     public boolean isProhibited(ResourceLocation item) {
         return prohibited.contains(item);
+    }
+
+    public boolean toggleProhibited(ResourceLocation item) {
+        if (kind() != PanBlock.Kind.CORE || !closure.costs().containsKey(item)) {
+            return false;
+        }
+        if (!prohibited.remove(item)) {
+            prohibited.add(item);
+        }
+        sortedCandidates = null;
+        setChanged();
+        return true;
     }
 
     public void applyScreenControl(int action, int value) {

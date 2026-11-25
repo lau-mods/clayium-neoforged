@@ -66,20 +66,6 @@ public final class LogisticsBlockStateProvider extends BlockStateProvider {
                     .element().from(0, 0, 0).to(16, 16, 16).cube("#hull").end();
             var multipart = getMultipartBuilder(definition.block().get());
             multipart.part().modelFile(model).addModel().end();
-            for (Direction direction : Direction.values()) {
-                for (BufferBlockEntity.FaceMode mode : new BufferBlockEntity.FaceMode[] {
-                        BufferBlockEntity.FaceMode.INPUT, BufferBlockEntity.FaceMode.OUTPUT,
-                        BufferBlockEntity.FaceMode.INPUT_OUTPUT}) {
-                    multipart.part().modelFile(models().getExistingFile(ClayiumMod.id(
-                                    "block/buffer_face_" + direction.getName() + "_" + mode.getSerializedName())))
-                            .addModel().condition(BufferBlock.FACES.get(direction.get3DDataValue()), mode).end();
-                    if (mode == BufferBlockEntity.FaceMode.INPUT_OUTPUT) {
-                        multipart.part().modelFile(models().getExistingFile(ClayiumMod.id(
-                                        "block/buffer_face_" + direction.getName() + "_output")))
-                                .addModel().condition(BufferBlock.FACES.get(direction.get3DDataValue()), mode).end();
-                    }
-                }
-            }
             for (Direction facing : Direction.Plane.HORIZONTAL) {
                 multipart.part().modelFile(filter).rotationY(((int)facing.toYRot() + 180) % 360).addModel()
                         .condition(BufferBlock.FILTERED, true).condition(BufferBlock.FACING, facing).end();

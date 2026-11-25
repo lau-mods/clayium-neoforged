@@ -115,7 +115,7 @@ public final class GuiParityGameTests {
                 new net.minecraft.world.inventory.SimpleContainerData(22));
         slot(machineMenu.slots.get(0), 44, 35, "processing input");
         slot(machineMenu.slots.get(1), 116, 35, "processing output");
-        slot(machineMenu.slots.get(3), 44, 57, "processing CE fuel");
+        slot(machineMenu.slots.get(3), -12, 56, "processing CE fuel");
         slot(machineMenu.slots.get(4), 8, 84, "processing player inventory");
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
         require(!machineMenu.quickMoveStack(player, 4).isEmpty()
@@ -141,7 +141,9 @@ public final class GuiParityGameTests {
                 new net.minecraft.world.inventory.SimpleContainerData(22));
         slot(separatorMenu.slots.get(0), 25, 44, "metal separator input");
         slot(separatorMenu.slots.get(1), 85, 17, "metal separator output");
-        slot(separatorMenu.slots.get(4), 8, 108, "metal separator player inventory");
+        slot(separatorMenu.slots.get(16), 139, 71, "metal separator last output");
+        slot(separatorMenu.slots.get(18), -12, 80, "metal separator CE fuel");
+        slot(separatorMenu.slots.get(19), 8, 108, "metal separator player inventory");
 
         BlockPos duplicatorPos = new BlockPos(4, 2, 2);
         helper.setBlock(duplicatorPos, PanRegistration.DEFINITIONS.get("pan_duplicator_tier_10").block().get());
@@ -458,6 +460,10 @@ public final class GuiParityGameTests {
         player.containerMenu = menu;
         helper.runAfterDelay(20, () -> {
             require(core.candidatePages() > 1, "PAN payload test requires multiple pages");
+            PanScreenPayloads.Snapshot snapshot = PanScreenPayloads.snapshot(menu);
+            require(snapshot.candidates().size() == core.allCandidates().size()
+                            && snapshot.candidates().size() > PanBlockEntity.CANDIDATES_PER_PAGE,
+                    "PAN core snapshot did not publish the full list required by the original table and search UI");
             core.applyScreenControl(PanScreenPayloads.PAGE, 1);
             player.containerMenu = player.inventoryMenu;
             PanScreenPayloads.apply(player, new PanScreenPayloads.Control(
@@ -482,9 +488,21 @@ public final class GuiParityGameTests {
                     core.getBlockPos(), PanScreenPayloads.REVERSE, 99));
             PanScreenPayloads.apply(player, new PanScreenPayloads.Control(
                     core.getBlockPos(), PanScreenPayloads.SELECT, PanBlockEntity.CANDIDATES_PER_PAGE));
+            var directCandidate = core.allCandidates().getFirst().item();
+            PanScreenPayloads.apply(player, new PanScreenPayloads.ToggleProhibited(
+                    core.getBlockPos().east(), directCandidate));
+            PanScreenPayloads.apply(player, new PanScreenPayloads.ToggleProhibited(
+                    core.getBlockPos(), ClayiumMod.id("missing_pan_candidate")));
             require(core.candidateSort() == 0 && core.candidatePage() == 1
-                            && core.selectedCandidate() == null && !core.candidateReverse(),
+                            && core.selectedCandidate() == null && !core.candidateReverse()
+                            && !core.isProhibited(directCandidate),
                     "A forged PAN position or value changed server state");
+            PanScreenPayloads.apply(player, new PanScreenPayloads.ToggleProhibited(
+                    core.getBlockPos(), directCandidate));
+            require(core.isProhibited(directCandidate),
+                    "A valid item-addressed PAN prohibition operation was rejected");
+            PanScreenPayloads.apply(player, new PanScreenPayloads.ToggleProhibited(
+                    core.getBlockPos(), directCandidate));
             PanScreenPayloads.apply(player, new PanScreenPayloads.Control(
                     core.getBlockPos(), PanScreenPayloads.SORT, 1));
             require(core.candidateSort() == 1, "A valid open-menu PAN operation was rejected");

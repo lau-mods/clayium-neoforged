@@ -131,17 +131,33 @@ public final class SideConfiguration {
         if (!device.pipeEnabled() || owner.getLevel() == null) return false;
         BlockEntity neighbor = owner.getLevel().getBlockEntity(owner.getBlockPos().relative(side));
         if (neighbor instanceof ConfigurableIoDevice adjacent) {
-            if (adjacent.ioTransportKind() != device.ioTransportKind()) return false;
             Direction opposite = side.getOpposite();
-            return device.extractionRoute(side) >= 0 && adjacent.insertionRoute(opposite) >= 0
-                    || device.insertionRoute(side) >= 0 && adjacent.extractionRoute(opposite) >= 0;
+            int extraction = device.extractionRoute(side);
+            int adjacentInsertion = adjacent.insertionRoute(opposite);
+            int insertion = device.insertionRoute(side);
+            int adjacentExtraction = adjacent.extractionRoute(opposite);
+            return extraction >= 0 && adjacentInsertion >= 0
+                        && device.extractionTransportKind(extraction)
+                                == adjacent.insertionTransportKind(adjacentInsertion)
+                    || insertion >= 0 && adjacentExtraction >= 0
+                        && device.insertionTransportKind(insertion)
+                                == adjacent.extractionTransportKind(adjacentExtraction);
         }
-        if (device.insertionRoute(side) < 0 && device.extractionRoute(side) < 0) return false;
-        return device.ioTransportKind() == IoTransportKind.FLUID
-                ? owner.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,
-                        owner.getBlockPos().relative(side), side.getOpposite()) != null
-                : owner.getLevel().getCapability(Capabilities.ItemHandler.BLOCK,
-                        owner.getBlockPos().relative(side), side.getOpposite()) != null;
+        int insertion = device.insertionRoute(side);
+        int extraction = device.extractionRoute(side);
+        return insertion >= 0 && hasCapability(device.insertionTransportKind(insertion), owner, side)
+                || extraction >= 0 && hasCapability(device.extractionTransportKind(extraction), owner, side);
+    }
+
+    private static boolean hasCapability(IoTransportKind kind, BlockEntity owner, Direction side) {
+        var level = owner.getLevel();
+        var neighborPos = owner.getBlockPos().relative(side);
+        Direction neighborSide = side.getOpposite();
+        return switch (kind) {
+            case ITEM -> level.getCapability(Capabilities.ItemHandler.BLOCK, neighborPos, neighborSide) != null;
+            case FLUID -> level.getCapability(Capabilities.FluidHandler.BLOCK, neighborPos, neighborSide) != null;
+            case ENERGY -> level.getCapability(Capabilities.EnergyStorage.BLOCK, neighborPos, neighborSide) != null;
+        };
     }
 
     private static int sanitize(int value, int count) {

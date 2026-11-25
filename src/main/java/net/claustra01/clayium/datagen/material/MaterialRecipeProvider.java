@@ -39,7 +39,7 @@ public final class MaterialRecipeProvider {
         }
         for (MaterialBlockDefinition definition : MaterialBlockDefinition.ORIGINAL_METAL_BLOCKS) {
             String materialId = definition.id().substring(0, definition.id().length() - "_block".length());
-            Item ingot = MaterialRegistration.MATERIAL_ITEMS.get(materialId + "_ingot").get();
+            Item ingot = materialItem(materialId + "_ingot");
             Item block = MaterialRegistration.METAL_BLOCKS.get(definition.id()).get().asItem();
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, block)
                     .define('#', ingot)
@@ -65,6 +65,11 @@ public final class MaterialRecipeProvider {
                     .unlockedBy("has_silicone", InventoryChangeTrigger.TriggerInstance.hasItems(silicone))
                     .save(recipeOutput, ClayiumMod.id("silicone/" + definition.color().getName()));
         }
+    }
+
+    private static Item materialItem(String id) {
+        return MaterialRegistration.isVanillaBacked(id)
+                ? Items.COPPER_INGOT : MaterialRegistration.MATERIAL_ITEMS.get(id).get();
     }
 
     private MaterialRecipeProvider() {

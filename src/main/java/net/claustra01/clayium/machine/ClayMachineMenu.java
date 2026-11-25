@@ -37,14 +37,15 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new SlotItemHandler(machine.inventory(), input, inputX(machine, input), inputY(machine, input)));
             }
-            for (int output = 0; output < Math.min(machine.outputSlots(), 4); output++) {
+            for (int output = 0; output < displayedOutputSlots(machine); output++) {
                 addSlot(new SlotItemHandler(
                         machine.inventory(), machine.outputSlot(output), outputX(machine, output), outputY(machine, output)));
             }
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new LockedSlot(machine, machine.reservedSlot(input), -1000, -1000));
             }
-            addSlot(new SlotItemHandler(machine.inventory(), machine.fuelSlot(), 44, 57));
+            addSlot(new SlotItemHandler(
+                    machine.inventory(), machine.fuelSlot(), -12, machineAreaHeight() - 16));
         }
         addPlayerInventory(playerInventory);
         addDataSlots(data);
@@ -95,7 +96,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
 
     public static int outputX(ClayMachineBlockEntity machine, int output) {
         if (isChemicalMetalSeparator(machine)) {
-            return 85;
+            return 85 + output % 4 * 18;
         }
         if (isCentrifuge(machine)) {
             return 116;
@@ -105,7 +106,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
 
     public static int outputY(ClayMachineBlockEntity machine, int output) {
         if (isChemicalMetalSeparator(machine)) {
-            return 17;
+            return 17 + output / 4 * 18;
         }
         if (isCentrifuge(machine)) {
             int outputs = Math.min(machine.outputSlots(), 4);
@@ -135,6 +136,10 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         return hasMethod(machine, "chemical_metal_separator");
     }
 
+    public static int displayedOutputSlots(ClayMachineBlockEntity machine) {
+        return isChemicalMetalSeparator(machine) ? 16 : Math.min(machine.outputSlots(), 4);
+    }
+
     private static boolean hasMethod(ClayMachineBlockEntity machine, String id) {
         return machine != null && machine.series().recipeMethod().id().equals(id);
     }
@@ -148,7 +153,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         ItemStack original = slot.getItem().copy();
         ItemStack moving = slot.getItem();
         int machineSlots = machine == null ? 0 : machine.inputSlots() * 2
-                + Math.min(machine.outputSlots(), 4) + 1;
+                + displayedOutputSlots(machine) + 1;
         if (index < machineSlots) {
             if (!moveItemStackTo(moving, machineSlots, slots.size(), true)) {
                 return ItemStack.EMPTY;

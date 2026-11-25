@@ -72,6 +72,10 @@ public final class CobblestoneGeneratorBlock extends BaseEntityBlock {
                 ? PipeShapes.forDevice(generator) : Shapes.block();
     }
 
+    @Override protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return PipeShapes.occlusionShape(state, PIPE);
+    }
+
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CobblestoneGeneratorBlockEntity(pos, state);

@@ -59,6 +59,9 @@ public final class DistributorBlock extends BaseEntityBlock {
         return level.getBlockEntity(pos) instanceof DistributorBlockEntity distributor
                 ? PipeShapes.forDevice(distributor) : Shapes.block();
     }
+    @Override protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return PipeShapes.occlusionShape(state, PIPE);
+    }
     @Override protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                          BlockHitResult hitResult) {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer

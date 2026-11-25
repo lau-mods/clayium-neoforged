@@ -25,7 +25,8 @@ public final class MaterialItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         for (var variant : ClayMaterials.VARIANTS) {
             if (variant.shape() == MaterialShape.BLOCK || variant.id().startsWith("minecraft:")
-                    || variant.id().equals("industrial_clay_dust")) {
+                    || variant.id().equals("industrial_clay_dust")
+                    || MaterialRegistration.isVanillaBacked(variant.id())) {
                 continue;
             }
             String dedicated = MaterialAppearance.dedicatedTexture(variant);

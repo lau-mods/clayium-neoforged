@@ -69,6 +69,11 @@ public final class PanCableBlock extends PanBlock {
     }
 
     @Override
+    protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST);

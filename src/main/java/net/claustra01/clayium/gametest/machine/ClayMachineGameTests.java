@@ -10,6 +10,7 @@ import net.claustra01.clayium.machine.series.ProcessingSeries;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.PanRegistration;
 import net.claustra01.clayium.registry.FoundationItemRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.minecraft.core.BlockPos;
@@ -54,6 +55,36 @@ public final class ClayMachineGameTests {
                         && machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.DISABLED
                         && machine.faceMode(Direction.SOUTH) == ClayMachineBlockEntity.FaceMode.DISABLED,
                 "A processing-machine face without an original route was enabled by default");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void ioFacesUseOriginalRouteTexturesAndPipeShapesDoNotCullNeighbors(GameTestHelper helper) {
+        MachineRegistration.MachineDefinition definition = MachineRegistration.MACHINES.get("condenser_tier_4");
+        BlockPos position = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockState normal = definition.block().get().defaultBlockState();
+        helper.getLevel().setBlockAndUpdate(position, normal);
+        ClayMachineBlockEntity machine = (ClayMachineBlockEntity)helper.getLevel().getBlockEntity(position);
+        require(machine != null, "Placed processing machine did not create its shared block entity");
+        require("import".equals(machine.insertionFaceTexture(0)),
+                "The normal input route no longer uses the original import texture");
+        require("import_energy".equals(machine.insertionFaceTexture(1)),
+                "The energetic-clay route no longer uses the original yellow texture");
+        require("export".equals(machine.extractionFaceTexture(0)),
+                "The output route no longer uses the original export texture");
+
+        BlockState pipe = normal.setValue(net.claustra01.clayium.machine.ClayMachineBlock.PIPE, true);
+        helper.getLevel().setBlockAndUpdate(position, pipe);
+        require(pipe.getOcclusionShape(helper.getLevel(), position).isEmpty(),
+                "A pipe-shaped machine still culls the adjacent block face");
+        require(!normal.getOcclusionShape(helper.getLevel(), position).isEmpty(),
+                "A normal full-block machine lost its occlusion shape");
+
+        BlockPos cablePosition = helper.absolutePos(new BlockPos(3, 1, 1));
+        BlockState cable = PanRegistration.PAN_CABLE.get().defaultBlockState();
+        helper.getLevel().setBlockAndUpdate(cablePosition, cable);
+        require(cable.getOcclusionShape(helper.getLevel(), cablePosition).isEmpty(),
+                "PAN cable still culls the adjacent block face");
         helper.succeed();
     }
 

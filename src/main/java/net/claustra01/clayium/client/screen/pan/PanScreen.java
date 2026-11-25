@@ -1,7 +1,10 @@
 package net.claustra01.clayium.client.screen.pan;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import net.claustra01.clayium.client.screen.legacy.LegacyButton;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.energy.ClayEnergy;
@@ -10,6 +13,7 @@ import net.claustra01.clayium.pan.PanBlockEntity;
 import net.claustra01.clayium.pan.PanMenu;
 import net.claustra01.clayium.pan.PanScreenPayloads;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -18,12 +22,21 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class PanScreen extends AbstractContainerScreen<PanMenu> {
-    private final List<LegacyButton> candidateButtons = new ArrayList<>();
+    private static final int TABLE_X = 11;
+    private static final int TABLE_Y = 18;
+    private static final int TABLE_WIDTH = 144;
+    private static final int TABLE_HEIGHT = 112;
+    private static final int SLIDER_WIDTH = 10;
+    private static final int ROWS = 7;
+
     private LegacyButton previous;
     private LegacyButton next;
-    private LegacyButton sort;
-    private LegacyButton reverse;
-    private LegacyButton prohibit;
+    private EditBox search;
+    private int sortMode;
+    private boolean reverse;
+    private boolean detail;
+    private int scrollRow;
+    private boolean draggingSlider;
 
     public PanScreen(PanMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -44,6 +57,9 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
+        if (menu.kind() == PanBlock.Kind.CORE) {
+            renderCoreContents(graphics);
+        }
         renderTooltip(graphics, mouseX, mouseY);
     }
 
@@ -57,79 +73,66 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
                 next = addRenderableWidget(new LegacyButton(leftPos + 156, topPos + 36, 16, 16,
                         Component.literal(">"), () -> changeAdapterPage(menu.adapterPage() + 1)));
             }
-            updateButtons();
+            updateAdapterButtons();
             return;
         }
         if (menu.kind() != PanBlock.Kind.CORE) {
             return;
         }
-        sort = addRenderableWidget(new LegacyButton(leftPos + 6, topPos + 17, 53, 12,
-                Component.translatable("gui.clayium.pan.sort"),
-                () -> send(PanScreenPayloads.SORT, (menu.candidateSort() + 1) % 3)));
-        reverse = addRenderableWidget(new LegacyButton(leftPos + 61, topPos + 17, 36, 12,
-                Component.empty(), () -> send(PanScreenPayloads.REVERSE, 0)));
-        previous = addRenderableWidget(new LegacyButton(leftPos + 99, topPos + 17, 18, 12,
-                Component.literal("<"), () -> send(PanScreenPayloads.PAGE, menu.candidatePage() - 1)));
-        next = addRenderableWidget(new LegacyButton(leftPos + 119, topPos + 17, 18, 12,
-                Component.literal(">"), () -> send(PanScreenPayloads.PAGE, menu.candidatePage() + 1)));
-        prohibit = addRenderableWidget(new LegacyButton(leftPos + 139, topPos + 17, 31, 12,
-                Component.translatable("gui.clayium.pan.prohibit"),
-                () -> send(PanScreenPayloads.TOGGLE_PROHIBITED, 0)));
-        for (int index = 0; index < PanBlockEntity.CANDIDATES_PER_PAGE; index++) {
-            int candidate = index;
-            candidateButtons.add(addRenderableWidget(new LegacyButton(
-                    leftPos + 26, topPos + 32 + index * 15, 144, 14, Component.empty(),
-                    () -> send(PanScreenPayloads.SELECT, candidate))));
-        }
-        updateButtons();
+        addRenderableWidget(new LegacyButton(leftPos + 90, topPos + 5, 12, 12,
+                Component.literal("I"), () -> sortBy(0)));
+        addRenderableWidget(new LegacyButton(leftPos + 106, topPos + 5, 12, 12,
+                Component.literal("M"), () -> sortBy(1)));
+        addRenderableWidget(new LegacyButton(leftPos + 122, topPos + 5, 12, 12,
+                Component.literal("C"), () -> sortBy(2)));
+        addRenderableWidget(new LegacyButton(leftPos + 140, topPos + 5, 30, 12,
+                Component.literal("Dump"), this::dumpMatches));
+        addRenderableWidget(new LegacyButton(leftPos + 72, topPos + 133, 12, 12,
+                Component.literal("D"), () -> {
+                    detail = !detail;
+                    scrollRow = 0;
+                }));
+        search = addRenderableWidget(new EditBox(font, leftPos + 88, topPos + 133, 77, 12,
+                Component.translatable("gui.clayium.pan.search")));
+        search.setMaxLength(128);
+        search.setBordered(true);
+        search.setResponder(value -> scrollRow = 0);
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
-        updateButtons();
+        updateAdapterButtons();
+        scrollRow = Math.clamp(scrollRow, 0, maxScrollRow());
     }
 
-    private void updateButtons() {
-        if (previous == null) {
+    private void updateAdapterButtons() {
+        if (menu.kind() != PanBlock.Kind.ADAPTER || previous == null) {
             return;
         }
-        if (menu.kind() == PanBlock.Kind.ADAPTER) {
-            previous.active = menu.adapterPage() > 0;
-            next.active = menu.adapterPage() + 1 < menu.adapterPages();
-            return;
-        }
-        previous.active = menu.candidatePage() > 0;
-        next.active = menu.candidatePage() + 1 < menu.candidatePages();
-        sort.setMessage(Component.translatable("gui.clayium.pan.sort." + menu.candidateSort()));
-        reverse.setMessage(Component.translatable(menu.candidateReverse()
-                ? "gui.clayium.pan.descending" : "gui.clayium.pan.ascending"));
-        List<PanScreenPayloads.Candidate> candidates = menu.visibleCandidates();
-        boolean selected = false;
-        for (int index = 0; index < candidateButtons.size(); index++) {
-            LegacyButton button = candidateButtons.get(index);
-            button.visible = index < candidates.size();
-            if (!button.visible) {
-                continue;
-            }
-            PanScreenPayloads.Candidate candidate = candidates.get(index);
-            ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(candidate.item()));
-            String marker = candidate.item().equals(menu.selectedCandidate()) ? "> " : "  ";
-            String disabled = candidate.prohibited() ? " [X]" : "";
-            String suffix = " " + format(candidate.consumption()) + disabled;
-            int nameWidth = Math.max(0, button.getWidth() - 8 - font.width(marker + suffix));
-            String name = stack.getHoverName().getString();
-            if (font.width(name) > nameWidth) {
-                name = font.plainSubstrByWidth(name, Math.max(0, nameWidth - font.width("…"))) + "…";
-            }
-            button.setMessage(Component.literal(marker + name + suffix));
-            selected |= candidate.item().equals(menu.selectedCandidate());
-        }
-        prohibit.active = selected;
+        previous.active = menu.adapterPage() > 0;
+        next.active = menu.adapterPage() + 1 < menu.adapterPages();
     }
 
-    private void send(int action, int value) {
-        PacketDistributor.sendToServer(new PanScreenPayloads.Control(menu.position(), action, value));
+    private void sortBy(int requested) {
+        if (sortMode == requested) {
+            reverse = !reverse;
+        } else {
+            sortMode = requested;
+            reverse = false;
+        }
+        scrollRow = 0;
+    }
+
+    private void dumpMatches() {
+        if (minecraft == null || minecraft.player == null) {
+            return;
+        }
+        for (PanScreenPayloads.Candidate candidate : filteredCandidates()) {
+            ItemStack stack = stack(candidate);
+            minecraft.player.displayClientMessage(Component.literal(stack.getHoverName().getString()
+                    + " [" + format(candidate.cost()) + " : " + format(candidate.consumption()) + "]"), false);
+        }
     }
 
     private void changeAdapterPage(int page) {
@@ -156,14 +159,10 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             LegacyGuiGraphics.progress(graphics, leftPos + 84, topPos + 36,
                     menu.progress(), menu.requiredProgress());
         } else if (menu.kind() == PanBlock.Kind.CORE) {
-            List<PanScreenPayloads.Candidate> candidates = menu.visibleCandidates();
-            for (int index = 0; index < candidates.size(); index++) {
-                ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(candidates.get(index).item()));
-                graphics.renderFakeItem(stack, leftPos + 8, topPos + 32 + index * 15);
-            }
-            int sliderY = menu.candidatePages() <= 1 ? 32
-                    : 32 + menu.candidatePage() * 89 / (menu.candidatePages() - 1);
-            LegacyGuiGraphics.slider(graphics, leftPos + 170, topPos + 32, topPos + sliderY);
+            graphics.fill(leftPos + TABLE_X - 1, topPos + TABLE_Y - 1,
+                    leftPos + TABLE_X + TABLE_WIDTH + SLIDER_WIDTH + 1,
+                    topPos + TABLE_Y + TABLE_HEIGHT + 1, 0xFF001E00);
+            renderSlider(graphics);
         } else if (menu.kind() == PanBlock.Kind.ADAPTER) {
             for (int row = 0; row < 3; row++) {
                 for (int column = 0; column < 3; column++) {
@@ -177,13 +176,77 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
         }
     }
 
+    private void renderSlider(GuiGraphics graphics) {
+        int x = leftPos + TABLE_X + TABLE_WIDTH;
+        int y = topPos + TABLE_Y;
+        graphics.fill(x, y, x + SLIDER_WIDTH, y + TABLE_HEIGHT, 0xFF303030);
+        int travel = TABLE_HEIGHT - 8;
+        int maximum = maxScrollRow();
+        int thumbY = y + (maximum == 0 ? 0 : scrollRow * travel / maximum);
+        graphics.fill(x + 1, thumbY, x + SLIDER_WIDTH - 1, thumbY + 8, 0xFFC0C0C0);
+        graphics.fill(x + 2, thumbY + 1, x + SLIDER_WIDTH - 2, thumbY + 7, 0xFF707070);
+    }
+
+    private void renderCoreContents(GuiGraphics graphics) {
+        List<PanScreenPayloads.Candidate> candidates = filteredCandidates();
+        int columns = detail ? 1 : 9;
+        int start = scrollRow * columns;
+        int end = Math.min(candidates.size(), start + ROWS * columns);
+        for (int index = start; index < end; index++) {
+            int visible = index - start;
+            int column = visible % columns;
+            int row = visible / columns;
+            int x = leftPos + TABLE_X + column * 16;
+            int y = topPos + TABLE_Y + row * 16;
+            PanScreenPayloads.Candidate candidate = candidates.get(index);
+            if (candidate.prohibited()) {
+                graphics.fill(x, y, x + 16, y + 16, 0x78C0001E);
+            }
+            graphics.renderFakeItem(stack(candidate), x, y);
+            if (detail) {
+                graphics.drawString(font, format(candidate.cost()), x + 24, y + 4, 0xFFDCDCDC, false);
+                graphics.drawString(font, format(candidate.consumption()), x + 88, y + 4, 0xFFF0F0B0, false);
+            }
+        }
+    }
+
+    private List<PanScreenPayloads.Candidate> filteredCandidates() {
+        Pattern pattern;
+        try {
+            String expression = search == null ? "" : search.getValue();
+            pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        } catch (PatternSyntaxException ignored) {
+            return List.of();
+        }
+        List<PanScreenPayloads.Candidate> candidates = new ArrayList<>();
+        for (PanScreenPayloads.Candidate candidate : menu.candidates()) {
+            if (pattern.matcher(stack(candidate).getHoverName().getString()).find()) {
+                candidates.add(candidate);
+            }
+        }
+        Comparator<PanScreenPayloads.Candidate> comparator = switch (sortMode) {
+            case 1 -> Comparator.comparingLong(PanScreenPayloads.Candidate::cost)
+                    .thenComparing(candidate -> candidate.item().toString());
+            case 2 -> Comparator.comparingLong(PanScreenPayloads.Candidate::consumption)
+                    .thenComparing(candidate -> candidate.item().toString());
+            default -> Comparator.comparing(candidate -> candidate.item().toString());
+        };
+        candidates.sort(reverse ? comparator.reversed() : comparator);
+        return candidates;
+    }
+
+    private int maxScrollRow() {
+        int columns = detail ? 1 : 9;
+        int rows = (filteredCandidates().size() + columns - 1) / columns;
+        return Math.max(0, rows - ROWS);
+    }
+
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (menu.kind() == PanBlock.Kind.CORE && scrollY != 0.0D) {
-            int page = menu.candidatePage() + (scrollY < 0.0D ? 1 : -1);
-            if (page >= 0 && page < menu.candidatePages()) {
-                send(PanScreenPayloads.PAGE, page);
-            }
+        if (menu.kind() == PanBlock.Kind.CORE && scrollY != 0.0D
+                && mouseX >= leftPos + TABLE_X && mouseX < leftPos + TABLE_X + TABLE_WIDTH + SLIDER_WIDTH
+                && mouseY >= topPos + TABLE_Y && mouseY < topPos + TABLE_Y + TABLE_HEIGHT) {
+            scrollRow = Math.clamp(scrollRow + (scrollY < 0.0D ? 1 : -1), 0, maxScrollRow());
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
@@ -199,16 +262,31 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             }
             return true;
         }
-        if (menu.kind() == PanBlock.Kind.CORE && button == 0 && sliderAt(mouseX, mouseY)) {
-            moveSlider(mouseY);
-            return true;
+        if (menu.kind() == PanBlock.Kind.CORE) {
+            if (button == 0 && sliderAt(mouseX, mouseY)) {
+                draggingSlider = true;
+                moveSlider(mouseY);
+                return true;
+            }
+            PanScreenPayloads.Candidate candidate = candidateAt(mouseX, mouseY);
+            if (button == 1 && candidate != null) {
+                PacketDistributor.sendToServer(
+                        new PanScreenPayloads.ToggleProhibited(menu.position(), candidate.item()));
+                return true;
+            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        draggingSlider = false;
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (menu.kind() == PanBlock.Kind.CORE && button == 0 && sliderAt(mouseX, mouseY)) {
+        if (menu.kind() == PanBlock.Kind.CORE && button == 0 && draggingSlider) {
             moveSlider(mouseY);
             return true;
         }
@@ -216,27 +294,40 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
     }
 
     private boolean sliderAt(double mouseX, double mouseY) {
-        return mouseX >= leftPos + 170 && mouseX < leftPos + 176
-                && mouseY >= topPos + 32 && mouseY < topPos + 128;
+        int x = leftPos + TABLE_X + TABLE_WIDTH;
+        return mouseX >= x && mouseX < x + SLIDER_WIDTH
+                && mouseY >= topPos + TABLE_Y && mouseY < topPos + TABLE_Y + TABLE_HEIGHT;
     }
 
     private void moveSlider(double mouseY) {
-        int page = (int)Math.round((mouseY - topPos - 32) * (menu.candidatePages() - 1) / 95.0D);
-        page = Math.clamp(page, 0, menu.candidatePages() - 1);
-        if (page != menu.candidatePage()) {
-            send(PanScreenPayloads.PAGE, page);
+        int maximum = maxScrollRow();
+        int travel = TABLE_HEIGHT - 8;
+        int row = (int)Math.round((mouseY - topPos - TABLE_Y - 4) * maximum / Math.max(1.0D, travel));
+        scrollRow = Math.clamp(row, 0, maximum);
+    }
+
+    private PanScreenPayloads.Candidate candidateAt(double mouseX, double mouseY) {
+        if (mouseX < leftPos + TABLE_X || mouseX >= leftPos + TABLE_X + TABLE_WIDTH
+                || mouseY < topPos + TABLE_Y || mouseY >= topPos + TABLE_Y + TABLE_HEIGHT) {
+            return null;
         }
+        int columns = detail ? 1 : 9;
+        int column = (int)(mouseX - leftPos - TABLE_X) / 16;
+        int row = (int)(mouseY - topPos - TABLE_Y) / 16;
+        if (column >= columns) {
+            return null;
+        }
+        List<PanScreenPayloads.Candidate> candidates = filteredCandidates();
+        int index = (scrollRow + row) * columns + column;
+        return index >= 0 && index < candidates.size() ? candidates.get(index) : null;
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 7, 6, LegacyGuiGraphics.TEXT_COLOR, false);
         if (menu.kind() == PanBlock.Kind.CORE) {
-            String page = (menu.candidatePage() + 1) + "/" + menu.candidatePages();
-            graphics.drawString(font, page, 118 - font.width(page) / 2, 7,
-                    LegacyGuiGraphics.TEXT_COLOR, false);
-            drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
-                    menu.nodes(), menu.adapters()), 7, 130, 162, 0x405060);
+            drawFitted(graphics, Component.translatable("gui.clayium.pan.energy", format(menu.requiredEnergy())),
+                    4, 132, 64, LegacyGuiGraphics.TEXT_COLOR);
         } else if (menu.kind() == PanBlock.Kind.ADAPTER) {
             if (menu.adapterPages() > 1) {
                 String page = (menu.adapterPage() + 1) + "/" + menu.adapterPages();
@@ -266,12 +357,9 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
         if (menu.kind() != PanBlock.Kind.CORE) {
             return;
         }
-        int relativeY = mouseY - topPos - 32;
-        int index = relativeY < 0 ? -1 : relativeY / 15;
-        List<PanScreenPayloads.Candidate> candidates = menu.visibleCandidates();
-        if (index >= 0 && index < candidates.size() && mouseX >= leftPos + 6 && mouseX < leftPos + 170) {
-            PanScreenPayloads.Candidate candidate = candidates.get(index);
-            ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(candidate.item()));
+        PanScreenPayloads.Candidate candidate = candidateAt(mouseX, mouseY);
+        if (candidate != null) {
+            ItemStack stack = stack(candidate);
             graphics.renderTooltip(font, List.of(
                     stack.getHoverName(),
                     Component.translatable("gui.clayium.pan.cost", format(candidate.cost())),
@@ -280,6 +368,10 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
                             ? "gui.clayium.pan.prohibited" : "gui.clayium.pan.permitted")),
                     java.util.Optional.empty(), mouseX, mouseY);
         }
+    }
+
+    private static ItemStack stack(PanScreenPayloads.Candidate candidate) {
+        return new ItemStack(BuiltInRegistries.ITEM.get(candidate.item()));
     }
 
     private static String format(long internal) {

@@ -9,7 +9,7 @@ public enum ChemicalSeries implements MachineSeries {
             ClayiumRecipeMethod.CHEMICAL_METAL_SEPARATOR,
             new int[] {6},
             1,
-            1,
+            16,
             "chemicalmetalseparator"),
     MATTER_TRANSFORMER(ClayiumRecipeMethod.MATTER_TRANSFORMER, new int[] {7, 8, 9, 10, 11, 12}, 1, 1, "transformer");
 

@@ -198,7 +198,21 @@ public final class MaterialBlockGameTests {
             String material = definition.id().substring(0, definition.id().length() - "_block".length());
             Item ingot = MaterialRegistration.MATERIAL_ITEMS.get(material + "_ingot").get();
             Item block = MaterialRegistration.METAL_BLOCKS.get(definition.id()).get().asItem();
-            ItemStack madeBlock = craft(helper, 3, 3, java.util.Collections.nCopies(9, new ItemStack(ingot)));
+            List<ItemStack> ingots = java.util.Collections.nCopies(9, new ItemStack(ingot));
+            ItemStack madeBlock;
+            if (MaterialRegistration.isVanillaBacked(material + "_ingot")) {
+                CraftingInput input = CraftingInput.of(3, 3, ingots);
+                var recipe = helper.getLevel().getRecipeManager()
+                        .byKey(ClayiumMod.id("material_block/" + definition.id()))
+                        .orElseThrow(() -> new GameTestAssertException(
+                                "Missing metal block recipe: " + definition.id()));
+                require(recipe.value() instanceof net.minecraft.world.item.crafting.CraftingRecipe,
+                        "Metal block recipe is not a crafting recipe: " + definition.id());
+                madeBlock = ((net.minecraft.world.item.crafting.CraftingRecipe)recipe.value())
+                        .assemble(input, helper.getLevel().registryAccess());
+            } else {
+                madeBlock = craft(helper, 3, 3, ingots);
+            }
             require(madeBlock.is(block) && madeBlock.getCount() == 1,
                     "Nine ingots did not create their matching block: " + definition.id());
             ItemStack restored = craft(helper, 1, 1, List.of(new ItemStack(block)));

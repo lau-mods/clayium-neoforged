@@ -51,8 +51,12 @@ public final class ChemicalMachineGameTests {
         }
 
         ClayMachineBlockEntity blocked = machine(helper, ChemicalSeries.CHEMICAL_METAL_SEPARATOR, 6);
+        require(blocked.outputSlots() == 16,
+                "The metal separator does not expose the original sixteen output slots");
         blocked.inventory().setStackInSlot(0, stack("industrial_clay_dust", 1));
-        blocked.inventory().setStackInSlot(blocked.outputSlot(), new ItemStack(Items.STONE, 64));
+        for (int output = 0; output < blocked.outputSlots(); output++) {
+            blocked.inventory().setStackInSlot(blocked.outputSlot(output), new ItemStack(Items.STONE, 64));
+        }
         blocked.receiveClayEnergy(ClayEnergy.ofInternal(STARTING_ENERGY));
         RandomSource blockedRandom = RandomSource.create(814L);
         RandomSource untouchedRandom = RandomSource.create(814L);

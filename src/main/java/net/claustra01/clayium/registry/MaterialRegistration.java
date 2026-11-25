@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.item.FoundationItem;
 import net.claustra01.clayium.material.ClayMaterials;
@@ -13,6 +14,7 @@ import net.claustra01.clayium.material.MaterialBlockDefinition;
 import net.claustra01.clayium.material.MaterialShape;
 import net.claustra01.clayium.material.SiliconeBlockDefinition;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -50,7 +52,7 @@ public final class MaterialRegistration {
 
     public static final Map<String, DeferredBlock<? extends Block>> COMPRESSION_BLOCKS;
     public static final Map<String, DeferredBlock<? extends Block>> MATERIAL_BLOCKS;
-    public static final Map<String, DeferredItem<? extends Item>> MATERIAL_ITEMS;
+    public static final Map<String, Supplier<? extends Item>> MATERIAL_ITEMS;
     public static final Map<String, DeferredItem<? extends Item>> COMPONENTS;
     public static final Map<String, DeferredBlock<? extends Block>> METAL_BLOCKS;
     public static final Map<String, DeferredBlock<? extends Block>> SILICONE_BLOCKS;
@@ -62,7 +64,7 @@ public final class MaterialRegistration {
         Map<String, DeferredBlock<? extends Block>> compressionBlocks = new LinkedHashMap<>();
         Map<String, DeferredItem<? extends Item>> compressionItems = new LinkedHashMap<>();
         Map<String, DeferredBlock<? extends Block>> materialBlocks = new LinkedHashMap<>();
-        Map<String, DeferredItem<? extends Item>> materialItems = new LinkedHashMap<>();
+        Map<String, Supplier<? extends Item>> materialItems = new LinkedHashMap<>();
         Map<String, DeferredItem<? extends Item>> components = new LinkedHashMap<>();
         Map<String, DeferredBlock<? extends Block>> metalBlocks = new LinkedHashMap<>();
         Map<String, DeferredBlock<? extends Block>> siliconeBlocks = new LinkedHashMap<>();
@@ -113,6 +115,8 @@ public final class MaterialRegistration {
                 materialItems.put(variant.id(), item);
             } else if (variant.id().equals("industrial_clay_dust")) {
                 materialItems.put(variant.id(), FoundationItemRegistration.INDUSTRIAL_CLAY_DUST);
+            } else if (variant.id().equals("copper_ingot")) {
+                materialItems.put(variant.id(), () -> Items.COPPER_INGOT);
             } else {
                 DeferredItem<FoundationItem> item = ClayiumRegistries.ITEMS.register(
                         variant.id(), () -> new FoundationItem(itemProperties(variant.tier())));
@@ -212,6 +216,10 @@ public final class MaterialRegistration {
 
     private static ComponentDefinition component(String id, String texture, int tier) {
         return new ComponentDefinition(id, texture, tier);
+    }
+
+    public static boolean isVanillaBacked(String id) {
+        return id.equals("copper_ingot");
     }
 
     private static <T> Map<String, T> immutableMap(Map<String, T> map) {

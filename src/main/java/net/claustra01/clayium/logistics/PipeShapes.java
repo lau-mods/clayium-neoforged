@@ -2,6 +2,8 @@ package net.claustra01.clayium.logistics;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -19,6 +21,11 @@ public final class PipeShapes {
             }
         }
         return shape;
+    }
+
+    /** Pipe bodies never cover an entire neighbor face, so the neighbor must not be culled. */
+    public static VoxelShape occlusionShape(BlockState state, BooleanProperty pipeProperty) {
+        return state.getValue(pipeProperty) ? Shapes.empty() : Shapes.block();
     }
 
     private static VoxelShape arm(Direction direction) {

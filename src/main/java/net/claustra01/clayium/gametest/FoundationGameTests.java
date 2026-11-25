@@ -110,7 +110,11 @@ public final class FoundationGameTests {
             expectedItems.add(id);
         }
         for (String idPath : MaterialRegistration.MATERIAL_ITEMS.keySet()) {
-            expectedItems.add(ClayiumMod.id(idPath));
+            ResourceLocation id = BuiltInRegistries.ITEM.getKey(
+                    MaterialRegistration.MATERIAL_ITEMS.get(idPath).get());
+            if (id.getNamespace().equals(ClayiumMod.MOD_ID)) {
+                expectedItems.add(id);
+            }
         }
         for (String idPath : MaterialRegistration.MATERIAL_BLOCKS.keySet()) {
             expectedBlocks.add(ClayiumMod.id(idPath));
@@ -406,7 +410,8 @@ public final class FoundationGameTests {
                 expectedKeys.add("block.clayium." + tier.id());
             }
             for (var variant : net.claustra01.clayium.material.ClayMaterials.VARIANTS) {
-                if (!variant.id().startsWith("minecraft:")) {
+                if (!variant.id().startsWith("minecraft:")
+                        && !MaterialRegistration.isVanillaBacked(variant.id())) {
                     expectedKeys.add((variant.shape() == net.claustra01.clayium.material.MaterialShape.BLOCK
                             ? "block.clayium." : "item.clayium.") + variant.id());
                 }

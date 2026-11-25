@@ -27,7 +27,7 @@ public final class PanMenu extends AbstractContainerMenu {
     private final ContainerData data;
     private final int machineSlots;
     private final ServerPlayer viewer;
-    private List<PanScreenPayloads.Candidate> visibleCandidates = List.of();
+    private List<PanScreenPayloads.Candidate> candidates = List.of();
     private int candidatePage;
     private int candidatePages = 1;
     private int candidateSort;
@@ -165,7 +165,7 @@ public final class PanMenu extends AbstractContainerMenu {
         candidateSort = snapshot.sort();
         candidateReverse = snapshot.reverse();
         selectedCandidate = snapshot.selected();
-        visibleCandidates = snapshot.candidates();
+        candidates = snapshot.candidates();
     }
 
     public long progress() {
@@ -209,7 +209,11 @@ public final class PanMenu extends AbstractContainerMenu {
     }
 
     public List<PanScreenPayloads.Candidate> visibleCandidates() {
-        return viewer == null ? visibleCandidates : pan.visibleCandidates();
+        return viewer == null ? candidates : pan.visibleCandidates();
+    }
+
+    public List<PanScreenPayloads.Candidate> candidates() {
+        return viewer == null ? candidates : pan.allCandidates();
     }
 
     public int candidatePage() {

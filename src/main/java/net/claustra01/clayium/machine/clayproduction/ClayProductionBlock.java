@@ -74,6 +74,11 @@ public final class ClayProductionBlock extends BaseEntityBlock {
                 : net.minecraft.world.phys.shapes.Shapes.block();
     }
 
+    @Override protected net.minecraft.world.phys.shapes.VoxelShape getOcclusionShape(
+            BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos) {
+        return net.claustra01.clayium.logistics.PipeShapes.occlusionShape(state, PIPE);
+    }
+
     @Override
     protected InteractionResult useWithoutItem(
             BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {

@@ -23,6 +23,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -121,7 +122,7 @@ public final class MaterialGameTests {
         require(ledger.size() == 245, "The original material-shape ledger must contain 245 combinations");
         require(ClayMaterials.VARIANTS.size() == ledger.size(), "A material-shape combination was added or removed");
         require(MaterialRegistration.MATERIAL_ITEMS.size() == ledger.size() - 1,
-                "Every non-vanilla material-shape combination needs one registered item ID");
+                "Every material-shape combination needs one runtime item mapping");
 
         Set<String> ledgerIds = new HashSet<>();
         for (OriginalRegistryCatalog.OriginalVariety variety : ledger) {
@@ -136,8 +137,13 @@ public final class MaterialGameTests {
         require(registeredIds.equals(MaterialRegistration.MATERIAL_ITEMS.keySet()),
                 "Registered items differ from the original material-shape ledger");
         for (String id : registeredIds) {
-            require(BuiltInRegistries.ITEM.containsKey(ClayiumMod.id(id)), "Material item is absent: " + id);
+            ResourceLocation expected = MaterialRegistration.isVanillaBacked(id)
+                    ? ResourceLocation.withDefaultNamespace(id) : ClayiumMod.id(id);
+            require(BuiltInRegistries.ITEM.containsKey(expected), "Material item is absent: " + expected);
         }
+        require(MaterialRegistration.MATERIAL_ITEMS.get("copper_ingot").get() == Items.COPPER_INGOT
+                        && !BuiltInRegistries.ITEM.containsKey(ClayiumMod.id("copper_ingot")),
+                "Copper ingot must use the vanilla item without a duplicate Clayium registration");
         for (OriginalRegistryCatalog.OriginalVariety variety : OriginalRegistryCatalog.ORIGINAL_VARIETIES) {
             if (variety.kind().equals("item") && variety.legacyId().matches(
                     "item\\.item(ClayParts|DenseClayParts|Plates|LargePlates|Dusts|Ingots|Gems)\\..*")) {
@@ -163,7 +169,7 @@ public final class MaterialGameTests {
         JsonObject english = language("en_us");
         JsonObject japanese = language("ja_jp");
         for (var variant : ClayMaterials.VARIANTS) {
-            if (variant.id().startsWith("minecraft:")) {
+            if (variant.id().startsWith("minecraft:") || MaterialRegistration.isVanillaBacked(variant.id())) {
                 continue;
             }
             String prefix = variant.shape() == MaterialShape.BLOCK ? "block" : "item";

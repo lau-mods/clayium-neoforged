@@ -41,6 +41,30 @@ public interface ConfigurableIoDevice {
         return IoTransportKind.ITEM;
     }
 
+    default IoTransportKind insertionTransportKind(int route) {
+        return ioTransportKind();
+    }
+
+    default IoTransportKind extractionTransportKind(int route) {
+        return ioTransportKind();
+    }
+
+    default String insertionFaceTexture(int route) {
+        return switch (insertionTransportKind(route)) {
+            case FLUID -> "import_l";
+            case ENERGY -> "import_energy";
+            case ITEM -> route == 1 ? "import_energy" : "import";
+        };
+    }
+
+    default String extractionFaceTexture(int route) {
+        return switch (extractionTransportKind(route)) {
+            case FLUID -> "export_l";
+            case ENERGY -> "export_rf";
+            case ITEM -> "export";
+        };
+    }
+
     default Direction ioFacing() {
         DirectionProperty property = ioFacingProperty();
         return property == null ? Direction.NORTH : ioOwner().getBlockState().getValue(property);

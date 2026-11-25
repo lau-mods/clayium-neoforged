@@ -51,6 +51,9 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         }
     }
 
+    @Override public String insertionFaceTexture(int route) { return "import_m" + route; }
+    @Override public String extractionFaceTexture(int route) { return "export_m" + route; }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, MultitrackBufferBlockEntity buffer) {
         buffer.tickServer();
     }

@@ -64,7 +64,7 @@ public final class PanBlockStateProvider
                 .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                 .texture("cable", ClayiumMod.id("block/pancable"))
                 .texture("particle", "#cable")
-                .renderType("minecraft:translucent")
+                .renderType("minecraft:cutout")
                 .element().from(6, 6, 6).to(10, 10, 10).cube("#cable").end()
                 .element().from(6, 0, 6).to(10, 6, 10).cube("#cable").end()
                 .element().from(6, 10, 6).to(10, 16, 10).cube("#cable").end()
@@ -82,7 +82,7 @@ public final class PanBlockStateProvider
                 .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                 .texture("cable", ClayiumMod.id("block/pancable"))
                 .texture("particle", "#cable")
-                .renderType("minecraft:translucent")
+                .renderType("minecraft:cutout")
                 .element().from(fromX, fromY, fromZ).to(toX, toY, toZ).cube("#cable").end();
     }
 

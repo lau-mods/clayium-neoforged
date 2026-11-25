@@ -72,6 +72,10 @@ public final class MultitrackBufferBlock extends BaseEntityBlock {
                 ? PipeShapes.forDevice(buffer) : Shapes.block();
     }
 
+    @Override protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return PipeShapes.occlusionShape(state, PIPE);
+    }
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hitResult) {

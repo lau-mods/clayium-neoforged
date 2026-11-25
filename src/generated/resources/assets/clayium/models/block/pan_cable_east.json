@@ -40,7 +40,7 @@
       ]
     }
   ],
-  "render_type": "minecraft:translucent",
+  "render_type": "minecraft:cutout",
   "textures": {
     "cable": "clayium:block/pancable",
     "particle": "#cable"

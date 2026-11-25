@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
-import net.claustra01.clayium.logistics.SideMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -51,9 +50,12 @@ public final class IoDeviceRenderer<T extends BlockEntity & ConfigurableIoDevice
     private static void renderFaces(ConfigurableIoDevice device, PoseStack poses,
                                     MultiBufferSource buffers, boolean pipe) {
         for (Direction side : Direction.values()) {
-            SideMode mode = device.sideMode(side);
-            if (mode.allowsInsert()) drawFace(poses, buffers, side, "import" + (pipe ? "_p" : ""), pipe);
-            if (mode.allowsExtract()) drawFace(poses, buffers, side, "export" + (pipe ? "_p" : ""), pipe);
+            int insertion = device.insertionRoute(side);
+            int extraction = device.extractionRoute(side);
+            if (insertion >= 0) drawFace(poses, buffers, side,
+                    device.insertionFaceTexture(insertion) + (pipe ? "_p" : ""), pipe);
+            if (extraction >= 0) drawFace(poses, buffers, side,
+                    device.extractionFaceTexture(extraction) + (pipe ? "_p" : ""), pipe);
             if (device.hasFilter(side) && !pipe) drawFace(poses, buffers, side, "filter", false);
         }
     }

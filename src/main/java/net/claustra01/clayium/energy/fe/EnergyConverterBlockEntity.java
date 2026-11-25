@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.machine.augment.AugmentScanner;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.IoTransportKind;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.EnergyConverterRegistration;
@@ -55,6 +56,11 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
     private final ItemStack[] sideFilters = new ItemStack[6];
     private final SideConfiguration sideConfiguration = new SideConfiguration(
             insertionRoutes, extractionRoutes, sideFilters, () -> 2, () -> 1, ItemFilter::accepts);
+
+    @Override
+    public IoTransportKind extractionTransportKind(int route) {
+        return IoTransportKind.ENERGY;
+    }
     private final IItemHandler unsidedFuelHandler = new FuelHandler(null);
     private final EnumMap<Direction, IItemHandler> fuelHandlers = new EnumMap<>(Direction.class);
     private final IEnergyStorage unsidedEnergyStorage = new OutputEnergyStorage(null);

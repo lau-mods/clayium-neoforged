@@ -15,6 +15,7 @@ import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
@@ -154,7 +155,8 @@ public final class SmeltingRecipes {
     }
 
     private static ItemLike material(String id) {
-        return MaterialRegistration.MATERIAL_ITEMS.get(id).get();
+        return MaterialRegistration.isVanillaBacked(id)
+                ? Items.COPPER_INGOT : MaterialRegistration.MATERIAL_ITEMS.get(id).get();
     }
 
     private static SmeltingRecipe smelting(String material, int tier, double energy, int ticks) {

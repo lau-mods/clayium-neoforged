@@ -14,6 +14,7 @@ import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -40,7 +41,8 @@ public final class MaterialItemTagProvider extends ItemTagsProvider {
             if (root == null) {
                 continue;
             }
-            Item item = MaterialRegistration.MATERIAL_ITEMS.get(variant.id()).get();
+            Item item = MaterialRegistration.isVanillaBacked(variant.id())
+                    ? Items.COPPER_INGOT : MaterialRegistration.MATERIAL_ITEMS.get(variant.id()).get();
             tag(common(root)).add(item);
             String materialName = variant.id();
             if (variant.shape() == MaterialShape.LARGE_PLATE && materialName.startsWith("large_")) {

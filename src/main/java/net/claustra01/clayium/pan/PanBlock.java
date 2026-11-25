@@ -78,6 +78,11 @@ public class PanBlock extends BaseEntityBlock {
                 : net.minecraft.world.phys.shapes.Shapes.block();
     }
 
+    @Override protected net.minecraft.world.phys.shapes.VoxelShape getOcclusionShape(
+            BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos) {
+        return net.claustra01.clayium.logistics.PipeShapes.occlusionShape(state, PIPE);
+    }
+
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

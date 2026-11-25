@@ -80,7 +80,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
             drawMachineSlot(graphics, ClayMachineMenu.inputX(menu.machine(), input),
                     ClayMachineMenu.inputY(menu.machine(), input), inputSlots, input, 32);
         }
-        int outputSlots = menu.machine() == null ? 1 : Math.min(menu.machine().outputSlots(), 4);
+        int outputSlots = menu.machine() == null ? 1 : ClayMachineMenu.displayedOutputSlots(menu.machine());
         if (ClayMachineMenu.isChemicalMetalSeparator(menu.machine())) {
             for (int row = 0; row < 4; row++) {
                 for (int column = 0; column < 4; column++) {
@@ -93,11 +93,12 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
                         ClayMachineMenu.outputY(menu.machine(), output), outputSlots, output, 64);
             }
         }
-        LegacyGuiGraphics.slot(graphics, leftPos + 44, topPos + 57);
         if (!configuringFaces && menu.machine() != null) {
             graphics.renderItem(new ItemStack(menu.machine().getBlockState().getBlock()), leftPos + 131, topPos + 4);
         }
-        LegacyGuiGraphics.progress(graphics, leftPos + 76, topPos + 35,
+        int progressX = ClayMachineMenu.isChemicalMetalSeparator(menu.machine()) ? 55 : 76;
+        int progressY = ClayMachineMenu.isChemicalMetalSeparator(menu.machine()) ? 44 : 35;
+        LegacyGuiGraphics.progress(graphics, leftPos + progressX, topPos + progressY,
                 menu.progress(), menu.requiredProgress());
         if (menu.machine() != null && menu.machine().series().recipeMethod().id().equals("chemical_reactor")) {
             drawFluidGauge(graphics, menu.inputFluid(), 20);
@@ -118,8 +119,10 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
 
     @Override
     public boolean mouseClicked(double x, double y, int button) {
-        if (button == 0 && menu.machine() != null && x >= leftPos + 76 && x < leftPos + 100
-                && y >= topPos + 35 && y < topPos + 52
+        int progressX = ClayMachineMenu.isChemicalMetalSeparator(menu.machine()) ? 55 : 76;
+        int progressY = ClayMachineMenu.isChemicalMetalSeparator(menu.machine()) ? 44 : 35;
+        if (button == 0 && menu.machine() != null && x >= leftPos + progressX && x < leftPos + progressX + 24
+                && y >= topPos + progressY && y < topPos + progressY + 17
                 && RecipeViewerNavigation.open(menu.machine().series().recipeMethod().location())) {
             return true;
         }
@@ -175,10 +178,13 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
             graphics.drawString(font, title, 0, 0, 0x404040, false);
             graphics.pose().popPose();
         }
+        ClayMachineBlockEntity machine = menu.machine();
+        int footerY = menu.machineAreaHeight() - 12;
         graphics.drawString(font, Component.translatable(
                         "gui.clayium.machine.required_energy", formatEnergy(menu.requiredEnergy())),
-                7, 19, 0x404040, false);
-        ClayMachineBlockEntity machine = menu.machine();
+                4, footerY, 0x404040, false);
+        Component tier = Component.literal("Tier " + menu.tier());
+        graphics.drawString(font, tier, imageWidth - 6 - font.width(tier), footerY, 0x404040, false);
         if (machine instanceof CaReactorCoreBlockEntity) {
             Component structure = Component.translatable(
                     "gui.clayium.ca_reactor.structure",
@@ -191,9 +197,9 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
             float scale = Math.min(1.0F, 162.0F / font.width(structure));
             graphics.pose().pushPose();
             graphics.pose().scale(scale, scale, 1.0F);
-            graphics.drawString(font, structure, (int)(7 / scale), (int)(80 / scale),
+            graphics.drawString(font, structure, (int)(7 / scale), (int)(68 / scale),
                     menu.reactorFormed() ? 0x168A16 : 0xAA2020, false);
-            graphics.drawString(font, rank, (int)(7 / scale), (int)(91 / scale), 0x404040, false);
+            graphics.drawString(font, rank, (int)(7 / scale), (int)(79 / scale), 0x404040, false);
             graphics.pose().popPose();
         }
         if (machine != null && menu.state() == ClayMachineBlockEntity.MachineState.RUNNING) {
