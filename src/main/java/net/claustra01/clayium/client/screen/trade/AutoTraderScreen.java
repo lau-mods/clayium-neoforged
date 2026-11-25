@@ -1,6 +1,5 @@
 package net.claustra01.clayium.client.screen.trade;
 
-import java.util.Locale;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.client.screen.legacy.LegacyButton;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
@@ -17,6 +16,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class AutoTraderScreen extends AbstractContainerScreen<AutoTraderMenu> {
     private static final ResourceLocation TRADE_ARROWS = ClayiumMod.id("textures/gui/autotrader.png");
+    private static final ResourceLocation OUT_OF_STOCK =
+            ResourceLocation.withDefaultNamespace("container/villager/out_of_stock");
 
     private LegacyButton previous;
     private LegacyButton next;
@@ -24,8 +25,8 @@ public final class AutoTraderScreen extends AbstractContainerScreen<AutoTraderMe
     public AutoTraderScreen(AutoTraderMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 201;
-        inventoryLabelY = 104;
+        imageHeight = 182;
+        inventoryLabelY = 88;
     }
 
     @Override
@@ -51,14 +52,18 @@ public final class AutoTraderScreen extends AbstractContainerScreen<AutoTraderMe
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 104, 0, 0, 176, 90);
-        graphics.blit(TRADE_ARROWS, leftPos + 90, topPos + 24, 22, 15, 86, 24, 22, 15, 256, 256);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 88, 0, 0, 176, 94);
+        graphics.blit(TRADE_ARROWS, leftPos, topPos, 0, 0, 176, 88, 256, 256);
         for (int[] slot : new int[][] {{35, 52}, {61, 52}, {119, 52}, {7, 52}}) {
             graphics.blit(LegacyGuiGraphics.SLOT, leftPos + slot[0], topPos + slot[1], 0, 0, 18, 18);
         }
         renderOffer(graphics, menu.selectedCostA(), leftPos + 36, topPos + 24);
         renderOffer(graphics, menu.selectedCostB(), leftPos + 62, topPos + 24);
         renderOffer(graphics, menu.selectedResult(), leftPos + 120, topPos + 24);
+        if (menu.selectedOutOfStock()) {
+            graphics.blitSprite(OUT_OF_STOCK, leftPos + 83, topPos + 21, 28, 21);
+            graphics.blitSprite(OUT_OF_STOCK, leftPos + 83, topPos + 51, 28, 21);
+        }
     }
 
     private void renderOffer(GuiGraphics graphics, ItemStack stack, int x, int y) {
@@ -69,31 +74,39 @@ public final class AutoTraderScreen extends AbstractContainerScreen<AutoTraderMe
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+        renderOfferTooltip(graphics, menu.selectedCostA(), 36, 24, mouseX, mouseY);
+        renderOfferTooltip(graphics, menu.selectedCostB(), 62, 24, mouseX, mouseY);
+        renderOfferTooltip(graphics, menu.selectedResult(), 120, 24, mouseX, mouseY);
+    }
+
+    private void renderOfferTooltip(
+            GuiGraphics graphics, ItemStack stack, int x, int y, int mouseX, int mouseY) {
+        if (!stack.isEmpty() && mouseX >= leftPos + x && mouseX < leftPos + x + 16
+                && mouseY >= topPos + y && mouseY < topPos + y + 16) {
+            graphics.renderTooltip(font, stack, mouseX, mouseY);
+        }
+    }
+
+    @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         String titleText = font.plainSubstrByWidth(title.getString(), 110);
         graphics.drawString(font, titleText, 7, 6, 0x404040, false);
-        graphics.drawString(font, Component.literal("Tier " + menu.tier()), 126, 6, 0x404040, false);
-        graphics.drawString(font, Component.literal((menu.selectedOffer() + 1) + "/" + menu.offerCount()),
-                75, 39, 0x404040, false);
-        String state = Component.translatable(
-                "gui.clayium.auto_trader.state." + menu.state().name().toLowerCase(Locale.ROOT)).getString();
-        String uses = Component.translatable(
-                "gui.clayium.auto_trader.uses", menu.selectedUses(), menu.selectedMaxUses()).getString();
         String cost = Component.translatable(
                 "gui.clayium.auto_trader.energy", ClayEnergy.ofInternal(menu.energyPerTrade()).format()).getString();
         String stored = Component.translatable(
                 "gui.clayium.auto_trader.stored", ClayEnergy.ofInternal(menu.storedEnergy()).format()).getString();
-        graphics.drawString(font, font.plainSubstrByWidth(state, 84), 7, 71, 0x404040, false);
-        graphics.drawString(font, font.plainSubstrByWidth(uses, 74), 95, 71, 0x404040, false);
-        drawFitted(graphics, cost, 81);
-        drawFitted(graphics, stored, 91);
+        drawFitted(graphics, cost, 7, 70, 162);
+        drawFitted(graphics, stored, 7, 80, 162);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 
-    private void drawFitted(GuiGraphics graphics, String label, int y) {
-        float scale = Math.min(1.0F, 162.0F / Math.max(1, font.width(label)));
+    private void drawFitted(GuiGraphics graphics, String label, int x, int y, int maximumWidth) {
+        float scale = Math.min(1.0F, maximumWidth / (float)Math.max(1, font.width(label)));
         graphics.pose().pushPose();
-        graphics.pose().translate(7, y, 0);
+        graphics.pose().translate(x, y, 0);
         graphics.pose().scale(scale, scale, 1.0F);
         graphics.drawString(font, label, 0, 0, 0x404040, false);
         graphics.pose().popPose();

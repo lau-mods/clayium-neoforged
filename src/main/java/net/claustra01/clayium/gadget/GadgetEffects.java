@@ -42,7 +42,7 @@ public final class GadgetEffects {
         if (flightRank == 1 && player.getAbilities().flying && player.tickCount % 80 == 0) {
             player.causeFoodExhaustion(1.0F);
         }
-        updateAutoEat(player, state, autoEatRank);
+        updateAutoEat(player, autoEatRank);
     }
 
     public static void clear(Player player) {
@@ -51,7 +51,6 @@ public final class GadgetEffects {
         applyModifier(player.getAttribute(NeoForgeMod.CREATIVE_FLIGHT), FLIGHT_MODIFIER_ID, 0.0D);
         GadgetPlayerState state = player.getData(GadgetRegistration.PLAYER_STATE);
         updateFlightSpeed(player, state, false);
-        state.autoEatCooldown(0);
     }
 
     public static Set<GadgetType> activeGadgets(Player player) {
@@ -139,11 +138,8 @@ public final class GadgetEffects {
         }
     }
 
-    private static void updateAutoEat(Player player, GadgetPlayerState state, int rank) {
-        if (state.autoEatCooldown() > 0) {
-            state.autoEatCooldown(state.autoEatCooldown() - 1);
-        }
-        if (rank == 0 || !player.getFoodData().needsFood() || state.autoEatCooldown() > 0) {
+    private static void updateAutoEat(Player player, int rank) {
+        if (rank == 0 || !player.getFoodData().needsFood()) {
             return;
         }
         int missingFood = 20 - player.getFoodData().getFoodLevel();
@@ -180,7 +176,6 @@ public final class GadgetEffects {
         } else if (!result.isEmpty() && result != food) {
             player.getInventory().add(result);
         }
-        state.autoEatCooldown(10);
     }
 
     private GadgetEffects() {

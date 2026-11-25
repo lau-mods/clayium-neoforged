@@ -179,8 +179,13 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
             int level = ClayProductionRules.productionLevel(input).orElse(-1);
             ItemStack result = level >= 0 && level < maximum
                     ? new ItemStack(ClayProductionRules.itemForLevel(level + 1)) : ItemStack.EMPTY;
-            setIdle(!result.isEmpty() && input.getCount() >= 9 && !canAcceptOutput(result)
-                    ? State.OUTPUT_FULL : level < 0 && !input.isEmpty() ? State.INVALID_INPUT : State.IDLE);
+            State idleState = State.IDLE;
+            if (!result.isEmpty() && input.getCount() >= 9 && !canAcceptOutput(result)) {
+                idleState = State.OUTPUT_FULL;
+            } else if (level < 0 && !input.isEmpty()) {
+                idleState = State.INVALID_INPUT;
+            }
+            setIdle(idleState);
         } else {
             progress = 1L;
             requiredProgress = 1L;
@@ -486,7 +491,10 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
 
         @Override
         public int getSlots() {
-            return direction == Direction.DOWN ? 1 : direction == null ? 4 : 3;
+            if (direction == null) {
+                return 4;
+            }
+            return direction == Direction.DOWN ? 1 : 3;
         }
 
         @Override

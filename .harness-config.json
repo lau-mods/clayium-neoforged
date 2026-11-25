@@ -44,12 +44,6 @@
       }
     }
   },
-  "recipeViewerProfiles": {
-    "emi": {
-      "directory": "profiles/emi",
-      "address": "127.0.0.1:25595"
-    }
-  },
   "releaseGateProfile": {
     "clients": [
       "clayium-a",

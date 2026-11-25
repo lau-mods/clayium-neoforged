@@ -826,12 +826,11 @@
         "M35",
         "M36"
       ],
-      "approach": "`compat`パッケージにJEIプラグイン（`@JeiPlugin`、gradleのJEIは`compileOnly`＋`localRuntime`、必須依存にしない）とEMIプラグイン（同様にcompileOnly）を実装し、M03のレシピ型ごとにカテゴリを作り必要Tier・材料・生成物・処理tick・CE（TierManager適用値）・流体mBを表示。作業台・CA反応炉・PAN複製等の特殊レシピも表示。プラグインクラスは通常ロード経路から参照しない。タグ（`c:`/`minecraft:`/`clayium:`）の整合性とItem/Fluid/EnergyStorage Capabilityの標準接続を横断検証するGameTest、JEI/EMI未導入での起動確認、E2EでJEIレシピ画面撮影。neoforge.mods.tomlにoptional依存を宣言。",
+      "approach": "`compat`パッケージにJEIプラグイン（`@JeiPlugin`、gradleのJEIは`compileOnly`＋`localRuntime`、必須依存にしない）を実装し、M03のレシピ型ごとにカテゴリを作り必要Tier・材料・生成物・処理tick・CE（TierManager適用値）・流体mBを表示。作業台・CA反応炉・PAN複製等の特殊レシピも表示。プラグインクラスは通常ロード経路から参照しない。タグ（`c:`/`minecraft:`/`clayium:`）の整合性とItem/Fluid/EnergyStorage Capabilityの標準接続を横断検証するGameTest、JEI未導入での起動確認、E2EでJEIレシピ画面撮影。neoforge.mods.tomlにoptional依存を宣言。",
       "scope": [
         "src/main/java/net/claustra01/clayium/compat/jei/",
-        "src/main/java/net/claustra01/clayium/compat/emi/",
         "build.gradle",
-        "gradle.properties (emi_version追加)",
+        "gradle.properties",
         "src/main/templates/META-INF/neoforge.mods.toml",
         "src/main/java/net/claustra01/clayium/gametest/compat/",
         "AGENTS.md",
@@ -1097,11 +1096,10 @@
         "M40",
         "M41"
       ],
-      "approach": "原作`plugin.nei.NEITemp`/`NEIClayMachines`/`NEIClayWorkTable`/`NEIMetalSeparator`/`NEIDescription`/`LoadNEIConfig`を`.tmp/`で解析する。`nei.png`のUV、入出力スロット位置、進捗バー、`Tier:`(6,43)・`CE/t × 時間 = 総CE`(6,52)の文字位置と色、金属分離の重み/確率表示、作業台の工具表示、カテゴリ一覧と5種類の説明ページ（CobblestoneGenerator、SaltExtractor、QuartzCrucible、SolarClayFabricator、ClayTree）の文言・対象アイテムを仕様化する。`compat`直下にViewer非依存の共通表示モデル`RecipeViewerLayout`（背景UV、スロット座標、テキスト行、進捗）と描画ヘルパーを置き、`RecipeViewerData`から生成する。JEIの`MachineRecipeCategory`（176×103の共通矩形を廃止）・`PanDuplicationCategory`、EMIの`EmiMachineRecipe`・`EmiPanDuplicationRecipe`をどちらもこのモデルの描画に置き換え、JEI/EMIで別々の手書きレイアウトを作らない。追加カテゴリ：粘土作業台専用、金属分離（確率%と重み/488のツールチップ）、5説明ページ（JEI `IRecipeCategory`／EMI `EmiRecipe`の情報カテゴリ、検索可能）、M38のElemental Milling Machine。触媒は全Tier機械を登録し、使用用途/製造の検索、タグ代替表示、流体mBを正式APIで提供する。粘土作業台と作業板には?ボタン相当のクリック領域（JEI `IGuiContainerHandler`のクリック領域／EMI `EmiStackProvider`）とレシピ転送（JEI `IRecipeTransferHandler`、EMI `StandardRecipeHandler`）を追加し、配置はバニラのスロット操作だけで行う。サーバー側で不正操作は拒否される。プラグインは通常ロード経路から参照しない。E2E用にEMIを`gradle.properties`の`emi_version`で`localRuntime`切替可能にし、Harness runtimeでJEI単独・EMI単独の両構成を用意する（AGENTS.md・`.harness-config.json`も更新）。GameTest：レイアウトモデルと全`ClayiumRecipeMethod`・説明ページの網羅、データパック変更後の表示データ追従、Viewer未導入での起動。E2E `tests/e2e/recipe-viewers.mjs`（JEI）と`tests/e2e/recipe-viewers-emi.mjs`で代表レシピを原作NEI参照画像と並べて撮影し、検索・触媒・転送・確率ツールチップを操作する。",
+      "approach": "原作`plugin.nei.NEITemp`/`NEIClayMachines`/`NEIClayWorkTable`/`NEIMetalSeparator`/`NEIDescription`/`LoadNEIConfig`を`.tmp/`で解析する。`nei.png`のUV、入出力スロット位置、進捗バー、`Tier:`(6,43)・`CE/t × 時間 = 総CE`(6,52)の文字位置と色、金属分離の重み/確率表示、作業台の工具表示、カテゴリ一覧と5種類の説明ページ（CobblestoneGenerator、SaltExtractor、QuartzCrucible、SolarClayFabricator、ClayTree）の文言・対象アイテムを仕様化する。`compat`直下にViewer非依存の共通表示モデル`RecipeViewerLayout`（背景UV、スロット座標、テキスト行、進捗）と描画ヘルパーを置き、`RecipeViewerData`から生成する。JEIの`MachineRecipeCategory`（176×103の共通矩形を廃止）・`PanDuplicationCategory`をこのモデルの描画に置き換える。追加カテゴリ：粘土作業台専用、金属分離（確率%と重み/488のツールチップ）、5説明ページ（JEI `IRecipeCategory`の情報カテゴリ、検索可能）、M38のElemental Milling Machine。触媒は全Tier機械を登録し、使用用途/製造の検索、タグ代替表示、流体mBを正式APIで提供する。粘土作業台と作業板には?ボタン相当のクリック領域（JEI `IGuiContainerHandler`のクリック領域）とレシピ転送（JEI `IRecipeTransferHandler`）を追加し、配置はバニラのスロット操作だけで行う。サーバー側で不正操作は拒否される。プラグインは通常ロード経路から参照しない。Harness runtimeでJEI単独の構成を用意する。GameTest：レイアウトモデルと全`ClayiumRecipeMethod`・説明ページの網羅、データパック変更後の表示データ追従、Viewer未導入での起動。E2E `tests/e2e/recipe-viewers.mjs`（JEI）で代表レシピを原作NEI参照画像と並べて撮影し、検索・触媒・転送・確率ツールチップを操作する。",
       "scope": [
         "src/main/java/net/claustra01/clayium/compat/",
         "src/main/java/net/claustra01/clayium/compat/jei/",
-        "src/main/java/net/claustra01/clayium/compat/emi/",
         "src/main/java/net/claustra01/clayium/datagen/compat/CompatLanguageEntries.java",
         "src/main/java/net/claustra01/clayium/gametest/compat/",
         "build.gradle",
@@ -1110,8 +1108,7 @@
         "src/generated/resources/assets/clayium/lang/",
         "AGENTS.md",
         "tests/acceptance.json",
-        "tests/e2e/recipe-viewers.mjs",
-        "tests/e2e/recipe-viewers-emi.mjs"
+        "tests/e2e/recipe-viewers.mjs"
       ]
     },
     {
@@ -1164,7 +1161,7 @@
         "M42",
         "M43"
       ],
-      "approach": "最終受入ゲート。原作JARと現行ビルドJARを`.tmp/`で機械比較する。登録要素・言語キー・`CRecipes`全登録（意味比較：入出力数量、代替材料、方法、Tier、CE、tick、確率）・内部計算・特殊操作・GUI/NEI・レンダラー・PNGについて、原作クラス/JARパス/命令位置↔移植先ID・JSON・Javaクラス・画面・テスト名↔判定（同等／明示的に変更済み／欠落／未確認）の対応台帳`src/main/resources/data/clayium/parity_ledger.tsv`を生成してコミットする。M39・M41・M42・M43の各台帳を参照統合し、許可変更はPROJECT.md明記事項と理由だけを記す。設定：`ClayiumConfig`へ原作設定を移す。`ProgressionRate`=1.0、`HardcoreAluminium`/`HardcoreOsmium`=false、`EnableInjectorRecipeOfInterface`=false、既存の`ClaySteelPickaxeRange`=2・`InvertClayLaserRSCondition`=false・`CAReactorGlittering`=true、`LaserQuality`=8、Tier別製造・搬送・収納倍率を置く。データパック正本のレシピにはNeoForge条件（Config連動condition）で反映し、`TierManager`には倍率で反映する。`UtilityMode`・カプセル・流体ID・旧TileEntity名・数値Entity ID・PacketSendingRateが存在しないことを検査で保証する。台帳で見つかった`欠落`は該当ドメインの既存クラスで修正し、`未確認`はGameTest/E2Eで確認して0件にする。GameTest：台帳の欠落・未確認0件、Config初期値と反映、Tier 0～13の進行閉包（粘土・バニラ資源のみから全168機種・57金属チェスト・Tier 13装置へ到達）、加工時間・CE/t・分離抽選・工具残余・レーザー・採掘・フィルター複製・再起動保存。E2E `tests/e2e/release-gate.mjs`：専用サーバー＋2クライアントで上位装置・流体・PAN・ガジェット・チャンクローダーを連続稼働し、セーブ・再起動・チャンク離脱/復帰・装着変更で増殖・消失・属性残存・未解除チケット・同期破綻がないことを確認する。あわせて既存全E2E・JEI/EMI・GUI/レンダリング比較を再実行して総合判定し、`./gradlew build`と全GameTestの合格を記録する。",
+      "approach": "最終受入ゲート。原作JARと現行ビルドJARを`.tmp/`で機械比較する。登録要素・言語キー・`CRecipes`全登録（意味比較：入出力数量、代替材料、方法、Tier、CE、tick、確率）・内部計算・特殊操作・GUI/NEI・レンダラー・PNGについて、原作クラス/JARパス/命令位置↔移植先ID・JSON・Javaクラス・画面・テスト名↔判定（同等／明示的に変更済み／欠落／未確認）の対応台帳`src/main/resources/data/clayium/parity_ledger.tsv`を生成してコミットする。M39・M41・M42・M43の各台帳を参照統合し、許可変更はPROJECT.md明記事項と理由だけを記す。設定：`ClayiumConfig`へ原作設定を移す。`ProgressionRate`=1.0、`HardcoreAluminium`/`HardcoreOsmium`=false、`EnableInjectorRecipeOfInterface`=false、既存の`ClaySteelPickaxeRange`=2・`InvertClayLaserRSCondition`=false・`CAReactorGlittering`=true、`LaserQuality`=8、Tier別製造・搬送・収納倍率を置く。データパック正本のレシピにはNeoForge条件（Config連動condition）で反映し、`TierManager`には倍率で反映する。`UtilityMode`・カプセル・流体ID・旧TileEntity名・数値Entity ID・PacketSendingRateが存在しないことを検査で保証する。台帳で見つかった`欠落`は該当ドメインの既存クラスで修正し、`未確認`はGameTest/E2Eで確認して0件にする。GameTest：台帳の欠落・未確認0件、Config初期値と反映、Tier 0～13の進行閉包（粘土・バニラ資源のみから全168機種・57金属チェスト・Tier 13装置へ到達）、加工時間・CE/t・分離抽選・工具残余・レーザー・採掘・フィルター複製・再起動保存。E2E `tests/e2e/release-gate.mjs`：専用サーバー＋2クライアントで上位装置・流体・PAN・ガジェット・チャンクローダーを連続稼働し、セーブ・再起動・チャンク離脱/復帰・装着変更で増殖・消失・属性残存・未解除チケット・同期破綻がないことを確認する。あわせて既存全E2E・JEI・GUI/レンダリング比較を再実行して総合判定し、`./gradlew build`と全GameTestの合格を記録する。",
       "scope": [
         "src/main/java/net/claustra01/clayium/ClayiumConfig.java",
         "src/main/java/net/claustra01/clayium/energy/TierManager.java",

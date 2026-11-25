@@ -2,10 +2,7 @@ package net.claustra01.clayium.client.screen.gadget;
 
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.gadget.GadgetEffects;
-import net.claustra01.clayium.gadget.GadgetType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -24,14 +21,6 @@ public final class GadgetClientEvents {
             previousDestroyDelay = 0;
             return;
         }
-        if (minecraft.options.keyAttack.isDown()
-                && GadgetEffects.isActive(minecraft.player, GadgetType.REPEATED_ATTACK)
-                && minecraft.player.getAttackStrengthScale(0.0F) >= 1.0F
-                && minecraft.hitResult instanceof EntityHitResult entityHit) {
-            minecraft.gameMode.attack(minecraft.player, entityHit.getEntity());
-            minecraft.player.swing(InteractionHand.MAIN_HAND);
-        }
-
         int interval = GadgetEffects.operationInterval(minecraft.player);
         if (interval > 0 && minecraft.options.keyUse.isDown()) {
             if (minecraft.rightClickDelay == 4 && previousUseDelay <= 1) {

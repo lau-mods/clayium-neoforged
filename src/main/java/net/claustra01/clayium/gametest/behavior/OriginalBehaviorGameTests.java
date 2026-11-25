@@ -310,7 +310,11 @@ public final class OriginalBehaviorGameTests {
                 new ItemStack(MaterialRegistration.MATERIAL_ITEMS.get("impure_silicon_ingot").get(), 10));
         helper.getLevel().addFreshEntity(dropped);
         crucible.absorbDroppedItem(dropped);
-        crucible.absorbDroppedItem(dropped);
+        require(crucible.impureSilicon() == 3 && dropped.getItem().getCount() == 9,
+                "One collision must insert one ingot");
+        for (int collision = 0; collision < 6; collision++) {
+            crucible.absorbDroppedItem(dropped);
+        }
         require(crucible.impureSilicon() == 8 && dropped.isAlive() && dropped.getItem().getCount() == 4,
                 "Dropped silicon was not partially consumed exactly once");
         CompoundTag heated = crucible.saveWithFullMetadata(helper.getLevel().registryAccess());

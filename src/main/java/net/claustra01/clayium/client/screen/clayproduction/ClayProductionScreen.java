@@ -1,9 +1,8 @@
 package net.claustra01.clayium.client.screen.clayproduction;
 
-import java.util.Locale;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
+import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionMenu;
-import net.claustra01.clayium.machine.clayproduction.ClayProductionBlockEntity;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -15,6 +14,12 @@ public final class ClayProductionScreen extends AbstractContainerScreen<ClayProd
         super(menu, inventory, title);
         imageHeight = 180;
         inventoryLabelY = 89;
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -36,8 +41,7 @@ public final class ClayProductionScreen extends AbstractContainerScreen<ClayProd
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        String titleText = title.getString().replace("Clay Condenser", "Condenser")
-                .replace("Clay Fabricator", "Fabricator");
+        String titleText = title.getString();
         if (font.width(titleText) > imageWidth - 14 && titleText.contains(" Mk ")) {
             String suffix = titleText.substring(titleText.lastIndexOf(" Mk "));
             titleText = font.plainSubstrByWidth(titleText, imageWidth - 14 - font.width("…" + suffix))
@@ -46,16 +50,6 @@ public final class ClayProductionScreen extends AbstractContainerScreen<ClayProd
             titleText = font.plainSubstrByWidth(titleText, imageWidth - 14 - font.width("…")) + "…";
         }
         graphics.drawString(font, titleText, 7, 6, 0x404040, false);
-        Component tier = Component.literal("Tier " + menu.tier());
-        graphics.drawString(font, tier, imageWidth - 7 - font.width(tier), 19, 0x404040, false);
-        graphics.drawString(font, Component.translatable(
-                "gui.clayium.clay_production.state." + menu.state().name().toLowerCase(Locale.ROOT)), 87, 70,
-                menu.state() == ClayProductionBlockEntity.State.RUNNING ? 0x168A16 : 0x404040, false);
-        graphics.drawString(font, Component.translatable(
-                "gui.clayium.clay_production.stage", Math.max(0, menu.productionLevel())), 87, 80, 0x404040, false);
-        long remaining = Math.max(0L, menu.requiredProgress() - menu.progress());
-        graphics.drawString(font, Component.translatable("gui.clayium.clay_production.remaining", remaining),
-                7, 19, 0x404040, false);
         boolean condenser = menu.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER;
         graphics.drawString(font, Component.translatable(condenser
                 ? "gui.clayium.clay_production.stored_ce" : "gui.clayium.clay_production.ce_per_tick",
@@ -64,6 +58,6 @@ public final class ClayProductionScreen extends AbstractContainerScreen<ClayProd
     }
 
     private static String formatEnergy(long internal) {
-        return String.format(Locale.ROOT, "%.5f", internal / 100_000.0D);
+        return ClayEnergy.ofInternal(internal).formatValue();
     }
 }

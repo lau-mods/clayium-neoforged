@@ -68,6 +68,12 @@ public final class ChunkLoaderGameTests {
         Set<Long> expected = ChunkLoaderTicketService.expectedChunks(owner);
         require(ChunkLoaderTicketService.heldChunks(helper.getLevel(), owner, true).equals(expected),
                 "Initial loader tickets are incomplete");
+        CompoundTag unavailable = new CompoundTag();
+        unavailable.putString("ticket_status", "unavailable");
+        chunkLoader.loadWithComponents(unavailable, helper.getLevel().registryAccess());
+        ChunkLoaderBlockEntity.serverTick(helper.getLevel(), owner, chunkLoader.getBlockState(), chunkLoader);
+        require(chunkLoader.ticketStatus() == ChunkLoaderBlockEntity.TicketStatus.ACTIVE,
+                "An unavailable loader did not retry on its next original-style tick");
 
         BlockPos orphan = owner.offset(160, 0, 160);
         ChunkPos orphanCenter = new ChunkPos(orphan);

@@ -1141,22 +1141,6 @@
       "scenario": "tests/e2e/recipe-viewers.mjs"
     },
     {
-      "acId": "AC-F047-001",
-      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
-    },
-    {
-      "acId": "AC-F047-002",
-      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
-    },
-    {
-      "acId": "AC-F047-003",
-      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
-    },
-    {
-      "acId": "AC-F047-004",
-      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
-    },
-    {
       "acId": "AC-F046-001",
       "scenario": "tests/e2e/gui-parity.mjs"
     },
@@ -1403,10 +1387,6 @@
     {
       "acId": "AC-F049-002",
       "scenario": "tests/e2e/recipe-viewers.mjs"
-    },
-    {
-      "acId": "AC-F049-002",
-      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
     },
     {
       "acId": "AC-F049-003",

@@ -84,12 +84,15 @@ public final class AreaMachineMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else {
-            int start = moving.is(LogisticsRegistration.ITEM_FILTER.get())
-                    ? AreaMachineBlockEntity.HARVEST_FILTER_SLOT
-                    : machine.inventory().isItemValid(AreaMachineBlockEntity.FUEL_SLOT, moving)
-                            ? AreaMachineBlockEntity.FUEL_SLOT : AreaMachineBlockEntity.OPERATION_SLOT;
-            int end = moving.is(LogisticsRegistration.ITEM_FILTER.get())
-                    ? AreaMachineBlockEntity.SILK_TOUCH_FILTER_SLOT + 1 : start + 1;
+            int start = AreaMachineBlockEntity.OPERATION_SLOT;
+            int end = start + 1;
+            if (moving.is(LogisticsRegistration.ITEM_FILTER.get())) {
+                start = AreaMachineBlockEntity.HARVEST_FILTER_SLOT;
+                end = AreaMachineBlockEntity.SILK_TOUCH_FILTER_SLOT + 1;
+            } else if (machine.inventory().isItemValid(AreaMachineBlockEntity.FUEL_SLOT, moving)) {
+                start = AreaMachineBlockEntity.FUEL_SLOT;
+                end = start + 1;
+            }
             if (!moveItemStackTo(moving, start, end, false)) {
                 return ItemStack.EMPTY;
             }

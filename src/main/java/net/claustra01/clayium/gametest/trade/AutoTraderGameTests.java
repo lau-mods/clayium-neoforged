@@ -155,7 +155,18 @@ public final class AutoTraderGameTests {
                         && namedResult.getHoverName().equals(menu.selectedResult().getHoverName())
                         && menu.energyPerTrade() == AutoTraderBlockEntity.ENERGY_PER_TRADE,
                 "The client snapshot lost the selected offer, discounted costs, components, or long CE value");
+        for (int index = 3; index < 12; index++) {
+            villager.getOffers().add(offer(Items.EMERALD, 1, Items.BREAD, 1, 8));
+        }
+        autoTrader.selectOffer(11);
+        menu.applySnapshot(menu.snapshot());
+        require(menu.offerCount() == 12 && menu.selectedOffer() == 11,
+                "The auto trader imposed a non-original ten-offer limit");
         player.containerMenu = player.inventoryMenu;
+        while (villager.getOffers().size() > 3) {
+            villager.getOffers().remove(villager.getOffers().size() - 1);
+        }
+        autoTrader.selectOffer(2);
         villager.getOffers().remove(2);
         before = snapshot(autoTrader, second.getUses());
         require(!autoTrader.tryTrade() && autoTrader.state() == AutoTraderBlockEntity.State.NO_OFFERS

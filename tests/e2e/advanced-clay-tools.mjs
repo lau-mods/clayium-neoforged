@@ -8,6 +8,9 @@ const { scenario, command, screenshot, mct } = await import(process.env.HARNESS_
 
 await scenario(async ({ clients }) => {
   const client = clients[0];
+  if (mct(client, 'gui', 'info').open) {
+    mct(client, 'gui', 'close');
+  }
   command(client, 'gamemode creative');
   command(client, 'clear @s');
   command(client, 'item replace entity @s hotbar.0 with clayium:clay_pickaxe[minecraft:damage=250]');

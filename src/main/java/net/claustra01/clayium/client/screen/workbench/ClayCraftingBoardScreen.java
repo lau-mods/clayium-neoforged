@@ -1,7 +1,6 @@
 package net.claustra01.clayium.client.screen.workbench;
 
 import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.client.screen.RecipeViewerNavigation;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
 import net.claustra01.clayium.workbench.ClayCraftingBoardMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,7 +8,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.fml.ModList;
 
 public final class ClayCraftingBoardScreen extends AbstractContainerScreen<ClayCraftingBoardMenu> {
     private static final ResourceLocation CRAFTING = ClayiumMod.id("textures/gui/claycraftingtable.png");
@@ -19,16 +17,6 @@ public final class ClayCraftingBoardScreen extends AbstractContainerScreen<ClayC
         imageWidth = 176;
         imageHeight = menu.machineHeight() + 94;
         inventoryLabelY = menu.machineHeight();
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        // EMI can center its search box in the bottom 21 pixels on short screens.
-        if (ModList.get().isLoaded("emi")) {
-            topPos = Math.max(0, Math.min(topPos, height - 21 - imageHeight));
-        }
-        addRenderableWidget(RecipeViewerNavigation.button(leftPos, topPos, RecipeViewerNavigation.CRAFTING));
     }
 
     @Override

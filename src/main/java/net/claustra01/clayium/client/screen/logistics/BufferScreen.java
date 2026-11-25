@@ -33,6 +33,12 @@ public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
     protected void init() {
         super.init();
         int index = 0;
@@ -129,8 +135,6 @@ public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
             titleText = font.plainSubstrByWidth(titleText, 140) + "…";
         }
         graphics.drawString(font, titleText, 7, 23, 0x404040, false);
-        Component tier = Component.literal("Tier " + menu.tier());
-        graphics.drawString(font, tier, imageWidth - 7 - font.width(tier), 23, 0x404040, false);
         graphics.drawString(font, ruleSummary(), 60, 59, 0x404040, false);
         graphics.drawString(font, Component.literal("F"), 7, 69, 0x505050, false);
         graphics.drawString(font, Component.literal((menu.page() + 1) + "/4"), 172, 128, 0x404040, false);

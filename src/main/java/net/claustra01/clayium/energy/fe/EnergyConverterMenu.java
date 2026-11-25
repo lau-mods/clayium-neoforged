@@ -27,11 +27,11 @@ public final class EnergyConverterMenu extends AbstractContainerMenu {
         addSlot(new SlotItemHandler(converter.fuelHandler(null), 0, 35, 53));
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 105 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 102 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 163));
+            addSlot(new Slot(inventory, column, 8 + column * 18, 160));
         }
         addDataSlots(data);
     }

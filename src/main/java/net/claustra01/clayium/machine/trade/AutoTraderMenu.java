@@ -20,7 +20,6 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
     private final ServerPlayer viewer;
     private MerchantOffers offers = new MerchantOffers();
     private int selectedOffer;
-    private AutoTraderBlockEntity.State state = AutoTraderBlockEntity.State.NO_MERCHANT;
     private long storedEnergy;
     private long energyPerTrade;
     private long lastSnapshotHash = Long.MIN_VALUE;
@@ -54,11 +53,11 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory inventory) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 116 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 100 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 174));
+            addSlot(new Slot(inventory, column, 8 + column * 18, 158));
         }
     }
 
@@ -72,7 +71,7 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
 
     public TradeSnapshotPayload snapshot() {
         return new TradeSnapshotPayload(containerId, autoTrader.visibleOffers(), autoTrader.selectedOffer(),
-                autoTrader.state(), autoTrader.energyStorage().stored().internalValue(),
+                autoTrader.energyStorage().stored().internalValue(),
                 AutoTraderBlockEntity.ENERGY_PER_TRADE);
     }
 
@@ -83,7 +82,6 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
         snapshotApplied = true;
         offers = snapshot.offers();
         selectedOffer = snapshot.selectedOffer();
-        state = snapshot.state();
         storedEnergy = snapshot.storedEnergy();
         energyPerTrade = snapshot.energyPerTrade();
     }
@@ -103,25 +101,39 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
     }
 
     public int selectedOffer() {
-        return snapshotApplied || viewer == null ? selectedOffer : autoTrader.selectedOffer();
+        if (usesSyncedSnapshot()) {
+            return selectedOffer;
+        }
+        return autoTrader.selectedOffer();
     }
 
     public int offerCount() {
-        return snapshotApplied || viewer == null ? offers.size() : autoTrader.offerCount();
-    }
-
-    public AutoTraderBlockEntity.State state() {
-        return snapshotApplied || viewer == null ? state : autoTrader.state();
+        if (usesSyncedSnapshot()) {
+            return offers.size();
+        }
+        return autoTrader.offerCount();
     }
 
     public long storedEnergy() {
-        return snapshotApplied || viewer == null ? storedEnergy : autoTrader.energyStorage().stored().internalValue();
+        if (usesSyncedSnapshot()) {
+            return storedEnergy;
+        }
+        return autoTrader.energyStorage().stored().internalValue();
     }
 
     private MerchantOffer selected() {
-        int index = selectedOffer();
-        return snapshotApplied || viewer == null ? index >= 0 && index < offers.size() ? offers.get(index) : null
-                : autoTrader.offer(index);
+        return offer(selectedOffer());
+    }
+
+    private MerchantOffer offer(int index) {
+        if (usesSyncedSnapshot()) {
+            return index >= 0 && index < offers.size() ? offers.get(index) : null;
+        }
+        return autoTrader.offer(index);
+    }
+
+    private boolean usesSyncedSnapshot() {
+        return snapshotApplied || viewer == null;
     }
 
     public ItemStack selectedCostA() {
@@ -139,27 +151,20 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
         return offer == null ? ItemStack.EMPTY : offer.getResult();
     }
 
-    public int selectedUses() {
+    public boolean selectedOutOfStock() {
         MerchantOffer offer = selected();
-        return offer == null ? 0 : offer.getUses();
-    }
-
-    public int selectedMaxUses() {
-        MerchantOffer offer = selected();
-        return offer == null ? 0 : offer.getMaxUses();
-    }
-
-    public int tier() {
-        return AutoTraderBlockEntity.TIER;
+        return offer != null && offer.isOutOfStock();
     }
 
     public long energyPerTrade() {
-        return snapshotApplied || viewer == null ? energyPerTrade : AutoTraderBlockEntity.ENERGY_PER_TRADE;
+        if (usesSyncedSnapshot()) {
+            return energyPerTrade;
+        }
+        return AutoTraderBlockEntity.ENERGY_PER_TRADE;
     }
 
     public ItemStack offerResult(int index) {
-        MerchantOffer offer = snapshotApplied || viewer == null ? index >= 0 && index < offers.size() ? offers.get(index) : null
-                : autoTrader.offer(index);
+        MerchantOffer offer = offer(index);
         return offer == null ? ItemStack.EMPTY : offer.getResult();
     }
 

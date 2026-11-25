@@ -1,7 +1,7 @@
 package net.claustra01.clayium.client.screen.autocrafter;
 
-import java.util.Locale;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
+import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.machine.autocrafter.AutoCrafterMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -12,23 +12,27 @@ public final class AutoCrafterScreen extends AbstractContainerScreen<AutoCrafter
 
     public AutoCrafterScreen(AutoCrafterMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageWidth = 230;
-        imageHeight = 226;
-        inventoryLabelX = 34;
-        inventoryLabelY = 128;
+        imageWidth = 176;
+        imageHeight = 178;
+        inventoryLabelX = 8;
+        inventoryLabelY = 84;
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos + 26, topPos + 130, 0, 0, 176, 86);
-        slots(graphics, 7, 33, 3, 3);
-        slots(graphics, 106, 33, 3, 3);
-        slots(graphics, 173, 33, 2, 3);
-        slot(graphics, 74, 51);
-        slot(graphics, 74, 75);
-        graphics.drawString(font, "→", leftPos + 64, topPos + 57, 0x404040, false);
-        graphics.drawString(font, "→", leftPos + 163, topPos + 57, 0x404040, false);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 84, 0, 0, 176, 94);
+        slots(graphics, 4, 17, 3, 3);
+        slots(graphics, 61, 17, 3, 3);
+        slots(graphics, 134, 17, 2, 3);
+        slot(graphics, 116, 35);
+        slot(graphics, 116, 59);
     }
 
     private void slots(GuiGraphics graphics, int x, int y, int columns, int rows) {
@@ -46,21 +50,13 @@ public final class AutoCrafterScreen extends AbstractContainerScreen<AutoCrafter
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         String titleText = title.getString();
-        if (font.width(titleText) > imageWidth - 70) {
-            titleText = font.plainSubstrByWidth(titleText, imageWidth - 80) + "…";
+        if (font.width(titleText) > imageWidth - 14) {
+            titleText = font.plainSubstrByWidth(titleText, imageWidth - 14) + "…";
         }
         graphics.drawString(font, titleText, 7, 7, 0x404040, false);
-        Component tier = Component.literal("Tier " + menu.tier());
-        graphics.drawString(font, tier, imageWidth - 7 - font.width(tier), 7, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.auto_crafter.pattern"), 8, 22, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.auto_crafter.materials"), 107, 22, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.auto_crafter.outputs"), 174, 22, 0x404040, false);
-        String cycle = Component.translatable(
-                "gui.clayium.auto_crafter.cycle", menu.intervalTicks(), menu.craftsPerCycle()).getString();
-        graphics.drawString(font, cycle, 8, 94, 0x404040, false);
         graphics.drawString(font, Component.translatable(
                 "gui.clayium.auto_crafter.stored_ce",
-                String.format(Locale.ROOT, "%.5f", menu.storedEnergy() / 100_000.0D)), 8, 106, 0x404040, false);
+                ClayEnergy.ofInternal(menu.storedEnergy()).formatValue()), 4, 72, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 }

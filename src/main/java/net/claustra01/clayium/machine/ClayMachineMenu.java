@@ -35,12 +35,11 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         this.data = data;
         if (machine != null) {
             for (int input = 0; input < machine.inputSlots(); input++) {
-                addSlot(new SlotItemHandler(machine.inventory(), input, inputX(machine.inputSlots(), input), 35));
+                addSlot(new SlotItemHandler(machine.inventory(), input, inputX(machine, input), inputY(machine, input)));
             }
             for (int output = 0; output < Math.min(machine.outputSlots(), 4); output++) {
                 addSlot(new SlotItemHandler(
-                        machine.inventory(), machine.outputSlot(output), outputX(Math.min(machine.outputSlots(), 4), output),
-                        outputY(Math.min(machine.outputSlots(), 4), output)));
+                        machine.inventory(), machine.outputSlot(output), outputX(machine, output), outputY(machine, output)));
             }
             for (int input = 0; input < machine.inputSlots(); input++) {
                 addSlot(new LockedSlot(machine, machine.reservedSlot(input), -1000, -1000));
@@ -57,7 +56,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     }
 
     private void addPlayerInventory(Inventory inventory) {
-        int inventoryY = machine instanceof CaReactorCoreBlockEntity ? 114 : 90;
+        int inventoryY = machineAreaHeight() + 12;
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, inventoryY + row * 18));
@@ -72,12 +71,72 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
         return inputSlots == 1 ? 44 : 32 + input * 18;
     }
 
+    public static int inputX(ClayMachineBlockEntity machine, int input) {
+        return isChemicalMetalSeparator(machine) ? 25 : inputX(machine.inputSlots(), input);
+    }
+
+    public static int inputY(ClayMachineBlockEntity machine, int input) {
+        return isChemicalMetalSeparator(machine) ? 44 : 35;
+    }
+
     public static int outputX(int outputSlots, int output) {
-        return outputSlots == 1 ? 116 : outputSlots == 2 ? 110 + output * 18 : 132 + output % 2 * 18;
+        if (outputSlots == 1) {
+            return 116;
+        }
+        if (outputSlots == 2) {
+            return 110 + output * 18;
+        }
+        return 132 + output % 2 * 18;
     }
 
     public static int outputY(int outputSlots, int output) {
         return outputSlots <= 2 ? 35 : 26 + output / 2 * 18;
+    }
+
+    public static int outputX(ClayMachineBlockEntity machine, int output) {
+        if (isChemicalMetalSeparator(machine)) {
+            return 85;
+        }
+        if (isCentrifuge(machine)) {
+            return 116;
+        }
+        return outputX(Math.min(machine.outputSlots(), 4), output);
+    }
+
+    public static int outputY(ClayMachineBlockEntity machine, int output) {
+        if (isChemicalMetalSeparator(machine)) {
+            return 17;
+        }
+        if (isCentrifuge(machine)) {
+            int outputs = Math.min(machine.outputSlots(), 4);
+            return 35 + output * 18 - 9 * (outputs - 1);
+        }
+        return outputY(Math.min(machine.outputSlots(), 4), output);
+    }
+
+    public int machineAreaHeight() {
+        if (machine instanceof CaReactorCoreBlockEntity) {
+            return 102;
+        }
+        if (isChemicalMetalSeparator(machine)) {
+            return 96;
+        }
+        if (isCentrifuge(machine)) {
+            return (Math.min(machine.outputSlots(), 4) + 1) * 9 + 46;
+        }
+        return 72;
+    }
+
+    public static boolean isCentrifuge(ClayMachineBlockEntity machine) {
+        return hasMethod(machine, "centrifuge");
+    }
+
+    public static boolean isChemicalMetalSeparator(ClayMachineBlockEntity machine) {
+        return hasMethod(machine, "chemical_metal_separator");
+    }
+
+    private static boolean hasMethod(ClayMachineBlockEntity machine, String id) {
+        return machine != null && machine.series().recipeMethod().id().equals(id);
     }
 
     @Override

@@ -10,6 +10,8 @@ import net.claustra01.clayium.machine.series.ProcessingSeries;
 import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
+import net.claustra01.clayium.registry.FoundationItemRegistration;
+import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -17,11 +19,15 @@ import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -189,6 +195,83 @@ public final class ClayMachineGameTests {
         require(loaded.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
                 "The server-owned face setting did not survive saving");
         helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void originalMachineToolsConfigureRotateAndRestoreFaces(GameTestHelper helper) {
+        MachineRegistration.MachineDefinition definition = MachineRegistration.MACHINES.get("condenser_tier_4");
+        BlockPos position = helper.absolutePos(new BlockPos(1, 1, 1));
+        helper.getLevel().setBlockAndUpdate(position, definition.block().get().defaultBlockState());
+        ClayMachineBlockEntity machine = (ClayMachineBlockEntity) helper.getLevel().getBlockEntity(position);
+        require(machine != null, "Placed processing machine did not create its shared block entity");
+
+        var player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(GameType.SURVIVAL);
+        player.setPos(Vec3.atCenterOf(position));
+
+        ItemStack ioTool = WorkbenchRegistration.CLAY_IO_CONFIGURATOR.toStack();
+        player.setItemInHand(InteractionHand.MAIN_HAND, ioTool);
+        useTool(player, position, Direction.NORTH, "I/O insertion disable");
+        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.DISABLED,
+                "A normal I/O-tool click did not cycle the insertion face to disabled");
+        useTool(player, position, Direction.NORTH, "I/O insertion restore");
+        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.INPUT,
+                "A second normal I/O-tool click did not restore insertion");
+        player.setShiftKeyDown(true);
+        useTool(player, position, Direction.NORTH, "I/O extraction select");
+        player.setShiftKeyDown(false);
+        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
+                "A sneaking I/O-tool click did not select extraction");
+        require(machine.itemHandler(Direction.NORTH).getSlots() == 1,
+                "The I/O tool changed the display state without changing sided capability access");
+        require(ioTool.getDamageValue() == 3, "Successful I/O-tool clicks consumed the wrong durability");
+
+        ItemStack wrench = FoundationItemRegistration.CLAY_WRENCH.toStack();
+        player.setItemInHand(InteractionHand.MAIN_HAND, wrench);
+        useTool(player, position, Direction.EAST, "wrench turn");
+        require(helper.getLevel().getBlockState(position).getValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING)
+                        == Direction.EAST,
+                "The wrench did not turn the machine toward the clicked side");
+        useTool(player, position, Direction.EAST, "wrench reverse");
+        require(helper.getLevel().getBlockState(position).getValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING)
+                        == Direction.WEST,
+                "Clicking the current front with the wrench did not reverse it");
+
+        ItemStack pipingTool = WorkbenchRegistration.CLAY_PIPING_CONFIGURATOR.toStack();
+        player.setItemInHand(InteractionHand.MAIN_HAND, pipingTool);
+        player.setShiftKeyDown(true);
+        useTool(player, position, Direction.SOUTH, "piping-tool turn");
+        player.setShiftKeyDown(false);
+        require(helper.getLevel().getBlockState(position).getValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING)
+                        == Direction.SOUTH,
+                "A sneaking piping-tool click did not perform the original rotation action");
+        require(pipingTool.getDamageValue() == 1,
+                "A successful piping-tool rotation consumed the wrong durability");
+
+        machine.setFaceMode(Direction.UP, ClayMachineBlockEntity.FaceMode.DISABLED);
+        ItemStack memory = WorkbenchRegistration.MEMORY_CARD.toStack();
+        player.setItemInHand(InteractionHand.MAIN_HAND, memory);
+        player.setShiftKeyDown(true);
+        useTool(player, position, Direction.NORTH, "memory save");
+        player.setShiftKeyDown(false);
+        machine.setFaceMode(Direction.UP, ClayMachineBlockEntity.FaceMode.INPUT);
+        helper.getLevel().setBlockAndUpdate(position, helper.getLevel().getBlockState(position)
+                .setValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING, Direction.NORTH));
+        useTool(player, position, Direction.NORTH, "memory load");
+        require(machine.faceMode(Direction.UP) == ClayMachineBlockEntity.FaceMode.DISABLED,
+                "The memory card did not restore the saved face setting");
+        require(helper.getLevel().getBlockState(position).getValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING)
+                        == Direction.SOUTH,
+                "The memory card did not restore the saved front");
+        helper.succeed();
+    }
+
+    private static void useTool(
+            net.minecraft.world.entity.player.Player player, BlockPos position, Direction side, String action) {
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(position), side, position, false);
+        UseOnContext context = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
+        require(player.getMainHandItem().onItemUseFirst(context).consumesAction(),
+                "The machine configuration tool did not consume its " + action + " click");
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)

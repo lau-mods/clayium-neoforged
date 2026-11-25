@@ -5,6 +5,7 @@ import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.item.FoundationItem;
 import net.claustra01.clayium.tool.BufferConfigurationToolItem;
 import net.claustra01.clayium.tool.ClayCraftingToolItem;
+import net.claustra01.clayium.tool.MachineConfigurationToolItem;
 import net.claustra01.clayium.workbench.ClayCraftingBoardBlock;
 import net.claustra01.clayium.workbench.ClayCraftingBoardBlockEntity;
 import net.claustra01.clayium.workbench.ClayCraftingBoardMenu;
@@ -51,10 +52,12 @@ public final class WorkbenchRegistration {
             "clay_slicer", 60, 3);
     public static final DeferredItem<ClayCraftingToolItem> CLAY_SPATULA = craftingTool(
             "clay_spatula", 36, 2);
-    public static final DeferredItem<FoundationItem> CLAY_IO_CONFIGURATOR = tool("clay_io_configurator", 1, 128);
-    public static final DeferredItem<FoundationItem> CLAY_PIPING_CONFIGURATOR = tool(
-            "clay_piping_configurator", 1, 128);
-    public static final DeferredItem<FoundationItem> MEMORY_CARD = tool("memory_card", 1, 0);
+    public static final DeferredItem<MachineConfigurationToolItem> CLAY_IO_CONFIGURATOR = configurationTool(
+            "clay_io_configurator", 128, MachineConfigurationToolItem.Mode.IO);
+    public static final DeferredItem<MachineConfigurationToolItem> CLAY_PIPING_CONFIGURATOR = configurationTool(
+            "clay_piping_configurator", 128, MachineConfigurationToolItem.Mode.PIPING);
+    public static final DeferredItem<MachineConfigurationToolItem> MEMORY_CARD = configurationTool(
+            "memory_card", 0, MachineConfigurationToolItem.Mode.MEMORY);
     public static final DeferredItem<BufferConfigurationToolItem> DIRECTION_MEMORY_CARD =
             ClayiumRegistries.ITEMS.register("direction_memory_card", () -> new BufferConfigurationToolItem(
                     new Item.Properties().stacksTo(1).component(FoundationDataComponentRegistration.TIER.get(), 1)));
@@ -131,6 +134,19 @@ public final class WorkbenchRegistration {
                                 .component(FoundationDataComponentRegistration.TIER.get(), 1),
                         durability,
                         brokenClayBalls));
+    }
+
+    private static DeferredItem<MachineConfigurationToolItem> configurationTool(
+            String id, int durability, MachineConfigurationToolItem.Mode mode) {
+        return ClayiumRegistries.ITEMS.register(id, () -> {
+            Item.Properties properties = new Item.Properties()
+                    .stacksTo(1)
+                    .component(FoundationDataComponentRegistration.TIER.get(), 1);
+            if (durability > 0) {
+                properties = properties.durability(durability);
+            }
+            return new MachineConfigurationToolItem(properties, mode);
+        });
     }
 
     private WorkbenchRegistration() {

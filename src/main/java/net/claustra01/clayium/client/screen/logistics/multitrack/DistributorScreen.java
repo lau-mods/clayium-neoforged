@@ -18,6 +18,12 @@ public final class DistributorScreen extends AbstractContainerScreen<Distributor
     public DistributorScreen(DistributorMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title); imageWidth = 230; imageHeight = 212; inventoryLabelX = 35; inventoryLabelY = 121;
     }
+
+
+    @Override public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
     @Override protected void init() {
         super.init(); int index = 0;
         for (Direction direction : Direction.values()) {
@@ -41,8 +47,6 @@ public final class DistributorScreen extends AbstractContainerScreen<Distributor
     }
     @Override protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 8, 7, 0x404040, false);
-        graphics.drawString(font, Component.literal("Tier " + menu.tier()), 184, 7, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.distributor.fair"), 122, 63, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 }

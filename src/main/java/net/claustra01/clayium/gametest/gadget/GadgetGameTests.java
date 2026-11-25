@@ -19,12 +19,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -231,9 +234,19 @@ public final class GadgetGameTests {
         require(player.getAttribute(NeoForgeMod.CREATIVE_FLIGHT).getModifier(foreignFlightId) != null,
                 "Removing a Clayium holder removed another mod's flight permission");
 
+        player.getInventory().add(holder(GadgetType.REPEATED_ATTACK));
+        LivingEntity target = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, 1, 2, 1);
+        target.invulnerableTime = 10;
+        GadgetEvents.attackEntity(new AttackEntityEvent(player, target));
+        require(target.invulnerableTime == 0,
+                "Repeated-attack gadget did not remove the target's invulnerability time");
+        player.getInventory().clearContent();
+        target.invulnerableTime = 10;
+        GadgetEvents.attackEntity(new AttackEntityEvent(player, target));
+        require(target.invulnerableTime == 10,
+                "Repeated-attack behavior remained active after removing the holder");
+
         player.getAbilities().mayfly = true;
-        GadgetEvents.changeGameMode(new PlayerEvent.PlayerChangeGameModeEvent(
-                player, GameType.SURVIVAL, GameType.CREATIVE));
         GadgetEffects.clear(player);
         require(player.getAbilities().mayfly,
                 "Cleaning up Clayium gadgets removed creative-mode flight permission");

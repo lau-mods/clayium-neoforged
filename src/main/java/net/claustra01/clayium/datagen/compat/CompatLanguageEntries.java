@@ -9,7 +9,6 @@ public final class CompatLanguageEntries {
         for (ClayiumRecipeMethod method : ClayiumRecipeMethod.values()) {
             String title = localizedName(method, japanese);
             add.accept("gui.clayium.recipe." + method.id(), title);
-            add.accept("emi.category.clayium." + method.id(), title);
         }
         add.accept("gui.clayium.recipe.show", japanese ? "レシピを見る" : "Show recipes");
         add.accept("gui.clayium.recipe.tier", japanese ? "Tier: %s" : "Tier: %s");
@@ -20,7 +19,6 @@ public final class CompatLanguageEntries {
                 japanese ? "確率 %1$s%%（重み %2$s/%3$s）" : "%1$s%% chance (weight %2$s/%3$s)");
         add.accept("gui.clayium.recipe.structure", japanese ? "構造倍率は稼働時に適用" : "Structure multipliers apply at runtime");
         add.accept("gui.clayium.recipe.pan_duplication", japanese ? "PAN複製" : "PAN Duplication");
-        add.accept("emi.category.clayium.pan_duplication", japanese ? "PAN複製" : "PAN Duplication");
         add.accept("gui.clayium.recipe.pan_rate", "%s CE/t");
         add.accept("gui.clayium.recipe.pan_sample", japanese ? "見本を保持、反物質1個を消費" : "Keep sample, use 1 antimatter");
         add.accept("gui.clayium.recipe.pan_ticks", japanese ? "時間 = ceil(コアの複製費用 ÷ CE/t)" : "Time = ceil(core cost / CE/t)");

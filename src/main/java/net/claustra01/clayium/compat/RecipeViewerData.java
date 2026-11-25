@@ -1,7 +1,7 @@
 package net.claustra01.clayium.compat;
 
-import java.math.BigDecimal;
 import java.util.List;
+import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
@@ -53,7 +53,7 @@ public record RecipeViewerData(
     }
 
     private static String formatEnergy(long internalEnergy) {
-        return BigDecimal.valueOf(internalEnergy, 5).stripTrailingZeros().toPlainString();
+        return ClayEnergy.ofInternal(internalEnergy).formatValue();
     }
 
     public static long panEnergyPerTick(int tier) {

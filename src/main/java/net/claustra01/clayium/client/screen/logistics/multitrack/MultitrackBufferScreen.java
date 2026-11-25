@@ -26,6 +26,12 @@ public final class MultitrackBufferScreen extends AbstractContainerScreen<Multit
         inventoryLabelY = 132;
     }
 
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
     @Override protected void init() {
         super.init();
         addRenderableWidget(Button.builder(Component.literal("◀"), button -> select(menu.selectedTrack() - 1))
@@ -78,8 +84,6 @@ public final class MultitrackBufferScreen extends AbstractContainerScreen<Multit
         Component track = Component.translatable("gui.clayium.multitrack.track", menu.selectedTrack() + 1, color);
         graphics.drawString(font, track, (imageWidth - font.width(track)) / 2, 25, 0x404040, false);
         graphics.drawString(font, title, 8, 7, 0x404040, false);
-        graphics.drawString(font, Component.literal("Tier " + menu.tier()), 184, 7, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.multitrack.filter"), 124, 68, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 

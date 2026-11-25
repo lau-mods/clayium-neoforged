@@ -1,10 +1,10 @@
 package net.claustra01.clayium.client.screen.pan;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import net.claustra01.clayium.client.screen.legacy.LegacyButton;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
+import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.pan.PanBlock;
 import net.claustra01.clayium.pan.PanBlockEntity;
 import net.claustra01.clayium.pan.PanMenu;
@@ -39,6 +39,12 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             case DUPLICATOR -> 108;
             case CABLE -> 94;
         };
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -240,8 +246,6 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
                     menu.nodes(), menu.adapters()), 7, 64, 120, 0x405060);
         } else {
-            graphics.drawString(font, Component.translatable("gui.clayium.pan.tier", menu.tier()), 7, 18,
-                    LegacyGuiGraphics.TEXT_COLOR, false);
             drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
                     menu.nodes(), menu.adapters()), 70, 18, 99, 0x405060);
             drawFitted(graphics, Component.translatable(menu.sampleReachable()
@@ -270,7 +274,7 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(candidate.item()));
             graphics.renderTooltip(font, List.of(
                     stack.getHoverName(),
-                    Component.translatable("gui.clayium.pan.cost", candidate.cost()),
+                    Component.translatable("gui.clayium.pan.cost", format(candidate.cost())),
                     Component.translatable("gui.clayium.pan.consumption", format(candidate.consumption())),
                     Component.translatable(candidate.prohibited()
                             ? "gui.clayium.pan.prohibited" : "gui.clayium.pan.permitted")),
@@ -279,7 +283,7 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
     }
 
     private static String format(long internal) {
-        return BigDecimal.valueOf(internal, 5).stripTrailingZeros().toPlainString() + " CE";
+        return ClayEnergy.ofInternal(internal).format();
     }
 
     private void drawFitted(GuiGraphics graphics, Component label, int x, int y, int width, int color) {

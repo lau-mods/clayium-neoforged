@@ -25,12 +25,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public final class LaserReflectorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    private static final VoxelShape DOWN = Block.box(2, 1, 2, 14, 3, 14);
-    private static final VoxelShape UP = Block.box(2, 13, 2, 14, 15, 14);
-    private static final VoxelShape NORTH = Block.box(2, 2, 1, 14, 14, 3);
-    private static final VoxelShape SOUTH = Block.box(2, 2, 13, 14, 14, 15);
-    private static final VoxelShape WEST = Block.box(1, 2, 2, 3, 14, 14);
-    private static final VoxelShape EAST = Block.box(13, 2, 2, 15, 14, 14);
+    private static final VoxelShape VERTICAL = Block.box(4, 2, 4, 12, 14, 12);
+    private static final VoxelShape NORTH_SOUTH = Block.box(4, 4, 2, 12, 12, 14);
+    private static final VoxelShape EAST_WEST = Block.box(2, 4, 4, 14, 12, 12);
 
     public LaserReflectorBlock(Properties properties) {
         super(properties);
@@ -50,12 +47,9 @@ public final class LaserReflectorBlock extends BaseEntityBlock {
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return switch (state.getValue(FACING)) {
-            case DOWN -> DOWN;
-            case UP -> UP;
-            case NORTH -> NORTH;
-            case SOUTH -> SOUTH;
-            case WEST -> WEST;
-            case EAST -> EAST;
+            case DOWN, UP -> VERTICAL;
+            case NORTH, SOUTH -> NORTH_SOUTH;
+            case WEST, EAST -> EAST_WEST;
         };
     }
 

@@ -20,6 +20,12 @@ public final class WaterWheelScreen extends AbstractContainerScreen<WaterWheelMe
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
     protected void renderBg(GuiGraphics graphics, float tick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 32, 0, 0, 176, 94);

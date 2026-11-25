@@ -1,8 +1,10 @@
 package net.claustra01.clayium.energy;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public record ClayEnergy(long internalValue) implements Comparable<ClayEnergy> {
+    private static final String[] NUMERAL_PREFIXES = {"u", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
     public static final long INTERNAL_UNITS_PER_CE = 100_000L;
     public static final ClayEnergy ZERO = new ClayEnergy(0L);
     public static final ClayEnergy MAX = new ClayEnergy(Long.MAX_VALUE);
@@ -37,7 +39,27 @@ public record ClayEnergy(long internalValue) implements Comparable<ClayEnergy> {
     }
 
     public String format() {
-        return BigDecimal.valueOf(internalValue, 5).stripTrailingZeros().toPlainString() + " CE";
+        return formatValue() + " CE";
+    }
+
+    public String formatValue() {
+        if (internalValue == 0L) {
+            return "0";
+        }
+        int prefix = 0;
+        long nextPrefixThreshold = 100L;
+        while (prefix + 1 < NUMERAL_PREFIXES.length && internalValue >= nextPrefixThreshold) {
+            prefix++;
+            if (nextPrefixThreshold > Long.MAX_VALUE / 1_000L) {
+                break;
+            }
+            nextPrefixThreshold *= 1_000L;
+        }
+        BigDecimal displayed = BigDecimal.valueOf(internalValue)
+                .movePointLeft(prefix * 3 - 1)
+                .setScale(3, RoundingMode.DOWN)
+                .stripTrailingZeros();
+        return displayed.toPlainString() + NUMERAL_PREFIXES[prefix];
     }
 
     @Override

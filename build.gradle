@@ -35,12 +35,6 @@ repositories {
             includeGroup 'net.mezzdev.config'
         }
     }
-    maven {
-        url = 'https://maven.terraformersmc.com/releases'
-        content {
-            includeGroup 'dev.emi'
-        }
-    }
 }
 
 base {
@@ -135,15 +129,10 @@ dependencies {
 
     // One recipe viewer is available in development runs without becoming a published dependency.
     if (!gradle.startParameter.taskNames.any { it.toLowerCase().contains('gametest') }) {
-        if (recipe_viewer == 'emi') {
-            localRuntime "dev.emi:emi-neoforge:${emi_version}"
-        } else if (recipe_viewer == 'jei') {
+        if (recipe_viewer == 'jei') {
             localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
         }
     }
-
-    // Viewer APIs are compile-time only so Clayium can run without either viewer installed.
-    compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

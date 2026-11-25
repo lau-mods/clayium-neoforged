@@ -170,7 +170,7 @@ public final class StandardCompatibilityGameTests {
         RecipeViewerData chemicalDisplay = RecipeViewerData.from(chemical);
         require(chemicalDisplay.processingTicks() == 20
                         && chemicalDisplay.clayEnergy() == 2_000L
-                        && chemicalDisplay.formattedClayEnergy().equals("0.02")
+                        && chemicalDisplay.formattedClayEnergy().equals("20m")
                         && chemical.fluidInputs().getFirst().getAmount() == 250,
                 "Direct fluid mB or applied recipe energy is incorrect in viewer data");
 

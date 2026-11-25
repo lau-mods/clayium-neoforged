@@ -72,14 +72,14 @@ public final class ConfigBehaviorGameTests {
                     ClayiumMod.id("grinder/cobblestone_to_gravel_4"), batch)).findFirst().orElseThrow();
             require(displayedBatch.holder().value().itemInputs().getFirst().count() == 8
                             && displayedBatch.holder().value().itemOutputs().getFirst().getCount() == 8,
-                    "JEI/EMI page inputs and outputs differ from ProgressionRate execution values");
+                    "JEI page inputs and outputs differ from ProgressionRate execution values");
             var bendingId = ClayiumMod.id("bending_machine/dense_clay_blade");
             var displayedBending = RecipeViewerPage.forRecipe(
                     new net.minecraft.world.item.crafting.RecipeHolder<>(bendingId, bending))
                     .findFirst().orElseThrow().holder().value();
             require(displayedBending.processingTicks()
                             == ProgressionRateRules.adjustedRecipeTicks(bending),
-                    "JEI/EMI page time differs from ProgressionRate execution time");
+                    "JEI page time differs from ProgressionRate execution time");
 
             ClayCraftingToolItem rollingPin = WorkbenchRegistration.CLAY_ROLLING_PIN.get();
             ItemStack freshTool = new ItemStack(rollingPin);

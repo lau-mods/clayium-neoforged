@@ -5,7 +5,6 @@ import net.claustra01.clayium.client.screen.RecipeViewerNavigation;
 import net.claustra01.clayium.workbench.ClayWorkTableMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -24,8 +23,6 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(RecipeViewerNavigation.button(leftPos, topPos,
-                net.claustra01.clayium.recipe.ClayiumRecipeMethod.CLAY_WORK_TABLE.location()));
         for (int action = 1; action <= 6; action++) {
             int selectedAction = action;
             Component description = Component.translatable("button.clayium.work_action." + action);
@@ -45,12 +42,16 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
                 protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
                     int column = selectedAction == 6 ? 0 : selectedAction - 1;
                     int row = selectedAction == 6 ? 80 : 32;
-                    int state = !active ? 2 : isHoveredOrFocused() ? 1 : 0;
+                    int state = 0;
+                    if (!active) {
+                        state = 2;
+                    } else if (isHoveredOrFocused()) {
+                        state = 1;
+                    }
                     graphics.blit(TEXTURE, getX(), getY(), 176 + column * 16, row + state * 16,
                             16, 16, 256, 256);
                 }
             };
-            button.setTooltip(Tooltip.create(description));
             addRenderableWidget(button);
         }
     }
@@ -68,6 +69,18 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
         if (progress > 0) {
             graphics.blit(TEXTURE, leftPos + 48, topPos + 29, 176, 0, progress, 16, 256, 256);
         }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0
+                && mouseX >= leftPos + 48 && mouseX < leftPos + 128
+                && mouseY >= topPos + 29 && mouseY < topPos + 45
+                && RecipeViewerNavigation.open(
+                        net.claustra01.clayium.recipe.ClayiumRecipeMethod.CLAY_WORK_TABLE.location())) {
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
 }

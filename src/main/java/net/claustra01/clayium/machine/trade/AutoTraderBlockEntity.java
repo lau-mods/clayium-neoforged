@@ -36,7 +36,6 @@ public final class AutoTraderBlockEntity extends BlockEntity implements MenuProv
     public static final int INPUT_B_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
     public static final int FUEL_SLOT = 3;
-    public static final int MAX_VISIBLE_OFFERS = 10;
     public static final long ENERGY_PER_TRADE = ClayiumRecipeEnergy.e(1.0D, TIER);
 
     private final ItemStackHandler inventory = new ItemStackHandler(4) {
@@ -83,7 +82,7 @@ public final class AutoTraderBlockEntity extends BlockEntity implements MenuProv
         if (merchant.getOffers().isEmpty()) {
             return stop(State.NO_OFFERS);
         }
-        if (selectedOffer < 0 || selectedOffer >= Math.min(MAX_VISIBLE_OFFERS, merchant.getOffers().size())) {
+        if (selectedOffer < 0 || selectedOffer >= merchant.getOffers().size()) {
             return stop(State.NO_OFFERS);
         }
         MerchantOffer offer = merchant.getOffers().get(selectedOffer);
@@ -150,12 +149,12 @@ public final class AutoTraderBlockEntity extends BlockEntity implements MenuProv
 
     public int offerCount() {
         Merchant merchant = cachedMerchant;
-        return merchant == null ? 0 : Math.min(MAX_VISIBLE_OFFERS, merchant.getOffers().size());
+        return merchant == null ? 0 : merchant.getOffers().size();
     }
 
     public void selectOffer(int index) {
         Merchant merchant = merchant();
-        if (merchant != null && index >= 0 && index < Math.min(MAX_VISIBLE_OFFERS, merchant.getOffers().size())) {
+        if (merchant != null && index >= 0 && index < merchant.getOffers().size()) {
             cachedMerchant = merchant;
             selectedOffer = index;
             state = State.READY;
@@ -293,7 +292,10 @@ public final class AutoTraderBlockEntity extends BlockEntity implements MenuProv
 
         @Override
         public int getSlots() {
-            return direction == Direction.DOWN ? 1 : direction == null ? 4 : 3;
+            if (direction == null) {
+                return 4;
+            }
+            return direction == Direction.DOWN ? 1 : 3;
         }
 
         @Override

@@ -22,7 +22,7 @@ export async function verifyViewer(viewer) {
     const click = (x, y) => mc('input', 'click', x, y);
     const screen = mc('screen', 'size');
     const cx = Math.floor(screen.width / 2), cy = Math.floor(screen.height / 2);
-    const viewerScreen = viewer === 'jei' ? 'RecipesGui' : 'RecipeScreen';
+    const viewerScreen = 'RecipesGui';
     const capture = (ac, label) => screenshot(client, ac, viewer + '-' + label);
     const locateRecipe = (kind,label,original = true) => {
       const file = capture(original ? 'AC-F047-001' : 'AC-F047-004',label);
@@ -75,8 +75,8 @@ export async function verifyViewer(viewer) {
     cmd('fill -5 99 -5 5 99 4 minecraft:stone');
     cmd('tp @s 0.5 100 -2.5 0 10'); cmd('gamemode survival'); cmd('clear @s');
     const log = await readFile(path.join(process.env.MCT_HOME, 'clients', client, 'minecraft/logs/latest.log'), 'utf8');
-    assert.ok(viewer === 'emi' ? /\[EMI\]|dev\.emi\.emi|EMI 1\.1/i.test(log) : /mezz\.jei|Just Enough Items/i.test(log));
-    if (viewer === 'jei') {
+    assert.ok(/mezz\.jei|Just Enough Items/i.test(log));
+    {
       for (const material of ['silicon','europium']) {
         const chest = show(material + '_chest','MetalChestScreen');
         if (material === 'europium') {
@@ -91,20 +91,20 @@ export async function verifyViewer(viewer) {
     cmd('give @s clayium:clay_plate 8');
     wait(5); move(0, 0);
     capture('AC-F047-001','work-table-gui');
-    openPage(table.guiLeft + 160, table.guiTop + 12);
+    openPage(table.guiLeft + 88, table.guiTop + 37);
     locateRecipe('work-table','work-table-original-buttons-and-selected-operation');
-    const tableTransfer = () => click(cx + 88, cy + (viewer === 'jei' ? 59 : 12));
+    const tableTransfer = () => click(cx + 88, cy + 59);
     tableTransfer(); wait(4);
     verify(viewerScreen);
     key('escape'); wait(4); verify('ClayWorkTableScreen');
     assert.ok(!slots()[0].hasStack && !slots()[1].hasStack, 'Missing tool caused a partial transfer');
     assert.equal(slots().find(s => s.item.type === 'clayium:clay_plate').item.count, 8);
     cmd('give @s clayium:clay_slicer');
-    wait(5); openPage(table.guiLeft + 160, table.guiTop + 12);
+    wait(5); openPage(table.guiLeft + 88, table.guiTop + 37);
     // Explicitly page forward and back before placing the original slice recipe.
-    const pageY = cy + (viewer === 'jei' ? -49 : -58);
-    click(cx + (viewer === 'jei' ? 86 : 77), pageY); wait(3);
-    click(cx - (viewer === 'jei' ? 88 : 77), pageY); wait(3);
+    const pageY = cy - 49;
+    click(cx + 86, pageY); wait(3);
+    click(cx - 88, pageY); wait(3);
     tableTransfer(); wait(8);
     verify('ClayWorkTableScreen');
     assert.equal(slots()[0].item.type, 'clayium:clay_plate');
@@ -115,7 +115,7 @@ export async function verifyViewer(viewer) {
     assert.equal(board.backgroundHeight,166);
     cmd('give @s minecraft:oak_planks 4'); cmd('item replace entity @s hotbar.8 with minecraft:crafting_table');
     wait(5); lookup('minecraft:crafting_table','r');
-    click(cx + 70,cy + (viewer === 'emi' ? 2 : 21)); wait(6);
+    click(cx + 70,cy + 21); wait(6);
     verify('ClayCraftingBoardScreen');
     assert.equal(slots()[0].item.type,'minecraft:crafting_table');
     assert.equal(slots().slice(1,10).filter(s => s.item.type === 'minecraft:oak_planks').length,4);
@@ -125,8 +125,6 @@ export async function verifyViewer(viewer) {
     const expanded = show('clay_crafting_board','ClayCraftingBoardScreen');
     assert.equal(expanded.backgroundHeight,222);
     assert.equal(slots().length,73);
-    if (viewer === 'emi') assert.ok(slots().at(-1).centerY + 8 <= screen.height - 21,
-      'EMI search field overlaps the hotbar of the expanded crafting board');
     move(0,0); capture('AC-F047-003','crafting-board-with-adjacent-chest');
     close(); cmd('setblock 1 100 0 minecraft:air');
 
@@ -161,7 +159,7 @@ export async function verifyViewer(viewer) {
     openPage(machine.guiLeft + 88,machine.guiTop + 43);
     capture('AC-F047-002','chemical-reactor-category-and-catalysts');
     capture('AC-F049-002','viewer-category-ledger-and-catalysts');
-    if (viewer === 'jei') capture('AC-F042-002','chemical-reactor-category');
+    capture('AC-F042-002','chemical-reactor-category');
     close();
 
     // Change a real server datapack while the same client remains connected.

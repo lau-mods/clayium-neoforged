@@ -38,24 +38,24 @@ public final class AutoCrafterMenu extends AbstractContainerMenu {
         this.data = data;
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
-                addSlot(new GhostSlot(autoCrafter, column + row * 3, 8 + column * 18, 34 + row * 18));
+                addSlot(new GhostSlot(autoCrafter, column + row * 3, 5 + column * 18, 18 + row * 18));
             }
         }
-        addSlot(new LockedSlot(autoCrafter.preview(), 0, 75, 52, true));
+        addSlot(new LockedSlot(autoCrafter.preview(), 0, 117, 36, true));
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
                 addSlot(new SlotItemHandler(autoCrafter.inventory(), column + row * 3,
-                        107 + column * 18, 34 + row * 18));
+                        62 + column * 18, 18 + row * 18));
             }
         }
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 2; column++) {
                 addSlot(new LockedSlot(autoCrafter.inventory(),
                         AutoCrafterBlockEntity.OUTPUT_START + column + row * 2,
-                        174 + column * 18, 34 + row * 18, false));
+                        135 + column * 18, 18 + row * 18, false));
             }
         }
-        addSlot(new SlotItemHandler(autoCrafter.inventory(), AutoCrafterBlockEntity.FUEL_SLOT, 75, 76));
+        addSlot(new SlotItemHandler(autoCrafter.inventory(), AutoCrafterBlockEntity.FUEL_SLOT, 117, 60));
         addPlayerInventory(inventory);
         addDataSlots(data);
     }
@@ -71,11 +71,11 @@ public final class AutoCrafterMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory inventory) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 34 + column * 18, 139 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 96 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 34 + column * 18, 197));
+            addSlot(new Slot(inventory, column, 8 + column * 18, 154));
         }
     }
 

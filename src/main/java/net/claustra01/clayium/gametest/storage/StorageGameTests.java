@@ -99,7 +99,7 @@ public final class StorageGameTests {
                         && storage.capacity() == StorageContainerBlockEntity.EXPANDED_CAPACITY,
                 "Clay Core did not expand the storage container");
         StorageContainerMenu storageMenu = new StorageContainerMenu(1, player.getInventory(), storage,
-                new net.minecraft.world.inventory.SimpleContainerData(9));
+                new net.minecraft.world.inventory.SimpleContainerData(8));
         ItemStack menuOffer = new ItemStack(Items.CLAY_BALL, 64);
         storageMenu.slots.get(0).safeInsert(menuOffer);
         require(menuOffer.isEmpty() && storage.amount() == 65_600L,
@@ -187,7 +187,7 @@ public final class StorageGameTests {
         require(storage != null, "Storage container block entity was not created");
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         StorageContainerMenu menu = new StorageContainerMenu(3, player.getInventory(), storage,
-                new net.minecraft.world.inventory.SimpleContainerData(9));
+                new net.minecraft.world.inventory.SimpleContainerData(8));
 
         ItemStack namedDiamond = new ItemStack(Items.DIAMOND, 32);
         namedDiamond.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,

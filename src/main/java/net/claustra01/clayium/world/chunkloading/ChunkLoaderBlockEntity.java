@@ -17,11 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuProvider {
-    private static final int RETRY_INTERVAL = 100;
-
     private final ContainerData menuData = new ChunkLoaderContainerData();
     private TicketStatus ticketStatus = TicketStatus.WAITING;
-    private int retryTick;
 
     public ChunkLoaderBlockEntity(BlockPos pos, BlockState state) {
         super(ChunkLoaderRegistration.BLOCK_ENTITY.get(), pos, state);
@@ -32,11 +29,6 @@ public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuPro
         if (chunkLoader.ticketStatus == TicketStatus.ACTIVE) {
             return;
         }
-        if (chunkLoader.ticketStatus == TicketStatus.UNAVAILABLE
-                && ++chunkLoader.retryTick < RETRY_INTERVAL) {
-            return;
-        }
-        chunkLoader.retryTick = 0;
         chunkLoader.requestTickets();
     }
 
@@ -75,7 +67,6 @@ public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuPro
         super.loadAdditional(tag, registries);
         ticketStatus = "unavailable".equals(tag.getString("ticket_status"))
                 ? TicketStatus.UNAVAILABLE : TicketStatus.WAITING;
-        retryTick = 0;
     }
 
     private void requestTickets() {

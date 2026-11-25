@@ -4,8 +4,6 @@ import java.util.List;
 import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.item.FoundationItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -46,7 +44,6 @@ public final class FilterDuplicatorItem extends FoundationItem {
             if (!level.isClientSide) {
                 duplicator.set(LogisticsRegistration.FILTER_COPY.get(), false);
                 player.displayClientMessage(Component.translatable("message.clayium.filter_copy.cleared"), true);
-                play(level, player);
             }
             return InteractionResultHolder.sidedSuccess(duplicator, level.isClientSide);
         }
@@ -65,13 +62,7 @@ public final class FilterDuplicatorItem extends FoundationItem {
             }
             player.displayClientMessage(Component.translatable(
                     hasCopy ? "message.clayium.filter_copy.applied" : "message.clayium.filter_copy.stored"), true);
-            play(level, player);
         }
         return InteractionResultHolder.sidedSuccess(duplicator, level.isClientSide);
-    }
-
-    private static void play(Level level, Player player) {
-        level.playSound(null, player.blockPosition(), SoundEvents.UI_BUTTON_CLICK.value(),
-                SoundSource.PLAYERS, 0.5F, 1.0F);
     }
 }

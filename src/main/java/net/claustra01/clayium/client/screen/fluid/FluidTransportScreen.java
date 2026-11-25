@@ -125,8 +125,6 @@ public final class FluidTransportScreen extends AbstractContainerScreen<FluidTra
             titleText = font.plainSubstrByWidth(titleText, 112) + "…";
         }
         graphics.drawString(font, titleText, 7, 7, 0x404040, false);
-        Component tier = Component.translatable("gui.clayium.fluid.tier", menu.tier());
-        graphics.drawString(font, tier, imageWidth - 7 - font.width(tier), 7, 0x404040, false);
         Component amount = Component.literal(menu.amount() + " / " + menu.capacity() + " mB");
         graphics.drawString(font, amount, 87 - font.width(amount) / 2, 90, 0x404040, false);
         graphics.drawString(font, compactAmount(menu.transferPerTick(), " mB/t"), 7, 56, 0x404040, false);

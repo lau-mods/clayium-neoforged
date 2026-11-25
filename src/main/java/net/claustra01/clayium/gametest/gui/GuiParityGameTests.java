@@ -24,6 +24,7 @@ import net.claustra01.clayium.machine.clayproduction.ClayProductionMenu;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionType;
 import net.claustra01.clayium.energy.fe.EnergyConverterBlockEntity;
 import net.claustra01.clayium.energy.fe.EnergyConverterMenu;
+import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.gadget.GadgetHolderMenu;
 import net.claustra01.clayium.gadget.GadgetType;
 import net.claustra01.clayium.machine.autocrafter.AutoCrafterBlockEntity;
@@ -36,6 +37,7 @@ import net.claustra01.clayium.pan.PanBlockEntity;
 import net.claustra01.clayium.pan.PanMenu;
 import net.claustra01.clayium.pan.PanScreenPayloads;
 import net.claustra01.clayium.registry.AreaMachineRegistration;
+import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.AutoCrafterRegistration;
 import net.claustra01.clayium.registry.EnergyConverterRegistration;
 import net.claustra01.clayium.registry.GadgetRegistration;
@@ -114,12 +116,32 @@ public final class GuiParityGameTests {
         slot(machineMenu.slots.get(0), 44, 35, "processing input");
         slot(machineMenu.slots.get(1), 116, 35, "processing output");
         slot(machineMenu.slots.get(3), 44, 57, "processing CE fuel");
-        slot(machineMenu.slots.get(4), 8, 90, "processing player inventory");
+        slot(machineMenu.slots.get(4), 8, 84, "processing player inventory");
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
         require(!machineMenu.quickMoveStack(player, 4).isEmpty()
                         && machine.inventory().getStackInSlot(0).is(Items.COBBLESTONE)
                         && player.getInventory().getItem(9).isEmpty(),
                 "Processing shift transfer did not move exactly one input stack");
+
+        BlockPos centrifugePos = new BlockPos(3, 2, 2);
+        helper.setBlock(centrifugePos,
+                AssemblyMachineRegistration.MACHINES.get("centrifuge_tier_4").block().get());
+        ClayMachineBlockEntity centrifuge = helper.getBlockEntity(centrifugePos);
+        ClayMachineMenu centrifugeMenu = new ClayMachineMenu(23, player.getInventory(), centrifuge,
+                new net.minecraft.world.inventory.SimpleContainerData(22));
+        slot(centrifugeMenu.slots.get(0), 44, 35, "centrifuge input");
+        slot(centrifugeMenu.slots.get(1), 116, 8, "centrifuge first output");
+        slot(centrifugeMenu.slots.get(4), 116, 62, "centrifuge fourth output");
+        slot(centrifugeMenu.slots.get(7), 8, 103, "centrifuge player inventory");
+
+        BlockPos separatorPos = new BlockPos(3, 2, 3);
+        helper.setBlock(separatorPos, MachineRegistration.MACHINES.get("chemical_metal_separator").block().get());
+        ClayMachineBlockEntity separator = helper.getBlockEntity(separatorPos);
+        ClayMachineMenu separatorMenu = new ClayMachineMenu(24, player.getInventory(), separator,
+                new net.minecraft.world.inventory.SimpleContainerData(22));
+        slot(separatorMenu.slots.get(0), 25, 44, "metal separator input");
+        slot(separatorMenu.slots.get(1), 85, 17, "metal separator output");
+        slot(separatorMenu.slots.get(4), 8, 108, "metal separator player inventory");
 
         BlockPos duplicatorPos = new BlockPos(4, 2, 2);
         helper.setBlock(duplicatorPos, PanRegistration.DEFINITIONS.get("pan_duplicator_tier_10").block().get());
@@ -145,7 +167,7 @@ public final class GuiParityGameTests {
         slot(traderMenu.slots.get(1), 62, 53, "trade input B");
         slot(traderMenu.slots.get(2), 120, 53, "trade output");
         slot(traderMenu.slots.get(3), 8, 53, "trade fuel");
-        slot(traderMenu.slots.get(4), 8, 116, "trade player inventory");
+        slot(traderMenu.slots.get(4), 8, 100, "trade player inventory");
 
         BlockPos areaPos = new BlockPos(8, 2, 2);
         helper.setBlock(areaPos, AreaMachineRegistration.MACHINES.get(AreaMachineType.ACTIVATOR).block().get());
@@ -181,7 +203,7 @@ public final class GuiParityGameTests {
         EnergyConverterMenu converterMenu = new EnergyConverterMenu(6, player.getInventory(), converter,
                 new net.minecraft.world.inventory.SimpleContainerData(12));
         slot(converterMenu.slots.get(0), 35, 53, "converter fuel");
-        slot(converterMenu.slots.get(1), 8, 105, "converter player inventory");
+        slot(converterMenu.slots.get(1), 8, 102, "converter player inventory");
         BlockPos topConverterPos = new BlockPos(11, 2, 2);
         helper.setBlock(topConverterPos, EnergyConverterRegistration.CONVERTERS.get(13).block().get());
         EnergyConverterBlockEntity topConverter = helper.getBlockEntity(topConverterPos);
@@ -240,9 +262,10 @@ public final class GuiParityGameTests {
         AutoCrafterBlockEntity crafter = helper.getBlockEntity(crafterPos);
         AutoCrafterMenu crafterMenu = new AutoCrafterMenu(11, player.getInventory(), crafter,
                 new net.minecraft.world.inventory.SimpleContainerData(7));
-        slot(crafterMenu.slots.get(0), 8, 34, "auto crafter first pattern slot");
-        slot(crafterMenu.slots.get(9), 75, 52, "auto crafter result preview");
+        slot(crafterMenu.slots.get(0), 5, 18, "auto crafter first pattern slot");
+        slot(crafterMenu.slots.get(9), 117, 36, "auto crafter result preview");
         int crafterPlayerSlot = crafterMenu.slots.size() - 36;
+        slot(crafterMenu.slots.get(crafterPlayerSlot), 8, 96, "auto crafter player inventory");
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
         require(!crafterMenu.quickMoveStack(player, crafterPlayerSlot).isEmpty()
                         && crafter.inventory().getStackInSlot(0).is(Items.COBBLESTONE)
@@ -252,7 +275,7 @@ public final class GuiParityGameTests {
         helper.setBlock(storagePos, StorageRegistration.STORAGE_CONTAINER.get());
         StorageContainerBlockEntity storage = helper.getBlockEntity(storagePos);
         StorageContainerMenu storageMenu = new StorageContainerMenu(12, player.getInventory(), storage,
-                new net.minecraft.world.inventory.SimpleContainerData(9));
+                new net.minecraft.world.inventory.SimpleContainerData(8));
         slot(storageMenu.slots.get(0), 44, 35, "storage input");
         slot(storageMenu.slots.get(1), 116, 35, "storage output");
         slot(storageMenu.slots.get(2), 142, 18, "storage memory");
@@ -487,6 +510,18 @@ public final class GuiParityGameTests {
                 throw new GameTestAssertException("Could not hash original GUI assets: " + exception.getMessage());
             }
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void clayEnergyGuiNumeralsKeepOriginalPrefixesAndPrecision(GameTestHelper helper) {
+        require(ClayEnergy.ofInternal(0L).formatValue().equals("0"), "Zero CE numeral changed");
+        require(ClayEnergy.ofInternal(1L).formatValue().equals("10u"), "Micro CE prefix changed");
+        require(ClayEnergy.ofInternal(100L).formatValue().equals("1m"), "Milli CE prefix changed");
+        require(ClayEnergy.ofInternal(100_000L).formatValue().equals("1"), "Base CE prefix changed");
+        require(ClayEnergy.ofInternal(123_499L).formatValue().equals("1.234"),
+                "CE numeral no longer truncates to the original three fractional digits");
+        require(ClayEnergy.ofInternal(100_000_000L).formatValue().equals("1k"), "Kilo CE prefix changed");
         helper.succeed();
     }
 

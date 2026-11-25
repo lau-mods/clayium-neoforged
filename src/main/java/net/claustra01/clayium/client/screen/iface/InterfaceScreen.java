@@ -34,10 +34,9 @@ public final class InterfaceScreen extends AbstractContainerScreen<InterfaceMenu
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         drawFit(graphics, title, 7, 7, 162, 0x404040);
-        graphics.drawString(font, Component.translatable("gui.clayium.interface.tier", menu.tier()), 48, 25, 0x404040, false);
         Component status = Component.translatable(
                 "gui.clayium.interface.status." + menu.status().name().toLowerCase());
-        graphics.drawString(font, status, 48, 37, statusColor(), false);
+        graphics.drawString(font, status, 48, 31, statusColor(), false);
 
         Component dimension = Component.literal("-");
         InterfaceBlockEntity blockEntity = menu.blockEntity();
@@ -46,10 +45,11 @@ public final class InterfaceScreen extends AbstractContainerScreen<InterfaceMenu
         }
         graphics.drawString(font, Component.translatable("gui.clayium.interface.target"), 8, 64, 0x404040, false);
         drawFit(graphics, dimension, 8, 76, 160, 0x404040);
-        Component position = blockEntity != null && blockEntity.target() != null
-                ? Component.literal(blockEntity.target().pos().getX() + ", "
-                        + blockEntity.target().pos().getY() + ", " + blockEntity.target().pos().getZ())
-                : Component.literal("-");
+        Component position = Component.literal("-");
+        if (blockEntity != null && blockEntity.target() != null) {
+            position = Component.literal(blockEntity.target().pos().getX() + ", "
+                    + blockEntity.target().pos().getY() + ", " + blockEntity.target().pos().getZ());
+        }
         drawFit(graphics, position, 8, 89, 160, 0x404040);
     }
 

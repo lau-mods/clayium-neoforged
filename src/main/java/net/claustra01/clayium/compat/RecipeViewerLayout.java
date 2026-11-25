@@ -94,7 +94,8 @@ public record RecipeViewerLayout(
                         new TextLine(Component.translatable("gui.clayium.recipe.tier", tier),
                                 TIER_X, TIER_Y, 0xFF000000),
                         new TextLine(Component.translatable("gui.clayium.recipe.pan_rate",
-                                RecipeViewerData.panEnergyPerTick(tier) / 100_000D),
+                                net.claustra01.clayium.energy.ClayEnergy.ofInternal(
+                                        RecipeViewerData.panEnergyPerTick(tier)).formatValue()),
                                 85, TIER_Y, 0xFF000000),
                         new TextLine(Component.translatable("gui.clayium.recipe.pan_sample"), 32, 6, 0xFF000000),
                         new TextLine(Component.translatable("gui.clayium.recipe.pan_ticks"), ENERGY_X, ENERGY_Y, 0xFF000000)),

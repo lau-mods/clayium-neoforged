@@ -23,6 +23,12 @@ public final class FilterScreen extends AbstractContainerScreen<FilterMenu> {
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
     protected void init() {
         super.init();
         mode = addRenderableWidget(Button.builder(modeText(), button -> send(0))

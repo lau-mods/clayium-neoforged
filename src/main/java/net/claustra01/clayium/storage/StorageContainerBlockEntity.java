@@ -261,7 +261,6 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
     private final class StorageData implements ContainerData {
         @Override
         public int get(int index) {
-            if (index == 8) return expanded ? 1 : 0;
             long value = index < 4 ? amount : capacity();
             return (int)(value >>> ((index % 4) * 16)) & 0xFFFF;
         }
@@ -272,7 +271,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
 
         @Override
         public int getCount() {
-            return 9;
+            return 8;
         }
     }
 }

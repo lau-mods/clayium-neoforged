@@ -15,8 +15,8 @@
 - Harness が自 Mod の JAR を server と client の `mods/` に配置し、クライアントへ operator 権限を付与する。client には MC Pilot の `mct-client-mod-neoforge-1.21.1.jar` も必要。
 - JEI 19.64.0.455（Minecraft 1.21.1 NeoForge 版）を server と client の `mods/` に配置する。配布元は BlameJared Maven の `mezz.jei:jei-1.21.1-neoforge:19.64.0.455`。再構築時も同じ JAR を両側へ配置する。
 - Gradle の JEI バージョンは `gradle.properties` の `jei_version` が正本。`localRuntime` で開発起動時に読み込み、配布 Mod の必須依存にはしない。
-- レシピViewerのE2EはJEI単独とEMI単独で別々に実行し、同じclientへ同時導入しない。EMI版は`gradle.properties`の`emi_version`を正本とし、Gradleでは`-Precipe_viewer=emi`で切り替える。
-- `tests/e2e/recipe-viewers.mjs`はJEI構成、`tests/e2e/recipe-viewers-emi.mjs`はEMI構成で実行する。後者は `.harness-config.json` の `recipeViewerProfiles.emi` を使い、専用のserver・client・worldを生成してEMIのみで起動する。EMI JARは `.harness-state/runtime/` にキャッシュする。
+- レシピViewerのE2EはJEI単独で実行する。
+- `tests/e2e/recipe-viewers.mjs` はJEI構成で実行する。
 - runtime 本体、キャッシュ、ログ、撮影画像は Git 管理外。設定の正本は `.harness-config.json`。
 
 MC Pilot を手動実行するときも Harness と同じ環境を使用する。
@@ -400,8 +400,8 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 
 ## M37 レシピ閲覧・標準他Mod互換
 
-- JEI API は `compileOnly`、開発確認用本体は `localRuntime`、EMI API は `compileOnly` とする。両Modは `neoforge.mods.toml` のクライアント任意依存であり、プラグインクラスを通常のClayiumロード経路から参照しない。
-- M03の全 `ClayiumRecipeMethod` にJEI/EMIカテゴリを用意し、クライアントの実際の `RecipeManager` からレシピを登録する。必要Tier、材料、生成物、TierManager適用後の処理tickと合計CE、直接流体入出力の正確なmB量を表示する。粘土作業台、CA反応炉、PAN複製も閲覧対象にする。
+- JEI API は `compileOnly`、開発確認用本体は `localRuntime`とする。JEI は `neoforge.mods.toml` のクライアント任意依存であり、プラグインクラスを通常のClayiumロード経路から参照しない。
+- M03の全 `ClayiumRecipeMethod` にJEIカテゴリを用意し、クライアントの実際の `RecipeManager` からレシピを登録する。必要Tier、材料、生成物、TierManager適用後の処理tickと合計CE、直接流体入出力の正確なmB量を表示する。粘土作業台、CA反応炉、PAN複製も閲覧対象にする。
 - 他Modとのアイテム・流体・FE接続は `Capabilities.ItemHandler.BLOCK`、`Capabilities.FluidHandler.BLOCK`、`Capabilities.EnergyStorage.BLOCK` だけを使用する。FE入力はCE→FE変換器と通常機械のいずれも受け付けず、既存の `c:`、`minecraft:`、`clayium:` タグを正本とする。
 - GameTest は `itemFluidAndFeTransferOnlyThroughNeoForgeCapabilities`、`commonMinecraftAndClayiumTagsResolveToRegisteredItems`、`recipeViewerDataMatchesReloadedDatapackRecipes`。閲覧Mod未導入で全GameTestが起動することも確認する。JEI画面のE2Eは `tests/e2e/recipe-viewers.mjs`。
 
@@ -455,7 +455,7 @@ GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndA
 - 共通加工GUIは旧 main の pre-alpha.3 と同じタイトル位置 (6,6)、単独の入出力に26×26の枠、加工矢印 (76,35) を使う。2入力・2出力には原作の色別スロットを使い、矢印で装置のカテゴリを開ける。I/Oボタンで6面の設定を開く。燃料スロットは (44,57)。作業台は原作と同じ (40,52) から6操作を並べ、(48,29) に80×16の進捗を描く。
 - 金属チェストは `ContainerNormalInventory` の7行以上の分岐を維持する。ユウロピウムチェストの13列×8行ウィンドウは256×236、最初のスロットは (12,6)。単一ページではページボタンを表示しない。
 - 原作 hotfix2 の `NEITemp` から、加工レシピの166×65領域、背景 `nei.png` (5,11)、入力 (52−17i,21)、出力 (98+17i,21)、矢印 (71,21)、Tier (6,43)、CE式 (6,52) を取得した。金属分離は原作と同じく鉱物ごとにページを分け、表示中の鉱物の確率を (69,10) に描き、ツールチップに重みと合計を示す。既定レシピの合計は488。流体はタンクに直接描き、ツールチップにmB量を表示する。
-- `NEIClayWorkTable` の専用背景は `clayworktable.png`。材料 (12,19)、工具 (75,6)、生成物 (138,19)/(138,44)、進捗 (43,18)、操作選択 (35+16i,41)、押下回数は選択ボタンの上。作業台の「?」は手動加工、作業板の「?」はバニラ製作を開く。工具スロットには焼成済みのめん棒・スライサー・へらを1個装備でき、Shiftクリックも同じ場所へ送る。JEIとEMIのレシピ転送は各Menuの実スロットを使う。
+- `NEIClayWorkTable` の専用背景は `clayworktable.png`。材料 (12,19)、工具 (75,6)、生成物 (138,19)/(138,44)、進捗 (43,18)、操作選択 (35+16i,41)、押下回数は選択ボタンの上。作業台の「?」は手動加工、作業板の「?」はバニラ製作を開く。工具スロットには焼成済みのめん棒・スライサー・へらを1個装備でき、Shiftクリックも同じ場所へ送る。JEIのレシピ転送は各Menuの実スロットを使う。
 - 特殊説明は `cobblestone_generator`、`salt_extractor`、`quartz_crucible`、`solar_clay_fabricator`、`clay_tree`。機種・Tierに対応する触媒から利用経路を検索できる。Tier 13 `energetic_clay_decomposer` はOPA筐体とCA反応炉コイルMk IVから組み立て、原作の粘土ブロックと圧縮13段階の逆変換を `ec_decomposer` に登録する。原作の0 tickは現行Recipe Codecの最低1 tickで表現する。
 - `tests/acceptance.json` が4件の受入条件をGameTestと両ビューアの実機シナリオに結び付ける。実画面比較はPython 3、Pillow、原作JAR `.tmp/clayium-0.4.6.36.hotfix2.jar` を使い、スクリーンショット内のスロットの縁を原作PNGに合わせて比較画像を出力する。
 

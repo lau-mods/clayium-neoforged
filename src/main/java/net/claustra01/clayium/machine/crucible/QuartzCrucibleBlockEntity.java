@@ -13,8 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 
 public final class QuartzCrucibleBlockEntity extends BlockEntity {
     public static final int CAPACITY = 8;
@@ -56,7 +54,7 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
         ItemStack stack = entity.getItem();
         int consumed = 0;
         if (stack.is(MaterialRegistration.MATERIAL_ITEMS.get("impure_silicon_ingot").get())) {
-            consumed = insertImpureSilicon(stack.getCount());
+            consumed = insertImpureSilicon(1);
         } else if (stack.is(net.minecraft.world.item.Items.STRING) && useString()) {
             consumed = 1;
         }
@@ -70,11 +68,10 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
         } else {
             entity.setItem(remaining);
         }
-        level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.25F, 1.0F);
     }
 
     public int insertImpureSilicon(int offered) {
-        if (offered <= 0 || isReady()) {
+        if (offered <= 0) {
             return 0;
         }
         int inserted = Math.min(offered, CAPACITY - impureSilicon);
@@ -98,11 +95,10 @@ public final class QuartzCrucibleBlockEntity extends BlockEntity {
         if (level != null) {
             ItemEntity output = new ItemEntity(
                     level,
-                    worldPosition.getX() + 0.5D,
-                    worldPosition.getY() + 1.05D,
-                    worldPosition.getZ() + 0.5D,
+                    worldPosition.getX() + 0.4D,
+                    worldPosition.getY() + 0.4D,
+                    worldPosition.getZ() + 0.4D,
                     new ItemStack(MaterialRegistration.MATERIAL_ITEMS.get("silicon_ingot").get(), outputCount));
-            output.setDefaultPickUpDelay();
             level.addFreshEntity(output);
         }
         updateStage(QuartzCrucibleStage.EMPTY);

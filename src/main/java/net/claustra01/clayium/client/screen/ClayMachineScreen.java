@@ -3,9 +3,9 @@ package net.claustra01.clayium.client.screen;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.client.gui.components.Tooltip;
 import net.claustra01.clayium.client.screen.legacy.LegacyButton;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
+import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
 import net.claustra01.clayium.multiblock.careactor.CaReactorCoreBlockEntity;
@@ -30,8 +30,8 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
 
     public ClayMachineScreen(ClayMachineMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageHeight = menu.machine() instanceof CaReactorCoreBlockEntity ? 196 : 172;
-        inventoryLabelY = menu.machine() instanceof CaReactorCoreBlockEntity ? 102 : 78;
+        imageHeight = menu.machineAreaHeight() + 94;
+        inventoryLabelY = menu.machineAreaHeight();
     }
 
     @Override
@@ -43,7 +43,6 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
                     configuringFaces = !configuringFaces;
                     faceButtons.values().forEach(button -> button.visible = configuringFaces);
                 }));
-        toggle.setTooltip(Tooltip.create(Component.translatable("gui.clayium.machine.faces")));
         int index = 0;
         for (Direction direction : Direction.values()) {
             LegacyButton faceButton = addRenderableWidget(new LegacyButton(
@@ -78,12 +77,21 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
                 0, 0, 176, 94, 256, 256);
         int inputSlots = menu.machine() == null ? 1 : menu.machine().inputSlots();
         for (int input = 0; input < inputSlots; input++) {
-            drawMachineSlot(graphics, ClayMachineMenu.inputX(inputSlots, input), 35, inputSlots, input, 32);
+            drawMachineSlot(graphics, ClayMachineMenu.inputX(menu.machine(), input),
+                    ClayMachineMenu.inputY(menu.machine(), input), inputSlots, input, 32);
         }
         int outputSlots = menu.machine() == null ? 1 : Math.min(menu.machine().outputSlots(), 4);
-        for (int output = 0; output < outputSlots; output++) {
-            drawMachineSlot(graphics, ClayMachineMenu.outputX(outputSlots, output),
-                    ClayMachineMenu.outputY(outputSlots, output), outputSlots, output, 64);
+        if (ClayMachineMenu.isChemicalMetalSeparator(menu.machine())) {
+            for (int row = 0; row < 4; row++) {
+                for (int column = 0; column < 4; column++) {
+                    LegacyGuiGraphics.slot(graphics, leftPos + 84 + column * 18, topPos + 16 + row * 18);
+                }
+            }
+        } else {
+            for (int output = 0; output < outputSlots; output++) {
+                drawMachineSlot(graphics, ClayMachineMenu.outputX(menu.machine(), output),
+                        ClayMachineMenu.outputY(menu.machine(), output), outputSlots, output, 64);
+            }
         }
         LegacyGuiGraphics.slot(graphics, leftPos + 44, topPos + 57);
         if (!configuringFaces && menu.machine() != null) {
@@ -167,13 +175,9 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
             graphics.drawString(font, title, 0, 0, 0x404040, false);
             graphics.pose().popPose();
         }
-        Component tier = Component.literal("Tier " + menu.tier());
-        graphics.drawString(font, tier, 40 - font.width(tier), 58, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.machine.state." + menu.state().name().toLowerCase()),
-                65, 58, stateColor(), false);
         graphics.drawString(font, Component.translatable(
                         "gui.clayium.machine.required_energy", formatEnergy(menu.requiredEnergy())),
-                65, 68, 0x404040, false);
+                7, 19, 0x404040, false);
         ClayMachineBlockEntity machine = menu.machine();
         if (machine instanceof CaReactorCoreBlockEntity) {
             Component structure = Component.translatable(
@@ -198,24 +202,15 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
                 if (menu.slots.get(input).getItem().isEmpty()) {
                     ItemStack reserved = menu.slots.get(reservedStart + input).getItem();
                     if (!reserved.isEmpty()) {
-                        graphics.renderItem(reserved, ClayMachineMenu.inputX(machine.inputSlots(), input), 35);
+                        graphics.renderItem(reserved, ClayMachineMenu.inputX(machine, input),
+                                ClayMachineMenu.inputY(machine, input));
                         graphics.renderItemDecorations(font, reserved,
-                                ClayMachineMenu.inputX(machine.inputSlots(), input), 35);
+                                ClayMachineMenu.inputX(machine, input), ClayMachineMenu.inputY(machine, input));
                     }
                 }
             }
         }
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
-    }
-
-    private int stateColor() {
-        return switch (menu.state()) {
-            case RUNNING -> 0x168A16;
-            case OUTPUT_FULL -> 0xAA2020;
-            case WAITING_FOR_ENERGY -> 0xAA6A00;
-            case RECIPE_CHANGED -> 0xAA6A00;
-            case IDLE -> 0x404040;
-        };
     }
 
     private Component faceButtonText(Direction direction) {
@@ -240,6 +235,6 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
     }
 
     private static String formatEnergy(long internal) {
-        return String.format(java.util.Locale.ROOT, "%.3f CE", internal / 100_000.0D);
+        return ClayEnergy.ofInternal(internal).format();
     }
 }

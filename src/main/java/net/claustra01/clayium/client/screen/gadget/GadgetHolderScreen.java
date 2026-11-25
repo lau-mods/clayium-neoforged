@@ -30,15 +30,12 @@ public final class GadgetHolderScreen extends AbstractContainerScreen<GadgetHold
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 8, 8, LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("screen.clayium.gadget_holder.installed"),
-                17, 18, LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, playerInventoryTitle, 8, inventoryLabelY,
                 LegacyGuiGraphics.TEXT_COLOR, false);
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
         renderTooltip(graphics, mouseX, mouseY);
     }

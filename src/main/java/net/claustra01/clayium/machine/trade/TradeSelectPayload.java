@@ -37,8 +37,7 @@ public record TradeSelectPayload(BlockPos pos, int offerIndex) implements Custom
         if (!(player.containerMenu instanceof AutoTraderMenu menu)
                 || !menu.pos().equals(payload.pos)
                 || !menu.stillValid(player)
-                || payload.offerIndex < 0
-                || payload.offerIndex >= AutoTraderBlockEntity.MAX_VISIBLE_OFFERS) {
+                || payload.offerIndex < 0) {
             return;
         }
         menu.autoTrader().selectOffer(payload.offerIndex);

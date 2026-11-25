@@ -229,8 +229,11 @@ public final class PanMenu extends AbstractContainerMenu {
     }
 
     public ResourceLocation selectedCandidate() {
-        return viewer == null ? selectedCandidate
-                : pan.selectedCandidate() == null ? ClayiumMod.id("none") : pan.selectedCandidate();
+        if (viewer == null) {
+            return selectedCandidate;
+        }
+        ResourceLocation selected = pan.selectedCandidate();
+        return selected == null ? ClayiumMod.id("none") : selected;
     }
 
     public int adapterPage() {

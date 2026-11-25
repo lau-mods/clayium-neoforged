@@ -31,12 +31,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public final class QuartzCrucibleBlock extends BaseEntityBlock {
     public static final EnumProperty<QuartzCrucibleStage> STAGE =
             EnumProperty.create("stage", QuartzCrucibleStage.class);
-    private static final VoxelShape SHAPE = Shapes.or(
-            box(0, 0, 0, 16, 4, 16),
-            box(0, 4, 0, 3, 16, 16),
-            box(13, 4, 0, 16, 16, 16),
-            box(3, 4, 0, 13, 16, 3),
-            box(3, 4, 13, 13, 16, 16));
+    private static final double WALL = 16.0D * 0.0675D;
+    private static final double HEIGHT = 16.0D * 0.75D;
+    private static final VoxelShape OUTLINE_SHAPE = box(0, 0, 0, 16, HEIGHT, 16);
+    private static final VoxelShape COLLISION_SHAPE = Shapes.or(
+            box(0, 0, 0, 16, WALL, 16),
+            box(0, 0, 0, WALL, HEIGHT, 16),
+            box(16 - WALL, 0, 0, 16, HEIGHT, 16),
+            box(0, 0, 0, 16, HEIGHT, WALL),
+            box(0, 0, 16 - WALL, 16, HEIGHT, 16));
 
     public QuartzCrucibleBlock(Properties properties) {
         super(properties);
@@ -56,7 +59,13 @@ public final class QuartzCrucibleBlock extends BaseEntityBlock {
     @Override
     protected VoxelShape getShape(
             BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return OUTLINE_SHAPE;
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(
+            BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return COLLISION_SHAPE;
     }
 
     @Override
@@ -101,6 +110,7 @@ public final class QuartzCrucibleBlock extends BaseEntityBlock {
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (!level.isClientSide && entity instanceof ItemEntity item
+                && entity.getY() - pos.getY() < 0.2D
                 && level.getBlockEntity(pos) instanceof QuartzCrucibleBlockEntity crucible) {
             crucible.absorbDroppedItem(item);
         }

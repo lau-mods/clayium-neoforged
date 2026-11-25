@@ -12,15 +12,13 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record TradeSnapshotPayload(int containerId, MerchantOffers offers, int selectedOffer,
-                                   AutoTraderBlockEntity.State state, long storedEnergy, long energyPerTrade)
+                                   long storedEnergy, long energyPerTrade)
         implements CustomPacketPayload {
     public static final Type<TradeSnapshotPayload> TYPE = new Type<>(ClayiumMod.id("trade_snapshot"));
     public static final StreamCodec<RegistryFriendlyByteBuf, TradeSnapshotPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, TradeSnapshotPayload::containerId,
             MerchantOffers.STREAM_CODEC, TradeSnapshotPayload::offers,
             ByteBufCodecs.VAR_INT, TradeSnapshotPayload::selectedOffer,
-            ByteBufCodecs.VAR_INT.map(index -> AutoTraderBlockEntity.State.values()[index],
-                    AutoTraderBlockEntity.State::ordinal), TradeSnapshotPayload::state,
             ByteBufCodecs.VAR_LONG, TradeSnapshotPayload::storedEnergy,
             ByteBufCodecs.VAR_LONG, TradeSnapshotPayload::energyPerTrade,
             TradeSnapshotPayload::new);
@@ -41,7 +39,7 @@ public record TradeSnapshotPayload(int containerId, MerchantOffers offers, int s
     }
 
     public long contentHash() {
-        long hash = 31L * selectedOffer + state.ordinal();
+        long hash = selectedOffer;
         hash = 31L * hash + storedEnergy;
         for (MerchantOffer offer : offers) {
             hash = 31L * hash + ItemStack.hashItemAndComponents(offer.getCostA());

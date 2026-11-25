@@ -3,6 +3,7 @@ package net.claustra01.clayium.registry;
 import java.util.List;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.item.FoundationItem;
+import net.claustra01.clayium.tool.MachineConfigurationToolItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -15,8 +16,9 @@ public final class FoundationItemRegistration {
             "clayium_block", FoundationBlockRegistration.CLAYIUM_BLOCK);
     public static final DeferredItem<Item> INDUSTRIAL_CLAY_DUST = ClayiumRegistries.ITEMS.register(
             "industrial_clay_dust", () -> new FoundationItem(tier(3)));
-    public static final DeferredItem<Item> CLAY_WRENCH = ClayiumRegistries.ITEMS.register(
-            "clay_wrench", () -> new FoundationItem(tier(1).stacksTo(1)));
+    public static final DeferredItem<MachineConfigurationToolItem> CLAY_WRENCH = ClayiumRegistries.ITEMS.register(
+            "clay_wrench", () -> new MachineConfigurationToolItem(
+                    tier(1).stacksTo(1), MachineConfigurationToolItem.Mode.WRENCH));
     public static final List<DeferredItem<? extends Item>> ALL = List.of(
             DENSE_CLAY,
             COMPRESSED_CLAY,

@@ -1,5 +1,5 @@
 {
-  "status": "fatal",
+  "status": "running",
   "active": [
     {
       "id": "M44",
@@ -908,10 +908,5 @@
     "M43"
   ],
   "lastCheckpoint": "ef2bfb3c77c8d5a493d8e4acb4a6cda3f38f5a73",
-  "fatal": {
-    "milestone": "M44",
-    "phase": "e2e",
-    "reason": "e2e_review agent failed (exit 1): {\"duration_api_ms\":333708,\"stop_reason\":\"stop_sequence\",\"session_id\":\"c37b8b13-051d-418d-89e5-180836f1dd64\",\"total_cost_usd\":8.449015200000002,\"usage\":{\"input_tokens\":106,\"cache_creation_input_tokens\":823426,\"cache_read_input_tokens\":6036616,\"output_tokens\":32693,\"output_tokens_details\":{\"thinking_tokens\":14814},\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":823426,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"global\",\"iterations\":[{\"input_tokens\":4,\"output_tokens\":819,\"cache_read_input_tokens\":224909,\"cache_creation_input_tokens\":11639,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":11639},\"type\":\"message\"}],\"speed\":\"standard\",\"fallback_credit\":null},\"modelUsage\":{\"claude-opus-5-5\":{\"inputTokens\":106,\"outputTokens\":32693,\"cacheReadInputTokens\":6036616,\"cacheCreationInputTokens\":823426,\"webSearchRequests\":0,\"costUSD\":8.449015200000002,\"contextWindow\":1000000,\"maxOutputTokens\":128000,\"thinkingTokens\":14814,\"cacheCreationEphemeral5mInputTokens\":0,\"cacheCreationEphemeral1hInputTokens\":823426,\"canonicalModel\":\"claude-opus-5-5\",\"provider\":\"firstParty\",\"costBasis\":\"list\"}},\"permission_denials\":[],\"terminal_reason\":\"api_error\",\"fast_mode_state\":\"off\",\"fast_mode_disabled_reason\":\"sdk_opt_in_required\",\"subagent_stats\":{\"spawned\":0,\"requested\":{\"background\":0,\"foreground\":0,\"unset\":0},\"started_in_background\":0,\"max_depth\":0,\"spawned_by_subagents\":0,\"completed\":0,\"failed\":0,\"killed\":{\"parent\":0,\"user\":0,\"system\":0},\"refused\":{\"depth_limit\":0,\"concurrency_limit\":0,\"budget\":0},\"by_type\":{}},\"safety_stops\":0,\"is_error\":true,\"num_turns\":219,\"subtype\":\"success\",\"api_error_status\":429,\"api_error_origin\":\"first_party\",\"api_error\":\"usage_limit_reached\",\"result\":\"You've hit your 5-hour limit · resets 6pm (Asia/Tokyo)\",\"type\":\"result\",\"duration_ms\":338553,\"uuid\":\"b8ecc6fe-dbab-4a57-bed6-885cd2e6862d\",\"queued_turn_count\":0,\"result_index\":0}",
-    "at": "2026-11-25T08:00:15.172Z"
-  }
+  "fatal": null
 }

@@ -1,6 +1,7 @@
 package net.claustra01.clayium.client.screen.area;
 
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
+import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.world.area.AreaMachineMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -21,6 +22,12 @@ public final class AreaMachineScreen extends AbstractContainerScreen<AreaMachine
         imageWidth = 230;
         imageHeight = 215;
         inventoryLabelY = 121;
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -90,14 +97,7 @@ public final class AreaMachineScreen extends AbstractContainerScreen<AreaMachine
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 7, 7, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
-        int statusY = menu.isActivator() ? 99 : 27;
-        drawFitted(graphics, menu.status().name(), statusY);
-        drawFitted(graphics, String.format(java.util.Locale.ROOT, "%.3f CE", menu.storedEnergy() / 100_000.0D),
-                statusY + 11);
-        drawFitted(graphics, menu.progress() + "/" + menu.requiredProgress(), statusY + 22);
-        if (!menu.isActivator()) {
-            drawFitted(graphics, "Mode: " + menu.machineType().name(), 60);
-        }
+        drawFitted(graphics, ClayEnergy.ofInternal(menu.storedEnergy()).format(), 109);
     }
 
     private void drawFitted(GuiGraphics graphics, String value, int y) {

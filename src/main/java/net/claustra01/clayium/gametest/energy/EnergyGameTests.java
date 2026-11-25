@@ -71,7 +71,7 @@ public final class EnergyGameTests {
                 "Clay Energy subtraction did not saturate at zero");
         require(ClayEnergy.ofCe(Long.MAX_VALUE).internalValue() == Long.MAX_VALUE,
                 "Whole CE conversion overflowed instead of saturating");
-        require(ClayEnergy.ofInternal(100L).format().equals("0.001 CE"),
+        require(ClayEnergy.ofInternal(100L).format().equals("1m CE"),
                 "Fractional CE formatting is not exact");
         require(ClayEnergy.ofInternal(100_000L).format().equals("1 CE"),
                 "Whole CE formatting is not exact");

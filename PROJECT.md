@@ -1091,7 +1091,7 @@ Expected Result: 毎tick最大64個の8重圧縮エネルギー粘土が補充�
 
 #### Description
 
-依存Feature: F-005、F-022、F-023、F-025、F-035、F-037。JEIとEMIによる機械レシピ閲覧、`c:`・`minecraft:`・`clayium:`タグ、NeoForgeのItemHandler／FluidHandler／EnergyStorage Capability、データパックによるレシピ差替えを提供する。**初回正式版では標準API互換のみを必須**とし、旧1.7.10版が対応した個別Mod（AE2、Ender IO、GregTech、Mekanism、IC2、Forestry、Galacticraft、TofuCraftなど）向け固有レシピ・依存コードは追加要件に含めない。KubeJS／CraftTweakerへの専用APIは任意の将来拡張であり、本体のレシピJSONとタグを正本とする。JEI/EMIが未導入でもModが起動する。
+依存Feature: F-005、F-022、F-023、F-025、F-035、F-037。JEIによる機械レシピ閲覧、`c:`・`minecraft:`・`clayium:`タグ、NeoForgeのItemHandler／FluidHandler／EnergyStorage Capability、データパックによるレシピ差替えを提供する。**初回正式版では標準API互換のみを必須**とし、旧1.7.10版が対応した個別Mod（AE2、Ender IO、GregTech、Mekanism、IC2、Forestry、Galacticraft、TofuCraftなど）向け固有レシピ・依存コードは追加要件に含めない。KubeJS／CraftTweakerへの専用APIは任意の将来拡張であり、本体のレシピJSONとタグを正本とする。JEIが未導入でもModが起動する。
 
 #### Acceptance Criteria
 
@@ -1103,9 +1103,9 @@ Action: アイテム・流体・FEの受け渡しを試す。
 
 Expected Result: 全て正式なNeoForge Capabilityを通して接続でき、専用相互APIを必須としない。FE→CEは依然として不可能である。
 
-##### AC-F042-002: JEI/EMIのレシピ表示
+##### AC-F042-002: JEIのレシピ表示
 
-Preconditions: JEIまたはEMIを導入し、複数Tierの機械レシピを開く。
+Preconditions: JEIを導入し、複数Tierの機械レシピを開く。
 
 Action: 必要Tier、材料、生成物、処理時間、消費CE、液体入出力を表示し、画像を撮影する。
 
@@ -1174,7 +1174,7 @@ Expected Result: 金属チェスト57品種に原作相当の2経路が存在し
 
 ##### AC-F043-004: レシピ再読込と表示・実行の一致
 
-Preconditions: 原作対応のクラフトレシピと機械レシピを登録し、JEI/EMIのいずれかを導入する。
+Preconditions: 原作対応のクラフトレシピと機械レシピを登録し、JEIを導入する。
 
 Action: データパックを再読込後、作成結果、入力数量、Tier、CE、時間、実機処理を照合する。
 
@@ -1332,25 +1332,25 @@ Action: 対応PNGのSHA-256を照合し、初期・稼働・設定・満杯・�
 
 Expected Result: PNGは無加工のまま原作に由来し、画面比較ファイル・操作対応表が納品される。レイアウト差分が残る場合は変更が必要な理由を具体的に記録する。
 
-### F-047: JEI・EMIでの原作NEIレシピ画面と操作の再現
+### F-047: JEIでの原作NEIレシピ画面と操作の再現
 
 #### Description
 
-依存Feature: F-005、F-042、F-043～F-046。**原作NEIと0.1.0のJEI/EMIの表示内容だけでなく見た目と操作を比較し、Clayium専用部分を再現する。** 原作は`plugin.nei.NEITemp`、`NEIClayMachines`、`NEIClayWorkTable`、`NEIMetalSeparator`、`NEIDescription`、`LoadNEIConfig`により、原作`assets/clayium/textures/gui/nei.png`の背景、加工機ごとのレシピカテゴリ、固定した入出力位置、進捗表示、`Tier:`、`CE/t × 時間 = 総CE`表記、種類別の特殊説明ページ、金属分離の確率表示、作業板の専用表示、レシピ使用・作成双方の検索、GUIからのレシピ参照・転送/オーバーレイを実装していた。原作`NEITemp.drawTier`では例として相対座標(6,43)、`drawEnergy`では(6,52)に情報が置かれ、`NEIClayMachines.getGuiTexture`は`clayium:textures/gui/nei.png`を返す。
+依存Feature: F-005、F-042、F-043～F-046。**原作NEIと0.1.0のJEIの表示内容だけでなく見た目と操作を比較し、Clayium専用部分を再現する。** 原作は`plugin.nei.NEITemp`、`NEIClayMachines`、`NEIClayWorkTable`、`NEIMetalSeparator`、`NEIDescription`、`LoadNEIConfig`により、原作`assets/clayium/textures/gui/nei.png`の背景、加工機ごとのレシピカテゴリ、固定した入出力位置、進捗表示、`Tier:`、`CE/t × 時間 = 総CE`表記、種類別の特殊説明ページ、金属分離の確率表示、作業板の専用表示、レシピ使用・作成双方の検索、GUIからのレシピ参照・転送/オーバーレイを実装していた。原作`NEITemp.drawTier`では例として相対座標(6,43)、`drawEnergy`では(6,52)に情報が置かれ、`NEIClayMachines.getGuiTexture`は`clayium:textures/gui/nei.png`を返す。
 
-0.1.0の`compat.jei.MachineRecipeCategory`は**176×103の共通矩形**に左寄せ入力・右寄せ出力・横並びの説明文を描画し、原作NEIの背景・画面構成を使用していない。同JARのJEI登録には通常加工方法とPAN複製カテゴリはあるが、原作の`NEIDescription`に相当する専用カテゴリが確認できない。`compat.emi.EmiMachineRecipe`も原作専用描画を共通化した方式ではない。原作のPNGがJARに収録されているだけで完成と判定しない。
+0.1.0の`compat.jei.MachineRecipeCategory`は**176×103の共通矩形**に左寄せ入力・右寄せ出力・横並びの説明文を描画し、原作NEIの背景・画面構成を使用していない。同JARのJEI登録には通常加工方法とPAN複製カテゴリはあるが、原作の`NEIDescription`に相当する専用カテゴリが確認できない。原作のPNGがJARに収録されているだけで完成と判定しない。
 
-**修正範囲**：① JEIとEMIのClayiumレシピコンテンツ部に原作NEIの背景・枠・相対位置・余白・色・情報表示順・進捗を再現する。② 加工方法ごとのTier・エネルギー・加工時間・工具・入出力・選択材料・副産物と金属分離の重み/確率を保持する。③ `LoadNEIConfig`の特殊説明`CobblestoneGenerator`・`SaltExtractor`・`QuartzCrucible`・`SolarClayFabricator`・`ClayTree`を、対応カテゴリ/情報ページとして閲覧・検索できるようにする。④ 原作`NEIClayWorkTable`の専用表示と粘土作業台の?ボタン／レシピオーバーレイに相当する参照・配置補助（現行JEI/EMIの正式APIの範囲）を提供する。⑤ レシピからその機械・使用例へ移動できる触媒、原料の利用経路・成果物の製造経路、ページ送り、タグ代替、流体のmB表示、各種検索を提供する。
+**修正範囲**：① JEIのClayiumレシピコンテンツ部に原作NEIの背景・枠・相対位置・余白・色・情報表示順・進捗を再現する。② 加工方法ごとのTier・エネルギー・加工時間・工具・入出力・選択材料・副産物と金属分離の重み/確率を保持する。③ `LoadNEIConfig`の特殊説明`CobblestoneGenerator`・`SaltExtractor`・`QuartzCrucible`・`SolarClayFabricator`・`ClayTree`を、対応カテゴリ/情報ページとして閲覧・検索できるようにする。④ 原作`NEIClayWorkTable`の専用表示と粘土作業台の?ボタン／レシピオーバーレイに相当する参照・配置補助（現行JEIの正式APIの範囲）を提供する。⑤ レシピからその機械・使用例へ移動できる触媒、原料の利用経路・成果物の製造経路、ページ送り、タグ代替、流体のmB表示、各種検索を提供する。
 
-NEI/JEI/EMIという**外部Mod本体の全体UI**や検索サイドバーをClayium側で改造して一致させる必要はない。一致対象は原作が独自に提供した「Clayiumのレシピカテゴリ内容と表示・操作」である。カプセルは復活させず液体を直接描画する。Raw Oreや深層岩、追加樹種のレシピは現代化仕様に従う。原作NEI互換のレンダリング情報は共通の表示モデルと描画ヘルパーへ集約し、JEI/EMIで別々の手書き画面へ分岐させない。
+NEI/JEIという**外部Mod本体の全体UI**や検索サイドバーをClayium側で改造して一致させる必要はない。一致対象は原作が独自に提供した「Clayiumのレシピカテゴリ内容と表示・操作」である。カプセルは復活させず液体を直接描画する。Raw Oreや深層岩、追加樹種のレシピは現代化仕様に従う。原作NEI互換のレンダリング情報は共通の表示モデルと描画ヘルパーへ集約する。
 
 #### Acceptance Criteria
 
 ##### AC-F047-001: 見た目の原作同等性
 
-Preconditions: hotfix2のNEI実装と`nei.png`、0.1.0のJEI/EMIカテゴリ、および加工機・作業台・金属分離の代表レシピを用意する。
+Preconditions: hotfix2のNEI実装と`nei.png`、0.1.0のJEIカテゴリ、および加工機・作業台・金属分離の代表レシピを用意する。
 
-Action: 原作NEIレイアウトを逆解析または実機撮影して参照画像を作り、同じ材料とカテゴリをJEI・EMIの両方で表示・撮影する。
+Action: 原作NEIレイアウトを逆解析または実機撮影して参照画像を作り、同じ材料とカテゴリをJEIで表示・撮影する。
 
 Expected Result: Clayium固有領域の背景、スロット群、進捗・Tier・CE・時間・文字の位置関係が原作と同等で、共通の無装飾176×103画面だけで代替しない。外部Viewer本体の外枠・検索UIの差は許容する。
 
@@ -1358,13 +1358,13 @@ Expected Result: Clayium固有領域の背景、スロット群、進捗・Tier�
 
 Preconditions: 原作LoadNEIConfigに登録された全加工方法、粘土作業板、金属分離、5種類の特殊説明とPANの関連表示を列挙する。
 
-Action: JEI/EMIの各カテゴリを開き、レシピ数、材料、重み、説明、Tier・CE・時間を相互照合する。
+Action: JEIの各カテゴリを開き、レシピ数、材料、重み、説明、Tier・CE・時間を相互照合する。
 
 Expected Result: 原作にあるカテゴリが見えないという状態がなく、CobblestoneGenerator・SaltExtractor・QuartzCrucible・SolarClayFabricator・ClayTreeの情報ページも閲覧できる。原作レシピが表示から脱落しない。
 
 ##### AC-F047-003: 画面操作・触媒・転送補助
 
-Preconditions: JEI/EMIを個別に導入し、粘土作業台、作業板、加工機GUIを開く。
+Preconditions: JEIを導入し、粘土作業台、作業板、加工機GUIを開く。
 
 Action: レシピ/使用用途検索、カテゴリ切替、触媒表示、ツール/確率のツールチップ、作業台への配置補助やレシピ転送を操作する。
 
@@ -1374,9 +1374,9 @@ Expected Result: 原作の?ボタン等に相当する機能が現行正式API�
 
 Preconditions: 流体入力/出力、ランダム成果物、異Tierのレシピを用意する。
 
-Action: JEI/EMIでmB量、確率、必要CE・時間・Tierを表示した後、レシピをデータパックで変更して再読込する。
+Action: JEIでmB量、確率、必要CE・時間・Tierを表示した後、レシピをデータパックで変更して再読込する。
 
-Expected Result: 双方のビューアが同じサーバーレシピに追従し、原作CE演算と現代の直接流体仕様を矛盾なく示す。JEI/EMI未導入でもClayium本体が起動する。
+Expected Result: JEIがサーバーレシピに追従し、原作CE演算と現代の直接流体仕様を矛盾なく示す。JEI未導入でもClayium本体が起動する。
 
 ### F-048: ワールド内モデル・アニメーション・エフェクトの原作同等性
 
@@ -1418,11 +1418,11 @@ Expected Result: 既存PNGは無改変で使用し、テクスチャ破損・表
 
 #### Description
 
-依存Feature: F-001～F-042、F-043～F-048。F-043～F-048を網羅しても、JARの総ファイル数一致だけで完全移植は証明できない。hotfix2と0.1.0（および修正後JAR）のレシピ、登録内容、内部計算、特殊操作、GUI/NEIとJEI/EMI表示、モデル/描画、エフェクト、言語・説明、操作手段を、**機能単位で追跡できる対応台帳**にする。原作はJava実装によって複数レシピを動的登録し、移植版は`clayium:machine`等のJSON中心であるため、旧バイトコードのレシピ登録呼び出し回数と新JSON数が等しいことを合格条件にしない。投入/出力数量、代替材料、加工方法、必要Tier、CE、処理tick、確率副産物、装置への適用条件を意味的に比較する。
+依存Feature: F-001～F-042、F-043～F-048。F-043～F-048を網羅しても、JARの総ファイル数一致だけで完全移植は証明できない。hotfix2と0.1.0（および修正後JAR）のレシピ、登録内容、内部計算、特殊操作、GUI/NEIとJEI表示、モデル/描画、エフェクト、言語・説明、操作手段を、**機能単位で追跡できる対応台帳**にする。原作はJava実装によって複数レシピを動的登録し、移植版は`clayium:machine`等のJSON中心であるため、旧バイトコードのレシピ登録呼び出し回数と新JSON数が等しいことを合格条件にしない。投入/出力数量、代替材料、加工方法、必要Tier、CE、処理tick、確率副産物、装置への適用条件を意味的に比較する。
 
 各要素には原作クラス・JARパス・必要ならバイトコード命令箇所、移植先Registry ID / JSON / Javaクラス、原作の表示PNG/GUI画面名、現行の表示画面・操作手順、テスト名を記録し、判定を`同等`・`明示的に変更済み`・`欠落`・`未確認`に分類する。**未確認を同等とみなしてはならない。** 許可変更はStone/Deepslate鉱石と現高度、Raw Ore・新樹種、新流体直接輸送、カプセル廃止、CE→FEのみ、B/W統合、現行API置換、UtilityMode廃止、FE変換器初期レシピ有効化、旧ワールド非対応などPROJECT.md明記事項だけである。変更理由なくレシピ・数値・見た目・操作を簡略化してはいけない。
 
-**本Featureを正式版の最終受入ゲートとする。** 自動で比較できる登録・計算・レシピはGameTest/Javaテスト/台帳照合を使用する。見た目はJEI・EMI両方、原作対応GUI、ワールド内レンダラーでE2Eスクリーンショット比較を実施する。原作1.7.10環境を起動できない場合はJARの実際のテクスチャと旧クラスの描画座標・処理分岐を復元して比較基準を作り、再現していない要素がないかをレビューする。
+**本Featureを正式版の最終受入ゲートとする。** 自動で比較できる登録・計算・レシピはGameTest/Javaテスト/台帳照合を使用する。見た目はJEI、原作対応GUI、ワールド内レンダラーでE2Eスクリーンショット比較を実施する。原作1.7.10環境を起動できない場合はJARの実際のテクスチャと旧クラスの描画座標・処理分岐を復元して比較基準を作り、再現していない要素がないかをレビューする。
 
 **設定と公開条件（旧F-043からの統合）:** 原作の`ProgressionRate`初期1.0、HardcoreAluminium／HardcoreOsmium初期false、EnableInjectorRecipeOfInterface初期false、ClaySteelPickaxeRange初期2、InvertClayLaserRSCondition初期false、CAReactorGlittering初期true、LaserQuality初期8、Tier別製造・搬送・収納倍率などを現行NeoForge Configへ移す。CE→FEの組立レシピは初期有効、生成鉱石・レシピ値はデータパックを正本とする。旧`UtilityMode`は一切実装しない。液体カプセル用設定、流体IDの保存設定、旧TileEntity代替名、数値Entity ID、旧PacketSendingRate依存は廃止する。初回正式版の完了条件は、原作のすべての主要機能、Tier 0～13、33機械系列168機種、全57金属チェスト、CA・PAN・銃・ガジェット・直接流体・FEの実装とGameTest/E2Eの合格とする。Tier途中までの公開テスト版は本計画に含めない。
 
@@ -1438,7 +1438,7 @@ Expected Result: 原作に存在した生存モード用要素のうち、`欠�
 
 ##### AC-F049-002: 操作・表示・カテゴリの全対応表
 
-Preconditions: 原作NEI、GUI、rendererのクラスとPNG、および新JEI/EMI・Screen・Modelを台帳化する。
+Preconditions: 原作NEI、GUI、rendererのクラスとPNG、および新JEI・Screen・Modelを台帳化する。
 
 Action: 全主要画面、特殊NEI説明5種、作業台の?操作、PANリスト、対応ブロックの描画を機能・表示・ユーザー操作で照合する。
 
@@ -1480,7 +1480,7 @@ Expected Result: アイテム／流体／CEの増殖や消失、不正な属性�
 
 Preconditions: F-001～F-042、F-043～F-048のAcceptance Criteriaおよび台帳をすべて準備する。
 
-Action: Minecraft 1.21.1/NeoForgeでTier0から13、全機械系列・57金属チェスト・最終装置と装備、JEI/EMI、全GUIと主要3D描画を試験する。
+Action: Minecraft 1.21.1/NeoForgeでTier0から13、全機械系列・57金属チェスト・最終装置と装備、JEI、全GUIと主要3D描画を試験する。
 
 Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件であることを証明できた場合にのみ本Featureを合格とし、初回正式版の完成判定を行う。
 
@@ -1741,7 +1741,7 @@ Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件で�
 
 5. 旧Minecraft 1.7.10版・1.12.2版のワールド、ブロックデータ、インベントリおよびプレイヤーデータの移行機能は実装しない。サポート対象はMinecraft 1.21.1で新規作成したワールドとする。既存チャンクへの鉱石の自動再生成も実装しない。
 
-6. 特定の他Modに専用の連携機能を実装することは、初回公開の必須範囲に含めない。NeoForgeのアイテム・流体・エネルギーCapability、共通アイテムタグ、データパックおよびJEI／EMIを標準の互換手段とする。外部Modを本Modの必須依存関係にしない。
+6. 特定の他Modに専用の連携機能を実装することは、初回公開の必須範囲に含めない。NeoForgeのアイテム・流体・エネルギーCapability、共通アイテムタグ、データパックおよびJEIを標準の互換手段とする。外部Modを本Modの必須依存関係にしない。
 
 7. 水入りブロックは水の存在判定および水中判定に含める。ただし、流速のない水源状態を水車の駆動源として数えない。水の存在、水源、流れる水の判定をそれぞれ区別して実装する。
 

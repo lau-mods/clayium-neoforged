@@ -18,7 +18,7 @@ public final class StorageContainerMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public StorageContainerMenu(int containerId, Inventory playerInventory, BlockPos pos) {
-        this(containerId, playerInventory, storageAt(playerInventory, pos), new SimpleContainerData(9));
+        this(containerId, playerInventory, storageAt(playerInventory, pos), new SimpleContainerData(8));
     }
 
     public StorageContainerMenu(
@@ -97,10 +97,6 @@ public final class StorageContainerMenu extends AbstractContainerMenu {
 
     public long capacity() {
         return readLong(4);
-    }
-
-    public boolean expanded() {
-        return data.get(8) != 0;
     }
 
     private long readLong(int start) {

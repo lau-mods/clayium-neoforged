@@ -60,7 +60,7 @@ public final class CaCollectorBlockEntity extends BlockEntity {
         // tick.  Fractional resonance is intentionally discarded rather than accumulated.
         long wholeProgress = (long)((resonance - 1.0D) * ClayiumConfig.progressionRate());
         progress = saturatedAdd(progress, wholeProgress);
-        int produced = (int)Math.min(Math.min(progress / BASE_CRAFT_TIME, 64L), outputRoom());
+        int produced = (int)Math.min(progress / BASE_CRAFT_TIME, outputRoom());
         if (produced > 0) {
             insertOutput(new ItemStack(MaterialRegistration.MATERIAL_ITEMS.get("antimatter").get(), produced));
             progress -= BASE_CRAFT_TIME * produced;

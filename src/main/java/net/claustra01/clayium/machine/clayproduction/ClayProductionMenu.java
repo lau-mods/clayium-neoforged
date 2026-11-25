@@ -72,10 +72,12 @@ public final class ClayProductionMenu extends AbstractContainerMenu {
             }
         } else {
             boolean moved = false;
-            int[] targets = machine.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER
-                    || machine.type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER
-                            && !machine.inventory().getStackInSlot(ClayProductionBlockEntity.INPUT_SLOT).isEmpty()
-                    ? new int[] {3, 0} : new int[] {0, 3};
+            boolean specialSlotFirst = machine.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER;
+            if (machine.type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER) {
+                specialSlotFirst = !machine.inventory()
+                        .getStackInSlot(ClayProductionBlockEntity.INPUT_SLOT).isEmpty();
+            }
+            int[] targets = specialSlotFirst ? new int[] {3, 0} : new int[] {0, 3};
             for (int target : targets) {
                 if (target >= machineSlotCount) {
                     continue;
