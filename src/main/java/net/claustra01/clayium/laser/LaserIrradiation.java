@@ -10,7 +10,6 @@ import net.claustra01.clayium.world.operation.BlockOperationResult;
 import net.claustra01.clayium.world.operation.BlockOperationService;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;

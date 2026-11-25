@@ -188,15 +188,6 @@ public final class MultitrackGameTests {
                 helper.getLevel(), buffer.getBlockPos(), buffer.getBlockState(), buffer);
     }
 
-    private static void fill(net.neoforged.neoforge.items.ItemStackHandler handler, Item item, int count) {
-        int remaining = count;
-        for (int slot = 0; slot < handler.getSlots() && remaining > 0; slot++) {
-            int inserted = Math.min(remaining, 64);
-            handler.setStackInSlot(slot, new ItemStack(item, inserted));
-            remaining -= inserted;
-        }
-    }
-
     private static int total(IItemHandler handler) {
         int total = 0;
         for (int slot = 0; slot < handler.getSlots(); slot++) total += handler.getStackInSlot(slot).getCount();

@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
-import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
 import net.minecraft.core.BlockPos;
@@ -173,8 +172,7 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
     @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.put("inventory", inventory.serializeNBT(registries));
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
+        saveIoState(tag, registries);
         tag.putInt("next_output_direction", nextOutputDirection);
         tag.putInt("next_input_direction", nextInputDirection);
     }
@@ -182,15 +180,7 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
     @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         inventory.deserializeNBT(registries, tag.getCompound("inventory"));
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        } else {
-            CompoundTag savedFaces = tag.getCompound("faces");
-            for (Direction direction : Direction.values()) {
-                if (!savedFaces.contains(direction.getName())) continue;
-                setFaceMode(direction, BufferBlockEntity.FaceMode.valueOf(savedFaces.getString(direction.getName())));
-            }
-        }
+        loadIoState(tag, registries);
         nextOutputDirection = tag.getInt("next_output_direction");
         nextInputDirection = tag.getInt("next_input_direction");
     }

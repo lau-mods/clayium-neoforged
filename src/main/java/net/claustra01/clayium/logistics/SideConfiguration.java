@@ -133,15 +133,8 @@ public final class SideConfiguration {
         if (neighbor instanceof ConfigurableIoDevice adjacent) {
             if (adjacent.ioTransportKind() != device.ioTransportKind()) return false;
             Direction opposite = side.getOpposite();
-            boolean ownPush = device.extractionRoute(side) >= 0
-                    && (adjacent.insertionRoute(opposite) >= 0 || adjacent.allowsPassiveInsertion(opposite));
-            boolean ownPull = device.insertionRoute(side) >= 0
-                    && (adjacent.extractionRoute(opposite) >= 0 || adjacent.allowsPassiveExtraction(opposite));
-            boolean adjacentPush = adjacent.extractionRoute(opposite) >= 0
-                    && (device.insertionRoute(side) >= 0 || device.allowsPassiveInsertion(side));
-            boolean adjacentPull = adjacent.insertionRoute(opposite) >= 0
-                    && (device.extractionRoute(side) >= 0 || device.allowsPassiveExtraction(side));
-            return ownPush || ownPull || adjacentPush || adjacentPull;
+            return device.extractionRoute(side) >= 0 && adjacent.insertionRoute(opposite) >= 0
+                    || device.insertionRoute(side) >= 0 && adjacent.extractionRoute(opposite) >= 0;
         }
         if (device.insertionRoute(side) < 0 && device.extractionRoute(side) < 0) return false;
         return device.ioTransportKind() == IoTransportKind.FLUID

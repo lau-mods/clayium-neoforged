@@ -722,11 +722,7 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider, C
         prohibited.stream().map(ResourceLocation::toString).sorted()
                 .forEach(id -> prohibitedItems.add(StringTag.valueOf(id)));
         tag.put("prohibited", prohibitedItems);
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
-        ListTag filters = new ListTag();
-        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
-        tag.put("side_filters", filters);
+        saveIoState(tag, registries);
     }
 
     @Override
@@ -777,13 +773,7 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider, C
         closureReady = false;
         closure = new PanRecipeClosure.Result(Map.of(), Map.of());
         sortedCandidates = null;
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        }
-        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
-        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
-            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
-        }
+        loadIoState(tag, registries);
     }
 
     private final class PanItemHandler implements IItemHandler {

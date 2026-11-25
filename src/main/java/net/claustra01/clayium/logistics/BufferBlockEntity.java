@@ -13,8 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -475,11 +473,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider, Conf
         tag.put("filter", filterInventory.serializeNBT(registries));
         tag.put("example", exampleInventory.serializeNBT(registries));
         tag.putInt("selected_tag", selectedTag);
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
-        ListTag sideFilterList = new ListTag();
-        for (ItemStack filter : sideFilters) sideFilterList.add(filter.saveOptional(registries));
-        tag.put("side_filters", sideFilterList);
+        saveIoState(tag, registries);
         tag.putString("redstone_condition", redstoneCondition.name());
         tag.putInt("transfer_limit", transferLimit);
         tag.putInt("insert_tick", insertTick);
@@ -502,28 +496,12 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider, Conf
         if (tag.contains("filter")) {
             filterInventory.deserializeNBT(registries, tag.getCompound("filter"));
         }
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(
-                    tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        } else {
-            CompoundTag faces = tag.getCompound("faces");
-            for (Direction direction : Direction.values()) {
-                if (faces.contains(direction.getName())) {
-                    setFaceMode(direction, parseEnum(
-                            FaceMode.class, faces.getString(direction.getName()), faceMode(direction)));
-                }
-            }
-        }
-        ListTag sideFilterList = tag.getList("side_filters", Tag.TAG_COMPOUND);
-        for (int index = 0; index < Math.min(sideFilterList.size(), sideFilters.length); index++) {
-            sideFilters[index] = ItemStack.parseOptional(registries, sideFilterList.getCompound(index));
-        }
+        loadIoState(tag, registries);
         redstoneCondition = parseEnum(
                 RedstoneCondition.class, tag.getString("redstone_condition"), RedstoneCondition.IGNORE);
         transferLimit = Math.max(0, tag.getInt("transfer_limit"));
-        int legacyTransferTick = Math.max(0, tag.getInt("transfer_tick"));
-        insertTick = Math.max(0, tag.contains("insert_tick") ? tag.getInt("insert_tick") : legacyTransferTick);
-        extractTick = Math.max(0, tag.contains("extract_tick") ? tag.getInt("extract_tick") : legacyTransferTick);
+        insertTick = Math.max(0, tag.getInt("insert_tick"));
+        extractTick = Math.max(0, tag.getInt("extract_tick"));
         nextOutputDirection = Math.floorMod(tag.getInt("next_output_direction"), Direction.values().length);
         nextInputDirection = Math.floorMod(tag.getInt("next_input_direction"), Direction.values().length);
         selectedRuleType = parseEnum(

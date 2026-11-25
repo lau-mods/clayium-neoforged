@@ -132,8 +132,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         tag.putLong("amount", amount);
         tag.putBoolean("expanded", expanded);
         tag.put("memory", memoryInventory.serializeNBT(registries));
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
+        saveIoState(tag, registries);
     }
 
     @Override
@@ -147,9 +146,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
             memoryInventory.deserializeNBT(registries, tag.getCompound("memory"));
         }
         sanitizeMemory();
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        }
+        loadIoState(tag, registries);
         if (amount == 0L) {
             stored = ItemStack.EMPTY;
         } else if (!stored.isEmpty()) {
@@ -188,6 +185,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
         tag.putLong("amount", amount);
         tag.putBoolean("expanded", expanded);
         tag.put("memory", memoryInventory.serializeNBT(registries));
+        saveIoState(tag, registries);
         return tag;
     }
 

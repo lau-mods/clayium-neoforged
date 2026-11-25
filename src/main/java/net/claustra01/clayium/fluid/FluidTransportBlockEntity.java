@@ -369,8 +369,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         tag.put("tank", tank.writeToNBT(registries, new CompoundTag()));
         tag.put("pending", pending.writeToNBT(registries, new CompoundTag()));
         tag.put("filter", filterInventory.serializeNBT(registries));
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
+        saveIoState(tag, registries);
         tag.putString("redstone_condition", redstoneCondition.name());
         tag.putInt("next_output_direction", nextOutputDirection);
         tag.putInt("next_input_direction", nextInputDirection);
@@ -384,20 +383,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         if (tag.contains("filter")) {
             filterInventory.deserializeNBT(registries, tag.getCompound("filter"));
         }
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(
-                    tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        } else {
-            CompoundTag savedFaces = tag.getCompound("faces");
-            for (Direction direction : Direction.values()) {
-                if (savedFaces.contains(direction.getName())) {
-                    try {
-                        setFaceMode(direction, FaceMode.valueOf(savedFaces.getString(direction.getName())));
-                    } catch (IllegalArgumentException ignored) {
-                    }
-                }
-            }
-        }
+        loadIoState(tag, registries);
         try {
             redstoneCondition = RedstoneCondition.valueOf(tag.getString("redstone_condition"));
         } catch (IllegalArgumentException ignored) {

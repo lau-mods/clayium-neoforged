@@ -1,9 +1,7 @@
 package net.claustra01.clayium.storage;
 
 import com.mojang.serialization.MapCodec;
-import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.MaterialRegistration;
-import net.claustra01.clayium.registry.StorageRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;

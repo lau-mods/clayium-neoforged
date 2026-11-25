@@ -2,7 +2,6 @@ package net.claustra01.clayium.datagen;
 
 import java.util.List;
 import java.util.Set;
-import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.gadget.GadgetItemModelProvider;
 import net.claustra01.clayium.datagen.advancedtool.AdvancedToolItemModelProvider;
 import net.claustra01.clayium.datagen.area.AreaBlockLoot;

@@ -7,7 +7,6 @@ import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;

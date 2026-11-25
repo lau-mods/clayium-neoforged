@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.SideMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -50,8 +51,9 @@ public final class IoDeviceRenderer<T extends BlockEntity & ConfigurableIoDevice
     private static void renderFaces(ConfigurableIoDevice device, PoseStack poses,
                                     MultiBufferSource buffers, boolean pipe) {
         for (Direction side : Direction.values()) {
-            if (device.insertionRoute(side) >= 0) drawFace(poses, buffers, side, "import" + (pipe ? "_p" : ""), pipe);
-            if (device.extractionRoute(side) >= 0) drawFace(poses, buffers, side, "export" + (pipe ? "_p" : ""), pipe);
+            SideMode mode = device.sideMode(side);
+            if (mode.allowsInsert()) drawFace(poses, buffers, side, "import" + (pipe ? "_p" : ""), pipe);
+            if (mode.allowsExtract()) drawFace(poses, buffers, side, "export" + (pipe ? "_p" : ""), pipe);
             if (device.hasFilter(side) && !pipe) drawFace(poses, buffers, side, "filter", false);
         }
     }
@@ -66,37 +68,37 @@ public final class IoDeviceRenderer<T extends BlockEntity & ConfigurableIoDevice
         float low = -0.01F;
         float high = 1.01F;
         switch (side) {
-            case NORTH -> quad(poses, vertices, side, min,min,low, max,min,low, max,max,low, min,max,low, true);
-            case SOUTH -> quad(poses, vertices, side, max,min,high, min,min,high, min,max,high, max,max,high, true);
-            case WEST -> quad(poses, vertices, side, low,min,max, low,min,min, low,max,min, low,max,max, true);
-            case EAST -> quad(poses, vertices, side, high,min,min, high,min,max, high,max,max, high,max,min, true);
-            case DOWN -> quad(poses, vertices, side, min,low,min, max,low,min, max,low,max, min,low,max, true);
-            case UP -> quad(poses, vertices, side, min,high,max, max,high,max, max,high,min, min,high,min, true);
+            case NORTH -> brightQuad(poses, vertices, side, min,min,low, max,min,low, max,max,low, min,max,low);
+            case SOUTH -> brightQuad(poses, vertices, side, max,min,high, min,min,high, min,max,high, max,max,high);
+            case WEST -> brightQuad(poses, vertices, side, low,min,max, low,min,min, low,max,min, low,max,max);
+            case EAST -> brightQuad(poses, vertices, side, high,min,min, high,min,max, high,max,max, high,max,min);
+            case DOWN -> brightQuad(poses, vertices, side, min,low,min, max,low,min, max,low,max, min,low,max);
+            case UP -> brightQuad(poses, vertices, side, min,high,max, max,high,max, max,high,min, min,high,min);
         }
     }
 
     private static void cuboid(PoseStack poses, MultiBufferSource buffers, int light, TextureAtlasSprite sprite,
                                float x0, float y0, float z0, float x1, float y1, float z1) {
         VertexConsumer vertices = sprite.wrap(buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS)));
-        quad(poses,vertices,Direction.NORTH,x0,y0,z0,x1,y0,z0,x1,y1,z0,x0,y1,z0,false,light);
-        quad(poses,vertices,Direction.SOUTH,x1,y0,z1,x0,y0,z1,x0,y1,z1,x1,y1,z1,false,light);
-        quad(poses,vertices,Direction.WEST,x0,y0,z1,x0,y0,z0,x0,y1,z0,x0,y1,z1,false,light);
-        quad(poses,vertices,Direction.EAST,x1,y0,z0,x1,y0,z1,x1,y1,z1,x1,y1,z0,false,light);
-        quad(poses,vertices,Direction.DOWN,x0,y0,z0,x1,y0,z0,x1,y0,z1,x0,y0,z1,false,light);
-        quad(poses,vertices,Direction.UP,x0,y1,z1,x1,y1,z1,x1,y1,z0,x0,y1,z0,false,light);
+        quad(poses,vertices,Direction.NORTH,x0,y0,z0,x1,y0,z0,x1,y1,z0,x0,y1,z0,light);
+        quad(poses,vertices,Direction.SOUTH,x1,y0,z1,x0,y0,z1,x0,y1,z1,x1,y1,z1,light);
+        quad(poses,vertices,Direction.WEST,x0,y0,z1,x0,y0,z0,x0,y1,z0,x0,y1,z1,light);
+        quad(poses,vertices,Direction.EAST,x1,y0,z0,x1,y0,z1,x1,y1,z1,x1,y1,z0,light);
+        quad(poses,vertices,Direction.DOWN,x0,y0,z0,x1,y0,z0,x1,y0,z1,x0,y0,z1,light);
+        quad(poses,vertices,Direction.UP,x0,y1,z1,x1,y1,z1,x1,y1,z0,x0,y1,z0,light);
     }
 
-    private static void quad(PoseStack poses, VertexConsumer vertices, Direction normal,
-                             float x0,float y0,float z0,float x1,float y1,float z1,
-                             float x2,float y2,float z2,float x3,float y3,float z3, boolean fullBright) {
-        quad(poses, vertices, normal, x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3, fullBright,
-                fullBright ? LightTexture.FULL_BRIGHT : 0);
+    private static void brightQuad(PoseStack poses, VertexConsumer vertices, Direction normal,
+                                   float x0,float y0,float z0,float x1,float y1,float z1,
+                                   float x2,float y2,float z2,float x3,float y3,float z3) {
+        quad(poses, vertices, normal, x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3,
+                LightTexture.FULL_BRIGHT);
     }
 
     private static void quad(PoseStack poses, VertexConsumer vertices, Direction normal,
                              float x0,float y0,float z0,float x1,float y1,float z1,
                              float x2,float y2,float z2,float x3,float y3,float z3,
-                             boolean fullBright, int light) {
+                             int light) {
         vertex(poses,vertices,normal,x0,y0,z0,0,1,light);
         vertex(poses,vertices,normal,x1,y1,z1,1,1,light);
         vertex(poses,vertices,normal,x2,y2,z2,1,0,light);

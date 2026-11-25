@@ -28,8 +28,6 @@ import net.claustra01.clayium.registry.CaReactorRegistration;
 import net.claustra01.clayium.registry.EnvironmentMachineRegistration;
 import net.claustra01.clayium.registry.FluidRegistration;
 import net.claustra01.clayium.registry.FormingMachineRegistration;
-import net.claustra01.clayium.registry.FoundationDataComponentRegistration;
-import net.claustra01.clayium.registry.GadgetRegistration;
 import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.claustra01.clayium.registry.LaserRegistration;
 import net.claustra01.clayium.registry.LogisticsRegistration;

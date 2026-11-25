@@ -15,7 +15,6 @@ import net.claustra01.clayium.client.screen.RecipeViewerNavigation;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.compat.RecipeViewerCatalysts;
 import net.claustra01.clayium.compat.RecipeViewerDescriptions;
-import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.PanRegistration;
 import net.claustra01.clayium.registry.RecipeRegistration;

@@ -7,33 +7,12 @@ import net.claustra01.clayium.logistics.BufferConfiguration;
 import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
 
 public final class BufferConfigurationToolItem extends FoundationItem {
     public BufferConfigurationToolItem(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
-        if (!(context.getLevel().getBlockEntity(context.getClickedPos()) instanceof BufferBlockEntity buffer)) {
-            return InteractionResult.PASS;
-        }
-        if (!context.getLevel().isClientSide) {
-            ItemStack tool = context.getItemInHand();
-            if (context.getPlayer() != null && context.getPlayer().isShiftKeyDown()) {
-                copyFrom(tool, buffer);
-                context.getPlayer().displayClientMessage(
-                        Component.translatable("message.clayium.buffer_configuration.copied"), true);
-            } else if (pasteTo(tool, buffer) && context.getPlayer() != null) {
-                context.getPlayer().displayClientMessage(
-                        Component.translatable("message.clayium.buffer_configuration.pasted"), true);
-            }
-        }
-        return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
     }
 
     public static void copyFrom(ItemStack tool, BufferBlockEntity buffer) {

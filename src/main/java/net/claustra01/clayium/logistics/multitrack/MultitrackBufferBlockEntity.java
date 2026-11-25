@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
-import net.claustra01.clayium.logistics.RelativeFace;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.LogisticsRegistration;
@@ -301,8 +300,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             trackData.put(Integer.toString(index), saved);
         }
         tag.put("tracks", trackData);
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
+        saveIoState(tag, registries);
         tag.putInt("insert_tick", insertTick);
         tag.putInt("extract_tick", extractTick);
     }
@@ -322,34 +320,9 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             track.nextOutputDirection = saved.getInt("next_output_direction");
             track.nextInputDirection = saved.getInt("next_input_direction");
         }
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        } else {
-            migrateLegacyRoutes(trackData);
-        }
-        int legacyTransferTick = Math.max(0, tag.getInt("transfer_tick"));
-        insertTick = Math.max(0, tag.contains("insert_tick") ? tag.getInt("insert_tick") : legacyTransferTick);
-        extractTick = Math.max(0, tag.contains("extract_tick") ? tag.getInt("extract_tick") : legacyTransferTick);
-    }
-
-    private void migrateLegacyRoutes(CompoundTag trackData) {
-        for (Direction direction : Direction.values()) {
-            int insertion = -1;
-            int extraction = -1;
-            for (int trackIndex = 0; trackIndex < trackCount(); trackIndex++) {
-                CompoundTag faces = trackData.getCompound(Integer.toString(trackIndex)).getCompound("faces");
-                if (!faces.contains(direction.getName())) continue;
-                BufferBlockEntity.FaceMode mode;
-                try {
-                    mode = BufferBlockEntity.FaceMode.valueOf(faces.getString(direction.getName()));
-                } catch (IllegalArgumentException ignored) {
-                    continue;
-                }
-                if (insertion < 0 && mode.canInput()) insertion = trackIndex;
-                if (extraction < 0 && mode.canOutput()) extraction = trackIndex;
-            }
-            sideConfiguration.setRoutes(ioFacing(), direction, insertion, extraction);
-        }
+        loadIoState(tag, registries);
+        insertTick = Math.max(0, tag.getInt("insert_tick"));
+        extractTick = Math.max(0, tag.getInt("extract_tick"));
     }
 
     public final class Track {

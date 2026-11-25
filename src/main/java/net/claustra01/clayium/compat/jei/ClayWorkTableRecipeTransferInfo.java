@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
 import net.claustra01.clayium.workbench.ClayWorkTableMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;

@@ -16,8 +16,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -460,11 +458,7 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         if (activeRecipe != null) {
             tag.putString("active_recipe", activeRecipe.toString());
         }
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
-        ListTag filters = new ListTag();
-        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
-        tag.put("side_filters", filters);
+        saveIoState(tag, registries);
     }
 
     @Override
@@ -480,13 +474,7 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         activeInputLevel = tag.getInt("active_input_level");
         activeRecipe = tag.contains("active_recipe") ? ResourceLocation.parse(tag.getString("active_recipe")) : null;
         activeRecipeValue = null;
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        }
-        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
-        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
-            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
-        }
+        loadIoState(tag, registries);
     }
 
     public enum State {

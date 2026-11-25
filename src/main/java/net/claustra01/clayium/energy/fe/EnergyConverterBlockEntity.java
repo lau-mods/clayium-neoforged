@@ -2,7 +2,6 @@ package net.claustra01.clayium.energy.fe;
 
 import java.util.EnumMap;
 import javax.annotation.Nullable;
-import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.machine.augment.AugmentScanner;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
@@ -13,8 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -270,11 +267,7 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
         tag.put("inventory", fuel.serializeNBT(registries));
         tag.put("energy", clayEnergy.serializeNBT(registries));
         tag.putInt("fe_energy", storedFe);
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
-        ListTag filters = new ListTag();
-        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
-        tag.put("side_filters", filters);
+        saveIoState(tag, registries);
     }
 
     @Override
@@ -287,13 +280,7 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
             clayEnergy.deserializeNBT(registries, tag.getCompound("energy"));
         }
         storedFe = Math.max(0, Math.min(specification().capacity(), tag.getInt("fe_energy")));
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        }
-        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
-        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
-            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
-        }
+        loadIoState(tag, registries);
     }
 
     private final class OutputEnergyStorage implements IEnergyStorage {

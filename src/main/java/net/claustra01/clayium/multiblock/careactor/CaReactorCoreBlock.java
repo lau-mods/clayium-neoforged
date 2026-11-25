@@ -2,7 +2,6 @@ package net.claustra01.clayium.multiblock.careactor;
 
 import javax.annotation.Nullable;
 import net.claustra01.clayium.machine.ClayMachineBlock;
-import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.registry.CaReactorRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

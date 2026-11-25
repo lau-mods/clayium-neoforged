@@ -7,7 +7,6 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.claustra01.clayium.compat.RecipeViewerData;
 import net.claustra01.clayium.compat.RecipeViewerLayout;
 import net.claustra01.clayium.compat.RecipeViewerRenderer;
 import net.claustra01.clayium.registry.MaterialRegistration;

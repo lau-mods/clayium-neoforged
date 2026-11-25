@@ -1073,11 +1073,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         tag.putInt("auto_extract_tick", autoExtractTick);
         tag.putInt("next_input_direction", nextInputDirection);
         tag.putInt("next_output_direction", nextOutputDirection);
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
-        ListTag filters = new ListTag();
-        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
-        tag.put("side_filters", filters);
+        saveIoState(tag, registries);
     }
 
     @Override
@@ -1109,30 +1105,14 @@ public class ClayMachineBlockEntity extends BlockEntity
         requiredProgress = tag.getLong("required_progress");
         energyPerProgress = tag.getLong("energy_per_progress");
         progressRemainder = tag.getDouble("progress_remainder");
-        progressPerTick = tag.contains("progress_per_tick") ? tag.getDouble("progress_per_tick") : 1.0D;
-        activeProgressMultiplier = tag.contains("active_progress_multiplier")
-                ? tag.getDouble("active_progress_multiplier") : 1.0D;
+        progressPerTick = tag.getDouble("progress_per_tick");
+        activeProgressMultiplier = tag.getDouble("active_progress_multiplier");
         autoInsertTick = Math.max(0, tag.getInt("auto_insert_tick"));
         autoExtractTick = Math.max(0, tag.getInt("auto_extract_tick"));
         nextInputDirection = Math.floorMod(tag.getInt("next_input_direction"), Direction.values().length);
         nextOutputDirection = Math.floorMod(tag.getInt("next_output_direction"), Direction.values().length);
         validateRecipeOnLoad = activeRecipe != null;
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(
-                    tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        } else {
-            CompoundTag faces = tag.getCompound("faces");
-            for (Direction direction : Direction.values()) {
-                if (faces.contains(direction.getName())) {
-                    setFaceMode(direction, parseEnum(
-                            FaceMode.class, faces.getString(direction.getName()), faceMode(direction)));
-                }
-            }
-        }
-        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
-        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
-            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
-        }
+        loadIoState(tag, registries);
         if (activeRecipe != null && (pendingOutputs.isEmpty() && pendingFluidOutput.isEmpty() || !hasReservedInput())) {
             clearCorruptProcess();
         }

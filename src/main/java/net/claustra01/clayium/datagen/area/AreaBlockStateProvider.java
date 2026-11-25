@@ -5,7 +5,6 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.AreaMachineRegistration;
 import net.claustra01.clayium.world.area.AreaMachineBlock;
 import net.claustra01.clayium.world.area.AreaMachineType;
-import net.claustra01.clayium.world.area.AreaMarkerBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;

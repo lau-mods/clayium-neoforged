@@ -194,8 +194,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         if (owner != null) {
             tag.putUUID("owner", owner);
         }
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
+        saveIoState(tag, registries);
     }
 
     @Override
@@ -207,9 +206,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
                 net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimension),
                 BlockPos.of(tag.getLong("target_pos")));
         owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        }
+        loadIoState(tag, registries);
         if (level != null && !Objects.equals(previousTarget, target)) {
             MultiblockStructureNotifier.componentChanged(level, worldPosition);
             CaReactorStructureNotifier.componentChanged(level, worldPosition);
@@ -228,6 +225,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
             tag.putString("target_dimension", target.dimension().location().toString());
             tag.putLong("target_pos", target.pos().asLong());
         }
+        saveIoState(tag, registries);
         return tag;
     }
 

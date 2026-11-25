@@ -136,8 +136,7 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
         super.saveAdditional(tag, registries);
         tag.put("inventory", output.serializeNBT(registries));
         tag.putInt("progress", progress);
-        tag.putIntArray("insertion_routes", insertionRoutes);
-        tag.putIntArray("extraction_routes", extractionRoutes);
+        saveIoState(tag, registries);
     }
 
     @Override
@@ -147,9 +146,7 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
             output.deserializeNBT(registries, tag.getCompound("inventory"));
         }
         progress = tag.getInt("progress");
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
-        }
+        loadIoState(tag, registries);
     }
 
     private final class OutputHandler implements IItemHandler {

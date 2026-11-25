@@ -18,7 +18,6 @@ import net.claustra01.clayium.registry.FluidRegistration;
 import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
-import net.claustra01.clayium.registry.PanRegistration;
 import net.claustra01.clayium.registry.RecipeRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

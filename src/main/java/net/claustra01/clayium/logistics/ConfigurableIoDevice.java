@@ -2,7 +2,10 @@ package net.claustra01.clayium.logistics;
 
 import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,14 +39,6 @@ public interface ConfigurableIoDevice {
 
     default IoTransportKind ioTransportKind() {
         return IoTransportKind.ITEM;
-    }
-
-    default boolean allowsPassiveInsertion(Direction side) {
-        return false;
-    }
-
-    default boolean allowsPassiveExtraction(Direction side) {
-        return false;
     }
 
     default Direction ioFacing() {
@@ -129,36 +124,36 @@ public interface ConfigurableIoDevice {
         return tag;
     }
 
-    default void loadIoMemory(CompoundTag tag) {
-        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
-            int[] insertion = tag.contains("insertion_routes")
-                    ? tag.getIntArray("insertion_routes") : sideConfiguration().insertionRoutes().clone();
-            int[] extraction = tag.contains("extraction_routes")
-                    ? tag.getIntArray("extraction_routes") : sideConfiguration().extractionRoutes().clone();
-            sideConfiguration().replaceRoutes(insertion, extraction);
-        } else {
-            Direction savedFacing = Direction.byName(tag.getString("facing"));
-            Direction relativeFacing = savedFacing != null && savedFacing.getAxis().isHorizontal()
-                    ? savedFacing : ioFacing();
-            for (Direction side : Direction.values()) {
-                String legacy = tag.getString(side.getName());
-                int insertion = switch (legacy) {
-                    case "INPUT", "INPUT_OUTPUT" -> 0;
-                    case "FUEL_INPUT" -> 1;
-                    default -> -1;
-                };
-                int extraction = switch (legacy) {
-                    case "OUTPUT", "INPUT_OUTPUT" -> 0;
-                    default -> -1;
-                };
-                if (!legacy.isEmpty()) sideConfiguration().setRoutes(relativeFacing, side, insertion, extraction);
+    default void saveIoState(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.putIntArray("insertion_routes", sideConfiguration().insertionRoutes().clone());
+        tag.putIntArray("extraction_routes", sideConfiguration().extractionRoutes().clone());
+        ItemStack[] filters = sideConfiguration().filters();
+        if (filters != null) {
+            ListTag savedFilters = new ListTag();
+            for (ItemStack filter : filters) savedFilters.add(filter.saveOptional(registries));
+            tag.put("side_filters", savedFilters);
+        }
+    }
+
+    default void loadIoState(CompoundTag tag, HolderLookup.Provider registries) {
+        sideConfiguration().replaceRoutes(
+                tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        ItemStack[] filters = sideConfiguration().filters();
+        if (filters != null) {
+            java.util.Arrays.fill(filters, ItemStack.EMPTY);
+            ListTag savedFilters = tag.getList("side_filters", Tag.TAG_COMPOUND);
+            for (int index = 0; index < Math.min(savedFilters.size(), filters.length); index++) {
+                filters[index] = ItemStack.parseOptional(registries, savedFilters.getCompound(index));
             }
         }
+    }
+
+    default void loadIoMemory(CompoundTag tag) {
+        sideConfiguration().replaceRoutes(
+                tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
         BlockEntity owner = ioOwner();
         if (owner.getLevel() != null) {
-            BlockState state = tag.contains("pipe")
-                    ? owner.getBlockState().setValue(ioPipeProperty(), tag.getBoolean("pipe"))
-                    : owner.getBlockState();
+            BlockState state = owner.getBlockState().setValue(ioPipeProperty(), tag.getBoolean("pipe"));
             DirectionProperty property = ioFacingProperty();
             Direction facing = Direction.byName(tag.getString("facing"));
             if (property != null && facing != null && facing.getAxis().isHorizontal()) {
