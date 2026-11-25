@@ -973,10 +973,76 @@
       "name": "parityledgerhasnomissingorunverifiedentries"
     },
     {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalneicoordinatesdriveeverymachineviewerlayout"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyrecipemethodandoriginaldescriptionpageiscovered"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "worktoolsandmetalprobabilitiesuseserverrecipeinputs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "legacymenusexposeoriginalslotrelationships"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "guipayloadsrejectwrongmenupositiondistanceandvalues"
+    },
+    {
       "acId": "AC-F049-003",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "resonatingcollectorstopswithoutresonanceandneverconsumeswhenfull"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalseparatorpreservesweightstimeenergyandfulloutput"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "craftingtoolsreturndamageandrawclayexactlyonce"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "lasertransmitsconvertsaccumulatesandhonorsprotection"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "areafiltersandactivatorpreservepriorityprotectionandinteraction"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "crucibleandfiltercopiesconsumevalidateandpersistexactly"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tiercalculationspreserveroundingandpreventfreework"
     },
     {
       "acId": "AC-F049-004",
@@ -988,7 +1054,7 @@
       "acId": "AC-F049-004",
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
-      "name": "tierandrenderoverridesaffectruntimelookups"
+      "name": "tieroverridesaffectruntimelookups"
     },
     {
       "acId": "AC-F049-004",
@@ -1001,6 +1067,12 @@
       "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
       "classname": "clayium:empty",
       "name": "optionalrecipeswitchesdriveconditions"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "recipeswitchesapplyoninitialdatapackload"
     },
     {
       "acId": "AC-F049-004",
@@ -1322,7 +1394,19 @@
     },
     {
       "acId": "AC-F049-002",
-      "scenario": "tests/e2e/release-gate.mjs"
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "scenario": "tests/e2e/recipe-viewers-emi.mjs"
     },
     {
       "acId": "AC-F049-003",

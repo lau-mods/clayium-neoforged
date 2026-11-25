@@ -4,8 +4,8 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const root = path.resolve(import.meta.dirname, '..');
-const jar = path.join(root, 'reference/original/clayium-0.4.6.36.hotfix2.jar');
-const output = path.join(root, 'src/main/resources/data/clayium/original_recipe_semantics.tsv');
+const jar = path.join(root, '.tmp/clayium-0.4.6.36.hotfix2.jar');
+const output = path.join(root, '.tmp/original_recipe_semantics.tsv');
 const expectedHash = 'c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2';
 const registration = /(addRecipe|addShapelessRecipe|addSmelting|registerODChainRecipes|registerStackChainRecipes|register1to1Recipe|register2to1Recipe|WeightedList\.add|results\.add)/;
 
@@ -29,11 +29,11 @@ const javap = execFileSync('java', [
   '-m', 'jdk.jdeps/com.sun.tools.javap.Main', '-classpath', jar, '-c', '-p', '-l', '-s', ...classes,
 ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 
-const cfrJar = process.env.CFR_JAR ?? [
-  path.join(root, '..', 'cfr-0.152.jar'),
-  path.join(root, '..', 'cfr.jar'),
-].find(candidate => fs.existsSync(candidate));
-if (!cfrJar) throw new Error('CFR 0.152 is required; set CFR_JAR to its path');
+const cfrJar = process.env.CFR_JAR ? path.resolve(process.env.CFR_JAR) : null;
+const temporaryRoot = path.join(root, '.tmp') + path.sep;
+if (!cfrJar || !cfrJar.startsWith(temporaryRoot) || !fs.existsSync(cfrJar)) {
+  throw new Error('CFR is required; set CFR_JAR to its path under .tmp/');
+}
 const decompiled = ['CRecipes', 'ClayWorkTableRecipes'].map(classFilter => execFileSync('java', [
   '-jar', cfrJar, jar, '--jarfilter', classFilter, '--silent', 'true', '--comments', 'false',
 ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })).join('\n');

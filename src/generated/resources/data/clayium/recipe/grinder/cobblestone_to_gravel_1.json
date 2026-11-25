@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:grinder",
   "processing_ticks": 10,
+  "progression_rate": "stacks",
   "required_tier": 0
 }

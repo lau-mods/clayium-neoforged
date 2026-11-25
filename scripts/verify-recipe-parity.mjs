@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const root = path.resolve(import.meta.dirname, '..');
-const jar = path.join(root, 'reference/original/clayium-0.4.6.36.hotfix2.jar');
+const jar = path.join(root, '.tmp/clayium-0.4.6.36.hotfix2.jar');
 const ledgerPath = path.join(root, 'src/main/resources/data/clayium/survival_recipe_ledger.tsv');
 const recipesRoot = path.join(root, 'src/generated/resources/data/clayium/recipe');
 const expectedJarHash = 'c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2';

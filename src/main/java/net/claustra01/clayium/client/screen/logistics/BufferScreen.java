@@ -94,7 +94,7 @@ public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
 
     private int nextLimit() {
         int current = menu.transferLimit();
-        int maximum = TierManager.bufferTransport(menu.tier()).maximumItems();
+        int maximum = TierManager.bufferTransport(menu.tier()).maximumExtractItems();
         int[] choices = {1, 4, 16, 64, 128, 192, 256, 512, 1_024, 6_400};
         if (current == 0) {
             return Math.min(1, maximum);

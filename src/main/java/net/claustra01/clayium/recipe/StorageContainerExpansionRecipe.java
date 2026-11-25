@@ -28,9 +28,12 @@ public final class StorageContainerExpansionRecipe extends CustomRecipe {
 
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-        ItemStack basic = findBasicContainer(input);
-        if (basic == null || countClayCores(input) != 1 || countOccupiedSlots(input) != 2) {
-            return ItemStack.EMPTY;
+        ItemStack basic = ItemStack.EMPTY;
+        for (int index = 0; index < input.size(); index++) {
+            if (input.getItem(index).is(StorageRegistration.STORAGE_CONTAINER_ITEM.get())) {
+                basic = input.getItem(index);
+                break;
+            }
         }
         ItemStack expanded = basic.copyWithCount(1);
         CustomData oldData = expanded.get(DataComponents.CUSTOM_DATA);

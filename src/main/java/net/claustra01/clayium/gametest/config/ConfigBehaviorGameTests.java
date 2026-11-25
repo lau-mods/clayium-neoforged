@@ -11,8 +11,6 @@ import net.claustra01.clayium.machine.environment.CobblestoneGeneratorBlockEntit
 import net.claustra01.clayium.recipe.ConfigEnabledCondition.Option;
 import net.claustra01.clayium.recipe.ProgressionRateRules;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
-import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
-import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
 import net.claustra01.clayium.tool.ClayCraftingToolItem;
@@ -47,29 +45,26 @@ public final class ConfigBehaviorGameTests {
             require(ClayiumConfig.divideProgressionTicks(101) == 50,
                     "Fabricator tick scaling did not preserve original truncation");
 
-            require(ProgressionRateRules.adjustedRecipeTicks(
-                    ClayiumMod.id("bending_machine/clay_plate"),
-                    ClayiumRecipeMethod.BENDING_MACHINE, 9) == 4,
+            ClayiumMachineRecipe bending = machineRecipe(helper, "bending_machine/dense_clay_blade");
+            require(ProgressionRateRules.adjustedRecipeTicks(bending) == 4,
                     "Original forming recipe was not scaled");
-            require(ProgressionRateRules.adjustedRecipeTicks(
-                    ClayiumMod.id("bending_machine/aluminium_plate"),
-                    ClayiumRecipeMethod.BENDING_MACHINE, 20) == 20,
+            ClayiumMachineRecipe fixedBending = machineRecipe(helper, "bending_machine/aluminium_plate");
+            require(ProgressionRateRules.adjustedRecipeTicks(fixedBending) == 20,
                     "A fixed-time advanced recipe was scaled");
-            require(ProgressionRateRules.adjustedRecipeTicks(
-                    ClayiumMod.id("gametest/worktable"),
-                    ClayiumRecipeMethod.CLAY_WORK_TABLE, 9) == 4,
+            ClayiumMachineRecipe workTable = machineRecipe(helper, "workbench/roll_clay_plate");
+            require(ProgressionRateRules.adjustedRecipeTicks(workTable) == 2,
                     "Clay Work Table recipe was not scaled");
 
-            ItemStack shard = new ItemStack(MaterialRegistration.SHARDS.get("compressed_clay_shard").get(), 2);
-            List<ItemStack> outputs = ProgressionRateRules.adjustedRecipeOutputs(
-                    ClayiumMod.id("grinder/clay_ore_to_compressed_clay_shard"), List.of(shard));
+            ClayiumMachineRecipe shardRecipe = machineRecipe(
+                    helper, "grinder/clay_ore_to_compressed_clay_shard");
+            ItemStack shard = shardRecipe.itemOutputs().getFirst();
+            List<ItemStack> outputs = ProgressionRateRules.adjustedRecipeOutputs(shardRecipe);
             require(outputs.getFirst().getCount() == 4 && shard.getCount() == 2,
                     "Ore grinder output scaling was not applied without mutating recipe data");
 
             ClayiumMachineRecipe batch = (ClayiumMachineRecipe)helper.getLevel().getRecipeManager()
                     .byKey(ClayiumMod.id("grinder/cobblestone_to_gravel_4")).orElseThrow().value();
-            ClayiumMachineRecipe adjustedBatch = ProgressionRateRules.adjustedRecipe(
-                    ClayiumMod.id("grinder/cobblestone_to_gravel_4"), batch);
+            ClayiumMachineRecipe adjustedBatch = ProgressionRateRules.adjustedRecipe(batch);
             require(adjustedBatch.itemInputs().getFirst().count() == 8
                             && adjustedBatch.itemOutputs().getFirst().getCount() == 8,
                     "Original batch recipe input and output counts did not use ProgressionRate");
@@ -78,24 +73,39 @@ public final class ConfigBehaviorGameTests {
             require(displayedBatch.holder().value().itemInputs().getFirst().count() == 8
                             && displayedBatch.holder().value().itemOutputs().getFirst().getCount() == 8,
                     "JEI/EMI page inputs and outputs differ from ProgressionRate execution values");
-            var bendingId = ClayiumMod.id("bending_machine/clay_plate");
-            var bending = (ClayiumMachineRecipe)helper.getLevel().getRecipeManager()
-                    .byKey(bendingId).orElseThrow().value();
+            var bendingId = ClayiumMod.id("bending_machine/dense_clay_blade");
             var displayedBending = RecipeViewerPage.forRecipe(
                     new net.minecraft.world.item.crafting.RecipeHolder<>(bendingId, bending))
                     .findFirst().orElseThrow().holder().value();
             require(displayedBending.processingTicks()
-                            == ProgressionRateRules.adjustedRecipeTicks(
-                                    bendingId, bending.processingMethod(), bending.processingTicks()),
+                            == ProgressionRateRules.adjustedRecipeTicks(bending),
                     "JEI/EMI page time differs from ProgressionRate execution time");
 
             ClayCraftingToolItem rollingPin = WorkbenchRegistration.CLAY_ROLLING_PIN.get();
-            ItemStack remainder = rollingPin.getCraftingRemainingItem(new ItemStack(rollingPin));
+            ItemStack freshTool = new ItemStack(rollingPin);
+            require(freshTool.getMaxDamage() == 120,
+                    "Fresh manual tool durability did not use ProgressionRate");
+            ItemStack remainder = rollingPin.getCraftingRemainingItem(freshTool);
             require(remainder.getMaxDamage() == 120 && remainder.getDamageValue() == 1,
                     "Manual tool durability did not use ProgressionRate");
         } finally {
             ClayiumConfig.PROGRESSION_RATE.set(saved);
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void recipeSwitchesApplyOnInitialDatapackLoad(GameTestHelper helper) {
+        require(Option.HARDCORE_ALUMINIUM.enabled() == ClayiumConfig.HARDCORE_ALUMINIUM.get(),
+                "HardcoreAluminium was unavailable during the initial datapack load");
+        require(Option.HARDCORE_OSMIUM.enabled() == ClayiumConfig.HARDCORE_OSMIUM.get(),
+                "HardcoreOsmium was unavailable during the initial datapack load");
+        require(Option.INJECTOR_INTERFACE.enabled() == ClayiumConfig.ENABLE_INJECTOR_RECIPE_OF_INTERFACE.get(),
+                "EnableInjectorRecipeOfInterface was unavailable during the initial datapack load");
+        assertRecipeConditionState(helper.getLevel().getRecipeManager(),
+                ClayiumConfig.HARDCORE_ALUMINIUM.get(),
+                ClayiumConfig.HARDCORE_OSMIUM.get(),
+                ClayiumConfig.ENABLE_INJECTOR_RECIPE_OF_INTERFACE.get());
         helper.succeed();
     }
 
@@ -236,6 +246,11 @@ public final class ConfigBehaviorGameTests {
             }
         }
         require(injectorRecipes == 22, "The config integration test did not inspect all injector recipes");
+    }
+
+    private static ClayiumMachineRecipe machineRecipe(GameTestHelper helper, String path) {
+        return (ClayiumMachineRecipe)helper.getLevel().getRecipeManager()
+                .byKey(ClayiumMod.id(path)).orElseThrow().value();
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)

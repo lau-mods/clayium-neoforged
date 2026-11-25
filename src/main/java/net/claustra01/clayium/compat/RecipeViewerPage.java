@@ -12,7 +12,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 /** NEIMetalSeparator exposes each weighted product as a separate, searchable recipe page. */
 public record RecipeViewerPage(RecipeHolder<ClayiumMachineRecipe> holder, RecipeViewerLayout layout, int outcome) {
     public static Stream<RecipeViewerPage> forRecipe(RecipeHolder<ClayiumMachineRecipe> holder) {
-        var recipe = ProgressionRateRules.adjustedRecipeForDisplay(holder.id(), holder.value());
+        var recipe = ProgressionRateRules.adjustedRecipeForDisplay(holder.value());
         var displayedHolder = new RecipeHolder<>(holder.id(), recipe);
         var layout = RecipeViewerLayout.machine(recipe);
         if (recipe.processingMethod() == ClayiumRecipeMethod.CHEMICAL_METAL_SEPARATOR && !recipe.randomOutputs().isEmpty()) {

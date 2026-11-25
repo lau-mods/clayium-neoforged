@@ -149,8 +149,7 @@ public final class CaReactorCoreBlockEntity extends ClayMachineBlockEntity imple
             return null;
         }
         CaReactorFormula.ScaledProcess scaled = formula.scale(
-                ProgressionRateRules.adjustedRecipeTicks(
-                        recipeId, recipe.processingMethod(), recipe.processingTicks()),
+                ProgressionRateRules.adjustedRecipeTicks(recipe),
                 recipe.clayEnergy()).orElse(null);
         if (scaled == null) {
             return null;

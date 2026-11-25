@@ -5,6 +5,7 @@ import net.claustra01.clayium.material.CompressionTier;
 import net.minecraft.world.level.ItemLike;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ClayiumMachineRecipe.ProgressionRate;
 import net.claustra01.clayium.recipe.ConfigEnabledCondition;
 import net.claustra01.clayium.recipe.ConfigEnabledCondition.Option;
 import net.claustra01.clayium.registry.MaterialRegistration;
@@ -88,6 +89,7 @@ public final class CondenserGrinderDecomposerRecipes {
                     .requires(Items.COBBLESTONE, count)
                     .output(Items.GRAVEL, count)
                     .clayEnergy(1L).processingTicks(10)
+                    .progressionRate(ProgressionRate.STACKS)
                     .save(output, ClayiumMod.id("grinder/cobblestone_to_gravel_" + count));
         }
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.GRINDER, 0)
@@ -104,6 +106,7 @@ public final class CondenserGrinderDecomposerRecipes {
                     .requires(Items.GRAVEL, counts[index])
                     .output(compression("dense_clay"), counts[index])
                     .clayEnergy(energies[index]).processingTicks(ticks[index])
+                    .progressionRate(ProgressionRate.STACKS)
                     .save(output, ClayiumMod.id("centrifuge/gravel_to_dense_clay_" + counts[index]));
         }
         oreShard(output, WorldgenRegistration.CLAY_ORE.get(), "compressed_clay_shard", 2, 3);
@@ -162,7 +165,9 @@ public final class CondenserGrinderDecomposerRecipes {
     private static ClayiumRecipeBuilder shardRecipe(ClayiumRecipeMethod method, int ticks) {
         return ClayiumRecipeBuilder.machine(method, 0)
                 .clayEnergy(1L)
-                .processingTicks(ticks);
+                .processingTicks(ticks)
+                .progressionRate(method == ClayiumRecipeMethod.GRINDER
+                        ? ProgressionRate.TICKS_AND_OUTPUTS : ProgressionRate.TICKS);
     }
 
     private static void decomposer(RecipeOutput output) {
@@ -170,11 +175,13 @@ public final class CondenserGrinderDecomposerRecipes {
                 .requires(material("industrial_clay_dust"), 1)
                 .output(material("energized_clay_dust"), 3)
                 .clayEnergy(1L).processingTicks(60)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("decomposer/industrial_clay_dust"));
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.DECOMPOSER, 4)
                 .requires(material("advanced_industrial_clay_dust"), 1)
                 .output(material("energized_clay_dust"), 28)
                 .clayEnergy(1_000L).processingTicks(60)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("decomposer/advanced_industrial_clay_dust"));
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.DECOMPOSER, 0)
                 .requires(Items.CLAY, 1)

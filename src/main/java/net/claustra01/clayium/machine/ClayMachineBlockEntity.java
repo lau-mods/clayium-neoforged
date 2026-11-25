@@ -349,8 +349,7 @@ public class ClayMachineBlockEntity extends BlockEntity
             return;
         }
         ClayiumMachineRecipe recipe = match.get().recipe();
-        List<ItemStack> fixedOutputs = ProgressionRateRules.adjustedRecipeOutputs(
-                match.get().id(), fixedOutputs(recipe));
+        List<ItemStack> fixedOutputs = ProgressionRateRules.adjustedRecipeOutputs(recipe, fixedOutputs(recipe));
         if (!canAcceptOutputs(fixedOutputs)
                 || !canAcceptFluidOutputs(recipe.fluidOutputs())
                 || !allRandomOutputsFit(fixedOutputs, recipe.randomOutputs())) {
@@ -402,7 +401,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         if (machineRecipe.isPresent()) {
             RecipeHolder<ClayiumMachineRecipe> holder = machineRecipe.get();
             return Optional.of(new SelectedRecipe(
-                    holder.id(), ProgressionRateRules.adjustedRecipe(holder.id(), holder.value()), false));
+                    holder.id(), ProgressionRateRules.adjustedRecipe(holder.value()), false));
         }
         if (series != SmeltingSeries.SMELTER || input.items().size() != 1) {
             return Optional.empty();
@@ -704,7 +703,7 @@ public class ClayMachineBlockEntity extends BlockEntity
             return manager.byKey(activeRecipe)
                     .filter(holder -> holder.value() instanceof ClayiumMachineRecipe)
                     .map(holder -> ProgressionRateRules.adjustedRecipe(
-                            activeRecipe, (ClayiumMachineRecipe)holder.value()));
+                            (ClayiumMachineRecipe)holder.value()));
         }
         ItemStack reserved = inventory.getStackInSlot(reservedSlot);
         if (!(level instanceof ServerLevel serverLevel) || reserved.isEmpty()) {
@@ -851,8 +850,7 @@ public class ClayMachineBlockEntity extends BlockEntity
             ResourceLocation recipeId, ClayiumMachineRecipe recipe) {
         return TierManager.calculate(
                 series().parameters(tier()),
-                ProgressionRateRules.adjustedRecipeTicks(
-                        recipeId, recipe.processingMethod(), recipe.processingTicks()),
+                ProgressionRateRules.adjustedRecipeTicks(recipe),
                 recipe.clayEnergy(), overclockFactor());
     }
 

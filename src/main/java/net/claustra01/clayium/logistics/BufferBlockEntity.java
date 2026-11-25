@@ -325,7 +325,8 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public void setTransferLimit(int limit) {
-        transferLimit = Math.max(0, Math.min(TierManager.bufferTransport(tier()).maximumItems(), limit));
+        transferLimit = Math.max(0,
+                Math.min(TierManager.bufferTransport(tier()).maximumExtractItems(), limit));
         setChangedAndSync();
     }
 

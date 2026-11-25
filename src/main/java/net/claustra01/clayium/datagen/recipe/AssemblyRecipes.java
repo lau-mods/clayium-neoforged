@@ -3,6 +3,7 @@ package net.claustra01.clayium.datagen.recipe;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.machine.series.AssemblySeries;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
+import net.claustra01.clayium.recipe.ClayiumMachineRecipe.ProgressionRate;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.FoundationItemRegistration;
@@ -102,10 +103,12 @@ public final class AssemblyRecipes {
         machine(ClayiumRecipeMethod.ASSEMBLER, 3, 10L, 20)
                 .requires(material("clay_stick"), 5)
                 .output(material("clay_gear"), 1)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("assembler/clay_gear"));
         machine(ClayiumRecipeMethod.ASSEMBLER, 3, 100L, 20)
                 .requires(material("large_dense_clay_plate")).requires(Items.CLAY_BALL, 8)
                 .output(material("dense_clay_spindle"), 1)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("assembler/dense_clay_spindle"));
     }
 
@@ -153,6 +156,7 @@ public final class AssemblyRecipes {
             builder.requires(second, secondCount);
         }
         builder.output(material(outputId), 1)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("assembler/" + id));
     }
 
@@ -160,11 +164,13 @@ public final class AssemblyRecipes {
         machine(ClayiumRecipeMethod.CENTRIFUGE, 0, 4L, 20)
                 .requires(material("clay_dust"), 9)
                 .output(material("dense_clay_dust"), 1)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("centrifuge/dense_clay_dust"));
         machine(ClayiumRecipeMethod.CENTRIFUGE, 0, 4L, 20)
                 .requires(material("dense_clay_dust"), 2)
                 .output(material("clay_dust"), 9)
                 .output(material("calcareous_clay_dust"), 1)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("centrifuge/calcareous_clay"));
         machine(ClayiumRecipeMethod.CENTRIFUGE, 0, 4L, 20)
                 .requires(material("industrial_clay_dust"), 2)
@@ -172,6 +178,7 @@ public final class AssemblyRecipes {
                 .output(material("clay_dust"), 8)
                 .output(material("dense_clay_dust"), 8)
                 .output(material("industrial_clay_dust"), 1)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("centrifuge/industrial_clay"));
         machine(ClayiumRecipeMethod.CENTRIFUGE, 4, 10_000L, 12)
                 .requires(material("advanced_industrial_clay_dust"), 2)
@@ -179,6 +186,7 @@ public final class AssemblyRecipes {
                 .output(material("clay_dust"), 64)
                 .output(material("dense_clay_dust"), 64)
                 .output(material("industrial_clay_dust"), 12)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("centrifuge/advanced_industrial_clay"));
         machine(ClayiumRecipeMethod.CENTRIFUGE, 4, 1L, 2)
                 .requires(Blocks.CLAY, 1).output(material("dense_clay"), 1)

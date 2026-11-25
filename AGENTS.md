@@ -118,11 +118,13 @@ M04 の CE は `ClayEnergy` の非負 `long` 内部値で保持し、1 CE を 10
 
 プレイヤーの永続状態は `clayium:gadget_player_state` Data Attachment に置く。固定 modifier ID は `clayium:gadget_extra_health`（最大体力 +20/+80/+180、保存する）、`clayium:gadget_long_arm`（block_interaction_range +3/+7/+20）、`clayium:gadget_flight`（NeoForge `CREATIVE_FLIGHT` +1）。オーバークロック I～IV の使用間隔は8/4/2/1 tick、超音速飛行速度は0.2。通常飛行は飛行中80 tickごとに空腹消耗1、自由飛行は消耗なし。倹約自動摂食は不足空腹値を超えない最大栄養、通常型は最小栄養を選び、有害効果の食品は除く。効果は毎 PlayerTick とログイン・次元移動・死亡後 Clone で再評価し、ホルダー取外しで解除する。ログアウト時は保存前に体力 modifier を外さない。
 
+通常自動摂食の製作は `progression/equipment/clay_gadget_auto_eat` の `clayium:nbt_preserving_auto_eat` 特殊レシピを使い、倹約自動摂食のData Componentを維持して置換する。通常のShapeless Recipeは併設しない。
+
 ## M03 機械レシピ
 
 Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`chemical_metal_separator`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`fluid_transfer_machine`、`salt_extractor`、`clay_work_table`（すべて `clayium:` 名前空間）を登録する。
 
-レシピ JSON は `type: clayium:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky`、`requires_adjacent_water_source` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
+レシピ JSON は `type: clayium:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。原作で `ProgressionRate` を参照した登録箇所は、同じJSONの任意 `progression_rate` に `ticks`、`outputs`、`ticks_and_outputs`、`stacks` のいずれかをDatagenから設定し、実行・キャッシュ・Viewerが同じ値を読む。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky`、`requires_adjacent_water_source` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
 
 サーバーのデータパック適用後、全プレイヤー向け `OnDatapackSyncEvent` でキャッシュを失効させ、新しい RecipeManager を持つ `ClayiumRecipesReloadedEvent` を機械・表示・PAN に通知する。クライアントの `RecipesUpdatedEvent` でも検索キャッシュを更新する。GameTest 用レシピ ID は `gametest/machine_recipe`、`gametest/conditional_missing_external_item`、`gametest/reload_changed`、`gametest/reload_removed`、`gametest/chemical_fluid_input`。テスト中の追加レシピは `gametest/reload_added`。
 
@@ -212,7 +214,7 @@ NeoForge `Capabilities.EnergyStorage.BLOCK` の `IEnergyStorage` は `canReceive
 
 共通機械の入力数を `n` とすると、入力は `0..n-1`、出力は `n`、処理中退避は `n+1..2n`、燃料は `2n+1`。合金機だけ `n=2`、他は `n=1`。バニラ製錬フォールバック中かどうかを保存する NBT キーは `vanilla_smelting_recipe`。
 
-Smelter のみバニラ `SMELTING` レシピをフォールバックとして参照し、基礎消費4内部CE・200 tickで処理する。これは原作 JAR の `mods.clayium.util.crafting.SmeltingRecipe` の `energySmelting=4`、`timeSmelting=200` に対応する。原作 `CRecipes.recipeSmelter` の専用レシピは Tier 5 のアルミニウム・ナトリウム・亜鉛・ニッケルと Tier 6 のマグネシウム・リチウム・ジルコニウム・亜鉛アルミニウム化合物・亜鉛ジルコニウム化合物・AZ91D・ZK60A。原作で通常かまどへ登録する不純シリコン・シリコン・シリコーン・鉄・金・鉛・銅・ブロンズ・真鍮・エレクトラム・インバーの粉→インゴットも生成し、Smelter のフォールバックから利用する。`cfgHardcoreAluminium` が有効な場合の不純アルミニウムは既定では対象外。原作 `CRecipes` では粘土鋼・クレイウム・究極合金の粉→インゴットは `recipeBlastFurnace` に登録され、Smelter のレシピではない。合金機の8レシピと電気分解機の19レシピは `SmeltingRecipes` から生成する。入力は原作 OreDictionary に相当する `c:ingots/<material>` と `c:dusts/<material>` を使う。
+Smelter のみバニラ `SMELTING` レシピをフォールバックとして参照し、基礎消費4内部CE・200 tickで処理する。これは原作 JAR の `mods.clayium.util.crafting.SmeltingRecipe` の `energySmelting=4`、`timeSmelting=200` に対応する。原作 `CRecipes.recipeSmelter` の専用レシピは Tier 5 のアルミニウム・ナトリウム・亜鉛・ニッケルと Tier 6 のマグネシウム・リチウム・ジルコニウム・亜鉛アルミニウム化合物・亜鉛ジルコニウム化合物・AZ91D・ZK60A。原作で通常かまどへ登録する不純シリコン・シリコン・シリコーン・鉄・金・鉛・銅・ブロンズ・真鍮・エレクトラム・インバーの粉→インゴットも生成し、Smelter のフォールバックから利用する。`HardcoreAluminium` が有効な場合は、不純アルミニウムの曲げ・粉砕・製錬経路をNeoForgeのConfig連動conditionで読み込む。既定値falseでは読み込まない。原作 `CRecipes` では粘土鋼・クレイウム・究極合金の粉→インゴットは `recipeBlastFurnace` に登録され、Smelter のレシピではない。合金機の8レシピと電気分解機の19レシピは `SmeltingRecipes` から生成する。入力は原作 OreDictionary に相当する `c:ingots/<material>` と `c:dusts/<material>` を使う。
 
 GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingAlloyAndElectrolysisPreserveOriginalBalances`。外観 E2E は `tests/e2e/smelting-machines.mjs`。
 
@@ -269,6 +271,8 @@ GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` �
 
 `StorageRegistration` は `storage_container`、`void_container` と57素材の `<material>_chest` を同名 Block/Item で登録する。BlockEntity/Menu ID は `storage_container`、`void_container`、`metal_chest`。ストレージは1品目を `long` で数え、初期容量65,536、Clay Core適用後は2,147,483,647。保存 NBT は `stored`、`amount`、`expanded`。破壊ドロップは同じ値を Item の `custom_data` に保持し、設置時に復元する。外部 `IItemHandler` は1スロットを通常スタック単位で公開し、搬入と搬出はその都度実残量を更新する。虚空コンテナは明示的な ItemHandler/GUI 投入だけを破棄する。金属チェストの保存 NBT は `inventory` で、Capability は全スロットを公開する。
 
+`storage_container_expansion` は `clayium:storage_container_expansion` 特殊レシピで、未拡張ストレージコンテナ1個とClay Core 1個だけを受け入れ、保存品目・数量を保持した拡張済みコンテナを返す。
+
 GR-08 の金属チェスト台帳は `素材:横×縦×ページ` とする。`SILICON:9×5×1 ALUMINIUM:9×6×1 CLAY_STEEL:9×8×1 CLAYIUM:13×8×1 ULTIMATE_ALLOY:13×8×3 MAGNESIUM:9×6×1 SODIUM:9×6×1 LITHIUM:9×7×1 ZIRCONIUM:9×7×1 ZINC:9×6×1 MANGANESE:9×6×1 CALCIUM:9×6×1 POTASSIUM:9×6×1 NICKEL:9×6×1 BERYLLIUM:10×8×1 LEAD:9×6×1 HAFNIUM:9×8×1 CHROME:13×8×1 TITANIUM:13×8×1 STRONTIUM:10×8×1 BARIUM:10×8×1 AZ91D_ALLOY:13×8×1 ZK60A_ALLOY:13×8×1 RUBIDIUM:13×3×1 CAESIUM:13×3×1 FRANCIUM:13×4×1 RADIUM:13×4×1 ACTINIUM:13×5×1 THORIUM:13×5×1 PROTACTINIUM:13×6×1 URANIUM:13×6×2 NEPTUNIUM:13×6×3 PLUTONIUM:13×6×4 AMERICIUM:13×6×5 CURIUM:13×6×6 LANTHANUM:13×2×2 CERIUM:13×2×4 PRASEODYMIUM:13×2×6 NEODYMIUM:13×2×8 PROMETHIUM:13×4×8 SAMARIUM:13×6×8 EUROPIUM:13×8×8 VANADIUM:4×8×1 COBALT:11×6×1 PALLADIUM:11×8×1 PLATINUM:13×8×2 IRIDIUM:13×8×3 OSMIUM:13×8×4 RHENIUM:13×8×5 TANTALUM:10×8×1 TUNGSTEN:13×8×1 MOLYBDENUM:13×8×2 ANTIMONY:9×6×1 BISMUTH:9×6×1 BRASS:9×6×1 ELECTRUM:13×8×1 INVAR:9×8×1`。ユーロピウムは832スロット。ページボタンは `clickMenuButton` の0始まりのページ番号でサーバーへ送る。各メニューは自分の表示ページを持ち、スロットの `isActive` とプレイヤーの shift 移動範囲を同じページへ限定する。
 
 GameTest は `storageCapacityExpansionOverflowPersistenceAndVoidAreExact`、`storageContentsSurviveBreakingAndPlacement`、`allFiftySevenMetalChestsMatchTheCapacityLedger`、`metalChestMenusKeepIndependentServerAuthoritativePages`。外観 E2E は `tests/e2e/storage-containers.mjs`。
@@ -277,6 +281,7 @@ GameTest は `storageCapacityExpansionOverflowPersistenceAndVoidAreExact`、`sto
 - `InterfaceRegistration` は `clay_interface_tier_5`～`13`、`redstone_interface_tier_5`～`13`、`clay_laser_interface_tier_7`～`13` の25種を同名 Block/Item に登録する。ID は `<stem>_tier_<Tier>`、共通 BlockEntity/Menu は `clayium:interface`。同期工具は `clayium:synchronizer`、記録先の Data Component は `clayium:synchronized_target`。
 - インターフェースの保存 NBT は `target_dimension`、`target_pos`、`owner`。シンクロナイザーは BlockEntity を右クリックして次元と座標を記録し、インターフェースを右クリックして接続する。対象の次元、ロード済みチャンク、BlockEntity、操作権限を接続時と機能アクセス時にサーバーで確認し、未ロードチャンクをロードしない。
 - 状態は `UNLINKED` が登録先なし、`CONNECTED` がアクセス可能な対象、`DISCONNECTED` が記録先にアクセスできない状態。GUI は原作 PNG とともに状態、次元、座標を常時表示する。ItemHandler は対象の Capability を代理公開し、赤石制御は当該 tick の中継だけ有効とする。レーザー受信と赤石制御は BlockCapability を介して接続し、レーザー本体とマルチブロック処理は後続マイルストーンが利用する。
+- `progression/ca_injector/interface/*` の22件は各系列の隣接Tierを反物質で更新するCA注入レシピで、`EnableInjectorRecipeOfInterface` のConfig連動conditionがtrueの場合だけ読み込む。
 - GameTest は `allInterfacesSynchronizeOnlyToValidatedPersistentTargets`、外観 E2E は `tests/e2e/interfaces.mjs`。
 
 ## M24 クリエイティブ用エネルギー源
@@ -308,6 +313,7 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 - `ClayEnergyLaser` は `clay_energy_laser_tier_7`～`10` の同名 Block/Item と共通 BlockEntity `clayium:clay_energy_laser` に登録する。Tier 7/8/9/10 は青/緑/赤/白、消費は毎 tick 0.4/4/40/400 CE、成分は `[1,0,0]`/`[0,1,0]`/`[0,0,1]`/`[3,3,3]`。`laser_reflector` は同名 Block/Item と BlockEntity `clayium:laser_reflector` を使う。
 - 光路は最大32ブロックで、ブロック変化時と10 tick ごとに再計算する。反射器は受信したビームの age を増やして同一 tick のビームを合成し、次の tick に一度転送する。age 10以上は成分ごとの最大値で合成し、それ未満は加算する。`LaserBeam.energy()` は原作の色別減衰式の積から1を引く。`LaserReceiver` はビームと age を受け渡し、レーザーインターフェースが同期先へ中継する。
 - 赤石入力中は停止する。COMMON Config の `InvertClayLaserRSCondition` が true のときは停止条件を反転する。レーザーの保存 NBT は `inventory` と `energy`。照射状態、長さ、反射ビームは表示同期だけに使う。
+- `LaserQuality` はCLIENT Configの1～32で、ビームを構成する交差平面数へ直接使う。専用サーバーはこの描画値を所有しない。
 - GameTest は `fourLasersConsumeMergeReflectAndHonorRedstone`。描画 E2E は `tests/e2e/clay-lasers.mjs`。
 
 ## M26 自動取引装置
@@ -351,7 +357,7 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 | `clay_steel_advanced` | 発展工業用粘土粉1、不純マンガン粉1 | 粘土鋼インゴット1 | 7 | 500,000 (`e(5,7)`) | 5 |
 | `clay_steel_manganese` | 発展工業用粘土粉1、マンガン粉1 | 粘土鋼インゴット1 | 8 | 5,000,000 (`e(5,8)`) | 1 |
 
-粉→インゴットの高温処理も同じ原作 `recipeBlastFurnace` から生成する。カルシウム・カリウムは Tier 5 / 1,000 CE内部値 (`e(1,5)`) / 500 tick、ベリリウム・ハフニウム・粘土鋼・鋼は Tier 6 / 10,000 CE内部値 (`e(1,6)`) / 500 tick、マンガン・ストロンチウム・バリウム・クレイウムは Tier 7 / 200,000 CE内部値 (`e(2,7)`) / 1,000 tick、チタン・究極合金は Tier 8 / 4,000,000 CE内部値 (`e(4,8)`) / 2,000 tick、クロムは Tier 9 / 40,000,000 CE内部値 (`e(4,9)`) / 2,000 tick。ID は `blast_furnace/<素材名>`。鉄インゴット1と石炭2→鋼インゴット1は `blast_furnace/steel_from_iron`、Tier 6 / 10,000 CE内部値 (`e(1,6)`) / 500 tick。外部 Mod 固有の原作レシピと既定無効の HardcoreOsmium 分岐は初期登録から除外する。
+粉→インゴットの高温処理も同じ原作 `recipeBlastFurnace` から生成する。カルシウム・カリウムは Tier 5 / 1,000 CE内部値 (`e(1,5)`) / 500 tick、ベリリウム・ハフニウム・粘土鋼・鋼は Tier 6 / 10,000 CE内部値 (`e(1,6)`) / 500 tick、マンガン・ストロンチウム・バリウム・クレイウムは Tier 7 / 200,000 CE内部値 (`e(2,7)`) / 1,000 tick、チタン・究極合金は Tier 8 / 4,000,000 CE内部値 (`e(4,8)`) / 2,000 tick、クロムは Tier 9 / 40,000,000 CE内部値 (`e(4,9)`) / 2,000 tick。ハフニウム・ストロンチウム・バリウムの入力は原作OreDictionary相当の `c:dusts/<material>` タグとする。ID は `blast_furnace/<素材名>`。鉄インゴット1と石炭2→鋼インゴット1は `blast_furnace/steel_from_iron`、Tier 6 / 10,000 CE内部値 (`e(1,6)`) / 500 tick。`HardcoreOsmium` が有効な場合は `blast_furnace/osmium_from_impure_osmium` をConfig連動conditionで読み込む。既定値falseでは読み込まず、外部Mod固有の原作レシピも初期登録から除外する。
 
 `machine_hull/tier_7..9` は原作 `CRecipes` の大板、回路または Clay Core/Brain、Clay Energy Excitor の格子で生成する。`multiblock/clay_blast_furnace` は必要組立機 Tier 4、120 tick、`e(1,6)`。`multiblock/clay_reactor` は必要組立機 Tier 6、1,200 tick、`e(1,7)`。反応炉のレーザー加速は原作 `mods.clayium.block.tile.TileClayReactor.proceedCraft` に従い、照射された `ClayLaser.getEnergy()` を `long` へ切り捨て、その tick の通常進捗1に加算する。任意の倍率上限を設けない。
 
@@ -402,6 +408,7 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 ## M38 未登録素材・設置ブロック・初期フライス盤
 
 - `MaterialRegistration` は原作 `blockMetal` の57種を `<material>_block`、`blockSiliconeColored` の16色を `<color>_silicone_block` として同名Block/Itemに登録する。金属は `metalblock_base/dark/light.png` の3層を素材色でtintし、シリコーンは `siliconecolored.png` を登録IDに対応する固定 `DyeColor` でtintする。全ブロックはツルハシ採掘、硬度・爆発耐性2.0、自身ドロップ。
+- `oec_block` は原作OEC素材の同名Block/Item、Tier 12として登録し、専用の原作ブロックPNGを参照する。
 - シャードは `compressed_clay_shard`、`industrial_clay_shard`、`advanced_industrial_clay_shard`。GrinderレシピIDは `grinder/<ore>_to_<shard>` で石・深層岩の6鉱石を扱い、出力2/3/5、内部CE 1、3/6/9 tick。Condenserは `condenser/{compressed,industrial,advanced_industrial}_clay_shard`、入力4、内部CE 1、3/6/9 tick。
 - 追加筐体は `dense_clay_machine_hull` Tier 2、`pure_antimatter_machine_hull` Tier 11、`oec_machine_hull` Tier 12、`opa_machine_hull` Tier 13、`az91_d_alloy_hull` と `zk60_a_alloy_hull` Tier 6。標準筐体は `MACHINE_HULLS`、全筐体は `MACHINE_HULL_DEFINITIONS` を正本とする。レシピIDは `machine_hull/tier_{2,11,12,13}` と `machine_hull/{az91_d_alloy_hull,zk60_a_alloy_hull}`。
 - `elemental_milling_machine` は通常の26成形機とは別のTier 1機種で、共通 `processing_machine` BlockEntity/Menuと原作の `milling_machine` RecipeTypeを使う。本体レシピは `forming_machine/elemental_milling_machine`、高密度粘土板1→粘土回路基板1の専用経路は `elemental_milling_machine/clay_circuit_board`、内部CE 1、32 tick。
@@ -454,7 +461,7 @@ GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndA
 
 ## M44 最終原作対応ゲート
 
-`scripts/generate-parity-ledger.mjs` は SHA-256 が `c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2` の hotfix2 JAR を入力とし、`data/clayium/parity_ledger.tsv` を再生成する。生成時にJAR内の英日言語キー、`CMaterials.class` の材料・形状、416 PNGの実バイト、renderer classの実在を独立に検査する。`scripts/extract-original-recipe-calls.mjs` はJARの `CRecipes` と `ClayWorkTableRecipes` を `javap` で読み、登録method、命令位置、ソース行を原作から独立抽出する。`scripts/verify-recipe-parity.mjs` は655件の型付きM39対応に対する移植版884 JSONの方法、Tier、tick、CE、入力、出力、確率フィールドを検査する。この検査は移植側台帳とJSONの整合を証明するもので、原作命令引数の意味比較を代替しない。台帳は登録品種992、レシピ674、GUI 20、GUI PNG 19、renderer 25、原作PNG 416、機械系列33、金属チェスト57、設定と除外方針を機能単位で記録する。証拠のない項目は `未確認`、未実装は `欠落` とし、件数を合わせるために `同等` へ変更してはならない。
+`scripts/generate-parity-ledger.mjs` は `.tmp/clayium-0.4.6.36.hotfix2.jar` に置いた SHA-256 が `c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2` の hotfix2 JAR を入力とし、`data/clayium/parity_ledger.tsv` を再生成する。生成時にJAR内の英日言語キー、`CMaterials.class` の材料・形状、416 PNGの実バイト、renderer classの実在を独立に検査する。`scripts/extract-original-recipe-semantics.mjs` は `CFR_JAR` で指定した `.tmp/` 内のCFRとJAR内の `CRecipes`、`ClayWorkTableRecipes` を読み、中間結果を `.tmp/original_recipe_semantics.tsv` へ出力する。`scripts/verify-recipe-parity.mjs` は655件の型付きM39対応に対する移植版884 JSONの方法、Tier、tick、CE、入力、出力、確率フィールドを検査する。この検査は移植側台帳とJSONの整合を証明するもので、原作命令引数の意味比較を代替しない。台帳は登録品種992、レシピ674、GUI 20、GUI PNG 19、renderer 25、原作PNG 416、機械系列33、金属チェスト57、設定と除外方針を機能単位で記録する。証拠のない項目は `未確認`、未実装は `欠落` とし、件数を合わせるために `同等` へ変更してはならない。
 
 原作レシピ意味比較は `scripts/extract-original-recipe-semantics.mjs` の原作側展開値と `scripts/map-original-recipe-semantics.mjs` の移植JSON比較を使用する。全必須フィールドと全経路が一致した Registry ID だけを `同等` とし、比較済み差異は `欠落`、未対応経路は `未確認` とする。GUI・renderer は、`build/reports/m44/visual-parity.json` に原作JAR SHA-256、相異なる2クライアント、試験した移植JARのパスとSHA-256、台帳 `unitId`、対象に対応する正規E2Eシナリオ、判定 `同等`、差分画素数0、原作画像・移植画像・比較artifactの各相対パスとSHA-256が揃う場合だけ検証候補とする。生成器は全ファイルの実在とハッシュ、PNGの形式と寸法、復号後の全画素一致まで検査してから `同等` へ昇格する。E2E名、スクリーンショット予定名、自己申告した判定だけを実行証拠として扱わない。
 

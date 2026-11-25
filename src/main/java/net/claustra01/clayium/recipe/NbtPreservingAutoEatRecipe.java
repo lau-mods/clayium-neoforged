@@ -27,9 +27,12 @@ public final class NbtPreservingAutoEatRecipe extends CustomRecipe {
 
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-        ItemStack source = findOnlyGadget(input);
-        if (source == null) {
-            return ItemStack.EMPTY;
+        ItemStack source = ItemStack.EMPTY;
+        for (int index = 0; index < input.size(); index++) {
+            if (!input.getItem(index).isEmpty()) {
+                source = input.getItem(index);
+                break;
+            }
         }
         Item target = source.is(gadget(GadgetType.ECONOMICAL_AUTO_EAT))
                 ? gadget(GadgetType.AUTO_EAT)

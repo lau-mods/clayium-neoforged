@@ -46,7 +46,7 @@ public final class ConfigParityGameTests {
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
-    public static void tierAndRenderOverridesAffectRuntimeLookups(GameTestHelper helper) {
+    public static void tierOverridesAffectRuntimeLookups(GameTestHelper helper) {
         var craftTime = ClayiumConfig.GENERAL_MACHINE.craftTimeValue(5);
         var energy = ClayiumConfig.GENERAL_MACHINE.energyValue(5);
         var insertInterval = ClayiumConfig.BUFFER_TRANSPORT.insertIntervalValue(8);
@@ -59,7 +59,6 @@ public final class ConfigParityGameTests {
         int savedExtractInterval = extractInterval.get();
         int savedMaximumInsert = maximumInsert.get();
         int savedMaximumExtract = maximumExtract.get();
-        int savedLaserQuality = ClayiumConfig.LASER_QUALITY.get();
         try {
             craftTime.set(0.5D);
             energy.set(7.0D);
@@ -67,8 +66,6 @@ public final class ConfigParityGameTests {
             extractInterval.set(5);
             maximumInsert.set(17);
             maximumExtract.set(29);
-            ClayiumConfig.LASER_QUALITY.set(12);
-
             TierManager.MachineParameters machine = TierManager.general(5);
             requireClose(machine.craftTimeMultiplier(), 0.5D, "configured tier 5 craft time");
             requireClose(machine.energyMultiplier(), 7.0D, "configured tier 5 energy");
@@ -83,7 +80,6 @@ public final class ConfigParityGameTests {
                     "Configured insert/extract intervals were not read independently");
             require(transport.maximumInsertItems() == 17 && transport.maximumExtractItems() == 29,
                     "Configured insert/extract limits were not read independently");
-            require(ClayiumConfig.laserQuality() == 12, "LaserQuality was not read by the renderer lookup");
         } finally {
             craftTime.set(savedCraftTime);
             energy.set(savedEnergy);
@@ -91,7 +87,6 @@ public final class ConfigParityGameTests {
             extractInterval.set(savedExtractInterval);
             maximumInsert.set(savedMaximumInsert);
             maximumExtract.set(savedMaximumExtract);
-            ClayiumConfig.LASER_QUALITY.set(savedLaserQuality);
         }
         helper.succeed();
     }

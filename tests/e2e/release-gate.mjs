@@ -11,13 +11,20 @@ const { scenario, command, camera, screenshot, mct } = await import(process.env.
 
 const OBJECTIVE = 'release_gate';
 const SENTINEL = -2_000_000_000;
+let commandResultSequence = 0;
 
 function outputText(value) {
   return typeof value === 'string' ? value : JSON.stringify(value);
 }
 
+function resultText(value) {
+  if (typeof value?.message?.plain === 'string') return value.message.plain;
+  if (typeof value?.plain === 'string') return value.plain;
+  return outputText(value);
+}
+
 function scoreFrom(value, label) {
-  const matches = [...outputText(value).matchAll(/-?\d+/g)];
+  const matches = [...resultText(value).matchAll(/-?\d+/g)];
   if (matches.length === 0) throw new Error(`${label} did not return a numeric score: ${outputText(value)}`);
   const score = Number(matches.at(-1)[0]);
   if (!Number.isSafeInteger(score) || score === SENTINEL) {
@@ -26,20 +33,32 @@ function scoreFrom(value, label) {
   return score;
 }
 
+async function commandResult(client, text) {
+  await mct(client, 'chat', 'clear');
+  command(client, text);
+  const marker = `release_gate_result_${commandResultSequence++}`;
+  command(client, `tellraw @s {"text":"${marker}"}`);
+  const history = await mct(client, 'chat', 'history', '--last', '10', '--match', marker, '--wait', '5');
+  const markerIndex = history.messages.findIndex(candidate => resultText({ message: candidate }).includes(marker));
+  const message = markerIndex > 0 ? history.messages[markerIndex - 1] : null;
+  if (!message) throw new Error(`No command result was received for: ${text}`);
+  return { message };
+}
+
 async function storedResult(client, holder, runCommand) {
   command(client, `scoreboard players set ${holder} ${OBJECTIVE} ${SENTINEL}`);
   command(client, `execute store result score ${holder} ${OBJECTIVE} run ${runCommand}`);
-  return scoreFrom(command(client, `scoreboard players get ${holder} ${OBJECTIVE}`), holder);
+  return scoreFrom(await commandResult(client, `scoreboard players get ${holder} ${OBJECTIVE}`), holder);
 }
 
 async function storedSuccess(client, holder, condition) {
   command(client, `scoreboard players set ${holder} ${OBJECTIVE} ${SENTINEL}`);
   command(client, `execute store success score ${holder} ${OBJECTIVE} ${condition}`);
-  return scoreFrom(command(client, `scoreboard players get ${holder} ${OBJECTIVE}`), holder);
+  return scoreFrom(await commandResult(client, `scoreboard players get ${holder} ${OBJECTIVE}`), holder);
 }
 
 function itemCount(nbt, id) {
-  const normalized = outputText(nbt).replaceAll('\\"', '"');
+  const normalized = resultText(nbt).replaceAll('\\"', '"');
   let total = 0;
   for (const compound of normalized.matchAll(/\{[^{}]*\}/g)) {
     if (!new RegExp(`id\\s*[:=]\\s*["']${id.replaceAll(':', '\\:')}["']`).test(compound[0])) continue;
@@ -50,7 +69,7 @@ function itemCount(nbt, id) {
 }
 
 function fluidAmount(nbt, id) {
-  const normalized = outputText(nbt).replaceAll('\\"', '"');
+  const normalized = resultText(nbt).replaceAll('\\"', '"');
   let total = 0;
   for (const compound of normalized.matchAll(/\{[^{}]*\}/g)) {
     if (!new RegExp(`id\\s*[:=]\\s*["']${id.replaceAll(':', '\\:')}["']`).test(compound[0])) continue;
@@ -69,8 +88,29 @@ function assertAtMost(actual, maximum, label) {
   if (actual > maximum) throw new Error(`${label}: ${actual} exceeded ${maximum}`);
 }
 
+function normalizeNbt(value) {
+  return resultText(value).replaceAll(/\s+/g, ' ').trim();
+}
+
+// Read the six visible candidates through real button selections. The GUI uses
+// localized labels, while the core saves the selected registry ID.
+async function panCandidates(client) {
+  const layout = await mct(client, 'gui', 'layout');
+  const slot = layout.slots.find(slot => slot.slot === 0);
+  if (!slot) throw new Error('PAN core did not open');
+  const ids = [];
+  for (let row = 0; row < 6; row++) {
+    await mct(client, 'input', 'click', String(slot.centerX + 34), String(slot.centerY - 125 + row * 15));
+    const feedback = await commandResult(client, 'data get block 6 100 0 selected_candidate');
+    const id = resultText(feedback).match(/"([a-z0-9_]+:[a-z0-9_/.-]+)"/)?.[1];
+    if (!id || ids.includes(id)) throw new Error('Invalid PAN candidate: ' + resultText(feedback));
+    ids.push(id);
+  }
+  return ids.join(',');
+}
+
 async function blockItems(client, position) {
-  return command(client, `data get block ${position} inventory.Items`);
+  return commandResult(client, `data get block ${position} inventory.Items`);
 }
 
 async function waitForServer(logFile, pid) {
@@ -110,10 +150,11 @@ async function prepareReleaseGateClients(harnessClients) {
   }
   const secondary = profile.secondary;
   const listed = mct(null, 'client', 'list');
+  const primary = listed?.clients?.find(client => client.name === profile.clients[0]);
+  if (!primary?.javaCommand) {
+    throw new Error(`Primary client ${profile.clients[0]} has no configured Java executable`);
+  }
   if (!listed?.clients?.some(client => client.name === secondary.name)) {
-    const javaExecutable = process.env.JAVA_HOME
-      ? path.join(process.env.JAVA_HOME, 'bin', 'java')
-      : 'java';
     mct(null, 'client', 'create', secondary.name,
       '--version', secondary.version,
       '--loader', secondary.loader,
@@ -121,7 +162,7 @@ async function prepareReleaseGateClients(harnessClients) {
       '--account', secondary.account,
       '--width', String(secondary.width),
       '--height', String(secondary.height),
-      '--java', javaExecutable);
+      '--java', primary.javaCommand);
   }
   const primaryMods = path.join(process.env.MCT_HOME, 'clients', profile.clients[0], 'minecraft', 'mods');
   const secondaryMods = path.join(process.env.MCT_HOME, 'clients', secondary.name, 'minecraft', 'mods');
@@ -198,6 +239,7 @@ await scenario(async ({ clients: harnessClients }) => {
   try {
   const [primary, secondary] = clients;
   for (const client of clients) {
+    if (mct(client, 'gui', 'info').open) await mct(client, 'gui', 'close');
     command(client, 'gamemode creative');
     command(client, 'gamerule sendCommandFeedback true');
     command(client, 'time set noon');
@@ -210,36 +252,46 @@ await scenario(async ({ clients: harnessClients }) => {
   command(primary, 'data merge block 0 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:iron_ingot",count:64}]},energy:{clay_energy:2000000000L}}');
   command(primary, 'setblock 3 100 0 clayium:fluid_translator_tier_13[facing=north]');
   command(primary, 'setblock 4 100 0 clayium:fluid_translator_tier_13[facing=north]');
-  command(primary, 'data merge block 3 100 0 {tank:{Fluid:{id:"minecraft:water",amount:32000000}},pending:{Fluid:{id:"minecraft:water",amount:125}},faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"DISABLED",east:"BOTH"},redstone_condition:"UNPOWERED"}');
-  command(primary, 'data merge block 4 100 0 {faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"BOTH",east:"DISABLED"},redstone_condition:"UNPOWERED"}');
+  command(primary, 'data merge block 3 100 0 {tank:{Fluid:{id:"minecraft:water",amount:32000000}},pending:{Fluid:{id:"minecraft:water",amount:125}},faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"DISABLED",east:"OUTPUT"},redstone_condition:"UNPOWERED"}');
+  command(primary, 'data merge block 4 100 0 {faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"INPUT",east:"DISABLED"},redstone_condition:"UNPOWERED"}');
   command(primary, 'setblock 6 100 0 clayium:pan_core');
+  command(primary, 'data merge block 6 100 0 {candidate_reverse:1b}');
   command(primary, 'setblock 6 100 -1 clayium:pan_adapter_tier_10');
   command(primary, 'setblock 6 100 -2 minecraft:crafting_table');
   command(primary, 'data merge block 6 100 -1 {adapter_patterns:{Size:72,Items:[{Slot:0b,id:"minecraft:oak_log",count:1}]},adapter_sub_items:{Size:9,Items:[]}}');
   command(primary, 'setblock 7 100 0 clayium:pan_cable');
-  command(primary, 'setblock 8 100 0 clayium:pan_duplicator_tier_13[facing=north]');
+  command(primary, 'setblock 8 100 0 clayium:pan_duplicator_tier_13');
   command(primary, 'data merge block 8 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:oak_planks",count:1},{Slot:1b,id:"clayium:antimatter",count:64}]},energy:{clay_energy:200000000L}}');
   // Keep the loader outside the vanilla spawn chunks so `if loaded` measures its ticket.
   await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
   command(primary, 'setblock 400 100 0 clayium:clay_3x3_chunk_loader[facing=north]');
   await mct(primary, 'wait', '--ticks', '20');
-  await camera(primary, { x: 5.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
+  await camera(primary, { x: 5.5, y: 100, z: -3.5, yaw: 180, pitch: -30 });
 
   command(primary, 'clear @s');
   command(primary, 'item replace entity @s hotbar.0 with clayium:gadget_holder');
-  command(primary, 'item replace entity @s inventory.9 with clayium:clay_gadget_flight');
-  command(primary, 'item replace entity @s inventory.10 with clayium:clay_gadget_extra_health_i');
+  command(primary, 'item replace entity @s inventory.0 with clayium:clay_gadget_flight');
+  command(primary, 'item replace entity @s inventory.1 with clayium:clay_gadget_extra_health_i');
+  command(primary, 'item replace entity @s inventory.2 with clayium:clay_gadget_long_arm');
   command(primary, 'gamemode survival');
   await mct(primary, 'input', 'key', 'press', '1');
   await mct(primary, 'input', 'click', '640', '360', '--button', 'right');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
+  assertEqual(mct(primary, 'gui', 'info').type, 'GadgetHolderScreen', 'active gadget holder screen');
   await mct(primary, 'gui', 'click', '16', '--button', 'shift-left');
   await mct(primary, 'gui', 'click', '17', '--button', 'shift-left');
+  await mct(primary, 'gui', 'click', '18', '--button', 'shift-left');
   await mct(primary, 'gui', 'close');
   await mct(primary, 'wait', '--ticks', '60');
 
   const healthBefore = await storedResult(primary, '#health_before', 'attribute @s minecraft:generic.max_health get 100');
   if (healthBefore <= 2000) throw new Error(`Extra-health gadget was not applied: ${healthBefore}`);
+  assertEqual(await storedSuccess(primary, '#flight_before',
+    'run attribute @s neoforge:creative_flight modifier value get clayium:gadget_flight'), 1,
+    'flight modifier while equipped');
+  assertEqual(await storedSuccess(primary, '#reach_before',
+    'run attribute @s minecraft:player.block_interaction_range modifier value get clayium:gadget_long_arm'), 1,
+    'block-interaction-range modifier while equipped');
   const machineBefore = await blockItems(primary, '0 100 0');
   assertEqual(itemCount(machineBefore, 'minecraft:iron_ingot') + itemCount(machineBefore, 'clayium:iron_dust'), 64,
     'grinder item conservation before restart');
@@ -248,16 +300,19 @@ await scenario(async ({ clients: harnessClients }) => {
   if (grinderDustBefore <= 0 || grinderEnergyBefore >= 2000000000) {
     throw new Error(`Grinder did not perform a measured processing cycle: ${JSON.stringify({ grinderDustBefore, grinderEnergyBefore })}`);
   }
+  assertEqual(2000000000 - grinderEnergyBefore, grinderDustBefore * 25000,
+    'grinder CE consumed per produced dust before restart');
   const panEnergyBefore = await storedResult(primary, '#pan_ce_before', 'data get block 8 100 0 energy.clay_energy');
-  const antimatterBefore = itemCount(command(primary, 'data get block 8 100 0 inventory.Items[{Slot:1b}]'),
+  const antimatterBefore = itemCount(await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:1}]'),
     'clayium:antimatter');
-  const panOutputBefore = itemCount(command(primary, 'data get block 8 100 0 inventory.Items[{Slot:2b}]'),
+  const panOutputBefore = itemCount(await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:2}]'),
     'minecraft:oak_planks');
   if (panEnergyBefore >= 200000000 || antimatterBefore >= 64 || panOutputBefore <= 0) {
     throw new Error(`PAN did not perform a measured duplication cycle: ${JSON.stringify({ panEnergyBefore, antimatterBefore, panOutputBefore })}`);
   }
-  const sourceFluidBefore = fluidAmount(command(primary, 'data get block 3 100 0'), 'minecraft:water');
-  const receiverFluidBefore = fluidAmount(command(primary, 'data get block 4 100 0'), 'minecraft:water');
+  command(primary, 'fill 3 101 0 4 101 0 minecraft:redstone_block');
+  const sourceFluidBefore = fluidAmount(await commandResult(primary, 'data get block 3 100 0'), 'minecraft:water');
+  const receiverFluidBefore = fluidAmount(await commandResult(primary, 'data get block 4 100 0'), 'minecraft:water');
   if (receiverFluidBefore <= 0 || sourceFluidBefore >= 32000125) {
     throw new Error(`Fluid translators did not perform a measured transfer: ${JSON.stringify({ sourceFluidBefore, receiverFluidBefore })}`);
   }
@@ -266,8 +321,10 @@ await scenario(async ({ clients: harnessClients }) => {
 
   await camera(primary, { x: 5.5, y: 104, z: -10.5, yaw: 0, pitch: 17 });
   screenshot(primary, 'AC-F049-006', 'two-client-running-state-before-save');
+  command(primary, 'fill 3 101 0 4 101 0 minecraft:air');
   command(primary, 'save-all flush');
   await restartSavedRuntime(clients);
+  command(primary, 'gamerule sendCommandFeedback true');
 
   await mct(primary, 'wait', '--ticks', '80');
   const primaryMachine = await blockItems(primary, '0 100 0');
@@ -277,32 +334,36 @@ await scenario(async ({ clients: harnessClients }) => {
   assertEqual(primaryTotal, 64, 'grinder item conservation after restart');
   assertEqual(secondaryTotal, primaryTotal, 'two-client grinder synchronization');
   const grinderEnergyAfter = await storedResult(primary, '#grinder_ce_after', 'data get block 0 100 0 energy.clay_energy');
-  assertAtMost(grinderEnergyAfter, grinderEnergyBefore, 'grinder CE after restart');
-  if (itemCount(primaryMachine, 'clayium:iron_dust') < grinderDustBefore) {
+  const grinderDustAfter = itemCount(primaryMachine, 'clayium:iron_dust');
+  assertEqual(2000000000 - grinderEnergyAfter, grinderDustAfter * 25000,
+    'grinder CE consumed per produced dust after restart');
+  if (grinderDustAfter < grinderDustBefore) {
     throw new Error('Grinder output decreased across restart');
   }
   const panEnergyAfter = await storedResult(primary, '#pan_ce_after', 'data get block 8 100 0 energy.clay_energy');
   assertAtMost(panEnergyAfter, panEnergyBefore, 'PAN CE after restart');
-  const panSampleAfter = command(primary, 'data get block 8 100 0 inventory.Items[{Slot:0b}]');
-  const panAntimatterAfter = command(primary, 'data get block 8 100 0 inventory.Items[{Slot:1b}]');
+  const panSampleAfter = await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:0}]');
+  const panAntimatterAfter = await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:1}]');
   assertEqual(itemCount(panSampleAfter, 'minecraft:oak_planks'), 1, 'PAN sample persistence');
   assertAtMost(itemCount(panAntimatterAfter, 'clayium:antimatter'), antimatterBefore,
     'PAN antimatter after restart');
-  const panOutputAfter = itemCount(command(primary, 'data get block 8 100 0 inventory.Items[{Slot:2b}]'),
+  const panOutputAfter = itemCount(await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:2}]'),
     'minecraft:oak_planks');
   if (panOutputAfter < panOutputBefore) {
     throw new Error(`PAN output decreased across restart: ${panOutputAfter} < ${panOutputBefore}`);
   }
-  const primaryReceiverFluid = fluidAmount(command(primary, 'data get block 4 100 0'), 'minecraft:water');
+  command(primary, 'fill 3 101 0 4 101 0 minecraft:redstone_block');
+  const primaryReceiverFluid = fluidAmount(await commandResult(primary, 'data get block 4 100 0'), 'minecraft:water');
   if (primaryReceiverFluid < receiverFluidBefore) {
     throw new Error(`Transferred fluid decreased across restart: ${primaryReceiverFluid} < ${receiverFluidBefore}`);
   }
-  const primaryFluid = fluidAmount(command(primary, 'data get block 3 100 0'), 'minecraft:water')
+  const primaryFluid = fluidAmount(await commandResult(primary, 'data get block 3 100 0'), 'minecraft:water')
     + primaryReceiverFluid;
-  const secondaryFluid = fluidAmount(command(secondary, 'data get block 3 100 0'), 'minecraft:water')
-    + fluidAmount(command(secondary, 'data get block 4 100 0'), 'minecraft:water');
+  const secondaryFluid = fluidAmount(await commandResult(secondary, 'data get block 3 100 0'), 'minecraft:water')
+    + fluidAmount(await commandResult(secondary, 'data get block 4 100 0'), 'minecraft:water');
   assertEqual(primaryFluid, 32000125, 'fluid conservation after restart');
   assertEqual(secondaryFluid, primaryFluid, 'two-client fluid synchronization');
+
 
   for (const client of clients) {
     await camera(client, { x: 3.5, y: 100.6, z: -3.5, yaw: 0, pitch: 8 });
@@ -312,8 +373,20 @@ await scenario(async ({ clients: harnessClients }) => {
     screenshot(client, 'AC-F049-006', `${client}-synchronized-fluid-after-reconnect`);
     await mct(client, 'gui', 'close');
   }
+  await camera(primary, { x: 6.5, y: 100.6, z: -3.5, yaw: 0, pitch: 8 });
+  await mct(primary, 'block', 'interact', '6', '100', '0');
+  await mct(primary, 'gui', 'wait-open', '--timeout', '15');
+  await mct(primary, 'wait', '--ticks', '5');
+  const panSnapshotBeforeDeparture = await panCandidates(primary);
+  if (!panSnapshotBeforeDeparture.includes('oak_planks')) {
+    throw new Error(`PAN closure did not settle to its bounded candidate list: ${panSnapshotBeforeDeparture}`);
+  }
+  const panStateBeforeDeparture = normalizeNbt(await commandResult(primary, 'data get block 6 100 0'));
+  screenshot(primary, 'AC-F049-003', 'pan-candidates-after-server-restart');
+  await mct(primary, 'gui', 'close');
 
-  const holderAfterRestart = command(primary, 'data get entity @s Inventory[{Slot:0b}]');
+  await camera(primary, { x: 6.5, y: 100, z: -3.5, yaw: 180, pitch: -30 });
+  const holderAfterRestart = await commandResult(primary, 'data get entity @s Inventory[{Slot:0b}]');
   if (itemCount(holderAfterRestart, 'clayium:clay_gadget_flight') !== 1
       || itemCount(holderAfterRestart, 'clayium:clay_gadget_extra_health_i') !== 1) {
     throw new Error(`Gadget holder contents did not survive restart: ${outputText(holderAfterRestart)}`);
@@ -321,30 +394,64 @@ await scenario(async ({ clients: harnessClients }) => {
   await mct(primary, 'input', 'key', 'press', '1');
   await mct(primary, 'input', 'click', '640', '360', '--button', 'right');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
+  assertEqual(mct(primary, 'gui', 'info').type, 'GadgetHolderScreen', 'active gadget holder screen');
+  await mct(primary, 'gui', 'click', '0', '--button', 'shift-left');
   await mct(primary, 'gui', 'click', '1', '--button', 'shift-left');
+  await mct(primary, 'gui', 'click', '2', '--button', 'shift-left');
   await mct(primary, 'gui', 'close');
   await mct(primary, 'wait', '--ticks', '40');
   const healthAfter = await storedResult(primary, '#health_after', 'attribute @s minecraft:generic.max_health get 100');
   assertEqual(healthAfter, 2000, 'maximum health after removing the health gadget');
-  const holderAfterRemoval = command(primary, 'data get entity @s Inventory[{Slot:0b}]');
+  assertEqual(await storedSuccess(primary, '#flight_after',
+    'run attribute @s neoforge:creative_flight modifier value get clayium:gadget_flight'), 0,
+    'flight modifier after gadget removal');
+  assertEqual(await storedSuccess(primary, '#reach_after',
+    'run attribute @s minecraft:player.block_interaction_range modifier value get clayium:gadget_long_arm'), 0,
+    'block-interaction-range modifier after gadget removal');
+  const holderAfterRemoval = await commandResult(primary, 'data get entity @s Inventory[{Slot:0b}]');
   if (itemCount(holderAfterRemoval, 'clayium:clay_gadget_extra_health_i') !== 0
-      || itemCount(holderAfterRemoval, 'clayium:clay_gadget_flight') !== 1) {
+      || itemCount(holderAfterRemoval, 'clayium:clay_gadget_flight') !== 0
+      || itemCount(holderAfterRemoval, 'clayium:clay_gadget_long_arm') !== 0) {
     throw new Error(`Gadget removal was not persisted exactly once: ${outputText(holderAfterRemoval)}`);
   }
 
   command(primary, 'gamemode creative');
+  await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
+  command(primary, 'setblock 402 100 0 clayium:grinder_tier_10[facing=north]');
+  command(primary, 'data merge block 402 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:barrier",count:7}]},energy:{clay_energy:123456789L},faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"DISABLED",east:"DISABLED"}}');
+  const loadedMachineBeforeDeparture = normalizeNbt(await commandResult(primary, 'data get block 402 100 0'));
   for (const client of clients) await camera(client, { x: 1000.5, y: 110, z: 1000.5, yaw: 0, pitch: 10 });
   await mct(primary, 'wait', '--ticks', '100');
   assertEqual(await storedSuccess(primary, '#loaded_with_ticket', 'if loaded 400 100 0'), 1,
     'chunk loader ticket after client departure');
   await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
+  assertEqual(normalizeNbt(await commandResult(primary, 'data get block 402 100 0')), loadedMachineBeforeDeparture,
+    'machine state in ticket-loaded area after departure and return');
+  await camera(primary, { x: 5.5, y: 104, z: -10.5, yaw: 0, pitch: 17 });
+  assertEqual(normalizeNbt(await commandResult(primary, 'data get block 6 100 0')), panStateBeforeDeparture,
+    'bounded PAN state after chunk departure and return');
+  await camera(primary, { x: 6.5, y: 100.6, z: -3.5, yaw: 0, pitch: 8 });
+  await mct(primary, 'block', 'interact', '6', '100', '0');
+  await mct(primary, 'gui', 'wait-open', '--timeout', '15');
+  await mct(primary, 'wait', '--ticks', '5');
+  assertEqual(await panCandidates(primary), panSnapshotBeforeDeparture,
+    'bounded PAN candidate list after chunk departure and return');
+  await mct(primary, 'gui', 'close');
+  await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
   command(primary, 'setblock 400 100 0 minecraft:air');
   for (const client of clients) await camera(client, { x: 1000.5, y: 110, z: 1000.5, yaw: 0, pitch: 10 });
-  await mct(primary, 'wait', '--ticks', '400');
-  assertEqual(await storedSuccess(primary, '#loaded_without_ticket', 'if loaded 400 100 0'), 0,
+  const unloadDeadline = Date.now() + 60_000;
+  let loaded;
+  do {
+    await mct(primary, 'wait', '--ticks', '20');
+    loaded = await storedSuccess(primary, '#loaded_without_ticket', 'if loaded 400 100 0');
+  } while (loaded === 1 && Date.now() < unloadDeadline);
+  assertEqual(loaded, 0,
     'released chunk-loader ticket');
   await camera(primary, { x: 5.5, y: 104, z: -10.5, yaw: 0, pitch: 17 });
   screenshot(primary, 'AC-F049-006', 'saved-reconnected-gadget-changed-and-ticket-released');
+  await camera(secondary, { x: 8.5, y: 104, z: -8.5, yaw: 15, pitch: 20 });
+  screenshot(secondary, 'AC-F049-007', 'second-client-at-completion-of-release-gate');
   } finally {
     await releaseGate.stopSecondary();
   }

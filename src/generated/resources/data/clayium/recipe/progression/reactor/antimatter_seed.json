@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:reactor",
   "processing_ticks": 200000000000000,
+  "progression_rate": "ticks",
   "required_tier": 9
 }

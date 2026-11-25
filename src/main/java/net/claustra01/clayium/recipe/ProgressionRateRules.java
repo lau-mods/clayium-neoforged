@@ -2,114 +2,24 @@ package net.claustra01.clayium.recipe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import net.claustra01.clayium.ClayiumConfig;
-import net.claustra01.clayium.ClayiumMod;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-/** Original ProgressionRate call sites that cannot be represented by tier-wide machine multipliers. */
 public final class ProgressionRateRules {
-    private static final Set<String> SCALED_RECIPE_PATHS = Set.of(
-            "bending_machine/small_clay_disc",
-            "bending_machine/clay_disc",
-            "bending_machine/clay_plate",
-            "bending_machine/large_clay_plate",
-            "bending_machine/dense_clay_plate",
-            "bending_machine/large_dense_clay_plate",
-            "bending_machine/industrial_clay_plate",
-            "bending_machine/large_industrial_clay_plate",
-            "bending_machine/advanced_industrial_clay_plate",
-            "bending_machine/large_advanced_industrial_clay_plate",
-            "bending_machine/clay_blade",
-            "bending_machine/dense_clay_blade",
-            "wire_drawing_machine/clay_stick",
-            "wire_drawing_machine/clay_cylinder_to_sticks",
-            "wire_drawing_machine/clay_pipe_to_sticks",
-            "wire_drawing_machine/dense_clay_cylinder_to_sticks",
-            "wire_drawing_machine/dense_clay_pipe_to_sticks",
-            "wire_drawing_machine/clay_disc_to_stick",
-            "wire_drawing_machine/dense_clay_disc_to_stick",
-            "pipe_drawing_machine/clay_pipe",
-            "pipe_drawing_machine/dense_clay_pipe",
-            "cutting_machine/clay_disc",
-            "cutting_machine/short_clay_stick",
-            "cutting_machine/small_clay_disc",
-            "cutting_machine/short_dense_clay_stick",
-            "cutting_machine/small_dense_clay_disc",
-            "cutting_machine/clay_cylinder_to_discs",
-            "cutting_machine/large_clay_plate_to_discs",
-            "cutting_machine/dense_clay_cylinder_to_discs",
-            "cutting_machine/large_dense_clay_plate_to_discs",
-            "lathe/short_clay_stick",
-            "lathe/clay_ring",
-            "lathe/dense_clay_ring",
-            "lathe/clay_cylinder",
-            "lathe/clay_needle",
-            "lathe/clay_needle_to_sticks",
-            "lathe/small_clay_ring",
-            "lathe/dense_clay_cylinder",
-            "lathe/dense_clay_needle",
-            "lathe/dense_clay_needle_to_sticks",
-            "lathe/small_dense_clay_ring",
-            "assembler/clay_gear",
-            "assembler/clay_spindle",
-            "assembler/clay_grinding_head",
-            "assembler/clay_cutting_head",
-            "assembler/dense_clay_spindle",
-            "assembler/dense_clay_gear_from_sticks",
-            "assembler/dense_clay_gear_from_short_sticks",
-            "assembler/dense_clay_grinding_head",
-            "assembler/dense_clay_cutting_head",
-            "decomposer/industrial_clay_dust",
-            "decomposer/advanced_industrial_clay_dust",
-            "centrifuge/dense_clay_dust",
-            "centrifuge/calcareous_clay",
-            "centrifuge/industrial_clay",
-            "centrifuge/advanced_industrial_clay",
-            "grinder/clay_ore_to_compressed_clay_shard",
-            "grinder/deepslate_clay_ore_to_compressed_clay_shard",
-            "grinder/dense_clay_ore_to_industrial_clay_shard",
-            "grinder/deepslate_dense_clay_ore_to_industrial_clay_shard",
-            "grinder/large_dense_clay_ore_to_advanced_industrial_clay_shard",
-            "grinder/deepslate_large_dense_clay_ore_to_advanced_industrial_clay_shard",
-            "condenser/compressed_clay_shard",
-            "condenser/industrial_clay_shard",
-            "condenser/advanced_industrial_clay_shard",
-            "progression/reactor/antimatter_seed",
-            "ca_condenser/antimatter",
-            "ca_reactor/pure_antimatter");
+    public static long adjustedRecipeTicks(ClayiumMachineRecipe recipe) {
+        return recipe.progressionRate().scalesTicks()
+                ? ClayiumConfig.divideProgressionTicks(recipe.processingTicks())
+                : recipe.processingTicks();
+    }
 
-    private static final Set<String> SCALED_OUTPUT_PATHS = Set.of(
-            "grinder/clay_ore_to_compressed_clay_shard",
-            "grinder/deepslate_clay_ore_to_compressed_clay_shard",
-            "grinder/dense_clay_ore_to_industrial_clay_shard",
-            "grinder/deepslate_dense_clay_ore_to_industrial_clay_shard",
-            "grinder/large_dense_clay_ore_to_advanced_industrial_clay_shard",
-            "grinder/deepslate_large_dense_clay_ore_to_advanced_industrial_clay_shard");
-
-    private static final Set<String> SCALED_STACK_RECIPE_PATHS = Set.of(
-            "grinder/cobblestone_to_gravel_1",
-            "grinder/cobblestone_to_gravel_4",
-            "grinder/cobblestone_to_gravel_16",
-            "grinder/cobblestone_to_gravel_64",
-            "centrifuge/gravel_to_dense_clay_1",
-            "centrifuge/gravel_to_dense_clay_4",
-            "centrifuge/gravel_to_dense_clay_16",
-            "centrifuge/gravel_to_dense_clay_64");
-
-    public static long adjustedRecipeTicks(
-            ResourceLocation recipeId, ClayiumRecipeMethod method, long baseTicks) {
-        if (method == ClayiumRecipeMethod.CLAY_WORK_TABLE || isOriginalScaledRecipe(recipeId)) {
-            return ClayiumConfig.divideProgressionTicks(baseTicks);
-        }
-        return baseTicks;
+    public static List<ItemStack> adjustedRecipeOutputs(ClayiumMachineRecipe recipe) {
+        return adjustedRecipeOutputs(recipe, recipe.itemOutputs());
     }
 
     public static List<ItemStack> adjustedRecipeOutputs(
-            ResourceLocation recipeId, List<ItemStack> baseOutputs) {
-        if (!isClayiumPath(recipeId, SCALED_OUTPUT_PATHS)) {
+            ClayiumMachineRecipe recipe, List<ItemStack> baseOutputs) {
+        if (!recipe.progressionRate().scalesOutputs()) {
             return baseOutputs;
         }
         List<ItemStack> adjusted = new ArrayList<>(baseOutputs.size());
@@ -122,9 +32,8 @@ public final class ProgressionRateRules {
         return List.copyOf(adjusted);
     }
 
-    public static ClayiumMachineRecipe adjustedRecipe(
-            ResourceLocation recipeId, ClayiumMachineRecipe recipe) {
-        if (!isClayiumPath(recipeId, SCALED_STACK_RECIPE_PATHS)) {
+    public static ClayiumMachineRecipe adjustedRecipe(ClayiumMachineRecipe recipe) {
+        if (!recipe.progressionRate().scalesStacks()) {
             return recipe;
         }
         List<SizedIngredient> inputs = recipe.itemInputs().stream()
@@ -136,36 +45,32 @@ public final class ProgressionRateRules {
             copy.setCount(ClayiumConfig.multiplyProgressionCount(copy.getCount()));
             return copy;
         }).toList();
-        return new ClayiumMachineRecipe(
-                recipe.processingMethod(), recipe.requiredTier(), inputs, recipe.fluidInputs(), outputs,
-                recipe.fluidOutputs(), recipe.clayEnergy(), recipe.processingTicks(), recipe.environment(),
-                recipe.randomOutputs());
+        return copy(recipe, inputs, outputs, recipe.processingTicks());
     }
 
-    /** Returns the same recipe values that execution uses after all original call-site adjustments. */
-    public static ClayiumMachineRecipe adjustedRecipeForDisplay(
-            ResourceLocation recipeId, ClayiumMachineRecipe recipe) {
-        ClayiumMachineRecipe stacks = adjustedRecipe(recipeId, recipe);
-        List<ItemStack> outputs = adjustedRecipeOutputs(recipeId, stacks.itemOutputs());
-        long ticks = adjustedRecipeTicks(recipeId, stacks.processingMethod(), stacks.processingTicks());
+    public static ClayiumMachineRecipe adjustedRecipeForDisplay(ClayiumMachineRecipe recipe) {
+        ClayiumMachineRecipe stacks = adjustedRecipe(recipe);
+        List<ItemStack> outputs = adjustedRecipeOutputs(stacks);
+        long ticks = adjustedRecipeTicks(stacks);
         if (outputs == stacks.itemOutputs() && ticks == stacks.processingTicks()) {
             return stacks;
         }
+        return copy(stacks, stacks.itemInputs(), outputs, ticks);
+    }
+
+    public static boolean requiresExactItemCount(ClayiumMachineRecipe recipe) {
+        return recipe.progressionRate().scalesStacks();
+    }
+
+    private static ClayiumMachineRecipe copy(
+            ClayiumMachineRecipe recipe,
+            List<SizedIngredient> inputs,
+            List<ItemStack> outputs,
+            long ticks) {
         return new ClayiumMachineRecipe(
-                stacks.processingMethod(), stacks.requiredTier(), stacks.itemInputs(), stacks.fluidInputs(), outputs,
-                stacks.fluidOutputs(), stacks.clayEnergy(), ticks, stacks.environment(), stacks.randomOutputs());
-    }
-
-    public static boolean requiresExactItemCount(ResourceLocation recipeId) {
-        return isClayiumPath(recipeId, SCALED_STACK_RECIPE_PATHS);
-    }
-
-    public static boolean isOriginalScaledRecipe(ResourceLocation recipeId) {
-        return isClayiumPath(recipeId, SCALED_RECIPE_PATHS);
-    }
-
-    private static boolean isClayiumPath(ResourceLocation id, Set<String> paths) {
-        return id.getNamespace().equals(ClayiumMod.MOD_ID) && paths.contains(id.getPath());
+                recipe.processingMethod(), recipe.requiredTier(), inputs, recipe.fluidInputs(), outputs,
+                recipe.fluidOutputs(), recipe.clayEnergy(), ticks, recipe.environment(), recipe.randomOutputs(),
+                recipe.progressionRate());
     }
 
     private ProgressionRateRules() {

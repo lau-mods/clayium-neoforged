@@ -52,10 +52,17 @@ export async function verifyViewer(viewer) {
       click(x, y); wait(6); verify(viewerScreen); move(0, 0); wait(4);
     };
     const lookup = (item, action) => {
-      const slot = slots().find(s => s.item?.type === item);
-      assert.ok(slot, 'Missing ' + item);
-      move(slot.centerX, slot.centerY);
-      for (let i = 0; i < 10 && info().type !== viewerScreen; i++) { key(action); wait(10); }
+      // Reloading the viewer can rebuild the inventory screen and reset its hover.
+      const deadline = Date.now() + 30_000;
+      while (info().type !== viewerScreen && Date.now() < deadline) {
+        const slot = slots().find(s => s.item?.type === item);
+        if (slot) {
+          move(slot.centerX, slot.centerY);
+          wait(2);
+          key(action);
+        }
+        wait(10);
+      }
       verify(viewerScreen); move(0, 0);
     };
     const invLookup = (item, action) => {
@@ -153,6 +160,7 @@ export async function verifyViewer(viewer) {
     const machine = show('chemical_reactor_tier_4','ClayMachineScreen');
     openPage(machine.guiLeft + 88,machine.guiTop + 43);
     capture('AC-F047-002','chemical-reactor-category-and-catalysts');
+    capture('AC-F049-002','viewer-category-ledger-and-catalysts');
     if (viewer === 'jei') capture('AC-F042-002','chemical-reactor-category');
     close();
 
@@ -162,7 +170,7 @@ export async function verifyViewer(viewer) {
     await mkdir(recipes,{recursive:true});
     await writeFile(path.join(pack,'pack.mcmeta'), JSON.stringify({pack:{pack_format:48,description:'M43 viewer probe'}}));
     for (const [index,amount] of [250,750].entries()) {
-      const result = index === 0 ? 'minecraft:barrier' : 'minecraft:structure_void';
+      const result = index === 0 ? 'minecraft:heart_of_the_sea' : 'minecraft:echo_shard';
       await writeFile(path.join(recipes,'direct_fluid.json'),JSON.stringify({
         type:'clayium:machine',processing_method:'clayium:chemical_reactor',required_tier:4 + index,
         clay_energy:100 + index * 100,processing_ticks:40 + index * 40,
