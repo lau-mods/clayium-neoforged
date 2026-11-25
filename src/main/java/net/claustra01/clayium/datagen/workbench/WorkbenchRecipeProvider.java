@@ -3,6 +3,7 @@ package net.claustra01.clayium.datagen.workbench;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.recipe.ClayiumRecipeBuilder;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ClayiumMachineRecipe.ProgressionRate;
 import net.claustra01.clayium.registry.FoundationItemRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.WorkbenchRegistration;
@@ -136,6 +137,7 @@ public final class WorkbenchRecipeProvider {
                 .requires(input, inputCount)
                 .output(result, resultCount)
                 .processingTicks(presses)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("workbench/" + id));
     }
 

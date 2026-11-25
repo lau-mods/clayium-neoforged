@@ -8,7 +8,7 @@ import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
-/** Datapack condition for the original recipe switches in the server configuration. */
+/** Datapack condition for original recipe switches loaded from the startup common configuration. */
 public record ConfigEnabledCondition(Option option) implements ICondition {
     public static final MapCodec<ConfigEnabledCondition> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(Codec.STRING.fieldOf("option")

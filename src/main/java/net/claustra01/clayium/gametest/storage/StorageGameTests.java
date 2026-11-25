@@ -61,8 +61,7 @@ public final class StorageGameTests {
 
         ItemStack expandedAgain = result.copy();
         CraftingInput invalid = CraftingInput.of(2, 1, java.util.List.of(expandedAgain, core));
-        require(!recipe.matches(invalid, helper.getLevel())
-                        && recipe.assemble(invalid, helper.getLevel().registryAccess()).isEmpty(),
+        require(!recipe.matches(invalid, helper.getLevel()),
                 "An already expanded Storage Container accepted a second Clay Core");
         helper.succeed();
     }

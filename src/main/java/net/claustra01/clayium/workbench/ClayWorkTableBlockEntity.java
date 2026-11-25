@@ -114,8 +114,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
         }
 
         ClayiumMachineRecipe value = recipe.get().value();
-        long requiredTicks = ProgressionRateRules.adjustedRecipeTicks(
-                recipe.get().id(), value.processingMethod(), value.processingTicks());
+        long requiredTicks = ProgressionRateRules.adjustedRecipeTicks(value);
         if (activeRecipe == null) {
             if (!canStoreOutputs(value.itemOutputs(), action)) {
                 return false;
@@ -187,8 +186,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
         return level.getRecipeManager().byKey(activeRecipe).stream()
                 .filter(holder -> holder.value() instanceof ClayiumMachineRecipe)
                 .map(holder -> ProgressionRateRules.adjustedRecipeTicks(
-                        holder.id(), ClayiumRecipeMethod.CLAY_WORK_TABLE,
-                        ((ClayiumMachineRecipe)holder.value()).processingTicks()))
+                        (ClayiumMachineRecipe)holder.value()))
                 .findFirst()
                 .orElse(0L);
     }

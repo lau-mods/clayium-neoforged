@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:decomposer",
   "processing_ticks": 60,
+  "progression_rate": "ticks",
   "required_tier": 4
 }

@@ -25,6 +25,7 @@ public final class ClayiumRecipeBuilder {
     private long clayEnergy;
     private long processingTicks = 1L;
     private ClayiumMachineRecipe.EnvironmentCondition environment = ClayiumMachineRecipe.EnvironmentCondition.ANY;
+    private ClayiumMachineRecipe.ProgressionRate progressionRate = ClayiumMachineRecipe.ProgressionRate.NONE;
 
     private ClayiumRecipeBuilder(ClayiumRecipeMethod processingMethod, int requiredTier) {
         this.processingMethod = processingMethod;
@@ -83,6 +84,11 @@ public final class ClayiumRecipeBuilder {
         return this;
     }
 
+    public ClayiumRecipeBuilder progressionRate(ClayiumMachineRecipe.ProgressionRate progressionRate) {
+        this.progressionRate = progressionRate;
+        return this;
+    }
+
     public ClayiumRecipeBuilder when(ICondition condition) {
         conditions.add(condition);
         return this;
@@ -99,7 +105,8 @@ public final class ClayiumRecipeBuilder {
                 clayEnergy,
                 processingTicks,
                 environment,
-                randomOutputs);
+                randomOutputs,
+                progressionRate);
         output.accept(id, recipe, null, conditions.toArray(ICondition[]::new));
     }
 }

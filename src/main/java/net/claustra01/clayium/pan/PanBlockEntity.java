@@ -687,18 +687,12 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         }
         loadingAdapterInventory = true;
         try {
-            clearHandler(adapterPatterns);
-            clearHandler(adapterSubItems);
-            if (kind() == PanBlock.Kind.ADAPTER && tag.contains("adapter_patterns")
-                    && validHandlerSize(tag.getCompound("adapter_patterns"),
-                            ADAPTER_PAGE_SIZE * MAX_ADAPTER_PAGES)) {
+            if (kind() == PanBlock.Kind.ADAPTER && tag.contains("adapter_patterns")) {
                 adapterPatterns.deserializeNBT(registries, tag.getCompound("adapter_patterns"));
             }
-            if (kind() == PanBlock.Kind.ADAPTER && tag.contains("adapter_sub_items")
-                    && validHandlerSize(tag.getCompound("adapter_sub_items"), ADAPTER_PAGE_SIZE)) {
+            if (kind() == PanBlock.Kind.ADAPTER && tag.contains("adapter_sub_items")) {
                 adapterSubItems.deserializeNBT(registries, tag.getCompound("adapter_sub_items"));
             }
-            sanitizeAdapterInventory();
         } finally {
             loadingAdapterInventory = false;
         }
@@ -735,24 +729,4 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         sortedCandidates = null;
     }
 
-    private void sanitizeAdapterInventory() {
-        for (int slot = 0; slot < adapterPatterns.getSlots(); slot++) {
-            ItemStack stack = adapterPatterns.getStackInSlot(slot);
-            if (slot >= adapterPages() * ADAPTER_PAGE_SIZE || !stack.isEmpty() && !PanRecipeClosure.isPlain(stack)) {
-                adapterPatterns.setStackInSlot(slot, ItemStack.EMPTY);
-            } else if (stack.getCount() > 1) {
-                adapterPatterns.setStackInSlot(slot, stack.copyWithCount(1));
-            }
-        }
-    }
-
-    private static void clearHandler(ItemStackHandler handler) {
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            handler.setStackInSlot(slot, ItemStack.EMPTY);
-        }
-    }
-
-    private static boolean validHandlerSize(CompoundTag tag, int expected) {
-        return !tag.contains("Size") || tag.getInt("Size") == expected;
-    }
 }

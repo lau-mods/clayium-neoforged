@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:clay_work_table",
   "processing_ticks": 2,
+  "progression_rate": "ticks",
   "required_tier": 6
 }

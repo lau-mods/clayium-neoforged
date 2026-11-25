@@ -5,6 +5,7 @@ import net.claustra01.clayium.machine.series.FormingSeries;
 import net.claustra01.clayium.material.ClayMaterials;
 import net.claustra01.clayium.material.MaterialShape;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
+import net.claustra01.clayium.recipe.ClayiumMachineRecipe.ProgressionRate;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
 import net.claustra01.clayium.recipe.ConfigEnabledCondition;
 import net.claustra01.clayium.recipe.ConfigEnabledCondition.Option;
@@ -363,7 +364,12 @@ public final class FormingRecipes {
 
     private static ClayiumRecipeBuilder machine(
             ClayiumRecipeMethod method, int tier, long energy, int ticks) {
-        return ClayiumRecipeBuilder.machine(method, tier).clayEnergy(energy).processingTicks(ticks);
+        ClayiumRecipeBuilder builder = ClayiumRecipeBuilder.machine(method, tier)
+                .clayEnergy(energy).processingTicks(ticks);
+        return tier <= 2 && switch (method) {
+            case BENDING_MACHINE, WIRE_DRAWING_MACHINE, PIPE_DRAWING_MACHINE, CUTTING_MACHINE, LATHE -> true;
+            default -> false;
+        } ? builder.progressionRate(ProgressionRate.TICKS) : builder;
     }
 
     private static ItemLike material(String id) {

@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const root = path.resolve(import.meta.dirname, '..');
-const originalPath = path.join(root, 'src/main/resources/data/clayium/original_recipe_semantics.tsv');
+const originalPath = path.join(root, '.tmp/original_recipe_semantics.tsv');
 const ledgerPath = path.join(root, 'src/main/resources/data/clayium/survival_recipe_ledger.tsv');
 const recipeRoot = path.join(root, 'src/generated/resources/data/clayium/recipe');
 const concreteStatuses = new Set(['具体式抽出', '条件付き具体式抽出']);
@@ -297,7 +297,7 @@ function materialRef(materialSymbol, shapeSymbol) {
   const material = materialAliases.get(materialSymbol) ?? snake(materialSymbol);
   const shape = snake(shapeSymbol);
   if (shape === 'ball' && material === 'clay') return 'minecraft:clay_ball';
-  if (shape === 'large_ball' && material === 'clay') return 'minecraft:clay';
+  if (shape === 'block' && material === 'clay') return 'minecraft:clay';
   if (shape === 'gem' && ['antimatter', 'pure_antimatter'].includes(material)) return `clayium:${material}`;
   const prefixedShape = shape.match(/^(small|large|short)_(.+)$/);
   if (prefixedShape) return `clayium:${prefixedShape[1]}_${material}_${prefixedShape[2]}`;
@@ -1132,6 +1132,7 @@ for (const recipeId of new Set(randomMappings.map((mapping) => mapping.recipeId)
     callIds: routeMappings.map((mapping) => mapping.callId).sort(),
     expectedOutputs: expectedOutputs.length,
     actualOutputs: actualOutputs.length,
+    totalWeight: Number(actualOutputs.reduce((sum, output) => sum + output.weight, 0n)),
     complete: routeDifferences.length === 0 && expectedOutputs.length > 0,
     differences: routeDifferences,
   });

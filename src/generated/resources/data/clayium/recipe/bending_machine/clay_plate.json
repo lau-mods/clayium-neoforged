@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:bending_machine",
   "processing_ticks": 1,
+  "progression_rate": "ticks",
   "required_tier": 0
 }

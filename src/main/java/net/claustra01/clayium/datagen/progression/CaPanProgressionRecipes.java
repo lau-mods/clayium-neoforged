@@ -4,6 +4,7 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.recipe.ClayiumRecipeBuilder;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ClayiumMachineRecipe.ProgressionRate;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.CaReactorRegistration;
 import net.claustra01.clayium.registry.CaRegistration;
@@ -62,6 +63,7 @@ public final class CaPanProgressionRecipes {
                 .output(component("antimatter_seed"), 1)
                 .clayEnergy(ClayiumRecipeEnergy.e(1.0D, 9))
                 .processingTicks(200_000_000_000_000L)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("progression/reactor/antimatter_seed"));
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC,
                         material("ultimate_compound_ingot"), 9)

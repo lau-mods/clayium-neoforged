@@ -122,6 +122,7 @@ await scenario(async ({ clients }) => {
   await camera(primary, { x: -4.5, y: 106.0, z: -10.5, yaw: -20, pitch: 24 });
   await mct(primary, 'wait', '--ticks', '10');
   screenshot(primary, 'AC-F048-001', 'connected-pan-crucible-markers-interfaces-ca-storage-and-reflectors');
+  screenshot(primary, 'AC-F049-002', 'renderer-ledger-connected-models-and-orientations');
   await command(primary, 'gamemode creative');
   await command(primary, 'item replace entity @s weapon.mainhand with clayium:synchronizer');
   await camera(primary, { x: 7.5, y: 101.5, z: -2.5, yaw: 0, pitch: 10 });

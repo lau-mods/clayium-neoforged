@@ -4,6 +4,7 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.datagen.recipe.ClayiumRecipeBuilder;
 import net.claustra01.clayium.recipe.ClayiumRecipeEnergy;
 import net.claustra01.clayium.recipe.ClayiumRecipeMethod;
+import net.claustra01.clayium.recipe.ClayiumMachineRecipe.ProgressionRate;
 import net.claustra01.clayium.registry.AssemblyMachineRegistration;
 import net.claustra01.clayium.registry.CaRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
@@ -18,6 +19,7 @@ public final class CaRecipes {
                 .output(antimatter, 1)
                 .clayEnergy(ClayiumRecipeEnergy.e(2.5D, 9))
                 .processingTicks(2_000)
+                .progressionRate(ProgressionRate.TICKS)
                 .save(output, ClayiumMod.id("ca_condenser/antimatter"));
 
         ClayiumRecipeBuilder.machine(ClayiumRecipeMethod.CA_INJECTOR, 10)

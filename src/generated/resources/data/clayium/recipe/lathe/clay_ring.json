@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:lathe",
   "processing_ticks": 2,
+  "progression_rate": "ticks",
   "required_tier": 0
 }

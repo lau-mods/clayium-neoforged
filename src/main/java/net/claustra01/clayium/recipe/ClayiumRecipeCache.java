@@ -27,11 +27,11 @@ public final class ClayiumRecipeCache {
         TypeIndex index = managerCache.computeIfAbsent(type, ignored -> build(manager, type));
         return index.candidates(input).stream()
                 .filter(holder -> {
-                    ClayiumMachineRecipe adjusted = ProgressionRateRules.adjustedRecipe(holder.id(), holder.value());
+                    ClayiumMachineRecipe adjusted = ProgressionRateRules.adjustedRecipe(holder.value());
                     if (!adjusted.matches(input, level)) {
                         return false;
                     }
-                    return !ProgressionRateRules.requiresExactItemCount(holder.id())
+                    return !ProgressionRateRules.requiresExactItemCount(holder.value())
                             || input.items().stream().mapToInt(ItemStack::getCount).sum()
                                     == adjusted.itemInputs().stream().mapToInt(
                                             net.neoforged.neoforge.common.crafting.SizedIngredient::count).sum();

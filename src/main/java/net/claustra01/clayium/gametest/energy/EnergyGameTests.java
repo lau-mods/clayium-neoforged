@@ -122,17 +122,23 @@ public final class EnergyGameTests {
 
         for (int tier = 0; tier <= 13; tier++) {
             TierManager.TransportParameters machine = TierManager.machineTransport(tier);
-            require(machine.intervalTicks() == (tier <= 4 ? 20 : tier == 5 ? 2 : 1),
+            int interval = tier <= 4 ? 20 : tier == 5 ? 2 : 1;
+            int amount = tier <= 4 ? 8 : tier == 5 ? 16 : 64;
+            require(machine.insertIntervalTicks() == interval && machine.extractIntervalTicks() == interval,
                     "Wrong standard transport interval at tier " + tier);
-            require(machine.maximumItems() == (tier <= 4 ? 8 : tier == 5 ? 16 : 64),
+            require(machine.maximumInsertItems() == amount && machine.maximumExtractItems() == amount,
                     "Wrong standard transport amount at tier " + tier);
         }
         int[] bufferIntervals = {8, 8, 8, 8, 8, 4, 2, 1, 1, 1, 1, 1, 1, 1};
         int[] bufferAmounts = {1, 1, 1, 1, 1, 4, 16, 64, 128, 192, 256, 512, 1_024, 6_400};
         for (int tier = 0; tier <= 13; tier++) {
             TierManager.TransportParameters buffer = TierManager.bufferTransport(tier);
-            require(buffer.intervalTicks() == bufferIntervals[tier], "Wrong buffer interval at tier " + tier);
-            require(buffer.maximumItems() == bufferAmounts[tier], "Wrong buffer amount at tier " + tier);
+            require(buffer.insertIntervalTicks() == bufferIntervals[tier]
+                            && buffer.extractIntervalTicks() == bufferIntervals[tier],
+                    "Wrong buffer interval at tier " + tier);
+            require(buffer.maximumInsertItems() == bufferAmounts[tier]
+                            && buffer.maximumExtractItems() == bufferAmounts[tier],
+                    "Wrong buffer amount at tier " + tier);
         }
         helper.succeed();
     }

@@ -17,6 +17,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -37,7 +38,8 @@ public record ClayiumMachineRecipe(
         long clayEnergy,
         long processingTicks,
         EnvironmentCondition environment,
-        List<RandomOutput> randomOutputs) implements Recipe<ClayiumRecipeInput> {
+        List<RandomOutput> randomOutputs,
+        ProgressionRate progressionRate) implements Recipe<ClayiumRecipeInput> {
     public static final MapCodec<ClayiumMachineRecipe> CODEC = recipeCodec().validate(ClayiumMachineRecipe::validate);
 
     private static MapCodec<ClayiumMachineRecipe> recipeCodec() {
@@ -68,7 +70,9 @@ public record ClayiumMachineRecipe(
                                 .optionalFieldOf("environment", EnvironmentCondition.ANY)
                                 .forGetter(ClayiumMachineRecipe::environment),
                         RandomOutput.CODEC.codec().listOf().optionalFieldOf("random_outputs", List.of())
-                                .forGetter(ClayiumMachineRecipe::randomOutputs))
+                                .forGetter(ClayiumMachineRecipe::randomOutputs),
+                        ProgressionRate.CODEC.optionalFieldOf("progression_rate", ProgressionRate.NONE)
+                                .forGetter(ClayiumMachineRecipe::progressionRate))
                 .apply(instance, ClayiumMachineRecipe::new));
     }
 
@@ -77,7 +81,7 @@ public record ClayiumMachineRecipe(
     }
 
     private record RecipeSettings(long energy, long ticks, EnvironmentCondition environment,
-                                  List<RandomOutput> randomOutputs) {
+                                  List<RandomOutput> randomOutputs, ProgressionRate progressionRate) {
     }
 
     private static final StreamCodec<RegistryFriendlyByteBuf, RecipeData> DATA_CODEC = StreamCodec.composite(
@@ -94,15 +98,32 @@ public record ClayiumMachineRecipe(
             ByteBufCodecs.VAR_LONG, RecipeSettings::ticks,
             EnvironmentCondition.STREAM_CODEC, RecipeSettings::environment,
             RandomOutput.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeSettings::randomOutputs,
+            ByteBufCodecs.STRING_UTF8.map(ProgressionRate::byName, ProgressionRate::serializedName),
+                    RecipeSettings::progressionRate,
             RecipeSettings::new);
     public static final StreamCodec<RegistryFriendlyByteBuf, ClayiumMachineRecipe> STREAM_CODEC = StreamCodec.composite(
             DATA_CODEC, recipe -> new RecipeData(recipe.processingMethod, recipe.requiredTier, recipe.itemInputs,
                     recipe.fluidInputs, recipe.itemOutputs, recipe.fluidOutputs),
             SETTINGS_CODEC, recipe -> new RecipeSettings(recipe.clayEnergy, recipe.processingTicks,
-                    recipe.environment, recipe.randomOutputs),
+                    recipe.environment, recipe.randomOutputs, recipe.progressionRate),
             (data, settings) -> new ClayiumMachineRecipe(data.method, data.tier, data.items, data.fluids,
                     data.outputs, data.fluidOutputs, settings.energy, settings.ticks,
-                    settings.environment, settings.randomOutputs));
+                    settings.environment, settings.randomOutputs, settings.progressionRate));
+
+    public ClayiumMachineRecipe(
+            ClayiumRecipeMethod processingMethod,
+            int requiredTier,
+            List<SizedIngredient> itemInputs,
+            List<FluidStack> fluidInputs,
+            List<ItemStack> itemOutputs,
+            List<FluidStack> fluidOutputs,
+            long clayEnergy,
+            long processingTicks,
+            EnvironmentCondition environment,
+            List<RandomOutput> randomOutputs) {
+        this(processingMethod, requiredTier, itemInputs, fluidInputs, itemOutputs, fluidOutputs,
+                clayEnergy, processingTicks, environment, randomOutputs, ProgressionRate.NONE);
+    }
 
     public ClayiumMachineRecipe {
         itemInputs = List.copyOf(itemInputs);
@@ -213,6 +234,58 @@ public record ClayiumMachineRecipe(
 
     private static List<FluidStack> copyFluids(List<FluidStack> stacks) {
         return stacks.stream().map(FluidStack::copy).toList();
+    }
+
+    public enum ProgressionRate implements StringRepresentable {
+        NONE("none", false, false, false),
+        TICKS("ticks", true, false, false),
+        OUTPUTS("outputs", false, true, false),
+        TICKS_AND_OUTPUTS("ticks_and_outputs", true, true, false),
+        STACKS("stacks", false, false, true);
+
+        public static final Codec<ProgressionRate> CODEC = StringRepresentable.fromEnum(ProgressionRate::values);
+
+        private final String serializedName;
+        private final boolean scalesTicks;
+        private final boolean scalesOutputs;
+        private final boolean scalesStacks;
+
+        ProgressionRate(String serializedName, boolean scalesTicks, boolean scalesOutputs, boolean scalesStacks) {
+            this.serializedName = serializedName;
+            this.scalesTicks = scalesTicks;
+            this.scalesOutputs = scalesOutputs;
+            this.scalesStacks = scalesStacks;
+        }
+
+        public boolean scalesTicks() {
+            return scalesTicks;
+        }
+
+        public boolean scalesOutputs() {
+            return scalesOutputs;
+        }
+
+        public boolean scalesStacks() {
+            return scalesStacks;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return serializedName;
+        }
+
+        public String serializedName() {
+            return serializedName;
+        }
+
+        public static ProgressionRate byName(String name) {
+            for (ProgressionRate value : values()) {
+                if (value.serializedName.equals(name)) {
+                    return value;
+                }
+            }
+            throw new IllegalArgumentException("Unknown progression rate behavior: " + name);
+        }
     }
 
     public record EnvironmentCondition(

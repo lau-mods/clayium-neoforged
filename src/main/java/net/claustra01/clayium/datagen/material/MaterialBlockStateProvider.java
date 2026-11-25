@@ -15,12 +15,11 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public final class MaterialBlockStateProvider extends BlockStateProvider {
     private static final Map<String, String> MATERIAL_TEXTURES = Map.ofEntries(
-                        Map.entry("aluminium_block", "aluminium"),
+            Map.entry("aluminium_block", "aluminium"),
             Map.entry("antimatter_block", "antimatter"),
-                        Map.entry("clay_steel_block", "claysteel"),
+            Map.entry("clay_steel_block", "claysteel"),
             Map.entry("impure_silicon_block", "impuresilicon"),
-            Map.entry("oec_block", "oec"),
-                                    Map.entry("opa_block", "opa"),
+            Map.entry("opa_block", "opa"),
             Map.entry("pure_antimatter_block", "pureantimatter"),
             Map.entry("silicon_block", "silicon"),
             Map.entry("silicone_block", "silicone"),

@@ -3,39 +3,36 @@ package net.claustra01.clayium.energy;
 import net.claustra01.clayium.ClayiumConfig;
 
 public final class TierManager {
-    public static final int MIN_TIER = 0;
-    public static final int MAX_TIER = 13;
-
     private static final double[] OVERCLOCKER_FACTORS = {1.5D, 2.3D, 3.5D, 5.0D};
 
     public static MachineParameters general(int tier) {
-        checkTier(tier);
+        ClayiumConfig.checkTier(tier);
         return new MachineParameters(
                 ClayiumConfig.GENERAL_MACHINE.craftTime(tier),
                 ClayiumConfig.GENERAL_MACHINE.energy(tier));
     }
 
     public static MachineParameters smelter(int tier) {
-        checkTier(tier);
+        ClayiumConfig.checkTier(tier);
         return new MachineParameters(
                 ClayiumConfig.SMELTER_MACHINE.craftTime(tier),
                 ClayiumConfig.SMELTER_MACHINE.energy(tier));
     }
 
     public static MachineParameters caCondenser(int tier) {
-        checkTier(tier);
+        ClayiumConfig.checkTier(tier);
         return new MachineParameters(
                 ClayiumConfig.CA_CONDENSER_MACHINE.craftTime(tier),
                 ClayiumConfig.CA_CONDENSER_MACHINE.energy(tier));
     }
 
     public static TransportParameters machineTransport(int tier) {
-        checkTier(tier);
+        ClayiumConfig.checkTier(tier);
         return transport(ClayiumConfig.MACHINE_TRANSPORT, tier);
     }
 
     public static TransportParameters bufferTransport(int tier) {
-        checkTier(tier);
+        ClayiumConfig.checkTier(tier);
         return transport(ClayiumConfig.BUFFER_TRANSPORT, tier);
     }
 
@@ -91,12 +88,6 @@ public final class TierManager {
                 balance.maximumExtract(tier));
     }
 
-    private static void checkTier(int tier) {
-        if (tier < MIN_TIER || tier > MAX_TIER) {
-            throw new IllegalArgumentException("Tier must be from 0 through 13: " + tier);
-        }
-    }
-
     private static long floorWithMinimum(double value) {
         if (!Double.isFinite(value) || value >= Long.MAX_VALUE) {
             return Long.MAX_VALUE;
@@ -119,17 +110,6 @@ public final class TierManager {
             int extractIntervalTicks,
             int maximumInsertItems,
             int maximumExtractItems) {
-        public TransportParameters(int intervalTicks, int maximumItems) {
-            this(intervalTicks, intervalTicks, maximumItems, maximumItems);
-        }
-
-        public int intervalTicks() {
-            return Math.min(insertIntervalTicks, extractIntervalTicks);
-        }
-
-        public int maximumItems() {
-            return Math.max(maximumInsertItems, maximumExtractItems);
-        }
     }
 
     public record ProcessingParameters(

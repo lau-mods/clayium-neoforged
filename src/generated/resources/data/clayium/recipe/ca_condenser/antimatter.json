@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:ca_condenser",
   "processing_ticks": 2000,
+  "progression_rate": "ticks",
   "required_tier": 9
 }

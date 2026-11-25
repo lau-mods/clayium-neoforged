@@ -23,5 +23,6 @@
   ],
   "processing_method": "clayium:assembler",
   "processing_ticks": 20,
+  "progression_rate": "ticks",
   "required_tier": 3
 }

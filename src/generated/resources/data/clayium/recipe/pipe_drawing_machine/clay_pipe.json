@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:pipe_drawing_machine",
   "processing_ticks": 3,
+  "progression_rate": "ticks",
   "required_tier": 0
 }

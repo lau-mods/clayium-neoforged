@@ -17,5 +17,6 @@
   ],
   "processing_method": "clayium:centrifuge",
   "processing_ticks": 2,
+  "progression_rate": "stacks",
   "required_tier": 4
 }

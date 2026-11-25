@@ -99,6 +99,7 @@ await scenario(async ({ clients }) => {
   await mct(client, 'input', 'click', String(left + 154), String(top + 23));
   await mct(client, 'wait', '--ticks', '5');
   await screenshot(client, 'AC-F046-002', 'pan-sorted-reversed-cost-list-and-prohibition');
+  await screenshot(client, 'AC-F049-002', 'gui-operation-ledger-pan-list-and-controls');
   await close(client);
   await open(client, 0, 100, 0);
   await screenshot(client, 'AC-F046-003', 'pan-server-state-after-window-reopen');

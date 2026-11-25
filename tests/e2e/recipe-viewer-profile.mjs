@@ -1,5 +1,6 @@
 import { constants } from 'node:fs';
 import { access, copyFile, cp, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:net';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -15,8 +16,16 @@ export async function withEmi(runScenario) {
   const { deployMod, startRuntime, stopRuntime, collectLogs, pilotEnv } =
     await import(pathToFileURL(path.join(shared, 'e2e/runtime.js')));
   const { run } = await import(pathToFileURL(path.join(shared, 'core/process.js')));
+  const address = await new Promise((resolve, reject) => {
+    const server = createServer();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const { port } = server.address();
+      server.close(error => error ? reject(error) : resolve(`127.0.0.1:${port}`));
+    });
+  });
   const config = { ...runtime, command: path.resolve(workspace, runtime.command),
-    server: { ...runtime.server, address: profile.address }, clients: [runtime.clients[0]], deploy: [], logs: [] };
+    server: { ...runtime.server, address }, clients: [runtime.clients[0]], deploy: [], logs: [] };
   const client = path.join('mct-home/clients', config.clients[0]);
   const copyTree = async (source, target) => {
     try { await access(target); } catch {
