@@ -8,10 +8,10 @@ public final class StorageCapabilities {
     public static void register(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
                 StorageRegistration.STORAGE_CONTAINER_BLOCK_ENTITY.get(),
-                (storage, side) -> storage.itemHandler());
+                StorageContainerBlockEntity::itemHandler);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
                 StorageRegistration.VOID_CONTAINER_BLOCK_ENTITY.get(),
-                (container, side) -> container.itemHandler());
+                VoidContainerBlockEntity::itemHandler);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
                 StorageRegistration.METAL_CHEST_BLOCK_ENTITY.get(),
                 (chest, side) -> chest.inventory());

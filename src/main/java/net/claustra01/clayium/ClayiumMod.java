@@ -50,6 +50,7 @@ public final class ClayiumMod {
         modEventBus.addListener(FluidCapabilities::register);
         modEventBus.addListener(LogisticsCapabilities::register);
         modEventBus.addListener(StorageCapabilities::register);
+        modEventBus.addListener(net.claustra01.clayium.pan.PanCapabilities::register);
         modEventBus.addListener(InterfaceCapabilities::register);
         modEventBus.addListener(net.claustra01.clayium.laser.LaserCapabilities::register);
         modEventBus.addListener(MultiblockCapabilities::register);

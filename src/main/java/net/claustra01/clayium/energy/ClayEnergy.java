@@ -9,11 +9,20 @@ public record ClayEnergy(long internalValue) implements Comparable<ClayEnergy> {
     public static final ClayEnergy ZERO = new ClayEnergy(0L);
     public static final ClayEnergy MAX = new ClayEnergy(Long.MAX_VALUE);
 
+    public ClayEnergy {
+        if (internalValue < 0L) {
+            throw new IllegalArgumentException("Clay Energy must not be negative: " + internalValue);
+        }
+    }
+
     public static ClayEnergy ofInternal(long internalValue) {
         return internalValue == 0L ? ZERO : new ClayEnergy(internalValue);
     }
 
     public static ClayEnergy ofCe(long clayEnergy) {
+        if (clayEnergy < 0L) {
+            throw new IllegalArgumentException("Clay Energy must not be negative: " + clayEnergy + " CE");
+        }
         if (clayEnergy > Long.MAX_VALUE / INTERNAL_UNITS_PER_CE) {
             return MAX;
         }

@@ -12,10 +12,31 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
 
 public final class UnifiedItemFilterItem extends Item {
     public UnifiedItemFilterItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        return useOn(context);
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        if (!(context.getLevel().getBlockEntity(context.getClickedPos()) instanceof ConfigurableIoDevice device)) {
+            return InteractionResult.PASS;
+        }
+        if (!context.getLevel().isClientSide) {
+            device.setFilter(context.getClickedFace(),
+                    context.getPlayer() != null && context.getPlayer().isShiftKeyDown()
+                            ? ItemStack.EMPTY : context.getItemInHand());
+        }
+        return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
     }
 
     @Override

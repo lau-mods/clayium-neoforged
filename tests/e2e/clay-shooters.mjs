@@ -16,6 +16,9 @@ const shooters = [
 
 await scenario(async ({ clients }) => {
   const client = clients[0];
+  if (mct(client, 'gui', 'info').open) {
+    mct(client, 'gui', 'close');
+  }
   command(client, 'gamemode creative');
   command(client, 'gamerule sendCommandFeedback false');
   command(client, 'time set noon');

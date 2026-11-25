@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
+import net.claustra01.clayium.client.renderer.io.IoDeviceRenderer;
 
 public final class MultitrackFaceRenderer implements BlockEntityRenderer<MultitrackBufferBlockEntity> {
     public MultitrackFaceRenderer(BlockEntityRendererProvider.Context context) {
@@ -22,6 +23,10 @@ public final class MultitrackFaceRenderer implements BlockEntityRenderer<Multitr
     @Override
     public void render(MultitrackBufferBlockEntity buffer, float partialTick, PoseStack poseStack,
                        MultiBufferSource buffers, int light, int overlay) {
+        if (buffer.pipeEnabled()) {
+            IoDeviceRenderer.renderDevice(buffer, poseStack, buffers, light);
+            return;
+        }
         VertexConsumer vertices = buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
         PoseStack.Pose pose = poseStack.last();
         for (Direction direction : Direction.values()) {

@@ -27,10 +27,12 @@ import net.minecraft.world.phys.BlockHitResult;
 public final class StorageContainerBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty EXPANDED = BooleanProperty.create("expanded");
+    public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
 
     public StorageContainerBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(EXPANDED, false));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH)
+                .setValue(EXPANDED, false).setValue(PIPE, false));
     }
 
     @Override
@@ -40,7 +42,7 @@ public final class StorageContainerBlock extends BaseEntityBlock {
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return state.getValue(PIPE) ? RenderShape.INVISIBLE : RenderShape.MODEL;
     }
 
     @Override
@@ -57,7 +59,17 @@ public final class StorageContainerBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING, EXPANDED);
+        builder.add(FACING, EXPANDED, PIPE);
+    }
+
+    @Override
+    protected net.minecraft.world.phys.shapes.VoxelShape getShape(
+            BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,
+            net.minecraft.world.phys.shapes.CollisionContext context) {
+        if (!state.getValue(PIPE)) return net.minecraft.world.phys.shapes.Shapes.block();
+        return level.getBlockEntity(pos) instanceof StorageContainerBlockEntity storage
+                ? net.claustra01.clayium.logistics.PipeShapes.forDevice(storage)
+                : net.minecraft.world.phys.shapes.Shapes.block();
     }
 
     @Override

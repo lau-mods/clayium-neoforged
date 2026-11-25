@@ -21,7 +21,7 @@ public final class MachineCapabilities {
         event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,
                 EnvironmentMachineRegistration.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(),
-                (generator, direction) -> generator.itemHandler());
+                net.claustra01.clayium.machine.environment.CobblestoneGeneratorBlockEntity::itemHandler);
     }
 
     private MachineCapabilities() {

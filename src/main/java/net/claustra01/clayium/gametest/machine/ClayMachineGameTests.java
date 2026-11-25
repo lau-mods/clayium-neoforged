@@ -36,6 +36,28 @@ import net.neoforged.neoforge.items.IItemHandler;
 @PrefixGameTestTemplate(false)
 public final class ClayMachineGameTests {
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void processingMachinesUseOriginalRelativeDefaultRoutes(GameTestHelper helper) {
+        MachineRegistration.MachineDefinition definition = MachineRegistration.MACHINES.get("condenser_tier_4");
+        BlockPos position = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockState state = definition.block().get().defaultBlockState()
+                .setValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING, Direction.EAST);
+        helper.getLevel().setBlockAndUpdate(position, state);
+        ClayMachineBlockEntity machine = (ClayMachineBlockEntity) helper.getLevel().getBlockEntity(position);
+        require(machine != null, "Placed processing machine did not create its shared block entity");
+        require(machine.faceMode(Direction.DOWN) == ClayMachineBlockEntity.FaceMode.OUTPUT,
+                "The original lower output route was not restored");
+        require(machine.faceMode(Direction.UP) == ClayMachineBlockEntity.FaceMode.INPUT,
+                "The original upper normal-input route was not restored");
+        require(machine.faceMode(Direction.WEST) == ClayMachineBlockEntity.FaceMode.FUEL_INPUT,
+                "The original rear fuel-input route did not follow the machine facing");
+        require(machine.faceMode(Direction.EAST) == ClayMachineBlockEntity.FaceMode.DISABLED
+                        && machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.DISABLED
+                        && machine.faceMode(Direction.SOUTH) == ClayMachineBlockEntity.FaceMode.DISABLED,
+                "A processing-machine face without an original route was enabled by default");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void sharedMachineStateSurvivesStopsSavesAndRecipeChanges(GameTestHelper helper) {
         assertStateMachine(
                 helper,
@@ -87,7 +109,7 @@ public final class ClayMachineGameTests {
         for (ClayMachineBlockEntity machine : List.of(tierThree, tierFour, tierSix)) {
             IItemHandler input = machine.itemHandler(Direction.UP);
             IItemHandler output = machine.itemHandler(Direction.DOWN);
-            require(input.getSlots() == 2 && output.getSlots() == 1,
+            require(input.getSlots() == 1 && output.getSlots() == 1,
                     "Tier changed the common sided slot layout");
             require(output.insertItem(0, new ItemStack(Items.CLAY), true).getCount() == 1,
                     "Output face accepted insertion");
@@ -99,6 +121,10 @@ public final class ClayMachineGameTests {
             require(ioInput.insertItem(0, new ItemStack(Items.CLAY), false).isEmpty()
                             && ioMachine.inventory().getStackInSlot(0).is(Items.CLAY),
                     "An input face rejected its item");
+            IItemHandler fuelInput = ioMachine.itemHandler(Direction.SOUTH);
+            require(fuelInput.getSlots() == 1
+                            && !fuelInput.insertItem(0, new ItemStack(Items.CLAY), true).isEmpty(),
+                    "The rear fuel route accepted a normal input item");
             ioMachine.inventory().setStackInSlot(ioMachine.outputSlot(), new ItemStack(Items.CLAY));
             require(ioOutput.extractItem(0, 1, false).is(Items.CLAY)
                             && ioMachine.inventory().getStackInSlot(ioMachine.outputSlot()).isEmpty(),
@@ -161,7 +187,7 @@ public final class ClayMachineGameTests {
                 "A valid server payload did not change the face");
         MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos.above(), Direction.NORTH.get3DDataValue(), 0));
         MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, 6, 0));
-        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, Direction.NORTH.get3DDataValue(), 3));
+        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, Direction.NORTH.get3DDataValue(), 5));
         require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
                 "Invalid server payload changed the face");
         player.setPos(machinePos.getX() + 9.0D, machinePos.getY(), machinePos.getZ());
@@ -211,20 +237,23 @@ public final class ClayMachineGameTests {
 
         ItemStack ioTool = WorkbenchRegistration.CLAY_IO_CONFIGURATOR.toStack();
         player.setItemInHand(InteractionHand.MAIN_HAND, ioTool);
-        useTool(player, position, Direction.NORTH, "I/O insertion disable");
-        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.DISABLED,
-                "A normal I/O-tool click did not cycle the insertion face to disabled");
-        useTool(player, position, Direction.NORTH, "I/O insertion restore");
-        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.INPUT,
-                "A second normal I/O-tool click did not restore insertion");
+        useTool(player, position, Direction.UP, "I/O fuel insertion select");
+        require(machine.faceMode(Direction.UP) == ClayMachineBlockEntity.FaceMode.FUEL_INPUT,
+                "A normal I/O-tool click did not advance to the fuel insertion route");
+        useTool(player, position, Direction.UP, "I/O insertion disable");
+        require(machine.faceMode(Direction.UP) == ClayMachineBlockEntity.FaceMode.DISABLED,
+                "A second normal I/O-tool click did not disable insertion");
+        useTool(player, position, Direction.UP, "I/O insertion restore");
+        require(machine.faceMode(Direction.UP) == ClayMachineBlockEntity.FaceMode.INPUT,
+                "A third normal I/O-tool click did not restore the item insertion route");
         player.setShiftKeyDown(true);
-        useTool(player, position, Direction.NORTH, "I/O extraction select");
+        useTool(player, position, Direction.UP, "I/O extraction select");
         player.setShiftKeyDown(false);
-        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
-                "A sneaking I/O-tool click did not select extraction");
-        require(machine.itemHandler(Direction.NORTH).getSlots() == 1,
-                "The I/O tool changed the display state without changing sided capability access");
-        require(ioTool.getDamageValue() == 3, "Successful I/O-tool clicks consumed the wrong durability");
+        require(machine.faceMode(Direction.UP) == ClayMachineBlockEntity.FaceMode.INPUT_OUTPUT,
+                "A sneaking I/O-tool click did not add extraction independently of insertion");
+        require(machine.itemHandler(Direction.UP).getSlots() == 2,
+                "The combined I/O state did not expose its input and output routes");
+        require(ioTool.getDamageValue() == 4, "Successful I/O-tool clicks consumed the wrong durability");
 
         ItemStack wrench = FoundationItemRegistration.CLAY_WRENCH.toStack();
         player.setItemInHand(InteractionHand.MAIN_HAND, wrench);
@@ -247,6 +276,12 @@ public final class ClayMachineGameTests {
                 "A sneaking piping-tool click did not perform the original rotation action");
         require(pipingTool.getDamageValue() == 1,
                 "A successful piping-tool rotation consumed the wrong durability");
+        useTool(player, position, Direction.NORTH, "pipe shape toggle");
+        require(helper.getLevel().getBlockState(position)
+                        .getValue(net.claustra01.clayium.machine.ClayMachineBlock.PIPE),
+                "A normal piping-tool click did not enable the shared pipe shape");
+        require(pipingTool.getDamageValue() == 2,
+                "A successful pipe toggle consumed the wrong durability");
 
         machine.setFaceMode(Direction.UP, ClayMachineBlockEntity.FaceMode.DISABLED);
         ItemStack memory = WorkbenchRegistration.MEMORY_CARD.toStack();
@@ -256,13 +291,17 @@ public final class ClayMachineGameTests {
         player.setShiftKeyDown(false);
         machine.setFaceMode(Direction.UP, ClayMachineBlockEntity.FaceMode.INPUT);
         helper.getLevel().setBlockAndUpdate(position, helper.getLevel().getBlockState(position)
-                .setValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING, Direction.NORTH));
+                .setValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING, Direction.NORTH)
+                .setValue(net.claustra01.clayium.machine.ClayMachineBlock.PIPE, false));
         useTool(player, position, Direction.NORTH, "memory load");
         require(machine.faceMode(Direction.UP) == ClayMachineBlockEntity.FaceMode.DISABLED,
                 "The memory card did not restore the saved face setting");
         require(helper.getLevel().getBlockState(position).getValue(net.claustra01.clayium.machine.ClayMachineBlock.FACING)
                         == Direction.SOUTH,
                 "The memory card did not restore the saved front");
+        require(helper.getLevel().getBlockState(position)
+                        .getValue(net.claustra01.clayium.machine.ClayMachineBlock.PIPE),
+                "The memory card did not restore the shared pipe state");
         helper.succeed();
     }
 

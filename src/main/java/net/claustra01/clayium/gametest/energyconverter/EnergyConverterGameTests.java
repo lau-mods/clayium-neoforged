@@ -95,7 +95,7 @@ public final class EnergyConverterGameTests {
             require(converter.clayEnergyStorage().stored().internalValue() == 0L,
                     "Tier " + tier + " consumed the wrong CE amount");
             IEnergyStorage capability = helper.getLevel().getCapability(
-                    Capabilities.EnergyStorage.BLOCK, converter.getBlockPos(), Direction.NORTH);
+                    Capabilities.EnergyStorage.BLOCK, converter.getBlockPos(), Direction.DOWN);
             require(capability != null
                             && capability.getMaxEnergyStored() == specification.capacity()
                             && !capability.canReceive()
@@ -153,6 +153,7 @@ public final class EnergyConverterGameTests {
         TestReceiver receiver = new TestReceiver(Integer.MAX_VALUE);
         TEST_RECEIVERS.put(receiverPosition, receiver);
         helper.getLevel().invalidateCapabilities(receiverPosition);
+        converter.cycleExtractRoute(Direction.EAST);
 
         EnergyConverterSpecification specification = converter.specification();
         IEnergyStorage exposed = helper.getLevel().getCapability(

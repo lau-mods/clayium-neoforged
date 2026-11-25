@@ -25,6 +25,7 @@ await scenario(async ({ clients }) => {
   command(client, 'gamerule sendCommandFeedback false');
   command(client, 'time set noon');
   command(client, 'weather clear');
+  await camera(client, { x: 0.5, y: 101.0, z: -12.5, yaw: 0, pitch: 7 });
   command(client, 'fill -8 99 -13 8 99 4 minecraft:smooth_stone');
   command(client, 'fill -6 100 2 6 101 2 minecraft:smooth_stone');
 
@@ -38,6 +39,13 @@ await scenario(async ({ clients }) => {
   await camera(client, { x: 0.5, y: 101.0, z: -12.5, yaw: 0, pitch: 7 }, 5_000);
   await mct(client, 'look', 'at', '0.5', '101.4', '1.5');
   await mct(client, 'wait', '--ticks', '20');
+  for (const [index, id] of machines.entries()) {
+    const x = -5 + (index % 5) * 2;
+    const y = index < 5 ? 100 : 102;
+    const z = index < 5 ? 0 : 2;
+    const block = mct(client, 'block', 'get', String(x), String(y), String(z));
+    if (block.type !== `clayium:${id}`) throw new Error(`Expected ${id} at ${x} ${y} ${z}, got ${block.type}`);
+  }
   screenshot(client, 'AC-F014-002', 'chemical-reactors-separator-and-six-transformers');
 
   command(client, 'tick freeze');

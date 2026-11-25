@@ -1,32 +1,62 @@
 {
   "variants": {
-    "facing=east,linked=false": {
+    "facing=east,linked=false,pipe=false": {
       "model": "clayium:block/redstone_interface_tier_10",
       "y": 90
     },
-    "facing=east,linked=true": {
+    "facing=east,linked=false,pipe=true": {
+      "model": "clayium:block/redstone_interface_tier_10",
+      "y": 90
+    },
+    "facing=east,linked=true,pipe=false": {
       "model": "clayium:block/redstone_interface_tier_10_linked",
       "y": 90
     },
-    "facing=north,linked=false": {
+    "facing=east,linked=true,pipe=true": {
+      "model": "clayium:block/redstone_interface_tier_10_linked",
+      "y": 90
+    },
+    "facing=north,linked=false,pipe=false": {
       "model": "clayium:block/redstone_interface_tier_10"
     },
-    "facing=north,linked=true": {
+    "facing=north,linked=false,pipe=true": {
+      "model": "clayium:block/redstone_interface_tier_10"
+    },
+    "facing=north,linked=true,pipe=false": {
       "model": "clayium:block/redstone_interface_tier_10_linked"
     },
-    "facing=south,linked=false": {
+    "facing=north,linked=true,pipe=true": {
+      "model": "clayium:block/redstone_interface_tier_10_linked"
+    },
+    "facing=south,linked=false,pipe=false": {
       "model": "clayium:block/redstone_interface_tier_10",
       "y": 180
     },
-    "facing=south,linked=true": {
+    "facing=south,linked=false,pipe=true": {
+      "model": "clayium:block/redstone_interface_tier_10",
+      "y": 180
+    },
+    "facing=south,linked=true,pipe=false": {
       "model": "clayium:block/redstone_interface_tier_10_linked",
       "y": 180
     },
-    "facing=west,linked=false": {
+    "facing=south,linked=true,pipe=true": {
+      "model": "clayium:block/redstone_interface_tier_10_linked",
+      "y": 180
+    },
+    "facing=west,linked=false,pipe=false": {
       "model": "clayium:block/redstone_interface_tier_10",
       "y": 270
     },
-    "facing=west,linked=true": {
+    "facing=west,linked=false,pipe=true": {
+      "model": "clayium:block/redstone_interface_tier_10",
+      "y": 270
+    },
+    "facing=west,linked=true,pipe=false": {
+      "model": "clayium:block/redstone_interface_tier_10_linked",
+      "y": 270
+    },
+    "facing=west,linked=true,pipe=true": {
       "model": "clayium:block/redstone_interface_tier_10_linked",
       "y": 270
     }

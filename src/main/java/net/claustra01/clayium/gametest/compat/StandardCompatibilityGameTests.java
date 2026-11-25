@@ -107,6 +107,7 @@ public final class StandardCompatibilityGameTests {
         ENERGY_ENDPOINTS.put(energyEndpointPosition, energyEndpoint);
         helper.getLevel().setBlockAndUpdate(energyEndpointPosition, Blocks.DIAMOND_BLOCK.defaultBlockState());
         helper.getLevel().invalidateCapabilities(energyEndpointPosition);
+        converter.cycleExtractRoute(Direction.EAST);
         converter.clayEnergyStorage().add(ClayEnergy.ofInternal(
                 converter.specification().clayEnergyPerTick()));
         EnergyConverterBlockEntity.serverTick(
@@ -114,7 +115,7 @@ public final class StandardCompatibilityGameTests {
         require(energyEndpoint.energy == 10 && converter.clayEnergyStorage().stored().internalValue() == 0L,
                 "The converter did not push FE through Capabilities.EnergyStorage.BLOCK");
         IEnergyStorage converterCapability = helper.getLevel().getCapability(
-                Capabilities.EnergyStorage.BLOCK, converter.getBlockPos(), Direction.NORTH);
+                Capabilities.EnergyStorage.BLOCK, converter.getBlockPos(), Direction.DOWN);
         require(converterCapability != null && !converterCapability.canReceive()
                         && converterCapability.receiveEnergy(1_000, false) == 0,
                 "The CE-FE converter accepted reverse FE input");

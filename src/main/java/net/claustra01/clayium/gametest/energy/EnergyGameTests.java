@@ -92,6 +92,21 @@ public final class EnergyGameTests {
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void clayEnergyRejectsEveryNegativeConstructionPath(GameTestHelper helper) {
+        requireThrows(() -> new ClayEnergy(-1L), "The public ClayEnergy constructor accepted a negative value");
+        requireThrows(() -> ClayEnergy.ofInternal(-1L), "ClayEnergy.ofInternal accepted a negative value");
+        requireThrows(() -> ClayEnergy.ofCe(-1L), "ClayEnergy.ofCe accepted a negative value");
+
+        CompoundTag invalid = new CompoundTag();
+        invalid.putLong(ClayEnergyStorage.ENERGY_NBT_KEY, -1L);
+        ClayEnergyStorage storage = new ClayEnergyStorage();
+        requireThrows(
+                () -> storage.deserializeNBT(helper.getLevel().registryAccess(), invalid),
+                "ClayEnergyStorage accepted a negative persisted value");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void ordinaryClayEnergyStorageDoesNotExposeFe(GameTestHelper helper) {
         require(!ClayEnergyStorage.EXPOSES_FE_CAPABILITY,
                 "Ordinary Clayium machines must not expose an FE capability");
@@ -222,6 +237,15 @@ public final class EnergyGameTests {
     private static void requireClose(double actual, double expected, String description) {
         require(Math.abs(actual - expected) <= EPSILON * Math.max(1.0D, Math.abs(expected)),
                 "Wrong " + description + ": " + actual + " instead of " + expected);
+    }
+
+    private static void requireThrows(Runnable action, String message) {
+        try {
+            action.run();
+        } catch (IllegalArgumentException expected) {
+            return;
+        }
+        throw new GameTestAssertException(message);
     }
 
     private static void require(boolean condition, String message) {

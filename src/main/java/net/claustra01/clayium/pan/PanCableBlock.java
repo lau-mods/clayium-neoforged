@@ -70,6 +70,7 @@ public final class PanCableBlock extends PanBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST);
     }
 

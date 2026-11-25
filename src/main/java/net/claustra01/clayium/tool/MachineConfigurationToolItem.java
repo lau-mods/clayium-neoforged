@@ -1,8 +1,7 @@
 package net.claustra01.clayium.tool;
 
 import net.claustra01.clayium.item.FoundationItem;
-import net.claustra01.clayium.machine.ClayMachineBlock;
-import net.claustra01.clayium.machine.ClayMachineBlockEntity;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -12,9 +11,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.state.BlockState;
 
-/** Restores the original machine-side tool clicks using the current three-state face model. */
+/** Applies the original configuration-tool actions to every shared relative-side I/O device. */
 public final class MachineConfigurationToolItem extends FoundationItem {
     private static final String MEMORY_TAG = "clayium_machine_configuration";
 
@@ -32,7 +30,7 @@ public final class MachineConfigurationToolItem extends FoundationItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (!(context.getLevel().getBlockEntity(context.getClickedPos()) instanceof ClayMachineBlockEntity machine)) {
+        if (!(context.getLevel().getBlockEntity(context.getClickedPos()) instanceof ConfigurableIoDevice device)) {
             return InteractionResult.PASS;
         }
         if (context.getLevel().isClientSide) {
@@ -44,12 +42,13 @@ public final class MachineConfigurationToolItem extends FoundationItem {
         }
 
         boolean changed = switch (mode) {
-            case WRENCH -> rotate(context);
-            case IO -> configureFace(machine, context.getClickedFace(), player.isShiftKeyDown());
-            case PIPING -> player.isShiftKeyDown() && rotate(context);
+            case WRENCH -> device.rotate(context.getClickedFace());
+            case IO -> configureFace(device, context.getClickedFace(), player.isShiftKeyDown());
+            case PIPING -> player.isShiftKeyDown()
+                    ? device.rotate(context.getClickedFace()) : device.togglePipe();
             case MEMORY -> player.isShiftKeyDown()
-                    ? save(context.getItemInHand(), machine)
-                    : load(context.getItemInHand(), machine, context);
+                    ? save(context.getItemInHand(), device)
+                    : load(context.getItemInHand(), device);
         };
         if (!changed) {
             return InteractionResult.PASS;
@@ -60,76 +59,26 @@ public final class MachineConfigurationToolItem extends FoundationItem {
         return InteractionResult.SUCCESS;
     }
 
-    private static boolean configureFace(
-            ClayMachineBlockEntity machine, Direction direction, boolean extraction) {
-        ClayMachineBlockEntity.FaceMode selected = extraction
-                ? ClayMachineBlockEntity.FaceMode.OUTPUT
-                : ClayMachineBlockEntity.FaceMode.INPUT;
-        ClayMachineBlockEntity.FaceMode next = machine.faceMode(direction) == selected
-                ? ClayMachineBlockEntity.FaceMode.DISABLED
-                : selected;
-        machine.setFaceMode(direction, next);
+    private static boolean configureFace(ConfigurableIoDevice device, Direction direction, boolean extraction) {
+        if (extraction) device.cycleExtractRoute(direction);
+        else device.cycleInsertRoute(direction);
         return true;
     }
 
-    private static boolean rotate(UseOnContext context) {
-        Direction clicked = context.getClickedFace();
-        if (!clicked.getAxis().isHorizontal()) {
-            return false;
-        }
-        BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-        if (!state.hasProperty(ClayMachineBlock.FACING)) {
-            return false;
-        }
-        Direction current = state.getValue(ClayMachineBlock.FACING);
-        Direction next = current == clicked ? clicked.getOpposite() : clicked;
-        context.getLevel().setBlock(context.getClickedPos(), state.setValue(ClayMachineBlock.FACING, next), 3);
-        return true;
-    }
-
-    private static boolean save(ItemStack card, ClayMachineBlockEntity machine) {
+    private static boolean save(ItemStack card, ConfigurableIoDevice device) {
         CompoundTag root = card.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        CompoundTag memory = new CompoundTag();
-        for (Direction direction : Direction.values()) {
-            memory.putString(direction.getName(), machine.faceMode(direction).name());
-        }
-        BlockState state = machine.getBlockState();
-        if (state.hasProperty(ClayMachineBlock.FACING)) {
-            memory.putString("facing", state.getValue(ClayMachineBlock.FACING).getName());
-        }
-        root.put(MEMORY_TAG, memory);
+        root.put(MEMORY_TAG, device.saveIoMemory());
         card.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
         return true;
     }
 
-    private static boolean load(
-            ItemStack card, ClayMachineBlockEntity machine, UseOnContext context) {
+    private static boolean load(ItemStack card, ConfigurableIoDevice device) {
         CompoundTag root = card.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (!root.contains(MEMORY_TAG, CompoundTag.TAG_COMPOUND)) {
             return false;
         }
-        CompoundTag memory = root.getCompound(MEMORY_TAG);
-        for (Direction direction : Direction.values()) {
-            ClayMachineBlockEntity.FaceMode faceMode = parseFaceMode(memory.getString(direction.getName()));
-            if (faceMode != null) {
-                machine.setFaceMode(direction, faceMode);
-            }
-        }
-        Direction facing = Direction.byName(memory.getString("facing"));
-        BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-        if (facing != null && facing.getAxis().isHorizontal() && state.hasProperty(ClayMachineBlock.FACING)) {
-            context.getLevel().setBlock(
-                    context.getClickedPos(), state.setValue(ClayMachineBlock.FACING, facing), 3);
-        }
+        device.loadIoMemory(root.getCompound(MEMORY_TAG));
         return true;
-    }
-
-    private static ClayMachineBlockEntity.FaceMode parseFaceMode(String name) {
-        try {
-            return ClayMachineBlockEntity.FaceMode.valueOf(name);
-        } catch (IllegalArgumentException ignored) {
-            return null;
-        }
     }
 
     public enum Mode {

@@ -25,9 +25,10 @@ public final class LogisticsBlockStateProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         for (Direction direction : Direction.values()) {
             for (BufferBlockEntity.FaceMode mode : new BufferBlockEntity.FaceMode[] {
-                    BufferBlockEntity.FaceMode.INPUT, BufferBlockEntity.FaceMode.OUTPUT}) {
+                    BufferBlockEntity.FaceMode.INPUT, BufferBlockEntity.FaceMode.OUTPUT,
+                    BufferBlockEntity.FaceMode.INPUT_OUTPUT}) {
                 String name = "buffer_face_" + direction.getName() + "_" + mode.getSerializedName();
-                String texture = mode == BufferBlockEntity.FaceMode.INPUT ? "import" : "export";
+                String texture = mode == BufferBlockEntity.FaceMode.OUTPUT ? "export" : "import";
                 var model = models().getBuilder(name)
                         .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
                         .texture("overlay", ClayiumMod.id("block/" + texture))
@@ -67,10 +68,16 @@ public final class LogisticsBlockStateProvider extends BlockStateProvider {
             multipart.part().modelFile(model).addModel().end();
             for (Direction direction : Direction.values()) {
                 for (BufferBlockEntity.FaceMode mode : new BufferBlockEntity.FaceMode[] {
-                        BufferBlockEntity.FaceMode.INPUT, BufferBlockEntity.FaceMode.OUTPUT}) {
+                        BufferBlockEntity.FaceMode.INPUT, BufferBlockEntity.FaceMode.OUTPUT,
+                        BufferBlockEntity.FaceMode.INPUT_OUTPUT}) {
                     multipart.part().modelFile(models().getExistingFile(ClayiumMod.id(
                                     "block/buffer_face_" + direction.getName() + "_" + mode.getSerializedName())))
                             .addModel().condition(BufferBlock.FACES.get(direction.get3DDataValue()), mode).end();
+                    if (mode == BufferBlockEntity.FaceMode.INPUT_OUTPUT) {
+                        multipart.part().modelFile(models().getExistingFile(ClayiumMod.id(
+                                        "block/buffer_face_" + direction.getName() + "_output")))
+                                .addModel().condition(BufferBlock.FACES.get(direction.get3DDataValue()), mode).end();
+                    }
                 }
             }
             for (Direction facing : Direction.Plane.HORIZONTAL) {

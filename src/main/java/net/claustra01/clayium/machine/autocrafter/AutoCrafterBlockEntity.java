@@ -2,16 +2,22 @@ package net.claustra01.clayium.machine.autocrafter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.SideConfiguration;
+import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.recipe.ClayiumRecipesReloadedEvent;
 import net.claustra01.clayium.registry.AutoCrafterRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -33,7 +39,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class AutoCrafterBlockEntity extends BlockEntity implements MenuProvider {
+public final class AutoCrafterBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     private static final List<WeakReference<AutoCrafterBlockEntity>> LOADED_CRAFTERS = new ArrayList<>();
 
     static {
@@ -85,9 +91,13 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
         }
     };
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
+    private final int[] insertionRoutes = {-1, 0, -1, 1, -1, -1};
+    private final int[] extractionRoutes = {0, -1, -1, -1, -1, -1};
+    private final ItemStack[] sideFilters = new ItemStack[6];
+    private final SideConfiguration sideConfiguration = new SideConfiguration(
+            insertionRoutes, extractionRoutes, sideFilters, () -> 2, () -> 1, ItemFilter::accepts);
     private final IItemHandler unsidedHandler = new AutoCrafterItemHandler(null);
-    private final IItemHandler inputHandler = new AutoCrafterItemHandler(Direction.UP);
-    private final IItemHandler outputHandler = new AutoCrafterItemHandler(Direction.DOWN);
+    private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final ContainerData menuData = new AutoCrafterContainerData();
 
     private int craftTick;
@@ -95,6 +105,8 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
 
     public AutoCrafterBlockEntity(BlockPos pos, BlockState state) {
         super(AutoCrafterRegistration.BLOCK_ENTITY.get(), pos, state);
+        java.util.Arrays.fill(sideFilters, ItemStack.EMPTY);
+        for (Direction direction : Direction.values()) sidedHandlers.put(direction, new AutoCrafterItemHandler(direction));
         LOADED_CRAFTERS.add(new WeakReference<>(this));
     }
 
@@ -304,10 +316,24 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
-        if (direction == null) {
-            return unsidedHandler;
+        return direction == null ? unsidedHandler : sidedHandlers.get(direction);
+    }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() {
+        return AutoCrafterBlock.PIPE;
+    }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
+        return AutoCrafterBlock.FACING;
+    }
+    @Override public void ioConfigurationChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+            if (!level.isClientSide) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
-        return direction == Direction.DOWN ? outputHandler : inputHandler;
+        ioNeighborsChanged();
     }
 
     public Container dropInventory() {
@@ -336,6 +362,11 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
         tag.put("pattern", pattern.serializeNBT(registries));
         tag.put("energy", energy.serializeNBT(registries));
         tag.putInt("craft_tick", craftTick);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
+        ListTag filters = new ListTag();
+        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
+        tag.put("side_filters", filters);
     }
 
     @Override
@@ -345,6 +376,13 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
         pattern.deserializeNBT(registries, tag.getCompound("pattern"));
         energy.deserializeNBT(registries, tag.getCompound("energy"));
         craftTick = Math.max(0, tag.getInt("craft_tick"));
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        }
+        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
+        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
+            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
+        }
         previewDirty = true;
     }
 
@@ -353,52 +391,37 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
 
     private final class AutoCrafterItemHandler implements IItemHandler {
         @Nullable private final Direction direction;
-        private final int[] slots;
 
         private AutoCrafterItemHandler(@Nullable Direction direction) {
             this.direction = direction;
-            if (direction == Direction.DOWN) {
-                slots = new int[OUTPUT_SLOTS];
-                for (int slot = 0; slot < OUTPUT_SLOTS; slot++) {
-                    slots[slot] = OUTPUT_START + slot;
-                }
-            } else if (direction == null) {
-                slots = new int[FUEL_SLOT + 1];
-                for (int slot = 0; slot < slots.length; slot++) {
-                    slots[slot] = slot;
-                }
-            } else {
-                slots = new int[INPUT_SLOTS + 1];
-                for (int slot = 0; slot < INPUT_SLOTS; slot++) {
-                    slots[slot] = slot;
-                }
-                slots[INPUT_SLOTS] = FUEL_SLOT;
-            }
         }
 
         @Override
         public int getSlots() {
-            return slots.length;
+            return slots().length;
         }
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return inventory.getStackInSlot(slots[slot]);
+            return inventory.getStackInSlot(mappedSlot(slot));
         }
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            int actual = slots[slot];
-            if (direction == Direction.DOWN || actual >= OUTPUT_START && actual < FUEL_SLOT) {
+            int actual = mappedSlot(slot);
+            if (direction != null && !contains(insertionSlots(insertionRoute(direction)), actual)
+                    || actual >= OUTPUT_START && actual < FUEL_SLOT) {
                 return stack;
             }
+            if (direction != null && !matchesFilter(direction, stack)) return stack;
             return inventory.insertItem(actual, stack, simulate);
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            int actual = slots[slot];
-            if (actual < OUTPUT_START || actual >= FUEL_SLOT) {
+            int actual = mappedSlot(slot);
+            if (direction != null && !contains(extractionSlots(extractionRoute(direction)), actual)
+                    || actual < OUTPUT_START || actual >= FUEL_SLOT) {
                 return ItemStack.EMPTY;
             }
             return inventory.extractItem(actual, amount, simulate);
@@ -406,14 +429,41 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
 
         @Override
         public int getSlotLimit(int slot) {
-            return inventory.getSlotLimit(slots[slot]);
+            return inventory.getSlotLimit(mappedSlot(slot));
         }
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            int actual = slots[slot];
-            return direction != Direction.DOWN && inventory.isItemValid(actual, stack);
+            int actual = mappedSlot(slot);
+            return (direction == null || contains(insertionSlots(insertionRoute(direction)), actual))
+                    && (direction == null || matchesFilter(direction, stack))
+                    && inventory.isItemValid(actual, stack);
         }
+
+        private int mappedSlot(int slot) { return slots()[slot]; }
+
+        private int[] slots() {
+            if (direction == null) return java.util.stream.IntStream.range(0, FUEL_SLOT + 1).toArray();
+            return java.util.stream.IntStream.concat(
+                    java.util.Arrays.stream(insertionSlots(insertionRoute(direction))),
+                    java.util.Arrays.stream(extractionSlots(extractionRoute(direction)))).distinct().toArray();
+        }
+    }
+
+    private static int[] insertionSlots(int route) {
+        if (route == 0) return java.util.stream.IntStream.range(0, INPUT_SLOTS).toArray();
+        return route == 1 ? new int[] {FUEL_SLOT} : new int[0];
+    }
+
+    private static int[] extractionSlots(int route) {
+        return route == 0
+                ? java.util.stream.IntStream.range(OUTPUT_START, OUTPUT_START + OUTPUT_SLOTS).toArray()
+                : new int[0];
+    }
+
+    private static boolean contains(int[] slots, int slot) {
+        for (int candidate : slots) if (candidate == slot) return true;
+        return false;
     }
 
     private final class AutoCrafterContainerData implements ContainerData {

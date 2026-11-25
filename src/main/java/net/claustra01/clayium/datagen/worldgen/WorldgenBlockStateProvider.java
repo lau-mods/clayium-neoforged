@@ -20,12 +20,12 @@ public final class WorldgenBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        ore(WorldgenRegistration.CLAY_ORE.get(), "clayore-0");
-        ore(WorldgenRegistration.DEEPSLATE_CLAY_ORE.get(), "clayore-0");
-        ore(WorldgenRegistration.DENSE_CLAY_ORE.get(), "clayore-1");
-        ore(WorldgenRegistration.DEEPSLATE_DENSE_CLAY_ORE.get(), "clayore-1");
-        ore(WorldgenRegistration.LARGE_DENSE_CLAY_ORE.get(), "clayore-2");
-        ore(WorldgenRegistration.DEEPSLATE_LARGE_DENSE_CLAY_ORE.get(), "clayore-2");
+        ore(WorldgenRegistration.CLAY_ORE.get(), "clay_ore");
+        ore(WorldgenRegistration.DEEPSLATE_CLAY_ORE.get(), "deepslate_clay_ore");
+        ore(WorldgenRegistration.DENSE_CLAY_ORE.get(), "dense_clay_ore");
+        ore(WorldgenRegistration.DEEPSLATE_DENSE_CLAY_ORE.get(), "deepslate_dense_clay_ore");
+        ore(WorldgenRegistration.LARGE_DENSE_CLAY_ORE.get(), "large_dense_clay_ore");
+        ore(WorldgenRegistration.DEEPSLATE_LARGE_DENSE_CLAY_ORE.get(), "deepslate_large_dense_clay_ore");
     }
 
     private void ore(Block block, String texture) {

@@ -146,6 +146,7 @@ public final class BufferScreen extends AbstractContainerScreen<BufferMenu> {
             case INPUT -> "I";
             case OUTPUT -> "O";
             case DISABLED -> "X";
+            case INPUT_OUTPUT -> "B";
         };
         return Component.literal(shortName(direction) + ":" + mode);
     }

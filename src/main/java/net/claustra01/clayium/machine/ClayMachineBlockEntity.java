@@ -11,9 +11,14 @@ import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.machine.augment.AugmentScanner;
 import net.claustra01.clayium.machine.ca.CaMachineRules;
 import net.claustra01.clayium.machine.ca.CaSeries;
+import net.claustra01.clayium.machine.environment.EnvironmentSeries;
 import net.claustra01.clayium.machine.series.MachineSeries;
 import net.claustra01.clayium.machine.series.SmeltingSeries;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.RelativeFace;
+import net.claustra01.clayium.logistics.SideConfiguration;
+import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.machine.iface.RedstoneControlReceiver;
 import net.claustra01.clayium.multiblock.careactor.CaReactorCoreBlockEntity;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
@@ -68,7 +73,7 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
 public class ClayMachineBlockEntity extends BlockEntity
-        implements MenuProvider, RedstoneControlReceiver {
+        implements MenuProvider, RedstoneControlReceiver, ConfigurableIoDevice {
 
     private static final List<WeakReference<ClayMachineBlockEntity>> LOADED_MACHINES = new ArrayList<>();
 
@@ -94,7 +99,10 @@ public class ClayMachineBlockEntity extends BlockEntity
     private final int fuelSlot;
     private final ItemStackHandler inventory;
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
-    private final EnumMap<Direction, FaceMode> faceModes = new EnumMap<>(Direction.class);
+    private final int[] insertionRoutes = {-1, 0, -1, 1, -1, -1};
+    private final int[] extractionRoutes = {0, -1, -1, -1, -1, -1};
+    private final ItemStack[] sideFilters = new ItemStack[RelativeFace.COUNT];
+    private final SideConfiguration sideConfiguration;
     private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final IItemHandler unsidedHandler;
     private final FluidTank fluidInput = tank();
@@ -155,12 +163,25 @@ public class ClayMachineBlockEntity extends BlockEntity
                 return slot == fuelSlot ? fuelLimit() : super.getSlotLimit(slot);
             }
         };
+        java.util.Arrays.fill(sideFilters, ItemStack.EMPTY);
+        if (series == EnvironmentSeries.SALT_EXTRACTOR) {
+            java.util.Arrays.fill(insertionRoutes, -1);
+            java.util.Arrays.fill(extractionRoutes, -1);
+            insertionRoutes[3] = 0;
+            extractionRoutes[2] = 0;
+        }
+        sideConfiguration = new SideConfiguration(
+                insertionRoutes, extractionRoutes, sideFilters,
+                this::insertionRouteCount, () -> 1, ItemFilter::accepts);
         unsidedHandler = new SidedItemHandler(null);
         LOADED_MACHINES.add(new WeakReference<>(this));
         for (Direction direction : Direction.values()) {
-            faceModes.put(direction, direction == Direction.DOWN ? FaceMode.OUTPUT : FaceMode.INPUT);
             sidedHandlers.put(direction, new SidedItemHandler(direction));
         }
+    }
+
+    private int insertionRouteCount() {
+        return series() == EnvironmentSeries.SALT_EXTRACTOR ? 1 : 2;
     }
 
     private FluidTank tank() {
@@ -286,7 +307,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
             int index = (start + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (faceModes.get(direction) != FaceMode.OUTPUT) {
+            if (extractionRoute(direction) < 0) {
                 continue;
             }
             IItemHandler target = neighborItemCaches.get(direction).getCapability();
@@ -308,7 +329,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
             int index = (start + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (faceModes.get(direction) != FaceMode.INPUT) {
+            if (insertionRoute(direction) < 0) {
                 continue;
             }
             IItemHandler source = neighborItemCaches.get(direction).getCapability();
@@ -948,15 +969,39 @@ public class ClayMachineBlockEntity extends BlockEntity
     }
 
     public FaceMode faceMode(Direction direction) {
-        return faceModes.get(direction);
+        int insertion = insertionRoute(direction);
+        int extraction = extractionRoute(direction);
+        if (insertion >= 0 && extraction >= 0) return FaceMode.INPUT_OUTPUT;
+        if (extraction >= 0) return FaceMode.OUTPUT;
+        if (insertion == 1) return FaceMode.FUEL_INPUT;
+        if (insertion == 0) return FaceMode.INPUT;
+        return FaceMode.DISABLED;
     }
 
     public void setFaceMode(Direction direction, FaceMode mode) {
-        faceModes.put(direction, mode);
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition);
+        switch (mode) {
+            case INPUT -> sideConfiguration.setRoutes(ioFacing(), direction, 0, -1);
+            case FUEL_INPUT -> sideConfiguration.setRoutes(ioFacing(), direction,
+                    insertionRouteCount() > 1 ? 1 : 0, -1);
+            case OUTPUT -> sideConfiguration.setRoutes(ioFacing(), direction, -1, 0);
+            case INPUT_OUTPUT -> sideConfiguration.setRoutes(ioFacing(), direction, 0, 0);
+            case DISABLED -> sideConfiguration.setRoutes(ioFacing(), direction, -1, -1);
         }
+        ioConfigurationChanged();
+    }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() {
+        return ClayMachineBlock.PIPE;
+    }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
+        return ClayMachineBlock.FACING;
+    }
+    @Override public void ioConfigurationChanged() {
+        if (level != null) level.invalidateCapabilities(worldPosition);
         setChangedAndSync();
+        ioNeighborsChanged();
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
@@ -1028,9 +1073,11 @@ public class ClayMachineBlockEntity extends BlockEntity
         tag.putInt("auto_extract_tick", autoExtractTick);
         tag.putInt("next_input_direction", nextInputDirection);
         tag.putInt("next_output_direction", nextOutputDirection);
-        CompoundTag faces = new CompoundTag();
-        faceModes.forEach((direction, mode) -> faces.putString(direction.getName(), mode.name()));
-        tag.put("faces", faces);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
+        ListTag filters = new ListTag();
+        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
+        tag.put("side_filters", filters);
     }
 
     @Override
@@ -1070,11 +1117,21 @@ public class ClayMachineBlockEntity extends BlockEntity
         nextInputDirection = Math.floorMod(tag.getInt("next_input_direction"), Direction.values().length);
         nextOutputDirection = Math.floorMod(tag.getInt("next_output_direction"), Direction.values().length);
         validateRecipeOnLoad = activeRecipe != null;
-        CompoundTag faces = tag.getCompound("faces");
-        for (Direction direction : Direction.values()) {
-            if (faces.contains(direction.getName())) {
-                faceModes.put(direction, parseEnum(FaceMode.class, faces.getString(direction.getName()), faceModes.get(direction)));
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(
+                    tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        } else {
+            CompoundTag faces = tag.getCompound("faces");
+            for (Direction direction : Direction.values()) {
+                if (faces.contains(direction.getName())) {
+                    setFaceMode(direction, parseEnum(
+                            FaceMode.class, faces.getString(direction.getName()), faceMode(direction)));
+                }
             }
+        }
+        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
+        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
+            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
         }
         if (activeRecipe != null && (pendingOutputs.isEmpty() && pendingFluidOutput.isEmpty() || !hasReservedInput())) {
             clearCorruptProcess();
@@ -1140,7 +1197,13 @@ public class ClayMachineBlockEntity extends BlockEntity
     public enum FaceMode {
         INPUT,
         OUTPUT,
-        DISABLED;
+        DISABLED,
+        FUEL_INPUT,
+        INPUT_OUTPUT;
+
+        public boolean allowsInput() {
+            return this == INPUT || this == FUEL_INPUT || this == INPUT_OUTPUT;
+        }
 
         public FaceMode next() {
             return values()[(ordinal() + 1) % values().length];
@@ -1200,9 +1263,7 @@ public class ClayMachineBlockEntity extends BlockEntity
             if (direction == null) {
                 return inputSlots + outputSlots + 1;
             }
-            return faceModes.get(direction) == FaceMode.DISABLED
-                    ? 0
-                    : faceModes.get(direction) == FaceMode.INPUT ? inputSlots + 1 : outputSlots;
+            return slotsFor(direction).length;
         }
 
         @Override
@@ -1214,7 +1275,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             int mappedSlot = mappedSlot(slot);
             return (direction == null && !isOutputSlot(mappedSlot))
-                            || direction != null && faceModes.get(direction) == FaceMode.INPUT
+                            || direction != null && contains(insertionSlots(insertionRoute(direction)), mappedSlot)
                     ? inventory.insertItem(mappedSlot, stack, simulate) : stack;
         }
 
@@ -1222,7 +1283,7 @@ public class ClayMachineBlockEntity extends BlockEntity
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             int mappedSlot = mappedSlot(slot);
             return direction == null && isOutputSlot(mappedSlot)
-                            || direction != null && faceModes.get(direction) == FaceMode.OUTPUT
+                            || direction != null && contains(extractionSlots(extractionRoute(direction)), mappedSlot)
                     ? inventory.extractItem(mappedSlot, amount, simulate)
                     : ItemStack.EMPTY;
         }
@@ -1236,7 +1297,8 @@ public class ClayMachineBlockEntity extends BlockEntity
         public boolean isItemValid(int slot, ItemStack stack) {
             int mappedSlot = mappedSlot(slot);
             return ((direction == null && !isOutputSlot(mappedSlot))
-                            || direction != null && faceModes.get(direction) == FaceMode.INPUT)
+                            || direction != null && contains(insertionSlots(insertionRoute(direction)), mappedSlot))
+                    && (direction == null || matchesFilter(direction, stack))
                     && inventory.isItemValid(mappedSlot, stack);
         }
 
@@ -1248,15 +1310,38 @@ public class ClayMachineBlockEntity extends BlockEntity
                 return slot < inputSlots + outputSlots
                         ? outputSlot + slot - inputSlots : fuelSlot;
             }
-            if (faceModes.get(direction) == FaceMode.OUTPUT) {
-                return outputSlot + slot;
-            }
-            return slot < inputSlots ? slot : fuelSlot;
+            int[] slots = slotsFor(direction);
+            if (slot < 0 || slot >= slots.length) throw new IndexOutOfBoundsException("Machine side slot: " + slot);
+            return slots[slot];
         }
 
         private boolean isOutputSlot(int slot) {
             return slot >= outputSlot && slot < outputSlot + outputSlots;
         }
+
+        private int[] slotsFor(Direction side) {
+            int[] insertion = insertionSlots(insertionRoute(side));
+            int[] extraction = extractionSlots(extractionRoute(side));
+            return java.util.stream.IntStream.concat(
+                    java.util.Arrays.stream(insertion), java.util.Arrays.stream(extraction)).distinct().toArray();
+        }
+    }
+
+    private int[] insertionSlots(int route) {
+        if (route == 0) return java.util.stream.IntStream.range(0, inputSlots).toArray();
+        if (route == 1 && insertionRouteCount() > 1) return new int[] {fuelSlot};
+        return new int[0];
+    }
+
+    private int[] extractionSlots(int route) {
+        return route == 0
+                ? java.util.stream.IntStream.range(outputSlot, outputSlot + outputSlots).toArray()
+                : new int[0];
+    }
+
+    private static boolean contains(int[] slots, int slot) {
+        for (int candidate : slots) if (candidate == slot) return true;
+        return false;
     }
 
     private final class MachineFluidHandler implements IFluidHandler {

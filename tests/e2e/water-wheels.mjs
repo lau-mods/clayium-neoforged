@@ -12,6 +12,8 @@ await scenario(async ({ clients }) => {
   command(client, 'gamerule sendCommandFeedback false');
   command(client, 'time set noon');
   command(client, 'weather clear');
+  await camera(client, { x: 0.5, y: 100.4, z: -4.5, yaw: 0, pitch: 8 });
+  command(client, 'fill -5 100 -1 5 103 4 minecraft:air');
   command(client, 'fill -5 99 -5 5 99 4 minecraft:smooth_stone');
   command(client, 'fill -8 100 1 8 100 1 minecraft:smooth_stone');
   command(client, 'setblock -2 100 1 clayium:clay_water_wheel[facing=north]');

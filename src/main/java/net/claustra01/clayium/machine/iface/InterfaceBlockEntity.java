@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.InterfaceRegistration;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.laser.LaserBeam;
 import net.claustra01.clayium.multiblock.MultiblockStructureNotifier;
 import net.claustra01.clayium.multiblock.careactor.CaReactorStructureNotifier;
@@ -31,9 +33,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 
-public final class InterfaceBlockEntity extends BlockEntity implements MenuProvider, LaserReceiver {
+public final class InterfaceBlockEntity extends BlockEntity implements MenuProvider, LaserReceiver, ConfigurableIoDevice {
     private final IItemHandler[] itemHandlers = new IItemHandler[Direction.values().length + 1];
     private final ContainerData menuData = new InterfaceContainerData();
+    private final int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
+    private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
+    private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
+            insertionRoutes, extractionRoutes, this::itemRouteCount, this::itemRouteCount);
 
     private SynchronizedTarget target;
     private UUID owner;
@@ -63,6 +69,19 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
     public InterfaceType interfaceType() {
         return ((InterfaceBlock)getBlockState().getBlock()).interfaceType();
     }
+
+    private int itemRouteCount() { return interfaceType() == InterfaceType.ITEM ? 1 : 0; }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() { return InterfaceBlock.PIPE; }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() { return InterfaceBlock.FACING; }
+    @Override public void ioConfigurationChanged() {
+        if (level != null) level.invalidateCapabilities(worldPosition);
+        setChangedAndSync();
+        ioNeighborsChanged();
+    }
+    @Override public boolean togglePipe() { return interfaceType() == InterfaceType.ITEM && ConfigurableIoDevice.super.togglePipe(); }
 
     public int tier() {
         return ((InterfaceBlock)getBlockState().getBlock()).tier();
@@ -175,6 +194,8 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         if (owner != null) {
             tag.putUUID("owner", owner);
         }
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
     }
 
     @Override
@@ -186,6 +207,9 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
                 net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimension),
                 BlockPos.of(tag.getLong("target_pos")));
         owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        }
         if (level != null && !Objects.equals(previousTarget, target)) {
             MultiblockStructureNotifier.componentChanged(level, worldPosition);
             CaReactorStructureNotifier.componentChanged(level, worldPosition);
@@ -259,6 +283,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public int getSlots() {
+            if (direction != null && insertionRoute(direction) < 0 && extractionRoute(direction) < 0) return 0;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler == null ? 0 : targetHandler.getSlots();
         }
@@ -272,6 +297,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (direction != null && insertionRoute(direction) < 0) return stack;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler == null || slot < 0 || slot >= targetHandler.getSlots()
                     ? stack : targetHandler.insertItem(slot, stack, simulate);
@@ -279,6 +305,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (direction != null && extractionRoute(direction) < 0) return ItemStack.EMPTY;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler == null || slot < 0 || slot >= targetHandler.getSlots()
                     ? ItemStack.EMPTY : targetHandler.extractItem(slot, amount, simulate);
@@ -293,6 +320,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
+            if (direction != null && insertionRoute(direction) < 0) return false;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler != null && slot >= 0 && slot < targetHandler.getSlots()
                     && targetHandler.isItemValid(slot, stack);

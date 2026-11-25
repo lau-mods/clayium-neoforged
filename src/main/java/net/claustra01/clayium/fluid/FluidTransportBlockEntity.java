@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.FluidRegistration;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.IoTransportKind;
+import net.claustra01.clayium.logistics.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -30,7 +33,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class FluidTransportBlockEntity extends BlockEntity implements MenuProvider {
+public final class FluidTransportBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     private final FluidTank tank;
     private final FluidTank pending;
     private final ItemStackHandler filterInventory = new ItemStackHandler(1) {
@@ -49,7 +52,10 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
             return 1;
         }
     };
-    private final EnumMap<Direction, FaceMode> faces = new EnumMap<>(Direction.class);
+    private final int[] insertionRoutes = {-1, 0, 0, 0, 0, 0};
+    private final int[] extractionRoutes = {0, -1, -1, -1, -1, -1};
+    private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
+            insertionRoutes, extractionRoutes, () -> 1, () -> 1);
     private final EnumMap<Direction, IFluidHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final IFluidHandler unsidedHandler = new SidedFluidHandler(null);
     private final ContainerData menuData = new TransportContainerData();
@@ -69,7 +75,6 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         tank = createTank(capacity);
         pending = createTank(capacity);
         for (Direction direction : Direction.values()) {
-            faces.put(direction, direction == Direction.DOWN ? FaceMode.OUTPUT : FaceMode.INPUT);
             sidedHandlers.put(direction, new SidedFluidHandler(direction));
         }
     }
@@ -132,7 +137,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         for (int offset = 0; offset < Direction.values().length && moved < maximum && !pending.isEmpty(); offset++) {
             int index = (nextOutputDirection + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (!faces.get(direction).canOutput() || filledAt.getOrDefault(direction, Long.MIN_VALUE) == level.getGameTime()) {
+            if (extractionRoute(direction) < 0 || filledAt.getOrDefault(direction, Long.MIN_VALUE) == level.getGameTime()) {
                 continue;
             }
             IFluidHandler target = neighborCaches.get(direction).getCapability();
@@ -162,7 +167,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         for (int offset = 0; offset < Direction.values().length && moved < maximum && !tank.isEmpty(); offset++) {
             int index = (nextOutputDirection + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (!faces.get(direction).canOutput() || filledAt.getOrDefault(direction, Long.MIN_VALUE) == level.getGameTime()) {
+            if (extractionRoute(direction) < 0 || filledAt.getOrDefault(direction, Long.MIN_VALUE) == level.getGameTime()) {
                 continue;
             }
             IFluidHandler target = neighborCaches.get(direction).getCapability();
@@ -197,7 +202,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         for (int offset = 0; offset < Direction.values().length && moved < maximum; offset++) {
             int index = (nextInputDirection + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (!faces.get(direction).canInput() || usedOutputs.contains(direction)
+            if (insertionRoute(direction) < 0 || usedOutputs.contains(direction)
                     || drainedAt.getOrDefault(direction, Long.MIN_VALUE) == level.getGameTime()) {
                 continue;
             }
@@ -302,15 +307,33 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
     }
 
     public FaceMode faceMode(Direction direction) {
-        return faces.get(direction);
+        boolean input = insertionRoute(direction) >= 0;
+        boolean output = extractionRoute(direction) >= 0;
+        if (input && output) return FaceMode.BOTH;
+        if (input) return FaceMode.INPUT;
+        if (output) return FaceMode.OUTPUT;
+        return FaceMode.DISABLED;
     }
 
     public void setFaceMode(Direction direction, FaceMode mode) {
-        faces.put(direction, mode);
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition);
-        }
+        sideConfiguration.setRoutes(ioFacing(), direction,
+                mode.canInput() ? 0 : -1, mode.canOutput() ? 0 : -1);
+        ioConfigurationChanged();
+    }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() {
+        return FluidTransportBlock.PIPE;
+    }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
+        return FluidTransportBlock.FACING;
+    }
+    @Override public IoTransportKind ioTransportKind() { return IoTransportKind.FLUID; }
+    @Override public void ioConfigurationChanged() {
+        if (level != null) level.invalidateCapabilities(worldPosition);
         setChangedAndSync();
+        ioNeighborsChanged();
     }
 
     public RedstoneCondition redstoneCondition() {
@@ -346,9 +369,8 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         tag.put("tank", tank.writeToNBT(registries, new CompoundTag()));
         tag.put("pending", pending.writeToNBT(registries, new CompoundTag()));
         tag.put("filter", filterInventory.serializeNBT(registries));
-        CompoundTag savedFaces = new CompoundTag();
-        faces.forEach((direction, mode) -> savedFaces.putString(direction.getName(), mode.name()));
-        tag.put("faces", savedFaces);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
         tag.putString("redstone_condition", redstoneCondition.name());
         tag.putInt("next_output_direction", nextOutputDirection);
         tag.putInt("next_input_direction", nextInputDirection);
@@ -362,12 +384,17 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         if (tag.contains("filter")) {
             filterInventory.deserializeNBT(registries, tag.getCompound("filter"));
         }
-        CompoundTag savedFaces = tag.getCompound("faces");
-        for (Direction direction : Direction.values()) {
-            if (savedFaces.contains(direction.getName())) {
-                try {
-                    faces.put(direction, FaceMode.valueOf(savedFaces.getString(direction.getName())));
-                } catch (IllegalArgumentException ignored) {
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(
+                    tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        } else {
+            CompoundTag savedFaces = tag.getCompound("faces");
+            for (Direction direction : Direction.values()) {
+                if (savedFaces.contains(direction.getName())) {
+                    try {
+                        setFaceMode(direction, FaceMode.valueOf(savedFaces.getString(direction.getName())));
+                    } catch (IllegalArgumentException ignored) {
+                    }
                 }
             }
         }
@@ -428,7 +455,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public int getTanks() {
-            return direction != null && faces.get(direction) == FaceMode.DISABLED ? 0 : 1;
+            return direction != null && insertionRoute(direction) < 0 && extractionRoute(direction) < 0 ? 0 : 1;
         }
 
         @Override
@@ -443,12 +470,12 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public boolean isFluidValid(int tankIndex, FluidStack stack) {
-            return (direction == null || faces.get(direction).canInput()) && accepts(stack);
+            return (direction == null || insertionRoute(direction) >= 0) && accepts(stack);
         }
 
         @Override
         public int fill(FluidStack resource, FluidAction action) {
-            if ((direction != null && !faces.get(direction).canInput()) || !accepts(resource)) {
+            if ((direction != null && insertionRoute(direction) < 0) || !accepts(resource)) {
                 return 0;
             }
             int filled = tank.fill(resource.copyWithAmount(Math.min(resource.getAmount(), remainingTransfer())), action);
@@ -463,7 +490,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
-            if (direction != null && !faces.get(direction).canOutput() || !accepts(resource)) {
+            if (direction != null && extractionRoute(direction) < 0 || !accepts(resource)) {
                 return FluidStack.EMPTY;
             }
             FluidStack drained = tank.drain(resource.copyWithAmount(Math.min(resource.getAmount(), remainingTransfer())), action);
@@ -473,7 +500,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
-            if (direction != null && !faces.get(direction).canOutput() || !accepts(tank.getFluid())) {
+            if (direction != null && extractionRoute(direction) < 0 || !accepts(tank.getFluid())) {
                 return FluidStack.EMPTY;
             }
             FluidStack drained = tank.drain(Math.min(maxDrain, remainingTransfer()), action);
@@ -503,7 +530,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
                 case 6, 7 -> (pending.getFluidAmount() >>> ((index - 6) * 16)) & 0xFFFF;
                 case 8, 9 -> (specification().transferPerTick() >>> ((index - 8) * 16)) & 0xFFFF;
                 case 10 -> redstoneCondition.ordinal();
-                case 11, 12, 13, 14, 15, 16 -> faces.get(Direction.values()[index - 11]).ordinal();
+                case 11, 12, 13, 14, 15, 16 -> faceMode(Direction.values()[index - 11]).ordinal();
                 case 17 -> filterSettings().blacklist() ? 1 : 0;
                 case 18 -> filterSettings().fluid().map(location -> {
                     Fluid fluid = net.minecraft.core.registries.BuiltInRegistries.FLUID.get(location);

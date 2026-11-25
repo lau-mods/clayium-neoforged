@@ -13,6 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -39,7 +41,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public class BufferBlockEntity extends BlockEntity implements MenuProvider {
+public class BufferBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     public static final int STORAGE_SLOTS = 100;
 
     private final ItemStackHandler inventory = new ItemStackHandler(STORAGE_SLOTS) {
@@ -70,7 +72,10 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
             return 1;
         }
     };
-    private final EnumMap<Direction, FaceMode> faceModes = new EnumMap<>(Direction.class);
+    private final int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
+    private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
+    private final ItemStack[] sideFilters = new ItemStack[RelativeFace.COUNT];
+    private final SideConfiguration sideConfiguration;
     private final EnumMap<Direction, IItemHandler> sidedHandlers = new EnumMap<>(Direction.class);
     private final IItemHandler unsidedHandler = new BufferItemHandler(null);
     private final ContainerData menuData = new BufferContainerData();
@@ -102,8 +107,10 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
 
     protected BufferBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        java.util.Arrays.fill(sideFilters, ItemStack.EMPTY);
+        sideConfiguration = new SideConfiguration(
+                insertionRoutes, extractionRoutes, sideFilters, () -> 1, () -> 1, ItemFilter::accepts);
         for (Direction direction : Direction.values()) {
-            faceModes.put(direction, direction == Direction.DOWN ? FaceMode.OUTPUT : FaceMode.INPUT);
             sidedHandlers.put(direction, new BufferItemHandler(direction));
         }
     }
@@ -174,7 +181,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
             int index = (start + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (faceModes.get(direction) != FaceMode.OUTPUT) {
+            if (extractionRoute(direction) < 0) {
                 continue;
             }
             IItemHandler target = neighborCaches.get(direction).getCapability();
@@ -195,7 +202,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
             int index = (start + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (faceModes.get(direction) != FaceMode.INPUT) {
+            if (insertionRoute(direction) < 0) {
                 continue;
             }
             IItemHandler source = neighborCaches.get(direction).getCapability();
@@ -299,16 +306,34 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public FaceMode faceMode(Direction direction) {
-        return faceModes.get(direction);
+        return switch (sideMode(direction)) {
+            case INPUT -> FaceMode.INPUT;
+            case OUTPUT -> FaceMode.OUTPUT;
+            case INPUT_OUTPUT -> FaceMode.INPUT_OUTPUT;
+            case DISABLED -> FaceMode.DISABLED;
+        };
     }
 
     public void setFaceMode(Direction direction, FaceMode mode) {
-        faceModes.put(direction, mode);
+        sideConfiguration.setRoutes(ioFacing(), direction,
+                mode.canInput() ? 0 : -1, mode.canOutput() ? 0 : -1);
         updateDisplay();
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition);
-        }
+        ioConfigurationChanged();
+    }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() {
+        return BufferBlock.PIPE;
+    }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
+        return BufferBlock.FACING;
+    }
+    @Override public void ioConfigurationChanged() {
+        updateDisplay();
+        if (level != null) level.invalidateCapabilities(worldPosition);
         setChangedAndSync();
+        ioNeighborsChanged();
     }
 
     public RedstoneCondition redstoneCondition() {
@@ -393,7 +418,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
 
     public BufferConfiguration copyConfiguration() {
         List<Integer> faces = java.util.Arrays.stream(Direction.values())
-                .map(direction -> faceModes.get(direction).ordinal()).toList();
+                .map(direction -> faceMode(direction).ordinal()).toList();
         return new BufferConfiguration(faces, redstoneCondition, transferLimit, filterStack());
     }
 
@@ -401,7 +426,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         for (Direction direction : Direction.values()) {
             int ordinal = configuration.faces().get(direction.get3DDataValue());
             if (ordinal >= 0 && ordinal < FaceMode.values().length) {
-                faceModes.put(direction, FaceMode.values()[ordinal]);
+                setFaceMode(direction, FaceMode.values()[ordinal]);
             }
         }
         redstoneCondition = configuration.redstoneCondition();
@@ -450,9 +475,11 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("filter", filterInventory.serializeNBT(registries));
         tag.put("example", exampleInventory.serializeNBT(registries));
         tag.putInt("selected_tag", selectedTag);
-        CompoundTag faces = new CompoundTag();
-        faceModes.forEach((direction, mode) -> faces.putString(direction.getName(), mode.name()));
-        tag.put("faces", faces);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
+        ListTag sideFilterList = new ListTag();
+        for (ItemStack filter : sideFilters) sideFilterList.add(filter.saveOptional(registries));
+        tag.put("side_filters", sideFilterList);
         tag.putString("redstone_condition", redstoneCondition.name());
         tag.putInt("transfer_limit", transferLimit);
         tag.putInt("insert_tick", insertTick);
@@ -475,12 +502,21 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         if (tag.contains("filter")) {
             filterInventory.deserializeNBT(registries, tag.getCompound("filter"));
         }
-        CompoundTag faces = tag.getCompound("faces");
-        for (Direction direction : Direction.values()) {
-            if (faces.contains(direction.getName())) {
-                faceModes.put(direction, parseEnum(
-                        FaceMode.class, faces.getString(direction.getName()), faceModes.get(direction)));
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(
+                    tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        } else {
+            CompoundTag faces = tag.getCompound("faces");
+            for (Direction direction : Direction.values()) {
+                if (faces.contains(direction.getName())) {
+                    setFaceMode(direction, parseEnum(
+                            FaceMode.class, faces.getString(direction.getName()), faceMode(direction)));
+                }
             }
+        }
+        ListTag sideFilterList = tag.getList("side_filters", Tag.TAG_COMPOUND);
+        for (int index = 0; index < Math.min(sideFilterList.size(), sideFilters.length); index++) {
+            sideFilters[index] = ItemStack.parseOptional(registries, sideFilterList.getCompound(index));
         }
         redstoneCondition = parseEnum(
                 RedstoneCondition.class, tag.getString("redstone_condition"), RedstoneCondition.IGNORE);
@@ -518,7 +554,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
         }
         BlockState state = getBlockState().setValue(BufferBlock.FILTERED, !filterStack().isEmpty());
         for (Direction direction : Direction.values()) {
-            state = state.setValue(BufferBlock.FACES.get(direction.get3DDataValue()), faceModes.get(direction));
+            state = state.setValue(BufferBlock.FACES.get(direction.get3DDataValue()), faceMode(direction));
         }
         if (state != getBlockState()) {
             level.setBlock(worldPosition, state, 3);
@@ -535,7 +571,16 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
     public enum FaceMode implements StringRepresentable {
         INPUT,
         OUTPUT,
-        DISABLED;
+        DISABLED,
+        INPUT_OUTPUT;
+
+        public boolean canInput() {
+            return this == INPUT || this == INPUT_OUTPUT;
+        }
+
+        public boolean canOutput() {
+            return this == OUTPUT || this == INPUT_OUTPUT;
+        }
 
         @Override
         public String getSerializedName() {
@@ -576,7 +621,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
                 case 1 -> redstoneCondition.ordinal();
                 case 2 -> transferLimit;
                 case 3 -> filterSettings().mode().ordinal();
-                case 4, 5, 6, 7, 8, 9 -> faceModes.get(Direction.values()[index - 4]).ordinal();
+                case 4, 5, 6, 7, 8, 9 -> faceMode(Direction.values()[index - 4]).ordinal();
                 case 10 -> filterSettings().rules().size();
                 case 11 -> selectedRuleType.ordinal();
                 default -> 0;
@@ -603,7 +648,8 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public int getSlots() {
-            return direction != null && faceModes.get(direction) == FaceMode.DISABLED ? 0 : inventory.getSlots();
+            return direction != null && insertionRoute(direction) < 0 && extractionRoute(direction) < 0
+                    ? 0 : inventory.getSlots();
         }
 
         @Override
@@ -613,13 +659,14 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return acceptsInput() && (direction == null || faceModes.get(direction) == FaceMode.INPUT)
+            return acceptsInput() && (direction == null || insertionRoute(direction) >= 0)
+                    && (direction == null || matchesFilter(direction, stack))
                     ? inventory.insertItem(slot, stack, simulate) : stack;
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return direction == null || faceModes.get(direction) == FaceMode.OUTPUT
+            return direction == null || extractionRoute(direction) >= 0
                     ? inventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
 
@@ -630,7 +677,8 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return (direction == null || faceModes.get(direction) == FaceMode.INPUT)
+            return (direction == null || insertionRoute(direction) >= 0)
+                    && (direction == null || matchesFilter(direction, stack))
                     && inventory.isItemValid(slot, stack);
         }
     }

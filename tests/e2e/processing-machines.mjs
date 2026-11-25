@@ -19,6 +19,7 @@ await scenario(async ({ clients }) => {
   command(client, 'gamerule sendCommandFeedback false');
   command(client, 'time set noon');
   command(client, 'weather clear');
+  await camera(client, { x: 0.5, y: 100.5, z: -12.5, yaw: 0, pitch: 8 });
   command(client, 'fill -8 99 -13 8 99 5 minecraft:smooth_stone');
   command(client, 'fill -7 100 2 7 101 2 minecraft:smooth_stone');
   machines.forEach((id, index) => {

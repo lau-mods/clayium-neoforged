@@ -312,6 +312,28 @@ public final class MaterialBlockGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void derivedOreTexturesUseTheRecordedModernStoneBackgrounds(GameTestHelper helper) {
+        int count = 0;
+        try (InputStream stream = resource("assets/clayium/derived_ore_png.sha256");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            for (String line; (line = reader.readLine()) != null;) {
+                String[] fields = line.split("  ", 2);
+                require(fields.length == 2, "Malformed derived ore PNG manifest line");
+                try (InputStream png = resource("assets/clayium/" + fields[1])) {
+                    String actual = HexFormat.of().formatHex(
+                            MessageDigest.getInstance("SHA-256").digest(png.readAllBytes()));
+                    require(actual.equals(fields[0]), "Derived ore PNG bytes changed: " + fields[1]);
+                }
+                count++;
+            }
+        } catch (IOException | NoSuchAlgorithmException exception) {
+            throw new GameTestAssertException("Unable to verify derived ore PNG hashes: " + exception.getMessage());
+        }
+        require(count == 6, "The derived ore PNG manifest must contain exactly six entries");
+        helper.succeed();
+    }
+
     private static MachineExample grinder(String oreId, ItemLike input, String shard, int count, int ticks) {
         return new MachineExample(
                 "grinder/" + oreId + "_to_" + shard,

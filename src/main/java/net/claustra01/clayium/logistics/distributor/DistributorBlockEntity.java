@@ -3,6 +3,9 @@ package net.claustra01.clayium.logistics.distributor;
 import java.util.EnumMap;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.RelativeFace;
+import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,12 +29,15 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class DistributorBlockEntity extends BlockEntity implements MenuProvider {
+public final class DistributorBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     public static final int SLOTS = 9;
     private final ItemStackHandler inventory = new ItemStackHandler(SLOTS) {
         @Override protected void onContentsChanged(int slot) { setChanged(); }
     };
-    private final EnumMap<Direction, BufferBlockEntity.FaceMode> faces = new EnumMap<>(Direction.class);
+    private final int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
+    private final int[] extractionRoutes = {0, 0, 0, -1, 0, 0};
+    private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
+            insertionRoutes, extractionRoutes, () -> 1, () -> 1);
     private final ContainerData menuData = new DistributorData();
     private int nextOutputDirection;
     private int nextInputDirection;
@@ -39,10 +45,6 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
 
     public DistributorBlockEntity(BlockPos pos, BlockState state) {
         super(MultitrackRegistration.DISTRIBUTOR_BLOCK_ENTITY.get(), pos, state);
-        for (Direction direction : Direction.values()) {
-            faces.put(direction, direction == Direction.DOWN
-                    ? BufferBlockEntity.FaceMode.OUTPUT : BufferBlockEntity.FaceMode.INPUT);
-        }
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, DistributorBlockEntity distributor) {
@@ -63,7 +65,7 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
         while (moved < maximum && failures < Direction.values().length) {
             Direction direction = Direction.values()[nextOutputDirection];
             nextOutputDirection = (nextOutputDirection + 1) % Direction.values().length;
-            if (faces.get(direction) != BufferBlockEntity.FaceMode.OUTPUT) {
+            if (extractionRoute(direction) < 0) {
                 failures++;
                 continue;
             }
@@ -79,7 +81,7 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
         for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
             int index = (nextInputDirection + offset) % Direction.values().length;
             Direction direction = Direction.values()[index];
-            if (faces.get(direction) != BufferBlockEntity.FaceMode.INPUT) continue;
+            if (insertionRoute(direction) < 0) continue;
             IItemHandler source = neighborCaches.get(direction).getCapability();
             if (source == null) continue;
             int moved = BufferBlockEntity.moveItems(source, inventory, stack -> true, remaining, this::recover);
@@ -113,22 +115,40 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
 
     public int tier() { return ((DistributorBlock)getBlockState().getBlock()).tier(); }
     public ItemStackHandler inventory() { return inventory; }
-    public BufferBlockEntity.FaceMode faceMode(Direction direction) { return faces.get(direction); }
+    public BufferBlockEntity.FaceMode faceMode(Direction direction) {
+        boolean input = insertionRoute(direction) >= 0;
+        boolean output = extractionRoute(direction) >= 0;
+        if (input && output) return BufferBlockEntity.FaceMode.INPUT_OUTPUT;
+        if (input) return BufferBlockEntity.FaceMode.INPUT;
+        if (output) return BufferBlockEntity.FaceMode.OUTPUT;
+        return BufferBlockEntity.FaceMode.DISABLED;
+    }
     public void setFaceMode(Direction direction, BufferBlockEntity.FaceMode mode) {
-        faces.put(direction, mode);
+        sideConfiguration.setRoutes(ioFacing(), direction,
+                mode.canInput() ? 0 : -1, mode.canOutput() ? 0 : -1);
+        ioConfigurationChanged();
+    }
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() { return DistributorBlock.PIPE; }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() { return DistributorBlock.FACING; }
+    @Override public void ioConfigurationChanged() {
+        if (level != null) level.invalidateCapabilities(worldPosition);
         setChanged();
+        ioNeighborsChanged();
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
         return new IItemHandler() {
-            @Override public int getSlots() { return direction != null && faces.get(direction) == BufferBlockEntity.FaceMode.DISABLED ? 0 : SLOTS; }
+            @Override public int getSlots() { return direction != null
+                    && insertionRoute(direction) < 0 && extractionRoute(direction) < 0 ? 0 : SLOTS; }
             @Override public ItemStack getStackInSlot(int slot) { return inventory.getStackInSlot(slot); }
             @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-                return direction == null || faces.get(direction) == BufferBlockEntity.FaceMode.INPUT
+                return direction == null || insertionRoute(direction) >= 0
                         ? inventory.insertItem(slot, stack, simulate) : stack;
             }
             @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                return direction == null || faces.get(direction) == BufferBlockEntity.FaceMode.OUTPUT
+                return direction == null || extractionRoute(direction) >= 0
                         ? inventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
             }
             @Override public int getSlotLimit(int slot) { return inventory.getSlotLimit(slot); }
@@ -153,9 +173,8 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
     @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.put("inventory", inventory.serializeNBT(registries));
-        CompoundTag savedFaces = new CompoundTag();
-        faces.forEach((direction, mode) -> savedFaces.putString(direction.getName(), mode.name()));
-        tag.put("faces", savedFaces);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
         tag.putInt("next_output_direction", nextOutputDirection);
         tag.putInt("next_input_direction", nextInputDirection);
     }
@@ -163,10 +182,14 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
     @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         inventory.deserializeNBT(registries, tag.getCompound("inventory"));
-        CompoundTag savedFaces = tag.getCompound("faces");
-        for (Direction direction : Direction.values()) {
-            if (!savedFaces.contains(direction.getName())) continue;
-            faces.put(direction, BufferBlockEntity.FaceMode.valueOf(savedFaces.getString(direction.getName())));
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        } else {
+            CompoundTag savedFaces = tag.getCompound("faces");
+            for (Direction direction : Direction.values()) {
+                if (!savedFaces.contains(direction.getName())) continue;
+                setFaceMode(direction, BufferBlockEntity.FaceMode.valueOf(savedFaces.getString(direction.getName())));
+            }
         }
         nextOutputDirection = tag.getInt("next_output_direction");
         nextInputDirection = tag.getInt("next_input_direction");
@@ -175,7 +198,7 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
     private final class DistributorData implements ContainerData {
         @Override public int get(int index) {
             return index == 0 ? tier() : index >= 1 && index <= 6
-                    ? faces.get(Direction.values()[index - 1]).ordinal() : 0;
+                    ? faceMode(Direction.values()[index - 1]).ordinal() : 0;
         }
         @Override public void set(int index, int value) { }
         @Override public int getCount() { return 7; }

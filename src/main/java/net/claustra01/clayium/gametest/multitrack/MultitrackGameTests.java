@@ -87,8 +87,8 @@ public final class MultitrackGameTests {
 
         MultitrackBufferBlockEntity fastSource = multitrack(helper, 7, new BlockPos(4, 1, 1));
         MultitrackBufferBlockEntity fastTarget = multitrack(helper, 7, new BlockPos(5, 1, 1));
-        configureLink(fastSource, Direction.EAST, BufferBlockEntity.FaceMode.OUTPUT);
-        configureLink(fastTarget, Direction.WEST, BufferBlockEntity.FaceMode.INPUT);
+        configureLink(fastSource, 2, Direction.EAST, BufferBlockEntity.FaceMode.OUTPUT);
+        configureLink(fastTarget, 2, Direction.WEST, BufferBlockEntity.FaceMode.INPUT);
         fastSource.track(2).inventory().setStackInSlot(0, new ItemStack(Items.IRON_INGOT, 64));
         tick(helper, fastSource, 1);
         require(count(fastTarget.track(2).inventory(), Items.IRON_INGOT) == 64,
@@ -162,13 +162,11 @@ public final class MultitrackGameTests {
         return (ChestBlockEntity)helper.getLevel().getBlockEntity(helper.absolutePos(relative));
     }
 
-    private static void configureLink(MultitrackBufferBlockEntity buffer, Direction active,
+    private static void configureLink(MultitrackBufferBlockEntity buffer, int track, Direction active,
                                       BufferBlockEntity.FaceMode activeMode) {
-        for (int track = 0; track < buffer.trackCount(); track++) {
-            for (Direction direction : Direction.values()) {
-                buffer.setFaceMode(track, direction,
-                        direction == active ? activeMode : BufferBlockEntity.FaceMode.DISABLED);
-            }
+        for (Direction direction : Direction.values()) {
+            buffer.setFaceMode(track, direction,
+                    direction == active ? activeMode : BufferBlockEntity.FaceMode.DISABLED);
         }
     }
 

@@ -18,16 +18,23 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.claustra01.clayium.logistics.PipeShapes;
 
 public final class CobblestoneGeneratorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
 
     private final int tier;
 
     public CobblestoneGeneratorBlock(Properties properties, int tier) {
         super(properties);
         this.tier = tier;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(PIPE, false));
     }
 
     @Override
@@ -41,7 +48,7 @@ public final class CobblestoneGeneratorBlock extends BaseEntityBlock {
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return state.getValue(PIPE) ? RenderShape.INVISIBLE : RenderShape.MODEL;
     }
 
     @Override
@@ -56,7 +63,13 @@ public final class CobblestoneGeneratorBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, PIPE);
+    }
+
+    @Override protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (!state.getValue(PIPE)) return Shapes.block();
+        return level.getBlockEntity(pos) instanceof CobblestoneGeneratorBlockEntity generator
+                ? PipeShapes.forDevice(generator) : Shapes.block();
     }
 
     @Override

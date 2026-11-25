@@ -23,6 +23,22 @@
     },
     {
       "apply": {
+        "model": "clayium:block/buffer_face_down_input_output"
+      },
+      "when": {
+        "down": "input_output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_down_output"
+      },
+      "when": {
+        "down": "input_output"
+      }
+    },
+    {
+      "apply": {
         "model": "clayium:block/buffer_face_up_input"
       },
       "when": {
@@ -35,6 +51,22 @@
       },
       "when": {
         "up": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_up_input_output"
+      },
+      "when": {
+        "up": "input_output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_up_output"
+      },
+      "when": {
+        "up": "input_output"
       }
     },
     {
@@ -55,6 +87,22 @@
     },
     {
       "apply": {
+        "model": "clayium:block/buffer_face_north_input_output"
+      },
+      "when": {
+        "north": "input_output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_north_output"
+      },
+      "when": {
+        "north": "input_output"
+      }
+    },
+    {
+      "apply": {
         "model": "clayium:block/buffer_face_south_input"
       },
       "when": {
@@ -67,6 +115,22 @@
       },
       "when": {
         "south": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_south_input_output"
+      },
+      "when": {
+        "south": "input_output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_south_output"
+      },
+      "when": {
+        "south": "input_output"
       }
     },
     {
@@ -87,6 +151,22 @@
     },
     {
       "apply": {
+        "model": "clayium:block/buffer_face_west_input_output"
+      },
+      "when": {
+        "west": "input_output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_west_output"
+      },
+      "when": {
+        "west": "input_output"
+      }
+    },
+    {
+      "apply": {
         "model": "clayium:block/buffer_face_east_input"
       },
       "when": {
@@ -99,6 +179,22 @@
       },
       "when": {
         "east": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_east_input_output"
+      },
+      "when": {
+        "east": "input_output"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium:block/buffer_face_east_output"
+      },
+      "when": {
+        "east": "input_output"
       }
     },
     {

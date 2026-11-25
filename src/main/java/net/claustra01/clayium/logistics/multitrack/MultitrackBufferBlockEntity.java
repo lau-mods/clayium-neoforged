@@ -4,6 +4,9 @@ import java.util.EnumMap;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.RelativeFace;
+import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
@@ -29,12 +32,15 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class MultitrackBufferBlockEntity extends BlockEntity implements MenuProvider {
+public final class MultitrackBufferBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     public static final int TRACKS = 6;
     public static final int SLOTS_PER_TRACK = 9;
 
     private final Track[] tracks = new Track[TRACKS];
-    private final int[] faceTracks = new int[Direction.values().length];
+    private final int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
+    private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
+    private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
+            insertionRoutes, extractionRoutes, this::trackCount, this::trackCount);
     private EnumMap<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighborCaches;
     private int insertTick;
     private int extractTick;
@@ -43,9 +49,6 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         super(MultitrackRegistration.MULTITRACK_BUFFER_BLOCK_ENTITY.get(), pos, state);
         for (int index = 0; index < TRACKS; index++) {
             tracks[index] = new Track();
-        }
-        for (Direction direction : Direction.values()) {
-            faceTracks[direction.get3DDataValue()] = direction.get3DDataValue() % trackCount();
         }
     }
 
@@ -88,7 +91,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
             int directionIndex = (track.nextOutputDirection + offset) % Direction.values().length;
             Direction direction = Direction.values()[directionIndex];
-            if (track.faceModes.get(direction) != BufferBlockEntity.FaceMode.OUTPUT) {
+            if (extractionRoute(direction) != trackIndex) {
                 continue;
             }
             IItemHandler target = neighborTrackHandler(serverLevel, direction, trackIndex, true);
@@ -110,7 +113,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         for (int offset = 0; offset < Direction.values().length && remaining > 0; offset++) {
             int directionIndex = (track.nextInputDirection + offset) % Direction.values().length;
             Direction direction = Direction.values()[directionIndex];
-            if (track.faceModes.get(direction) != BufferBlockEntity.FaceMode.INPUT) {
+            if (insertionRoute(direction) != trackIndex) {
                 continue;
             }
             IItemHandler source = neighborTrackHandler(serverLevel, direction, trackIndex, false);
@@ -131,12 +134,13 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         BlockEntity neighbor = serverLevel.getBlockEntity(worldPosition.relative(direction));
         if (neighbor instanceof MultitrackBufferBlockEntity multitrack) {
             if (trackIndex >= multitrack.trackCount()) return null;
-            BufferBlockEntity.FaceMode needed = output
-                    ? BufferBlockEntity.FaceMode.INPUT : BufferBlockEntity.FaceMode.OUTPUT;
-            return multitrack.track(trackIndex).faceModes.get(direction.getOpposite()) == needed
+            boolean connected = output
+                    ? multitrack.insertionRoute(direction.getOpposite()) == trackIndex
+                    : multitrack.extractionRoute(direction.getOpposite()) == trackIndex;
+            return connected
                     ? multitrack.trackHandler(trackIndex, direction.getOpposite()) : null;
         }
-        if (faceTracks[direction.get3DDataValue()] != trackIndex) {
+        if ((output ? extractionRoute(direction) : insertionRoute(direction)) != trackIndex) {
             return null;
         }
         return neighborCaches.get(direction).getCapability();
@@ -181,22 +185,52 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
     }
 
     public int faceTrack(Direction direction) {
-        return faceTracks[direction.get3DDataValue()];
+        int insertion = insertionRoute(direction);
+        return insertion >= 0 ? insertion : Math.max(0, extractionRoute(direction));
     }
 
     public void setFaceTrack(Direction direction, int track) {
-        faceTracks[direction.get3DDataValue()] = track;
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition);
-        }
-        setChanged();
-        syncFaces();
+        int insertion = insertionRoute(direction) >= 0 ? track : -1;
+        int extraction = extractionRoute(direction) >= 0 ? track : -1;
+        if (insertion < 0 && extraction < 0) insertion = track;
+        sideConfiguration.setRoutes(ioFacing(), direction, insertion, extraction);
+        ioConfigurationChanged();
     }
 
     public void setFaceMode(int trackIndex, Direction direction, BufferBlockEntity.FaceMode mode) {
-        track(trackIndex).faceModes.put(direction, mode);
+        int insertion = insertionRoute(direction);
+        int extraction = extractionRoute(direction);
+        switch (mode) {
+            case INPUT -> { insertion = trackIndex; if (extraction == trackIndex) extraction = -1; }
+            case OUTPUT -> { extraction = trackIndex; if (insertion == trackIndex) insertion = -1; }
+            case INPUT_OUTPUT -> { insertion = trackIndex; extraction = trackIndex; }
+            case DISABLED -> {
+                if (insertion == trackIndex) insertion = -1;
+                if (extraction == trackIndex) extraction = -1;
+            }
+        }
+        sideConfiguration.setRoutes(ioFacing(), direction, insertion, extraction);
+        ioConfigurationChanged();
+    }
+
+    public BufferBlockEntity.FaceMode faceMode(int trackIndex, Direction direction) {
+        boolean input = insertionRoute(direction) == trackIndex;
+        boolean output = extractionRoute(direction) == trackIndex;
+        if (input && output) return BufferBlockEntity.FaceMode.INPUT_OUTPUT;
+        if (input) return BufferBlockEntity.FaceMode.INPUT;
+        if (output) return BufferBlockEntity.FaceMode.OUTPUT;
+        return BufferBlockEntity.FaceMode.DISABLED;
+    }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() { return MultitrackBufferBlock.PIPE; }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() { return MultitrackBufferBlock.FACING; }
+    @Override public void ioConfigurationChanged() {
+        if (level != null) level.invalidateCapabilities(worldPosition);
         setChanged();
         syncFaces();
+        ioNeighborsChanged();
     }
 
     private void syncFaces() {
@@ -216,7 +250,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
-        return direction == null ? combinedHandler() : trackHandler(faceTrack(direction), direction);
+        return direction == null ? combinedHandler() : new RoutedFaceHandler(direction);
     }
 
     public IItemHandler trackHandler(int trackIndex, @Nullable Direction direction) {
@@ -262,15 +296,13 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             CompoundTag saved = new CompoundTag();
             saved.put("inventory", track.inventory.serializeNBT(registries));
             saved.put("filter", track.filter.serializeNBT(registries));
-            CompoundTag faces = new CompoundTag();
-            track.faceModes.forEach((direction, mode) -> faces.putString(direction.getName(), mode.name()));
-            saved.put("faces", faces);
             saved.putInt("next_output_direction", track.nextOutputDirection);
             saved.putInt("next_input_direction", track.nextInputDirection);
             trackData.put(Integer.toString(index), saved);
         }
         tag.put("tracks", trackData);
-        tag.putIntArray("face_tracks", faceTracks);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
         tag.putInt("insert_tick", insertTick);
         tag.putInt("extract_tick", extractTick);
     }
@@ -287,29 +319,42 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             CompoundTag saved = trackData.getCompound(Integer.toString(index));
             track.inventory.deserializeNBT(registries, saved.getCompound("inventory"));
             track.filter.deserializeNBT(registries, saved.getCompound("filter"));
-            CompoundTag faces = saved.getCompound("faces");
-            for (Direction direction : Direction.values()) {
-                if (faces.contains(direction.getName())) {
-                    track.faceModes.put(direction, BufferBlockEntity.FaceMode.valueOf(
-                            faces.getString(direction.getName())));
-                }
-            }
             track.nextOutputDirection = saved.getInt("next_output_direction");
             track.nextInputDirection = saved.getInt("next_input_direction");
         }
-        int[] savedFaceTracks = tag.getIntArray("face_tracks");
-        for (int index = 0; index < Math.min(savedFaceTracks.length, faceTracks.length); index++) {
-            faceTracks[index] = savedFaceTracks[index];
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        } else {
+            migrateLegacyRoutes(trackData);
         }
         int legacyTransferTick = Math.max(0, tag.getInt("transfer_tick"));
         insertTick = Math.max(0, tag.contains("insert_tick") ? tag.getInt("insert_tick") : legacyTransferTick);
         extractTick = Math.max(0, tag.contains("extract_tick") ? tag.getInt("extract_tick") : legacyTransferTick);
     }
 
+    private void migrateLegacyRoutes(CompoundTag trackData) {
+        for (Direction direction : Direction.values()) {
+            int insertion = -1;
+            int extraction = -1;
+            for (int trackIndex = 0; trackIndex < trackCount(); trackIndex++) {
+                CompoundTag faces = trackData.getCompound(Integer.toString(trackIndex)).getCompound("faces");
+                if (!faces.contains(direction.getName())) continue;
+                BufferBlockEntity.FaceMode mode;
+                try {
+                    mode = BufferBlockEntity.FaceMode.valueOf(faces.getString(direction.getName()));
+                } catch (IllegalArgumentException ignored) {
+                    continue;
+                }
+                if (insertion < 0 && mode.canInput()) insertion = trackIndex;
+                if (extraction < 0 && mode.canOutput()) extraction = trackIndex;
+            }
+            sideConfiguration.setRoutes(ioFacing(), direction, insertion, extraction);
+        }
+    }
+
     public final class Track {
         private final ItemStackHandler inventory;
         private final ItemStackHandler filter;
-        private final EnumMap<Direction, BufferBlockEntity.FaceMode> faceModes = new EnumMap<>(Direction.class);
         private int nextOutputDirection;
         private int nextInputDirection;
 
@@ -341,10 +386,6 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
                     return 1;
                 }
             };
-            for (Direction direction : Direction.values()) {
-                faceModes.put(direction, direction == Direction.DOWN
-                        ? BufferBlockEntity.FaceMode.OUTPUT : BufferBlockEntity.FaceMode.INPUT);
-            }
         }
 
         public ItemStackHandler inventory() {
@@ -356,7 +397,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         }
 
         public BufferBlockEntity.FaceMode faceMode(Direction direction) {
-            return faceModes.get(direction);
+            return MultitrackBufferBlockEntity.this.faceMode(java.util.Arrays.asList(tracks).indexOf(this), direction);
         }
 
         private boolean accepts(ItemStack stack) {
@@ -373,20 +414,70 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             this.direction = direction;
         }
 
-        @Override public int getSlots() { return direction != null && track.faceMode(direction) == BufferBlockEntity.FaceMode.DISABLED ? 0 : SLOTS_PER_TRACK; }
+        @Override public int getSlots() { return direction != null
+                && track.faceMode(direction) == BufferBlockEntity.FaceMode.DISABLED ? 0 : SLOTS_PER_TRACK; }
         @Override public ItemStack getStackInSlot(int slot) { return track.inventory.getStackInSlot(slot); }
         @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return direction == null || track.faceMode(direction) == BufferBlockEntity.FaceMode.INPUT
+            return direction == null || track.faceMode(direction).canInput()
                     ? track.inventory.insertItem(slot, stack, simulate) : stack;
         }
         @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return direction == null || track.faceMode(direction) == BufferBlockEntity.FaceMode.OUTPUT
+            return direction == null || track.faceMode(direction).canOutput()
                     ? track.inventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
         @Override public int getSlotLimit(int slot) { return track.inventory.getSlotLimit(slot); }
         @Override public boolean isItemValid(int slot, ItemStack stack) {
-            return (direction == null || track.faceMode(direction) == BufferBlockEntity.FaceMode.INPUT)
+            return (direction == null || track.faceMode(direction).canInput())
                     && track.accepts(stack);
+        }
+    }
+
+    private final class RoutedFaceHandler implements IItemHandler {
+        private final Direction direction;
+
+        private RoutedFaceHandler(Direction direction) {
+            this.direction = direction;
+        }
+
+        private int inputTrack() { return insertionRoute(direction); }
+        private int outputTrack() { return extractionRoute(direction); }
+        private boolean sharedTrack() { return inputTrack() >= 0 && inputTrack() == outputTrack(); }
+
+        @Override public int getSlots() {
+            return (inputTrack() >= 0 ? SLOTS_PER_TRACK : 0)
+                    + (outputTrack() >= 0 && !sharedTrack() ? SLOTS_PER_TRACK : 0);
+        }
+
+        private int trackForSlot(int slot) {
+            if (inputTrack() >= 0 && slot < SLOTS_PER_TRACK) return inputTrack();
+            return outputTrack();
+        }
+
+        private int localSlot(int slot) {
+            return inputTrack() >= 0 && slot >= SLOTS_PER_TRACK ? slot - SLOTS_PER_TRACK : slot;
+        }
+
+        @Override public ItemStack getStackInSlot(int slot) {
+            return track(trackForSlot(slot)).inventory.getStackInSlot(localSlot(slot));
+        }
+
+        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (inputTrack() < 0 || slot >= SLOTS_PER_TRACK) return stack;
+            return track(inputTrack()).inventory.insertItem(slot, stack, simulate);
+        }
+
+        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            int outputStart = inputTrack() >= 0 && !sharedTrack() ? SLOTS_PER_TRACK : 0;
+            if (outputTrack() < 0 || slot < outputStart) return ItemStack.EMPTY;
+            return track(outputTrack()).inventory.extractItem(slot - outputStart, amount, simulate);
+        }
+
+        @Override public int getSlotLimit(int slot) {
+            return track(trackForSlot(slot)).inventory.getSlotLimit(localSlot(slot));
+        }
+
+        @Override public boolean isItemValid(int slot, ItemStack stack) {
+            return inputTrack() >= 0 && slot < SLOTS_PER_TRACK && track(inputTrack()).accepts(stack);
         }
     }
 

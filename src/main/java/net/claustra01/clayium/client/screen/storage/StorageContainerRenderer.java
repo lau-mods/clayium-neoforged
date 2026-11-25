@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
+import net.claustra01.clayium.client.renderer.io.IoDeviceRenderer;
 
 public final class StorageContainerRenderer implements BlockEntityRenderer<StorageContainerBlockEntity> {
     private final ItemRenderer itemRenderer;
@@ -26,6 +27,8 @@ public final class StorageContainerRenderer implements BlockEntityRenderer<Stora
     public void render(
             StorageContainerBlockEntity storage, float partialTick, PoseStack poseStack,
             MultiBufferSource buffers, int packedLight, int packedOverlay) {
+        IoDeviceRenderer.renderDevice(storage, poseStack, buffers, packedLight);
+        if (storage.pipeEnabled()) return;
         ItemStack stored = storage.storedItem();
         if (stored.isEmpty() || storage.amount() == 0L) {
             return;

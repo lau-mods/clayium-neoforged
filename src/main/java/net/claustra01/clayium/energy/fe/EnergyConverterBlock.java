@@ -22,16 +22,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public final class EnergyConverterBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
 
     private final EnergyConverterSpecification specification;
 
     public EnergyConverterBlock(Properties properties, EnergyConverterSpecification specification) {
         super(properties);
         this.specification = specification;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(PIPE, false));
     }
 
     public EnergyConverterSpecification specification() {
@@ -45,12 +47,12 @@ public final class EnergyConverterBlock extends BaseEntityBlock {
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return state.getValue(PIPE) ? RenderShape.INVISIBLE : RenderShape.MODEL;
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(PIPE, false);
     }
 
     @Override
@@ -60,7 +62,16 @@ public final class EnergyConverterBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, PIPE);
+    }
+
+    @Override protected net.minecraft.world.phys.shapes.VoxelShape getShape(
+            BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,
+            net.minecraft.world.phys.shapes.CollisionContext context) {
+        if (!state.getValue(PIPE)) return net.minecraft.world.phys.shapes.Shapes.block();
+        return level.getBlockEntity(pos) instanceof EnergyConverterBlockEntity device
+                ? net.claustra01.clayium.logistics.PipeShapes.forDevice(device)
+                : net.minecraft.world.phys.shapes.Shapes.block();
     }
 
     @Override

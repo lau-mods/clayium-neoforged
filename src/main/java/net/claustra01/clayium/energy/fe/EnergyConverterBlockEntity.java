@@ -5,11 +5,16 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.machine.augment.AugmentScanner;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.SideConfiguration;
+import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.EnergyConverterRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -30,7 +35,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class EnergyConverterBlockEntity extends BlockEntity implements MenuProvider {
+public final class EnergyConverterBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     private final ClayEnergyStorage clayEnergy = new ClayEnergyStorage();
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
@@ -48,7 +53,15 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
             return fuelLimit();
         }
     };
-    private final IEnergyStorage energyStorage = new OutputEnergyStorage();
+    private final int[] insertionRoutes = {-1, 0, -1, 1, -1, -1};
+    private final int[] extractionRoutes = {0, -1, -1, -1, -1, -1};
+    private final ItemStack[] sideFilters = new ItemStack[6];
+    private final SideConfiguration sideConfiguration = new SideConfiguration(
+            insertionRoutes, extractionRoutes, sideFilters, () -> 2, () -> 1, ItemFilter::accepts);
+    private final IItemHandler unsidedFuelHandler = new FuelHandler(null);
+    private final EnumMap<Direction, IItemHandler> fuelHandlers = new EnumMap<>(Direction.class);
+    private final IEnergyStorage unsidedEnergyStorage = new OutputEnergyStorage(null);
+    private final EnumMap<Direction, IEnergyStorage> energyStorages = new EnumMap<>(Direction.class);
     private EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> neighborCaches;
     private int storedFe;
     private int outputThisTick;
@@ -94,6 +107,11 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
 
     public EnergyConverterBlockEntity(BlockPos pos, BlockState state) {
         super(EnergyConverterRegistration.BLOCK_ENTITY.get(), pos, state);
+        java.util.Arrays.fill(sideFilters, ItemStack.EMPTY);
+        for (Direction direction : Direction.values()) {
+            fuelHandlers.put(direction, new FuelHandler(direction));
+            energyStorages.put(direction, new OutputEnergyStorage(direction));
+        }
     }
 
     public static void serverTick(
@@ -140,6 +158,7 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
 
     private void pushEnergy() {
         for (Direction direction : Direction.values()) {
+            if (extractionRoute(direction) < 0) continue;
             int offered = availableOutput();
             if (offered <= 0) {
                 return;
@@ -187,11 +206,28 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
     }
 
     public IItemHandler fuelHandler(@Nullable Direction direction) {
-        return fuel;
+        return direction == null ? unsidedFuelHandler : fuelHandlers.get(direction);
     }
 
     public IEnergyStorage energyStorage(@Nullable Direction direction) {
-        return energyStorage;
+        return direction == null ? unsidedEnergyStorage : energyStorages.get(direction);
+    }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() {
+        return EnergyConverterBlock.PIPE;
+    }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
+        return EnergyConverterBlock.FACING;
+    }
+    @Override public void ioConfigurationChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+            if (!level.isClientSide) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        ioNeighborsChanged();
     }
 
     public int storedFe() {
@@ -234,6 +270,11 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
         tag.put("inventory", fuel.serializeNBT(registries));
         tag.put("energy", clayEnergy.serializeNBT(registries));
         tag.putInt("fe_energy", storedFe);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
+        ListTag filters = new ListTag();
+        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
+        tag.put("side_filters", filters);
     }
 
     @Override
@@ -246,9 +287,22 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
             clayEnergy.deserializeNBT(registries, tag.getCompound("energy"));
         }
         storedFe = Math.max(0, Math.min(specification().capacity(), tag.getInt("fe_energy")));
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        }
+        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
+        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
+            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
+        }
     }
 
     private final class OutputEnergyStorage implements IEnergyStorage {
+        @Nullable private final Direction direction;
+
+        private OutputEnergyStorage(@Nullable Direction direction) {
+            this.direction = direction;
+        }
+
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
             return 0;
@@ -256,6 +310,7 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
 
         @Override
         public int extractEnergy(int maxExtract, boolean simulate) {
+            if (direction != null && extractionRoute(direction) < 0) return 0;
             int extracted = Math.min(Math.max(0, maxExtract), availableOutput());
             if (!simulate && extracted > 0) {
                 storedFe -= extracted;
@@ -277,12 +332,30 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
 
         @Override
         public boolean canExtract() {
-            return true;
+            return direction == null || extractionRoute(direction) >= 0;
         }
 
         @Override
         public boolean canReceive() {
             return false;
+        }
+    }
+
+    private final class FuelHandler implements IItemHandler {
+        @Nullable private final Direction direction;
+
+        private FuelHandler(@Nullable Direction direction) { this.direction = direction; }
+        private boolean enabled() { return direction == null || insertionRoute(direction) == 1; }
+        @Override public int getSlots() { return enabled() ? 1 : 0; }
+        @Override public ItemStack getStackInSlot(int slot) { return fuel.getStackInSlot(slot); }
+        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            return enabled() && (direction == null || matchesFilter(direction, stack))
+                    ? fuel.insertItem(slot, stack, simulate) : stack;
+        }
+        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) { return ItemStack.EMPTY; }
+        @Override public int getSlotLimit(int slot) { return fuel.getSlotLimit(slot); }
+        @Override public boolean isItemValid(int slot, ItemStack stack) {
+            return enabled() && (direction == null || matchesFilter(direction, stack)) && fuel.isItemValid(slot, stack);
         }
     }
 }

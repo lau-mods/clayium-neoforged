@@ -28,10 +28,15 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BufferBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FILTERED = BooleanProperty.create("filtered");
+    public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
     public static final EnumProperty<BufferBlockEntity.FaceMode> DOWN = EnumProperty.create("down", BufferBlockEntity.FaceMode.class);
     public static final EnumProperty<BufferBlockEntity.FaceMode> UP = EnumProperty.create("up", BufferBlockEntity.FaceMode.class);
     public static final EnumProperty<BufferBlockEntity.FaceMode> NORTH = EnumProperty.create("north", BufferBlockEntity.FaceMode.class);
@@ -47,12 +52,13 @@ public class BufferBlock extends BaseEntityBlock {
         this.tier = tier;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH)
                 .setValue(FILTERED, false)
-                .setValue(DOWN, BufferBlockEntity.FaceMode.OUTPUT)
-                .setValue(UP, BufferBlockEntity.FaceMode.INPUT)
-                .setValue(NORTH, BufferBlockEntity.FaceMode.INPUT)
+                .setValue(PIPE, false)
+                .setValue(DOWN, BufferBlockEntity.FaceMode.DISABLED)
+                .setValue(UP, BufferBlockEntity.FaceMode.DISABLED)
+                .setValue(NORTH, BufferBlockEntity.FaceMode.DISABLED)
                 .setValue(SOUTH, BufferBlockEntity.FaceMode.INPUT)
-                .setValue(WEST, BufferBlockEntity.FaceMode.INPUT)
-                .setValue(EAST, BufferBlockEntity.FaceMode.INPUT));
+                .setValue(WEST, BufferBlockEntity.FaceMode.DISABLED)
+                .setValue(EAST, BufferBlockEntity.FaceMode.DISABLED));
     }
 
     public int tier() {
@@ -66,12 +72,19 @@ public class BufferBlock extends BaseEntityBlock {
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return state.getValue(PIPE) ? RenderShape.INVISIBLE : RenderShape.MODEL;
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        Direction front = context.getHorizontalDirection().getOpposite();
+        BlockState state = defaultBlockState().setValue(FACING, front);
+        Direction input = RelativeFace.world(front, 3);
+        for (Direction direction : Direction.values()) {
+            state = state.setValue(FACES.get(direction.get3DDataValue()),
+                    direction == input ? BufferBlockEntity.FaceMode.INPUT : BufferBlockEntity.FaceMode.DISABLED);
+        }
+        return state;
     }
 
     @Override
@@ -81,7 +94,15 @@ public class BufferBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING, FILTERED, DOWN, UP, NORTH, SOUTH, WEST, EAST);
+        builder.add(FACING, FILTERED, PIPE, DOWN, UP, NORTH, SOUTH, WEST, EAST);
+    }
+
+    @Override
+    protected VoxelShape getShape(
+            BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (!state.getValue(PIPE)) return Shapes.block();
+        return level.getBlockEntity(pos) instanceof BufferBlockEntity buffer
+                ? PipeShapes.forDevice(buffer) : Shapes.block();
     }
 
     @Override

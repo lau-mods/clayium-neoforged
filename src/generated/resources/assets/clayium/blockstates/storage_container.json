@@ -1,32 +1,62 @@
 {
   "variants": {
-    "expanded=false,facing=east": {
+    "expanded=false,facing=east,pipe=false": {
       "model": "clayium:block/storage_container",
       "y": 90
     },
-    "expanded=false,facing=north": {
+    "expanded=false,facing=east,pipe=true": {
+      "model": "clayium:block/storage_container",
+      "y": 90
+    },
+    "expanded=false,facing=north,pipe=false": {
       "model": "clayium:block/storage_container"
     },
-    "expanded=false,facing=south": {
+    "expanded=false,facing=north,pipe=true": {
+      "model": "clayium:block/storage_container"
+    },
+    "expanded=false,facing=south,pipe=false": {
       "model": "clayium:block/storage_container",
       "y": 180
     },
-    "expanded=false,facing=west": {
+    "expanded=false,facing=south,pipe=true": {
+      "model": "clayium:block/storage_container",
+      "y": 180
+    },
+    "expanded=false,facing=west,pipe=false": {
       "model": "clayium:block/storage_container",
       "y": 270
     },
-    "expanded=true,facing=east": {
+    "expanded=false,facing=west,pipe=true": {
+      "model": "clayium:block/storage_container",
+      "y": 270
+    },
+    "expanded=true,facing=east,pipe=false": {
       "model": "clayium:block/storage_container_expanded",
       "y": 90
     },
-    "expanded=true,facing=north": {
+    "expanded=true,facing=east,pipe=true": {
+      "model": "clayium:block/storage_container_expanded",
+      "y": 90
+    },
+    "expanded=true,facing=north,pipe=false": {
       "model": "clayium:block/storage_container_expanded"
     },
-    "expanded=true,facing=south": {
+    "expanded=true,facing=north,pipe=true": {
+      "model": "clayium:block/storage_container_expanded"
+    },
+    "expanded=true,facing=south,pipe=false": {
       "model": "clayium:block/storage_container_expanded",
       "y": 180
     },
-    "expanded=true,facing=west": {
+    "expanded=true,facing=south,pipe=true": {
+      "model": "clayium:block/storage_container_expanded",
+      "y": 180
+    },
+    "expanded=true,facing=west,pipe=false": {
+      "model": "clayium:block/storage_container_expanded",
+      "y": 270
+    },
+    "expanded=true,facing=west,pipe=true": {
       "model": "clayium:block/storage_container_expanded",
       "y": 270
     }

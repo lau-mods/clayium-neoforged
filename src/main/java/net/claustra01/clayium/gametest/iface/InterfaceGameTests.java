@@ -70,7 +70,7 @@ public final class InterfaceGameTests {
         require(recorded.equals(itemInterface.target()) && player.getUUID().equals(itemInterface.owner()),
                 "The synchronizer did not apply its target and owner to the interface");
         IItemHandler itemHandler = helper.getLevel().getCapability(
-                Capabilities.ItemHandler.BLOCK, itemInterface.getBlockPos(), Direction.WEST);
+                Capabilities.ItemHandler.BLOCK, itemInterface.getBlockPos(), Direction.SOUTH);
         require(itemHandler != null && itemHandler.getSlots() == 27,
                 "The item interface did not proxy the target ItemHandler");
         require(itemHandler.insertItem(0, new ItemStack(Items.DIAMOND, 7), false).isEmpty(),

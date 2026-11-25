@@ -1,17 +1,32 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,pipe=false": {
       "model": "clayium:block/fluid_translator_tier_12",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,pipe=true": {
+      "model": "clayium:block/fluid_translator_tier_12",
+      "y": 90
+    },
+    "facing=north,pipe=false": {
       "model": "clayium:block/fluid_translator_tier_12"
     },
-    "facing=south": {
+    "facing=north,pipe=true": {
+      "model": "clayium:block/fluid_translator_tier_12"
+    },
+    "facing=south,pipe=false": {
       "model": "clayium:block/fluid_translator_tier_12",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,pipe=true": {
+      "model": "clayium:block/fluid_translator_tier_12",
+      "y": 180
+    },
+    "facing=west,pipe=false": {
+      "model": "clayium:block/fluid_translator_tier_12",
+      "y": 270
+    },
+    "facing=west,pipe=true": {
       "model": "clayium:block/fluid_translator_tier_12",
       "y": 270
     }

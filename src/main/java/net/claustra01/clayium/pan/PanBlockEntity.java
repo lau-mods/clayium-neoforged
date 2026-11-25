@@ -10,12 +10,16 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
 import net.claustra01.clayium.energy.TierManager;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.SideConfiguration;
+import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.PanRegistration;
 import net.claustra01.clayium.machine.ClayMachineBlock;
 import net.claustra01.clayium.recipe.ClayiumRecipeCache;
 import net.claustra01.clayium.recipe.ClayiumRecipeInput;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -45,8 +49,9 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
-public final class PanBlockEntity extends BlockEntity implements MenuProvider {
+public final class PanBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     public static final int CANDIDATES_PER_PAGE = 6;
     public static final int SAMPLE_SLOT = 0;
     public static final int ANTIMATTER_SLOT = 1;
@@ -78,6 +83,10 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
+    private final int[] insertionRoutes = {-1, -1, -1, -1, -1, -1};
+    private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
+    private final ItemStack[] sideFilters = new ItemStack[6];
+    private final SideConfiguration sideConfiguration;
     private boolean loadingAdapterInventory;
     private boolean adapterResultsDirty = true;
     private final ItemStackHandler adapterPatterns = new ItemStackHandler(ADAPTER_PAGE_SIZE * MAX_ADAPTER_PAGES) {
@@ -168,6 +177,15 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
 
     public PanBlockEntity(BlockPos pos, BlockState state) {
         super(PanRegistration.BLOCK_ENTITY.get(), pos, state);
+        java.util.Arrays.fill(sideFilters, ItemStack.EMPTY);
+        if (((PanBlock)state.getBlock()).kind() == PanBlock.Kind.DUPLICATOR) {
+            insertionRoutes[1] = 0;
+            insertionRoutes[3] = 1;
+            extractionRoutes[0] = 0;
+        }
+        sideConfiguration = new SideConfiguration(insertionRoutes, extractionRoutes, sideFilters,
+                () -> kind() == PanBlock.Kind.DUPLICATOR ? 2 : 0,
+                () -> kind() == PanBlock.Kind.DUPLICATOR ? 1 : 0, ItemFilter::accepts);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, PanBlockEntity pan) {
@@ -314,6 +332,33 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
 
     public ItemStackHandler inventory() {
         return inventory;
+    }
+
+    public IItemHandler itemHandler(@Nullable Direction direction) {
+        return new PanItemHandler(direction);
+    }
+
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() {
+        return PanBlock.PIPE;
+    }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
+        return PanBlock.FACING;
+    }
+    @Override public boolean togglePipe() {
+        return kind() == PanBlock.Kind.DUPLICATOR && ConfigurableIoDevice.super.togglePipe();
+    }
+    @Override public boolean rotate(Direction side) {
+        return kind() == PanBlock.Kind.DUPLICATOR && ConfigurableIoDevice.super.rotate(side);
+    }
+    @Override public void ioConfigurationChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+            if (!level.isClientSide) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        ioNeighborsChanged();
     }
 
     public int adapterPages() {
@@ -677,6 +722,11 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         prohibited.stream().map(ResourceLocation::toString).sorted()
                 .forEach(id -> prohibitedItems.add(StringTag.valueOf(id)));
         tag.put("prohibited", prohibitedItems);
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
+        ListTag filters = new ListTag();
+        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
+        tag.put("side_filters", filters);
     }
 
     @Override
@@ -727,6 +777,45 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider {
         closureReady = false;
         closure = new PanRecipeClosure.Result(Map.of(), Map.of());
         sortedCandidates = null;
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        }
+        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
+        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
+            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
+        }
+    }
+
+    private final class PanItemHandler implements IItemHandler {
+        @Nullable private final Direction direction;
+
+        private PanItemHandler(@Nullable Direction direction) { this.direction = direction; }
+        @Override public int getSlots() { return kind() == PanBlock.Kind.DUPLICATOR ? slots().length : 0; }
+        @Override public ItemStack getStackInSlot(int slot) { return inventory.getStackInSlot(slots()[slot]); }
+        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            int actual = slots()[slot];
+            return actual == OUTPUT_SLOT || direction != null && !matchesFilter(direction, stack)
+                    ? stack : inventory.insertItem(actual, stack, simulate);
+        }
+        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            int actual = slots()[slot];
+            return actual == OUTPUT_SLOT ? inventory.extractItem(actual, amount, simulate) : ItemStack.EMPTY;
+        }
+        @Override public int getSlotLimit(int slot) { return inventory.getSlotLimit(slots()[slot]); }
+        @Override public boolean isItemValid(int slot, ItemStack stack) {
+            int actual = slots()[slot];
+            return actual != OUTPUT_SLOT && (direction == null || matchesFilter(direction, stack))
+                    && inventory.isItemValid(actual, stack);
+        }
+        private int[] slots() {
+            if (direction == null) return new int[] {SAMPLE_SLOT, ANTIMATTER_SLOT, OUTPUT_SLOT, FUEL_SLOT};
+            int route = insertionRoute(direction);
+            int[] insertion = route == 0 ? new int[] {SAMPLE_SLOT, ANTIMATTER_SLOT}
+                    : route == 1 ? new int[] {FUEL_SLOT} : new int[0];
+            int[] extraction = extractionRoute(direction) == 0 ? new int[] {OUTPUT_SLOT} : new int[0];
+            return java.util.stream.IntStream.concat(
+                    java.util.Arrays.stream(insertion), java.util.Arrays.stream(extraction)).distinct().toArray();
+        }
     }
 
 }

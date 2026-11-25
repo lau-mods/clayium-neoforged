@@ -36,7 +36,12 @@ public final class DistributorScreen extends AbstractContainerScreen<Distributor
     }
     @Override protected void containerTick() { super.containerTick(); buttons.forEach((direction, button) -> button.setMessage(text(direction))); }
     private Component text(Direction direction) {
-        String mode = switch (menu.faceMode(direction)) { case INPUT -> "I"; case OUTPUT -> "O"; case DISABLED -> "X"; };
+        String mode = switch (menu.faceMode(direction)) {
+            case INPUT -> "I";
+            case OUTPUT -> "O";
+            case DISABLED -> "X";
+            case INPUT_OUTPUT -> "B";
+        };
         return Component.literal(direction.getName().substring(0, 1).toUpperCase() + ":" + mode);
     }
     @Override protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {

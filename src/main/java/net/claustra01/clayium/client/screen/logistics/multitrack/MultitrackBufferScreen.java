@@ -88,7 +88,12 @@ public final class MultitrackBufferScreen extends AbstractContainerScreen<Multit
     }
 
     private Component faceText(Direction direction) {
-        String mode = switch (menu.faceMode(direction)) { case INPUT -> "I"; case OUTPUT -> "O"; case DISABLED -> "X"; };
+        String mode = switch (menu.faceMode(direction)) {
+            case INPUT -> "I";
+            case OUTPUT -> "O";
+            case DISABLED -> "X";
+            case INPUT_OUTPUT -> "B";
+        };
         return Component.literal(direction.getName().substring(0, 1).toUpperCase()
                 + ":" + mode + (menu.faceTrack(direction) + 1));
     }

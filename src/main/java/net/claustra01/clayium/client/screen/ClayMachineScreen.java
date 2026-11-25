@@ -217,8 +217,10 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         ClayMachineBlockEntity machine = menu.machine();
         String mode = machine == null ? "-" : switch (machine.faceMode(direction)) {
             case INPUT -> "I";
+            case FUEL_INPUT -> "F";
             case OUTPUT -> "O";
             case DISABLED -> "X";
+            case INPUT_OUTPUT -> "B";
         };
         return Component.literal(shortName(direction) + ":" + mode);
     }

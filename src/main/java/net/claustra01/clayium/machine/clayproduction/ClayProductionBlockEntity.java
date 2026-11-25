@@ -3,6 +3,9 @@ package net.claustra01.clayium.machine.clayproduction;
 import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.energy.ClayEnergyStorage;
+import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.SideConfiguration;
+import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.ClayProductionRegistration;
 import net.claustra01.clayium.registry.RecipeRegistration;
 import net.claustra01.clayium.recipe.ClayiumMachineRecipe;
@@ -13,6 +16,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -30,7 +35,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
-public final class ClayProductionBlockEntity extends BlockEntity implements MenuProvider {
+public final class ClayProductionBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
     public static final int RESERVED_SLOT = 2;
@@ -57,6 +62,10 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
     };
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
     private final ContainerData menuData = new ProductionContainerData();
+    private final int[] insertionRoutes = {-1, 0, -1, -1, -1, -1};
+    private final int[] extractionRoutes = {0, -1, -1, -1, -1, -1};
+    private final ItemStack[] sideFilters = new ItemStack[6];
+    private final SideConfiguration sideConfiguration;
 
     private State state = State.IDLE;
     private long progress;
@@ -69,6 +78,16 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
 
     public ClayProductionBlockEntity(BlockPos pos, BlockState state) {
         super(ClayProductionRegistration.BLOCK_ENTITY.get(), pos, state);
+        java.util.Arrays.fill(sideFilters, ItemStack.EMPTY);
+        if (((ClayProductionBlock)state.getBlock()).type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER) {
+            insertionRoutes[3] = 1;
+        }
+        sideConfiguration = new SideConfiguration(insertionRoutes, extractionRoutes, sideFilters,
+                this::insertionRouteCount, () -> 1, ItemFilter::accepts);
+    }
+
+    private int insertionRouteCount() {
+        return type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER ? 2 : 1;
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ClayProductionBlockEntity machine) {
@@ -361,6 +380,23 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         return new ProductionItemHandler(direction);
     }
 
+    @Override public SideConfiguration sideConfiguration() { return sideConfiguration; }
+    @Override public BlockEntity ioOwner() { return this; }
+    @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() {
+        return ClayProductionBlock.PIPE;
+    }
+    @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
+        return ClayProductionBlock.FACING;
+    }
+    @Override public void ioConfigurationChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+            if (!level.isClientSide) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        ioNeighborsChanged();
+    }
+
     public void receiveClayEnergy(ClayEnergy amount) {
         energy.add(amount);
         setChanged();
@@ -424,6 +460,11 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         if (activeRecipe != null) {
             tag.putString("active_recipe", activeRecipe.toString());
         }
+        tag.putIntArray("insertion_routes", insertionRoutes);
+        tag.putIntArray("extraction_routes", extractionRoutes);
+        ListTag filters = new ListTag();
+        for (ItemStack filter : sideFilters) filters.add(filter.saveOptional(registries));
+        tag.put("side_filters", filters);
     }
 
     @Override
@@ -439,6 +480,13 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         activeInputLevel = tag.getInt("active_input_level");
         activeRecipe = tag.contains("active_recipe") ? ResourceLocation.parse(tag.getString("active_recipe")) : null;
         activeRecipeValue = null;
+        if (tag.contains("insertion_routes") || tag.contains("extraction_routes")) {
+            sideConfiguration.replaceRoutes(tag.getIntArray("insertion_routes"), tag.getIntArray("extraction_routes"));
+        }
+        ListTag filters = tag.getList("side_filters", Tag.TAG_COMPOUND);
+        for (int index = 0; index < Math.min(filters.size(), sideFilters.length); index++) {
+            sideFilters[index] = ItemStack.parseOptional(registries, filters.getCompound(index));
+        }
     }
 
     public enum State {
@@ -494,7 +542,7 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
             if (direction == null) {
                 return 4;
             }
-            return direction == Direction.DOWN ? 1 : 3;
+            return slots().length;
         }
 
         @Override
@@ -505,7 +553,8 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             int mappedSlot = mappedSlot(slot);
-            return mappedSlot == OUTPUT_SLOT ? stack : inventory.insertItem(mappedSlot, stack, simulate);
+            return mappedSlot == OUTPUT_SLOT || direction != null && !matchesFilter(direction, stack)
+                    ? stack : inventory.insertItem(mappedSlot, stack, simulate);
         }
 
         @Override
@@ -522,21 +571,31 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             int mappedSlot = mappedSlot(slot);
-            return mappedSlot != OUTPUT_SLOT && inventory.isItemValid(mappedSlot, stack);
+            return mappedSlot != OUTPUT_SLOT
+                    && (direction == null || matchesFilter(direction, stack))
+                    && inventory.isItemValid(mappedSlot, stack);
         }
 
         private int mappedSlot(int slot) {
-            if (direction == Direction.DOWN) {
-                return OUTPUT_SLOT;
-            }
-            if (direction == null && slot == 3) {
-                return OUTPUT_SLOT;
-            }
+            if (direction != null) return slots()[slot];
+            if (slot == 3) return OUTPUT_SLOT;
             return switch (slot) {
                 case 0 -> INPUT_SLOT;
                 case 1 -> FUEL_SLOT;
                 default -> LIMIT_SLOT;
             };
+        }
+
+        private int[] slots() {
+            int[] insertion = insertionSlots(insertionRoute(direction));
+            int[] extraction = extractionRoute(direction) == 0 ? new int[] {OUTPUT_SLOT} : new int[0];
+            return java.util.stream.IntStream.concat(
+                    java.util.Arrays.stream(insertion), java.util.Arrays.stream(extraction)).distinct().toArray();
+        }
+
+        private int[] insertionSlots(int route) {
+            if (route == 1 && insertionRouteCount() > 1) return new int[] {FUEL_SLOT};
+            return route == 0 ? new int[] {INPUT_SLOT, LIMIT_SLOT} : new int[0];
         }
     }
 }

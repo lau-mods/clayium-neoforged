@@ -39,6 +39,45 @@ public final class LogisticsGameTests {
     private static final Map<BlockPos, IItemHandler> TEST_HANDLERS = new HashMap<>();
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void buffersUseOriginalRearInputOnlyDefault(GameTestHelper helper) {
+        BufferBlockEntity buffer = placedBuffer(helper, 4, new BlockPos(1, 1, 1));
+        require(buffer.getBlockState().getValue(net.claustra01.clayium.logistics.BufferBlock.FACING)
+                        == Direction.NORTH,
+                "The default buffer fixture no longer faces north");
+        for (Direction direction : Direction.values()) {
+            BufferBlockEntity.FaceMode expected = direction == Direction.SOUTH
+                    ? BufferBlockEntity.FaceMode.INPUT
+                    : BufferBlockEntity.FaceMode.DISABLED;
+            require(buffer.faceMode(direction) == expected,
+                    "The buffer has the wrong original default on " + direction.getName());
+        }
+
+        net.claustra01.clayium.logistics.BufferBlock block =
+                (net.claustra01.clayium.logistics.BufferBlock) buffer.getBlockState().getBlock();
+        net.minecraft.world.entity.player.Player placer = helper.makeMockPlayer(net.minecraft.world.level.GameType.CREATIVE);
+        placer.setYRot(90.0F);
+        net.minecraft.world.item.context.BlockPlaceContext eastFacingPlacement =
+                new net.minecraft.world.item.context.BlockPlaceContext(
+                        helper.getLevel(), placer, net.minecraft.world.InteractionHand.MAIN_HAND,
+                        new ItemStack(block), new net.minecraft.world.phys.BlockHitResult(
+                                net.minecraft.world.phys.Vec3.atCenterOf(buffer.getBlockPos()),
+                                Direction.WEST, buffer.getBlockPos(), false));
+        net.minecraft.world.level.block.state.BlockState eastFacingState = block.getStateForPlacement(eastFacingPlacement);
+        require(eastFacingState != null && eastFacingState.getValue(
+                        net.claustra01.clayium.logistics.BufferBlock.FACING) == Direction.EAST,
+                "The placement state did not face east");
+        for (Direction direction : Direction.values()) {
+            BufferBlockEntity.FaceMode expected = direction == Direction.WEST
+                    ? BufferBlockEntity.FaceMode.INPUT
+                    : BufferBlockEntity.FaceMode.DISABLED;
+            require(eastFacingState.getValue(
+                            net.claustra01.clayium.logistics.BufferBlock.FACES.get(direction.get3DDataValue())) == expected,
+                    "The east-facing placement state did not keep the original rear-only route: " + direction);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void bufferPagesExposeAllOneHundredStorageSlots(GameTestHelper helper) {
         BufferBlockEntity buffer = placedBuffer(helper, 9, new BlockPos(1, 1, 1));
         var player = helper.makeMockPlayer(GameType.CREATIVE);
