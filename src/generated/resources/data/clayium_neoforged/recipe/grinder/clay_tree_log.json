@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_tree_log"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:organic_clay"
+    }
+  ],
+  "processing_method": "clayium_neoforged:grinder",
+  "processing_ticks": 200,
+  "required_tier": 5
+}

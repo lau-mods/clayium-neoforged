@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "clayium_neoforged:clay_blade"
+    },
+    "S": {
+      "item": "clayium_neoforged:short_clay_stick"
+    }
+  },
+  "pattern": [
+    "SB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:raw_clay_spatula"
+  }
+}

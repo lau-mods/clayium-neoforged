@@ -25,16 +25,16 @@ await scenario(async ({ clients }) => {
   command(client, 'time set noon');
   command(client, 'weather clear');
   command(client, 'fill -6 99 -7 6 99 5 minecraft:smooth_stone');
-  command(client, 'setblock -1 100 1 clayium:clay_work_table');
-  command(client, 'setblock 1 100 1 clayium:clay_crafting_board');
+  command(client, 'setblock -1 100 1 clayium_neoforged:clay_work_table');
+  command(client, 'setblock 1 100 1 clayium_neoforged:clay_crafting_board');
   command(client, 'setblock 2 100 1 minecraft:chest[facing=east]');
   command(client, 'item replace block 2 100 1 container.0 with minecraft:clay_ball 32');
   command(client, 'item replace block 2 100 1 container.1 with minecraft:oak_planks 16');
-  command(client, 'item replace entity @s hotbar.0 with clayium:clay_rolling_pin');
-  command(client, 'item replace entity @s hotbar.1 with clayium:clay_slicer');
-  command(client, 'item replace entity @s hotbar.2 with clayium:clay_spatula');
-  command(client, 'item replace entity @s hotbar.3 with clayium:clay_wrench');
-  command(client, 'item replace entity @s hotbar.4 with clayium:clay_io_configurator');
+  command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:clay_rolling_pin');
+  command(client, 'item replace entity @s hotbar.1 with clayium_neoforged:clay_slicer');
+  command(client, 'item replace entity @s hotbar.2 with clayium_neoforged:clay_spatula');
+  command(client, 'item replace entity @s hotbar.3 with clayium_neoforged:clay_wrench');
+  command(client, 'item replace entity @s hotbar.4 with clayium_neoforged:clay_io_configurator');
   command(client, 'gamemode survival');
 
   await camera(client, { x: 0, y: 101.6, z: -4.5, yaw: 0, pitch: 13 });

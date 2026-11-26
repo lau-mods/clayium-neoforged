@@ -38,15 +38,15 @@ public final class EnergyConverterScreen extends AbstractContainerScreen<EnergyC
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 7, 6, LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.converter.stored_ce",
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.converter.stored_ce",
                         ClayEnergy.ofInternal(menu.storedCe()).formatGui()),
                 62, 31, LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.converter.stored_fe",
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.converter.stored_fe",
                         formatFe(menu.storedFe()), formatFe(menu.capacity())),
                 62, 44, LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.converter.generation", formatFe(menu.generatedFe())), 62, 57,
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.converter.generation", formatFe(menu.generatedFe())), 62, 57,
                 LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.converter.output", formatFe(menu.outputLimit())), 62, 70,
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.converter.output", formatFe(menu.outputLimit())), 62, 70,
                 LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
                 LegacyGuiGraphics.TEXT_COLOR, false);

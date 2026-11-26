@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "M": {
+      "item": "clayium_neoforged:memory_card"
+    },
+    "P": {
+      "item": "clayium_neoforged:clay_pipe"
+    }
+  },
+  "pattern": [
+    " P ",
+    "PMP",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:direction_memory_card"
+  }
+}

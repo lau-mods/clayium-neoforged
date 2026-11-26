@@ -20,11 +20,11 @@ public final class AutoCrafterLanguageEntries {
     public static void add(String locale, BiConsumer<String, String> add) {
         Map<Integer, String> names = locale.equals("ja_jp") ? JAPANESE : ENGLISH;
         net.claustra01.clayium.registry.AutoCrafterRegistration.AUTO_CRAFTERS.forEach((tier, definition) ->
-                add.accept("block.clayium." + definition.id(), names.get(tier)));
-        add.accept("gui.clayium.auto_crafter.pattern", locale.equals("ja_jp") ? "レシピ" : "Pattern");
-        add.accept("gui.clayium.auto_crafter.materials", locale.equals("ja_jp") ? "材料" : "Materials");
-        add.accept("gui.clayium.auto_crafter.outputs", locale.equals("ja_jp") ? "出力" : "Outputs");
-        add.accept("gui.clayium.auto_crafter.cycle",
+                add.accept("block.clayium_neoforged." + definition.id(), names.get(tier)));
+        add.accept("gui.clayium_neoforged.auto_crafter.pattern", locale.equals("ja_jp") ? "レシピ" : "Pattern");
+        add.accept("gui.clayium_neoforged.auto_crafter.materials", locale.equals("ja_jp") ? "材料" : "Materials");
+        add.accept("gui.clayium_neoforged.auto_crafter.outputs", locale.equals("ja_jp") ? "出力" : "Outputs");
+        add.accept("gui.clayium_neoforged.auto_crafter.cycle",
                 locale.equals("ja_jp") ? "%1$s tickごとに最大%2$s回" : "Up to %2$s craft(s) / %1$s tick(s)");
     }
 

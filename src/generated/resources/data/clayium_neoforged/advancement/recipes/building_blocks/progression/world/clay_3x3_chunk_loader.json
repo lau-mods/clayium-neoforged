@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_hull": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:zk60_a_alloy_hull"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:progression/world/clay_3x3_chunk_loader"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_hull"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:progression/world/clay_3x3_chunk_loader"
+    ]
+  }
+}

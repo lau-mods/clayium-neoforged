@@ -33,7 +33,7 @@ await scenario(async ({ clients }) => {
     const x = -5 + (index % 5) * 2;
     const y = index < 5 ? 100 : 102;
     const z = index < 5 ? 0 : 2;
-    command(client, `setblock ${x} ${y} ${z} clayium:${id}[facing=north]`);
+    command(client, `setblock ${x} ${y} ${z} clayium_neoforged:${id}[facing=north]`);
   });
 
   await camera(client, { x: 0.5, y: 101.0, z: -12.5, yaw: 0, pitch: 7 }, 5_000);
@@ -44,18 +44,18 @@ await scenario(async ({ clients }) => {
     const y = index < 5 ? 100 : 102;
     const z = index < 5 ? 0 : 2;
     const block = mct(client, 'block', 'get', String(x), String(y), String(z));
-    if (block.type !== `clayium:${id}`) throw new Error(`Expected ${id} at ${x} ${y} ${z}, got ${block.type}`);
+    if (block.type !== `clayium_neoforged:${id}`) throw new Error(`Expected ${id} at ${x} ${y} ${z}, got ${block.type}`);
   }
   screenshot(client, 'AC-F014-002', 'chemical-reactors-separator-and-six-transformers');
 
   command(client, 'tick freeze');
-  command(client, 'data merge block -3 100 0 {inventory:{Size:7,Items:[{Slot:0,id:"clayium:dense_clay_dust",count:1}]},energy:{clay_energy:10000000L},fluid_input:{Fluid:{id:"minecraft:water",amount:8000}},fluid_output:{Fluid:{id:"minecraft:lava",amount:4000}}}');
+  command(client, 'data merge block -3 100 0 {inventory:{Size:7,Items:[{Slot:0,id:"clayium_neoforged:dense_clay_dust",count:1}]},energy:{clay_energy:10000000L},fluid_input:{Fluid:{id:"minecraft:water",amount:8000}},fluid_output:{Fluid:{id:"minecraft:lava",amount:4000}}}');
   command(client, 'tick step 1');
   await openMachine(client, -3, 100, 0);
   screenshot(client, 'AC-F014-002', 'chemical-reactor-two-output-gui');
   await mct(client, 'gui', 'close');
 
-  command(client, 'data merge block 3 100 0 {inventory:{Size:4,Items:[{Slot:0,id:"clayium:lithium_ingot",count:1}]},energy:{clay_energy:1000000000L}}');
+  command(client, 'data merge block 3 100 0 {inventory:{Size:4,Items:[{Slot:0,id:"clayium_neoforged:lithium_ingot",count:1}]},energy:{clay_energy:1000000000L}}');
   command(client, 'tick step 1');
   await openMachine(client, 3, 100, 0);
   screenshot(client, 'AC-F014-002', 'matter-transformer-running-gui');

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "P": {
+      "item": "clayium_neoforged:clay_plate"
+    },
+    "S": {
+      "item": "clayium_neoforged:short_clay_stick"
+    }
+  },
+  "pattern": [
+    " P ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:raw_clay_slicer"
+  }
+}

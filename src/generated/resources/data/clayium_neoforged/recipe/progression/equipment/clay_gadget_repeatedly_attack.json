@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 100000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_gadget_overclock_i"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_spirit"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_gadget_repeatedly_attack"
+    }
+  ],
+  "processing_method": "clayium_neoforged:assembler",
+  "processing_ticks": 120,
+  "required_tier": 10
+}

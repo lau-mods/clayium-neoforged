@@ -41,7 +41,7 @@ public final class FilterScreen extends AbstractContainerScreen<FilterMenu> {
 
     private Component modeText() {
         return Component.translatable(menu.modeSelected() == ItemFilterSettings.Mode.WHITELIST
-                ? "gui.clayium.item_filter.whitelist" : "gui.clayium.item_filter.blacklist");
+                ? "gui.clayium_neoforged.item_filter.whitelist" : "gui.clayium_neoforged.item_filter.blacklist");
     }
 
     @Override

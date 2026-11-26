@@ -41,7 +41,7 @@ export async function verifyViewer(viewer) {
     const show = (block, type) => {
       close();
       cmd('setblock 0 100 0 minecraft:air');
-      cmd('setblock 0 100 0 clayium:' + block);
+      cmd('setblock 0 100 0 clayium_neoforged:' + block);
       wait(3);
       mc('block', 'interact', 0, 100, 0);
       mc('gui', 'wait-open', '--timeout', 10);
@@ -88,7 +88,7 @@ export async function verifyViewer(viewer) {
       }
     }
     const table = show('clay_work_table', 'ClayWorkTableScreen');
-    cmd('give @s clayium:clay_plate 8');
+    cmd('give @s clayium_neoforged:clay_plate 8');
     wait(5); move(0, 0);
     capture('AC-F047-001','work-table-gui');
     openPage(table.guiLeft + 88, table.guiTop + 37);
@@ -98,8 +98,8 @@ export async function verifyViewer(viewer) {
     verify(viewerScreen);
     key('escape'); wait(4); verify('ClayWorkTableScreen');
     assert.ok(!slots()[0].hasStack && !slots()[1].hasStack, 'Missing tool caused a partial transfer');
-    assert.equal(slots().find(s => s.item.type === 'clayium:clay_plate').item.count, 8);
-    cmd('give @s clayium:clay_slicer');
+    assert.equal(slots().find(s => s.item.type === 'clayium_neoforged:clay_plate').item.count, 8);
+    cmd('give @s clayium_neoforged:clay_slicer');
     wait(5); openPage(table.guiLeft + 88, table.guiTop + 37);
     // Explicitly page forward and back before placing the original slice recipe.
     const pageY = cy - 49;
@@ -107,8 +107,8 @@ export async function verifyViewer(viewer) {
     click(cx - 88, pageY); wait(3);
     tableTransfer(); wait(8);
     verify('ClayWorkTableScreen');
-    assert.equal(slots()[0].item.type, 'clayium:clay_plate');
-    assert.equal(slots()[1].item.type, 'clayium:clay_slicer');
+    assert.equal(slots()[0].item.type, 'clayium_neoforged:clay_plate');
+    assert.equal(slots()[1].item.type, 'clayium_neoforged:clay_slicer');
     capture('AC-F047-003','work-table-after-transfer');
 
     const board = show('clay_crafting_board', 'ClayCraftingBoardScreen');
@@ -134,7 +134,7 @@ export async function verifyViewer(viewer) {
       const progress = name === 'metal-separator' ? [67,52] : [88,43];
       openPage(gui.guiLeft + progress[0],gui.guiTop + progress[1]);
       capture('AC-F047-002',name + '-category-via-machine');
-      invLookup(name === 'grinder' ? 'clayium:clay_steel_dust' : 'clayium:impure_aluminium_dust','r');
+      invLookup(name === 'grinder' ? 'clayium_neoforged:clay_steel_dust' : 'clayium_neoforged:impure_aluminium_dust','r');
       const [left,top] = locateRecipe(name,name + '-original-nei-layout');
       if (name === 'metal-separator') {
         move(left + 106, top + 29);
@@ -143,13 +143,13 @@ export async function verifyViewer(viewer) {
     }
 
     // The crucible has a searchable info page in each viewer.
-    invLookup('clayium:quartz_crucible','u');
+    invLookup('clayium_neoforged:quartz_crucible','u');
     const infoReference = path.join(process.env.HARNESS_SCREENSHOT_DIR,
       capture('AC-F047-002','quartz-crucible-uses'));
-    invLookup('clayium:quartz_crucible','r');
+    invLookup('clayium_neoforged:quartz_crucible','r');
     capture('AC-F047-002','quartz-crucible-recipes');
     for (const id of ['clay_cobblestone_generator','salt_extractor_tier_4','solar_clay_fabricator_mk_i','clay_tree_leaf']) {
-      invLookup('clayium:' + id,'u');
+      invLookup('clayium_neoforged:' + id,'u');
       const screenFile = path.join(path.dirname(process.env.HARNESS_RESULT_FILE),'info-tabs.png');
       mc('screenshot','--output',screenFile);
       const point = execFileSync('python3',['tests/e2e/viewer-info-tab.py',viewer,infoReference,
@@ -165,13 +165,13 @@ export async function verifyViewer(viewer) {
 
     // Change a real server datapack while the same client remains connected.
     const pack = path.resolve(process.env.MCT_HOME,'../server/harness-world/datapacks/m43-viewer');
-    const recipes = path.join(pack,'data/clayium/recipe/m43');
+    const recipes = path.join(pack,'data/clayium_neoforged/recipe/m43');
     await mkdir(recipes,{recursive:true});
     await writeFile(path.join(pack,'pack.mcmeta'), JSON.stringify({pack:{pack_format:48,description:'M43 viewer probe'}}));
     for (const [index,amount] of [250,750].entries()) {
       const result = index === 0 ? 'minecraft:heart_of_the_sea' : 'minecraft:echo_shard';
       await writeFile(path.join(recipes,'direct_fluid.json'),JSON.stringify({
-        type:'clayium:machine',processing_method:'clayium:chemical_reactor',required_tier:4 + index,
+        type:'clayium_neoforged:machine',processing_method:'clayium_neoforged:chemical_reactor',required_tier:4 + index,
         clay_energy:100 + index * 100,processing_ticks:40 + index * 40,
         item_inputs:[{ingredient:{item:'minecraft:paper'},count:1}],
         fluid_inputs:[{id:'minecraft:water',amount}],item_outputs:[{id:result,count:1}]

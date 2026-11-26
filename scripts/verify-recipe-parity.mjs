@@ -5,8 +5,8 @@ import { execFileSync } from 'node:child_process';
 
 const root = path.resolve(import.meta.dirname, '..');
 const jar = path.join(root, '.tmp/clayium-0.4.6.36.hotfix2.jar');
-const ledgerPath = path.join(root, 'src/main/resources/data/clayium/survival_recipe_ledger.tsv');
-const recipesRoot = path.join(root, 'src/generated/resources/data/clayium/recipe');
+const ledgerPath = path.join(root, 'src/main/resources/data/clayium_neoforged/survival_recipe_ledger.tsv');
+const recipesRoot = path.join(root, 'src/generated/resources/data/clayium_neoforged/recipe');
 const expectedJarHash = 'c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2';
 
 function fail(message) { throw new Error(message); }
@@ -43,8 +43,8 @@ function stackId(stack) {
 
 function outputSignature(recipe) {
   const deterministic = recipe.item_outputs ?? [];
-  const includeRandom = deterministic.length === 0 || recipe.processing_method === 'clayium:chemical_metal_separator';
-  const stacks = recipe.type === 'clayium:machine'
+  const includeRandom = deterministic.length === 0 || recipe.processing_method === 'clayium_neoforged:chemical_metal_separator';
+  const stacks = recipe.type === 'clayium_neoforged:machine'
     ? [...deterministic, ...(includeRandom ? (recipe.random_outputs ?? []).map((entry) => entry.stack) : [])]
     : [recipe.result];
   return stacks.map((stack) => `${stack.count ?? 1}*${stackId(stack)}`).sort().join('+');
@@ -80,7 +80,7 @@ function ingredientSignature(ingredient) {
 }
 
 function inputSignature(recipe) {
-  if (recipe.type === 'clayium:machine') {
+  if (recipe.type === 'clayium_neoforged:machine') {
     return (recipe.item_inputs ?? []).map((input) =>
       `${input.count ?? 1}*${ingredientSignature(input.ingredient)}`).sort().join('+');
   }
@@ -97,7 +97,7 @@ function inputSignature(recipe) {
 }
 
 function expectedInputSignature(value, recipe) {
-  if (recipe.type === 'clayium:machine') {
+  if (recipe.type === 'clayium_neoforged:machine') {
     return splitInputs(value).map((input) => {
       const counted = /^\d+\*/.test(input) ? input : `1*${input}`;
       return counted.replace(/\(([^()]+)\)/g, (_, alternatives) =>
@@ -139,7 +139,7 @@ function evidenceFor(recipe) {
     return 'mods/clayium/util/crafting/CRecipes.class#registerMaterialRecipes:source-lines-842-1439';
   }
   const prefixes = new Set(splitRoutes(recipe.recipe_ids)
-    .map((id) => id.replace(/^clayium:/, '').split('/')[0]));
+    .map((id) => id.replace(/^clayium_neoforged:/, '').split('/')[0]));
   if (prefixes.has('workbench')) {
     return 'mods/clayium/util/crafting/ClayWorkTableRecipes.class#constructor:source-lines-33-48';
   }
@@ -195,16 +195,16 @@ for (const row of rows) {
   const originalEvidence = evidenceFor(row);
   for (let index = 0; index < recipeIds.length; index++) {
     const recipeId = recipeIds[index];
-    const jsonPath = path.join(recipesRoot, `${recipeId.replace(/^clayium:/, '')}.json`);
+    const jsonPath = path.join(recipesRoot, `${recipeId.replace(/^clayium_neoforged:/, '')}.json`);
     if (!fs.existsSync(jsonPath)) fail(`Port recipe JSON is absent: ${recipeId}`);
     const recipe = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
     const method = route(row.method, index, recipeIds.length, `${row.registry_id} method`);
-    const actualMethod = recipe.type === 'clayium:machine' ? recipe.processing_method : recipe.type;
+    const actualMethod = recipe.type === 'clayium_neoforged:machine' ? recipe.processing_method : recipe.type;
     if (actualMethod !== method) fail(`${recipeId} method differs: ${actualMethod} != ${method}`);
-    if (recipeId === 'clayium:progression/equipment/clay_gadget_auto_eat') {
+    if (recipeId === 'clayium_neoforged:progression/equipment/clay_gadget_auto_eat') {
       const source = fs.readFileSync(path.join(root,
         'src/main/java/net/claustra01/clayium/recipe/NbtPreservingAutoEatRecipe.java'), 'utf8');
-      if (actualMethod !== 'clayium:nbt_preserving_auto_eat'
+      if (actualMethod !== 'clayium_neoforged:nbt_preserving_auto_eat'
           || !source.includes('GadgetType.ECONOMICAL_AUTO_EAT')
           || !source.includes('GadgetType.AUTO_EAT') || !source.includes('transmuteCopy(target, 1)')) {
         fail(`${recipeId} lacks the bidirectional component-preserving special recipe`);

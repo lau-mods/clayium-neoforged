@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 10000000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:octuple_compressed_pure_antimatter"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:octuple_pure_antimatter_plate"
+    }
+  ],
+  "processing_method": "clayium_neoforged:bending_machine",
+  "processing_ticks": 20,
+  "required_tier": 9
+}

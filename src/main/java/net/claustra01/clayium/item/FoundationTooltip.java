@@ -14,13 +14,13 @@ final class FoundationTooltip {
     static void add(ItemStack stack, List<Component> tooltip, TooltipFlag flag) {
         Integer tier = stack.get(FoundationDataComponentRegistration.TIER.get());
         if (tier != null) {
-            tooltip.add(Component.translatable("tooltip.clayium.tier", tier));
+            tooltip.add(Component.translatable("tooltip.clayium_neoforged.tier", tier));
         }
         String path = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
         CompressionTier.fromId(path).ifPresent(compressionTier -> {
-            tooltip.add(Component.translatable("tooltip.clayium.clay_units", compressionTier.clayUnits()));
+            tooltip.add(Component.translatable("tooltip.clayium_neoforged.clay_units", compressionTier.clayUnits()));
             if (compressionTier.clayEnergy() > 0) {
-                tooltip.add(Component.translatable("tooltip.clayium.ce_value", compressionTier.clayEnergy()));
+                tooltip.add(Component.translatable("tooltip.clayium_neoforged.ce_value", compressionTier.clayEnergy()));
             }
         });
         int lines = path.equals("gadget_holder")

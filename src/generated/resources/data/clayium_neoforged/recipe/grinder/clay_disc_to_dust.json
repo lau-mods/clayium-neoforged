@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_disc"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 3,
+      "id": "clayium_neoforged:clay_dust"
+    }
+  ],
+  "processing_method": "clayium_neoforged:grinder",
+  "processing_ticks": 9,
+  "required_tier": 0
+}

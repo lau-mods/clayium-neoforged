@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "clayium:item/largeplate_base",
-    "layer1": "clayium:item/largeplate_dark",
-    "layer2": "clayium:item/largeplate_light"
-  }
-}

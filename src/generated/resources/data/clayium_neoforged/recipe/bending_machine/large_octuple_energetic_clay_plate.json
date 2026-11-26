@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1000000000,
+  "item_inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:octuple_energetic_clay_plate"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:large_octuple_energetic_clay_plate"
+    }
+  ],
+  "processing_method": "clayium_neoforged:bending_machine",
+  "processing_ticks": 40,
+  "required_tier": 9
+}

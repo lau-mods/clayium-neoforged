@@ -262,38 +262,38 @@ await scenario(async ({ clients: harnessClients }) => {
   command(primary, `scoreboard objectives add ${OBJECTIVE} dummy`);
   command(primary, 'fill -5 99 -5 15 99 6 minecraft:smooth_stone');
 
-  command(primary, 'setblock 0 100 0 clayium:grinder_tier_10[facing=north]');
+  command(primary, 'setblock 0 100 0 clayium_neoforged:grinder_tier_10[facing=north]');
   command(primary, 'data merge block 0 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:iron_ingot",count:64}]},energy:{clay_energy:2000000000L}}');
-  command(primary, 'setblock 3 100 0 clayium:fluid_translator_tier_13[facing=north]');
-  command(primary, 'setblock 4 100 0 clayium:fluid_translator_tier_13[facing=north]');
+  command(primary, 'setblock 3 100 0 clayium_neoforged:fluid_translator_tier_13[facing=north]');
+  command(primary, 'setblock 4 100 0 clayium_neoforged:fluid_translator_tier_13[facing=north]');
   command(primary, 'data merge block 3 100 0 {tank:{Fluid:{id:"minecraft:water",amount:32000000}},pending:{Fluid:{id:"minecraft:water",amount:125}},insertion_routes:[I;-1,-1,-1,-1,-1,-1],extraction_routes:[I;-1,-1,-1,-1,-1,0]}');
   command(primary, 'data merge block 4 100 0 {insertion_routes:[I;-1,-1,-1,-1,0,-1],extraction_routes:[I;-1,-1,-1,-1,-1,-1]}');
-  command(primary, 'setblock 6 100 0 clayium:pan_core');
+  command(primary, 'setblock 6 100 0 clayium_neoforged:pan_core');
   command(primary, 'data merge block 6 100 0 {candidate_reverse:1b}');
-  command(primary, 'setblock 6 100 -1 clayium:pan_adapter_tier_10');
+  command(primary, 'setblock 6 100 -1 clayium_neoforged:pan_adapter_tier_10');
   command(primary, 'setblock 6 100 -2 minecraft:crafting_table');
   command(primary, 'data merge block 6 100 -1 {adapter_patterns:{Size:72,Items:[{Slot:0b,id:"minecraft:oak_log",count:1}]},adapter_sub_items:{Size:9,Items:[]}}');
-  command(primary, 'setblock 7 100 0 clayium:pan_cable');
-  command(primary, 'setblock 8 100 0 clayium:pan_duplicator_tier_13');
-  command(primary, 'data merge block 8 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:oak_planks",count:1},{Slot:1b,id:"clayium:antimatter",count:64}]},energy:{clay_energy:200000000L}}');
+  command(primary, 'setblock 7 100 0 clayium_neoforged:pan_cable');
+  command(primary, 'setblock 8 100 0 clayium_neoforged:pan_duplicator_tier_13');
+  command(primary, 'data merge block 8 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:oak_planks",count:1},{Slot:1b,id:"clayium_neoforged:antimatter",count:64}]},energy:{clay_energy:200000000L}}');
   // Keep the loader outside the vanilla spawn chunks so `if loaded` measures its ticket.
   await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
-  command(primary, 'setblock 400 100 0 clayium:clay_3x3_chunk_loader[facing=north]');
+  command(primary, 'setblock 400 100 0 clayium_neoforged:clay_3x3_chunk_loader[facing=north]');
   await mct(primary, 'wait', '--ticks', '20');
   await camera(primary, { x: 5.5, y: 100, z: -3.5, yaw: 180, pitch: -30 });
 
   command(primary, 'clear @s');
-  command(primary, 'item replace entity @s hotbar.0 with clayium:gadget_holder');
-  command(primary, 'item replace entity @s hotbar.1 with clayium:clay_gadget_flight');
-  command(primary, 'item replace entity @s hotbar.2 with clayium:clay_gadget_extra_health_i');
-  command(primary, 'item replace entity @s hotbar.3 with clayium:clay_gadget_long_arm');
+  command(primary, 'item replace entity @s hotbar.0 with clayium_neoforged:gadget_holder');
+  command(primary, 'item replace entity @s hotbar.1 with clayium_neoforged:clay_gadget_flight');
+  command(primary, 'item replace entity @s hotbar.2 with clayium_neoforged:clay_gadget_extra_health_i');
+  command(primary, 'item replace entity @s hotbar.3 with clayium_neoforged:clay_gadget_long_arm');
   command(primary, 'gamemode survival');
   await mct(primary, 'input', 'key', 'press', '1');
   await mct(primary, 'input', 'click', '640', '360', '--button', 'right');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
   assertEqual(mct(primary, 'gui', 'info').type, 'GadgetHolderScreen', 'active gadget holder screen');
-  for (const gadget of ['clayium:clay_gadget_flight', 'clayium:clay_gadget_extra_health_i',
-    'clayium:clay_gadget_long_arm']) {
+  for (const gadget of ['clayium_neoforged:clay_gadget_flight', 'clayium_neoforged:clay_gadget_extra_health_i',
+    'clayium_neoforged:clay_gadget_long_arm']) {
     await shiftClickGadget(primary, gadget, false);
   }
   await mct(primary, 'gui', 'close');
@@ -302,16 +302,16 @@ await scenario(async ({ clients: harnessClients }) => {
   const healthBefore = await storedResult(primary, '#health_before', 'attribute @s minecraft:generic.max_health get 100');
   if (healthBefore <= 2000) throw new Error(`Extra-health gadget was not applied: ${healthBefore}`);
   assertEqual(await storedSuccess(primary, '#flight_before',
-    'run attribute @s neoforge:creative_flight modifier value get clayium:gadget_flight'), 1,
+    'run attribute @s neoforge:creative_flight modifier value get clayium_neoforged:gadget_flight'), 1,
     'flight modifier while equipped');
   assertEqual(await storedSuccess(primary, '#reach_before',
-    'run attribute @s minecraft:player.block_interaction_range modifier value get clayium:gadget_long_arm'), 1,
+    'run attribute @s minecraft:player.block_interaction_range modifier value get clayium_neoforged:gadget_long_arm'), 1,
     'block-interaction-range modifier while equipped');
   const machineBefore = await blockItems(primary, '0 100 0');
-  assertEqual(itemCount(machineBefore, 'minecraft:iron_ingot') + itemCount(machineBefore, 'clayium:iron_dust'), 64,
+  assertEqual(itemCount(machineBefore, 'minecraft:iron_ingot') + itemCount(machineBefore, 'clayium_neoforged:iron_dust'), 64,
     'grinder item conservation before restart');
   const grinderEnergyBefore = await storedResult(primary, '#grinder_ce_before', 'data get block 0 100 0 energy.clay_energy');
-  const grinderDustBefore = itemCount(machineBefore, 'clayium:iron_dust');
+  const grinderDustBefore = itemCount(machineBefore, 'clayium_neoforged:iron_dust');
   if (grinderDustBefore <= 0 || grinderEnergyBefore >= 2000000000) {
     throw new Error(`Grinder did not perform a measured processing cycle: ${JSON.stringify({ grinderDustBefore, grinderEnergyBefore })}`);
   }
@@ -319,7 +319,7 @@ await scenario(async ({ clients: harnessClients }) => {
     'grinder CE consumed per produced dust before restart');
   const panEnergyBefore = await storedResult(primary, '#pan_ce_before', 'data get block 8 100 0 energy.clay_energy');
   const antimatterBefore = itemCount(await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:1}]'),
-    'clayium:antimatter');
+    'clayium_neoforged:antimatter');
   const panOutputBefore = itemCount(await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:2}]'),
     'minecraft:oak_planks');
   if (panEnergyBefore >= 200000000 || antimatterBefore >= 64 || panOutputBefore <= 0) {
@@ -344,12 +344,12 @@ await scenario(async ({ clients: harnessClients }) => {
   await mct(primary, 'wait', '--ticks', '80');
   const primaryMachine = await blockItems(primary, '0 100 0');
   const secondaryMachine = await blockItems(secondary, '0 100 0');
-  const primaryTotal = itemCount(primaryMachine, 'minecraft:iron_ingot') + itemCount(primaryMachine, 'clayium:iron_dust');
-  const secondaryTotal = itemCount(secondaryMachine, 'minecraft:iron_ingot') + itemCount(secondaryMachine, 'clayium:iron_dust');
+  const primaryTotal = itemCount(primaryMachine, 'minecraft:iron_ingot') + itemCount(primaryMachine, 'clayium_neoforged:iron_dust');
+  const secondaryTotal = itemCount(secondaryMachine, 'minecraft:iron_ingot') + itemCount(secondaryMachine, 'clayium_neoforged:iron_dust');
   assertEqual(primaryTotal, 64, 'grinder item conservation after restart');
   assertEqual(secondaryTotal, primaryTotal, 'two-client grinder synchronization');
   const grinderEnergyAfter = await storedResult(primary, '#grinder_ce_after', 'data get block 0 100 0 energy.clay_energy');
-  const grinderDustAfter = itemCount(primaryMachine, 'clayium:iron_dust');
+  const grinderDustAfter = itemCount(primaryMachine, 'clayium_neoforged:iron_dust');
   assertEqual(2000000000 - grinderEnergyAfter, grinderDustAfter * 25000,
     'grinder CE consumed per produced dust after restart');
   if (grinderDustAfter < grinderDustBefore) {
@@ -360,7 +360,7 @@ await scenario(async ({ clients: harnessClients }) => {
   const panSampleAfter = await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:0}]');
   const panAntimatterAfter = await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:1}]');
   assertEqual(itemCount(panSampleAfter, 'minecraft:oak_planks'), 1, 'PAN sample persistence');
-  assertAtMost(itemCount(panAntimatterAfter, 'clayium:antimatter'), antimatterBefore,
+  assertAtMost(itemCount(panAntimatterAfter, 'clayium_neoforged:antimatter'), antimatterBefore,
     'PAN antimatter after restart');
   const panOutputAfter = itemCount(await commandResult(primary, 'data get block 8 100 0 inventory.Items[{Slot:2}]'),
     'minecraft:oak_planks');
@@ -404,16 +404,16 @@ await scenario(async ({ clients: harnessClients }) => {
 
   await camera(primary, { x: 6.5, y: 100, z: -3.5, yaw: 180, pitch: -30 });
   const holderAfterRestart = await commandResult(primary, 'data get entity @s Inventory[{Slot:0b}]');
-  if (itemCount(holderAfterRestart, 'clayium:clay_gadget_flight') !== 1
-      || itemCount(holderAfterRestart, 'clayium:clay_gadget_extra_health_i') !== 1) {
+  if (itemCount(holderAfterRestart, 'clayium_neoforged:clay_gadget_flight') !== 1
+      || itemCount(holderAfterRestart, 'clayium_neoforged:clay_gadget_extra_health_i') !== 1) {
     throw new Error(`Gadget holder contents did not survive restart: ${outputText(holderAfterRestart)}`);
   }
   await mct(primary, 'input', 'key', 'press', '1');
   await mct(primary, 'input', 'click', '640', '360', '--button', 'right');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
   assertEqual(mct(primary, 'gui', 'info').type, 'GadgetHolderScreen', 'active gadget holder screen');
-  for (const gadget of ['clayium:clay_gadget_flight', 'clayium:clay_gadget_extra_health_i',
-    'clayium:clay_gadget_long_arm']) {
+  for (const gadget of ['clayium_neoforged:clay_gadget_flight', 'clayium_neoforged:clay_gadget_extra_health_i',
+    'clayium_neoforged:clay_gadget_long_arm']) {
     await shiftClickGadget(primary, gadget, true);
   }
   await mct(primary, 'gui', 'close');
@@ -421,21 +421,21 @@ await scenario(async ({ clients: harnessClients }) => {
   const healthAfter = await storedResult(primary, '#health_after', 'attribute @s minecraft:generic.max_health get 100');
   assertEqual(healthAfter, 2000, 'maximum health after removing the health gadget');
   assertEqual(await storedSuccess(primary, '#flight_after',
-    'run attribute @s neoforge:creative_flight modifier value get clayium:gadget_flight'), 0,
+    'run attribute @s neoforge:creative_flight modifier value get clayium_neoforged:gadget_flight'), 0,
     'flight modifier after gadget removal');
   assertEqual(await storedSuccess(primary, '#reach_after',
-    'run attribute @s minecraft:player.block_interaction_range modifier value get clayium:gadget_long_arm'), 0,
+    'run attribute @s minecraft:player.block_interaction_range modifier value get clayium_neoforged:gadget_long_arm'), 0,
     'block-interaction-range modifier after gadget removal');
   const holderAfterRemoval = await commandResult(primary, 'data get entity @s Inventory[{Slot:0b}]');
-  if (itemCount(holderAfterRemoval, 'clayium:clay_gadget_extra_health_i') !== 0
-      || itemCount(holderAfterRemoval, 'clayium:clay_gadget_flight') !== 0
-      || itemCount(holderAfterRemoval, 'clayium:clay_gadget_long_arm') !== 0) {
+  if (itemCount(holderAfterRemoval, 'clayium_neoforged:clay_gadget_extra_health_i') !== 0
+      || itemCount(holderAfterRemoval, 'clayium_neoforged:clay_gadget_flight') !== 0
+      || itemCount(holderAfterRemoval, 'clayium_neoforged:clay_gadget_long_arm') !== 0) {
     throw new Error(`Gadget removal was not persisted exactly once: ${outputText(holderAfterRemoval)}`);
   }
 
   command(primary, 'gamemode creative');
   await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
-  command(primary, 'setblock 402 100 0 clayium:grinder_tier_10[facing=north]');
+  command(primary, 'setblock 402 100 0 clayium_neoforged:grinder_tier_10[facing=north]');
   command(primary, 'data merge block 402 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:barrier",count:7}]},energy:{clay_energy:123456789L},insertion_routes:[I;-1,-1,-1,-1,-1,-1],extraction_routes:[I;-1,-1,-1,-1,-1,-1]}');
   const loadedMachineBeforeDeparture = normalizeNbt(await commandResult(primary, 'data get block 402 100 0'));
   for (const client of clients) await camera(client, { x: 1000.5, y: 110, z: 1000.5, yaw: 0, pitch: 10 });

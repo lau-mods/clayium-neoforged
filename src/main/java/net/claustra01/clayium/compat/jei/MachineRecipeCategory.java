@@ -47,7 +47,7 @@ final class MachineRecipeCategory implements IRecipeCategory<RecipeViewerPage> {
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gui.clayium.recipe." + method.id());
+        return Component.translatable("gui.clayium_neoforged.recipe." + method.id());
     }
 
     @Override
@@ -118,7 +118,7 @@ final class MachineRecipeCategory implements IRecipeCategory<RecipeViewerPage> {
             ClayiumMachineRecipe recipe,
             ClayiumMachineRecipe.RandomOutput output) {
         tooltip.add(Component.translatable(
-                "gui.clayium.recipe.probability_weight",
+                "gui.clayium_neoforged.recipe.probability_weight",
                 RecipeViewerLayout.formattedRandomOutputPercent(recipe, output),
                 output.weight(),
                 RecipeViewerLayout.totalRandomWeight(recipe)));

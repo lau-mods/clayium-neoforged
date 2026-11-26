@@ -27,7 +27,7 @@ await scenario(async ({ clients }) => {
     'automatic_clay_condenser_mk_ii',
   ];
   condensers.forEach((id, index) => command(
-    client, `setblock ${-3 + index * 2} -60 0 clayium:${id}[facing=north]`,
+    client, `setblock ${-3 + index * 2} -60 0 clayium_neoforged:${id}[facing=north]`,
   ));
   await camera(client, { x: 0.5, y: -59.5, z: -4.5, yaw: 0, pitch: 8 });
   await mct(client, 'wait', '--ticks', '10');
@@ -35,10 +35,10 @@ await scenario(async ({ clients }) => {
   for (const [x, label] of [[-3, 'energetic-mk-i'], [-1, 'energetic-mk-ii'],
     [1, 'automatic-mk-i'], [3, 'automatic-mk-ii']]) {
     await camera(client, { x: x + 0.5, y: -59.5, z: -2.5, yaw: 0, pitch: 8 });
-    const input = x === -3 ? 'clayium:compressed_energetic_clay' : x === -1
-      ? 'clayium:septuple_compressed_energetic_clay' : 'clayium:dense_clay';
+    const input = x === -3 ? 'clayium_neoforged:compressed_energetic_clay' : x === -1
+      ? 'clayium_neoforged:septuple_compressed_energetic_clay' : 'clayium_neoforged:dense_clay';
     const count = x < 0 ? 63 : 9;
-    const sample = x > 0 ? ',{Slot:4,id:"clayium:industrial_clay",count:1}' : '';
+    const sample = x > 0 ? ',{Slot:4,id:"clayium_neoforged:industrial_clay",count:1}' : '';
     if (x > 0) command(client, 'tick freeze');
     command(client, `data merge block ${x} -60 0 {inventory:{Size:5,Items:[{Slot:0,id:"${input}",count:${count}}${sample}]},energy:{clay_energy:1000000000000L}}`);
     if (x > 0) command(client, 'tick step 1');
@@ -54,9 +54,9 @@ await scenario(async ({ clients }) => {
     'lithium_solar_clay_fabricator',
   ];
   solar.forEach((id, index) => command(
-    client, `setblock ${-2 + index * 2} -60 2 clayium:${id}[facing=north]`,
+    client, `setblock ${-2 + index * 2} -60 2 clayium_neoforged:${id}[facing=north]`,
   ));
-  command(client, 'data merge block 0 -60 2 {inventory:{Size:5,Items:[{Slot:0,id:"clayium:energetic_clay",count:1}]}}');
+  command(client, 'data merge block 0 -60 2 {inventory:{Size:5,Items:[{Slot:0,id:"clayium_neoforged:energetic_clay",count:1}]}}');
   await mct(client, 'wait', '--ticks', '4');
   await camera(client, { x: 0.5, y: -59.5, z: -3.0, yaw: 0, pitch: 10 });
   screenshot(client, 'AC-F016-002', 'solar-machines-with-original-solar-panels');

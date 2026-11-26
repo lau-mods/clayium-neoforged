@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1000,
+  "item_inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:silicon_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:silicon_block"
+    }
+  ],
+  "processing_method": "clayium_neoforged:condenser",
+  "processing_ticks": 20,
+  "required_tier": 5
+}

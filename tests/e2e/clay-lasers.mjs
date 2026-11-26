@@ -25,19 +25,19 @@ await scenario(async ({ clients }) => {
     [6, 3, 'clay_energy_laser_tier_10', 'west', 0, 3],
   ];
   for (const [x, z, id, facing, targetX, targetZ] of lasers) {
-    command(client, `setblock ${x} 100 ${z} clayium:${id}[facing=${facing}]`);
+    command(client, `setblock ${x} 100 ${z} clayium_neoforged:${id}[facing=${facing}]`);
     command(client, `setblock ${targetX} 100 ${targetZ} minecraft:polished_deepslate`);
     energize(client, x, 100, z);
   }
 
-  command(client, 'setblock 10 100 -5 clayium:clay_energy_laser_tier_7[facing=south]');
-  command(client, 'setblock 10 100 0 clayium:laser_reflector[facing=west]');
+  command(client, 'setblock 10 100 -5 clayium_neoforged:clay_energy_laser_tier_7[facing=south]');
+  command(client, 'setblock 10 100 0 clayium_neoforged:laser_reflector[facing=west]');
   command(client, 'setblock 4 100 0 minecraft:polished_deepslate');
   energize(client, 10, 100, -5);
 
-  command(client, 'setblock -5 102 8 clayium:clay_energy_laser_tier_9[facing=east]');
+  command(client, 'setblock -5 102 8 clayium_neoforged:clay_energy_laser_tier_9[facing=east]');
   command(client, 'setblock 5 102 8 minecraft:polished_deepslate');
-  command(client, 'setblock 0 102 3 clayium:clay_energy_laser_tier_8[facing=south]');
+  command(client, 'setblock 0 102 3 clayium_neoforged:clay_energy_laser_tier_8[facing=south]');
   command(client, 'setblock 0 102 13 minecraft:polished_deepslate');
   energize(client, -5, 102, 8);
   energize(client, 0, 102, 3);

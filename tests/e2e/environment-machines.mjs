@@ -23,27 +23,27 @@ await scenario(async ({ clients }) => {
   generators.forEach((id, index) => {
     const x = -6 + (index % 4) * 4;
     const z = index < 4 ? 2 : 5;
-    command(client, `setblock ${x} 100 ${z} clayium:${id}[facing=north]`);
+    command(client, `setblock ${x} 100 ${z} clayium_neoforged:${id}[facing=north]`);
     command(client, `setblock ${x - 1} 100 ${z} minecraft:lava`);
     command(client, `setblock ${x + 1} 100 ${z} minecraft:oak_fence[waterlogged=true]`);
   });
   [4, 5, 6, 7].forEach((tier, index) => {
     const x = -6 + index * 4;
-    command(client, `setblock ${x} 100 -2 clayium:salt_extractor_tier_${tier}[facing=north]`);
+    command(client, `setblock ${x} 100 -2 clayium_neoforged:salt_extractor_tier_${tier}[facing=north]`);
     command(client, `setblock ${x + 1} 100 -2 minecraft:oak_fence[waterlogged=true]`);
   });
 
-  command(client, 'setblock 9 100 2 clayium:clay_cobblestone_generator[facing=north]');
+  command(client, 'setblock 9 100 2 clayium_neoforged:clay_cobblestone_generator[facing=north]');
   command(client, 'setblock 8 100 2 minecraft:lava');
-  command(client, 'setblock 9 100 -2 clayium:salt_extractor_tier_4[facing=north]');
+  command(client, 'setblock 9 100 -2 clayium_neoforged:salt_extractor_tier_4[facing=north]');
   command(client, 'setblock 10 100 -2 minecraft:lava');
   command(client, 'data merge block -6 100 -2 {energy:{clay_energy:100000L}}');
   command(client, 'data merge block 9 100 -2 {energy:{clay_energy:100000L}}');
   await camera(client, { x: -2.0, y: 103.5, z: -6.0, yaw: 0, pitch: 35 }, 5_000);
   const generator = await waitFor(
     () => mct(client, 'block', 'get', '-6', '100', '2'),
-    block => JSON.stringify(block).includes('clayium:clay_cobblestone_generator'), 30_000);
-  if (!JSON.stringify(generator).includes('clayium:clay_cobblestone_generator')) {
+    block => JSON.stringify(block).includes('clayium_neoforged:clay_cobblestone_generator'), 30_000);
+  if (!JSON.stringify(generator).includes('clayium_neoforged:clay_cobblestone_generator')) {
     throw new Error('The generator scene did not load: ' + JSON.stringify(generator));
   }
   await camera(client, { x: -2.0, y: 103.5, z: -6.0, yaw: 0, pitch: 35 });
@@ -66,8 +66,8 @@ await scenario(async ({ clients }) => {
   screenshot(client, 'AC-F018-001', 'lava-only-extractor-empty-output');
   await mct(client, 'gui', 'close');
 
-  command(client, 'setblock -3 100 -12 clayium:quartz_crucible');
-  command(client, 'item replace entity @s weapon.mainhand with clayium:impure_silicon_ingot 1');
+  command(client, 'setblock -3 100 -12 clayium_neoforged:quartz_crucible');
+  command(client, 'item replace entity @s weapon.mainhand with clayium_neoforged:impure_silicon_ingot 1');
   command(client, 'gamemode survival');
   await camera(client, { x: -2.5, y: 101.6, z: -14.0, yaw: 0, pitch: 10 });
   await mct(client, 'block', 'interact', '-3', '100', '-12');

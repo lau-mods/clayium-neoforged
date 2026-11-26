@@ -29,7 +29,7 @@ import net.neoforged.fml.config.ModConfig;
 
 @Mod(ClayiumMod.MOD_ID)
 public final class ClayiumMod {
-    public static final String MOD_ID = "clayium";
+    public static final String MOD_ID = "clayium_neoforged";
 
     public ClayiumMod(IEventBus modEventBus, ModContainer modContainer) {
         ClayiumRegistries.register(modEventBus);

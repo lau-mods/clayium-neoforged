@@ -506,7 +506,7 @@ public final class GuiParityGameTests {
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void originalGuiPngHashesRemainUnmodified(GameTestHelper helper) {
         for (var entry : ORIGINAL_GUI_HASHES.entrySet()) {
-            String path = "/assets/clayium/textures/gui/" + entry.getKey();
+            String path = "/assets/clayium_neoforged/textures/gui/" + entry.getKey();
             try (var input = ClayiumMod.class.getResourceAsStream(path)) {
                 require(input != null, "Missing original GUI asset " + entry.getKey());
                 String actual = HexFormat.of().formatHex(

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_duplicator": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:pan_duplicator_tier_8"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:progression/pan/pan_duplicator_tier_9"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_duplicator"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:progression/pan/pan_duplicator_tier_9"
+    ]
+  }
+}

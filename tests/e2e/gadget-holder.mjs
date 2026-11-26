@@ -29,9 +29,9 @@ await scenario(async ({ clients }) => {
   const client = clients[0];
   command(client, 'gamemode creative');
   command(client, 'clear @s');
-  command(client, 'item replace entity @s hotbar.0 with clayium:gadget_holder');
+  command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:gadget_holder');
   for (let index = 0; index < gadgets.length; index++) {
-    command(client, `item replace entity @s inventory.${index} with clayium:${gadgets[index]}`);
+    command(client, `item replace entity @s inventory.${index} with clayium_neoforged:${gadgets[index]}`);
   }
   command(client, 'gamemode survival');
 

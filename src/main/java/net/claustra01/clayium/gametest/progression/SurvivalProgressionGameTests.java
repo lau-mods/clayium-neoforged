@@ -72,7 +72,7 @@ public final class SurvivalProgressionGameTests {
         for (ResourceLocation id : candidates) {
             RecipeHolder<?> holder = helper.getLevel().getRecipeManager().byKey(id).orElseThrow();
             String expectedPath = id.getPath().substring(id.getPath().lastIndexOf('/') + 1);
-            String[] row = ledger.get("clayium:" + expectedPath);
+            String[] row = ledger.get("clayium_neoforged:" + expectedPath);
             require(row != null, id + " has no individual ledger row");
             require(List.of(row[3].split("\\|")).contains(id.toString()),
                     id + " is absent from its ledger row");
@@ -82,7 +82,7 @@ public final class SurvivalProgressionGameTests {
                             BuiltInRegistries.ITEM.get(ClayiumMod.id(expectedPath))),
                     id + " does not produce its classified machine");
             if (holder.value() instanceof ClayiumMachineRecipe recipe) {
-                require(recipe.processingMethod().id().equals(row[4].substring("clayium:".length()))
+                require(recipe.processingMethod().id().equals(row[4].substring("clayium_neoforged:".length()))
                                 && recipe.requiredTier() == Integer.parseInt(row[5])
                                 && recipe.processingTicks() == Long.parseLong(row[6])
                                 && recipe.clayEnergy() == Long.parseLong(row[7]),
@@ -101,7 +101,7 @@ public final class SurvivalProgressionGameTests {
     private static Map<String, String[]> readLedger() {
         Map<String, String[]> rows = new HashMap<>();
         try (var stream = SurvivalProgressionGameTests.class.getResourceAsStream(
-                        "/data/clayium/survival_recipe_ledger.tsv");
+                        "/data/clayium_neoforged/survival_recipe_ledger.tsv");
                 var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             reader.readLine();
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
@@ -467,13 +467,13 @@ public final class SurvivalProgressionGameTests {
             var holder = helper.getLevel().getRecipeManager().byKey(recipeId);
             require(holder.isPresent(),
                     id + " has no distinct survival recipe");
-            String[] row = ledger.get("clayium:" + id);
+            String[] row = ledger.get("clayium_neoforged:" + id);
             require(row != null && List.of(row[3].split("\\|")).contains(recipeId.toString()),
                     id + " has no source recipe in the individual equipment ledger");
-            require(row[4].equals("clayium:assembler") || row[4].equals("minecraft:crafting_shaped")
+            require(row[4].equals("clayium_neoforged:assembler") || row[4].equals("minecraft:crafting_shaped")
                             || row[4].equals("minecraft:crafting_shapeless")
                             || id.equals("clay_gadget_auto_eat")
-                                    && row[4].equals("clayium:nbt_preserving_auto_eat"),
+                                    && row[4].equals("clayium_neoforged:nbt_preserving_auto_eat"),
                     id + " has an unexpected equipment method in the ledger");
             require(BuiltInRegistries.ITEM.getKey(holder.get().value()
                             .getResultItem(helper.getLevel().registryAccess()).getItem()).toString().equals(row[1]),
@@ -481,7 +481,7 @@ public final class SurvivalProgressionGameTests {
             require(holder.get().value().getResultItem(helper.getLevel().registryAccess()).getCount() == 1,
                     id + " produces a different quantity from the ledger");
             if (holder.get().value() instanceof ClayiumMachineRecipe machine) {
-                require(row[4].equals("clayium:" + machine.processingMethod().id())
+                require(row[4].equals("clayium_neoforged:" + machine.processingMethod().id())
                                 && machine.requiredTier() == Integer.parseInt(row[5])
                                 && machine.processingTicks() == Long.parseLong(row[6])
                                 && machine.clayEnergy() == Long.parseLong(row[7]),
@@ -526,7 +526,7 @@ public final class SurvivalProgressionGameTests {
                         id + " differs from the original shapeless ingredient");
             } else if (holder.get().value() instanceof NbtPreservingAutoEatRecipe) {
                 require(id.equals("clay_gadget_auto_eat")
-                                && row[4].equals("clayium:nbt_preserving_auto_eat"),
+                                && row[4].equals("clayium_neoforged:nbt_preserving_auto_eat"),
                         id + " differs from the original component-preserving conversion");
             } else {
                 throw new GameTestAssertException(id + " has an unexpected recipe type");

@@ -16,10 +16,10 @@ await scenario(async ({ clients }) => {
   command(client, 'fill -5 100 -1 5 103 4 minecraft:air');
   command(client, 'fill -5 99 -5 5 99 4 minecraft:smooth_stone');
   command(client, 'fill -8 100 1 8 100 1 minecraft:smooth_stone');
-  command(client, 'setblock -2 100 1 clayium:clay_water_wheel[facing=north]');
-  command(client, 'setblock 2 100 1 clayium:dense_clay_water_wheel[facing=north]');
-  command(client, 'setblock -1 100 1 clayium:condenser_tier_2[facing=north]');
-  command(client, 'setblock 3 100 1 clayium:grinder_tier_3[facing=north]');
+  command(client, 'setblock -2 100 1 clayium_neoforged:clay_water_wheel[facing=north]');
+  command(client, 'setblock 2 100 1 clayium_neoforged:dense_clay_water_wheel[facing=north]');
+  command(client, 'setblock -1 100 1 clayium_neoforged:condenser_tier_2[facing=north]');
+  command(client, 'setblock 3 100 1 clayium_neoforged:grinder_tier_3[facing=north]');
   command(client, 'setblock -2 101 2 minecraft:water');
   command(client, 'setblock 2 101 2 minecraft:water');
 
@@ -27,7 +27,7 @@ await scenario(async ({ clients }) => {
   const wheelsAndWaterReady = blocks => blocks.every((block, index) => {
     const state = JSON.stringify(block);
     if (index >= 2) return state.includes('minecraft:water');
-    return state.includes(`clayium:${index === 0 ? 'clay_water_wheel' : 'dense_clay_water_wheel'}`)
+    return state.includes(`clayium_neoforged:${index === 0 ? 'clay_water_wheel' : 'dense_clay_water_wheel'}`)
       && /active[^a-zA-Z0-9]+true/.test(state);
   });
   const blocks = await waitFor(() => Promise.all([

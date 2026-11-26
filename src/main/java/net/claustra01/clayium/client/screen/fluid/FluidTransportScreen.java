@@ -38,7 +38,7 @@ public final class FluidTransportScreen extends AbstractContainerScreen<FluidTra
         if (x >= TANK_X && x < TANK_X + TANK_WIDTH && y >= TANK_Y && y < TANK_Y + TANK_HEIGHT) {
             FluidStack fluid = menu.fluid();
             graphics.renderTooltip(font, List.of(
-                    fluid.isEmpty() ? Component.translatable("gui.clayium.fluid.empty") : fluid.getHoverName(),
+                    fluid.isEmpty() ? Component.translatable("gui.clayium_neoforged.fluid.empty") : fluid.getHoverName(),
                     Component.literal(menu.amount() + " / " + menu.capacity() + " mB"))
                     .stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
         }

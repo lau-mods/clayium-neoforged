@@ -43,9 +43,9 @@ public final class GadgetHolderItem extends FoundationItem {
         super.appendHoverText(stack, context, tooltip, flag);
         List<ItemStack> gadgets = gadgets(stack);
         if (gadgets.isEmpty()) {
-            tooltip.add(Component.translatable("tooltip.clayium.gadget_holder.empty").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("tooltip.clayium_neoforged.gadget_holder.empty").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("tooltip.clayium.gadget_holder.configured", gadgets.size())
+            tooltip.add(Component.translatable("tooltip.clayium_neoforged.gadget_holder.configured", gadgets.size())
                     .withStyle(ChatFormatting.AQUA));
             for (ItemStack gadget : gadgets) {
                 tooltip.add(Component.literal(" • ").append(gadget.getHoverName()).withStyle(ChatFormatting.GRAY));

@@ -41,18 +41,18 @@ public final class AreaMachineScreen extends AbstractContainerScreen<AreaMachine
             int action = index;
             addRenderableWidget(new LegacyPictureButton(x + positions[index][0], y + positions[index][1],
                     LegacyPictureButton.BUTTONS, textures[index], 0,
-                    Component.translatable("gui.clayium.area." + names[index]), () -> click(action)));
+                    Component.translatable("gui.clayium_neoforged.area." + names[index]), () -> click(action)));
         }
         if (menu.isActivator()) {
             int modeX = leftPos + imageWidth - 16 - 16;
             targetButton = addRenderableWidget(new LegacyPictureButton(modeX, topPos + 16,
-                    LegacyPictureButton.BUTTONS, 16 * 5, 0, Component.translatable("gui.clayium.area.target"),
+                    LegacyPictureButton.BUTTONS, 16 * 5, 0, Component.translatable("gui.clayium_neoforged.area.target"),
                     () -> click(AreaGuiHost.BUTTON_TARGET)));
             rayTraceButton = addRenderableWidget(new LegacyPictureButton(modeX, topPos + 34,
-                    LegacyPictureButton.BUTTONS, 16 * 8, 0, Component.translatable("gui.clayium.area.ray_trace"),
+                    LegacyPictureButton.BUTTONS, 16 * 8, 0, Component.translatable("gui.clayium_neoforged.area.ray_trace"),
                     () -> click(AreaGuiHost.BUTTON_RAY_TRACE)));
             sneakButton = addRenderableWidget(new LegacyPictureButton(modeX, topPos + 52,
-                    LegacyPictureButton.BUTTONS, 16 * 10, 0, Component.translatable("gui.clayium.area.sneak"),
+                    LegacyPictureButton.BUTTONS, 16 * 10, 0, Component.translatable("gui.clayium_neoforged.area.sneak"),
                     () -> click(AreaGuiHost.BUTTON_SNEAK)));
             updateModeButtons();
         }
@@ -106,16 +106,16 @@ public final class AreaMachineScreen extends AbstractContainerScreen<AreaMachine
         graphics.drawString(font, title, 6, 6, LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
                 LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.machine.energy",
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.energy",
                 ClayEnergy.ofInternal(menu.storedEnergy()).formatGui()), 4, machineY - 12,
                 LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.machine.laser",
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.laser",
                 LegacyNumerals.stackSize(menu.laserEnergy())), 64, machineY - 12,
                 LegacyGuiGraphics.TEXT_COLOR, false);
         if (!menu.isActivator() && menu.guiTier() >= 9) {
             String[] keys = {"harvest", "fortune", "silk_touch"};
             for (int index = 0; index < keys.length; index++) {
-                graphics.drawString(font, Component.translatable("gui.clayium.area.filter." + keys[index]),
+                graphics.drawString(font, Component.translatable("gui.clayium_neoforged.area.filter." + keys[index]),
                         imageWidth - 48, 21 + index * 18, LegacyGuiGraphics.TEXT_COLOR, false);
             }
         }

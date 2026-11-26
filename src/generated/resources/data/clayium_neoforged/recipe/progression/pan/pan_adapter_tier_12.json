@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 10000000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:oec_resonator"
+      }
+    },
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:pan_cable"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pan_adapter_tier_12"
+    }
+  ],
+  "processing_method": "clayium_neoforged:assembler",
+  "processing_ticks": 60,
+  "required_tier": 10
+}

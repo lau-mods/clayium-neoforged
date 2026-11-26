@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:copper_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "minecraft:copper_ingot"
+  }
+}

@@ -15,7 +15,7 @@ public final class ClayTreeLanguageEntries {
 
     public static void add(String locale, BiConsumer<String, String> consumer) {
         (locale.equals("ja_jp") ? JAPANESE : ENGLISH)
-                .forEach((id, name) -> consumer.accept("block.clayium." + id, name));
+                .forEach((id, name) -> consumer.accept("block.clayium_neoforged." + id, name));
     }
 
     private ClayTreeLanguageEntries() {

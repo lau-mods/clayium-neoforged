@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "clayium_neoforged:metal_chests"
+    },
+    "I": {
+      "item": "clayium_neoforged:electrum_ingot"
+    }
+  },
+  "pattern": [
+    "III",
+    "ICI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:electrum_chest"
+  }
+}

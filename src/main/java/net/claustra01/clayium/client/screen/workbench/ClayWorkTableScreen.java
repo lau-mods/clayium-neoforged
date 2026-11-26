@@ -25,7 +25,7 @@ public final class ClayWorkTableScreen extends AbstractContainerScreen<ClayWorkT
         super.init();
         for (int action = 1; action <= 6; action++) {
             int selectedAction = action;
-            Component description = Component.translatable("button.clayium.work_action." + action);
+            Component description = Component.translatable("button.clayium_neoforged.work_action." + action);
             AbstractButton button = new AbstractButton(
                     leftPos + 40 + (action - 1) * 16, topPos + 52, 16, 16, description) {
                 @Override

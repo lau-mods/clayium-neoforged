@@ -26,7 +26,7 @@ await scenario(async ({ clients }) => {
   command(client, 'clear @s');
   command(client, 'fill -5 99 -3 5 99 92 minecraft:smooth_stone');
   for (let index = 0; index < shooters.length; index++) {
-    command(client, `item replace entity @s hotbar.${index} with clayium:${shooters[index]}`);
+    command(client, `item replace entity @s hotbar.${index} with clayium_neoforged:${shooters[index]}`);
   }
 
   command(client, 'gamemode survival');

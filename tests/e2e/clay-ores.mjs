@@ -21,14 +21,14 @@ await scenario(async ({ clients }) => {
     [4, 5, 'deepslate_large_dense_clay_ore'],
   ];
   for (const [x, z, id] of ores) {
-    command(client, `setblock ${x} -59 ${z} clayium:${id}`);
+    command(client, `setblock ${x} -59 ${z} clayium_neoforged:${id}`);
   }
   await camera(client, { x: 0.5, y: -56.5, z: -6.5, yaw: 0, pitch: 18 });
   for (const [x, z, id] of ores) {
     const block = await waitFor(() => mct(client, 'block', 'get', String(x), '-59', String(z)),
-      value => JSON.stringify(value).includes(`clayium:${id}`));
-    if (!JSON.stringify(block).includes(`clayium:${id}`)) {
-      throw new Error(`Ore placement was not visible to the client: clayium:${id}`);
+      value => JSON.stringify(value).includes(`clayium_neoforged:${id}`));
+    if (!JSON.stringify(block).includes(`clayium_neoforged:${id}`)) {
+      throw new Error(`Ore placement was not visible to the client: clayium_neoforged:${id}`);
     }
   }
   await mct(client, 'wait', '--ticks', '20');

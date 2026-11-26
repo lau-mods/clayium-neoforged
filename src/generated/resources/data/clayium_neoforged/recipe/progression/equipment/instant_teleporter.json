@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1000000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:sniper_clay_shooter_pro"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:teleportation_parts"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:instant_teleporter"
+    }
+  ],
+  "processing_method": "clayium_neoforged:assembler",
+  "processing_ticks": 3000,
+  "required_tier": 10
+}

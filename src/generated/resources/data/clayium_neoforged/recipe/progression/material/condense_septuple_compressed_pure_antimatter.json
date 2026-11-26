@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 10000000,
+  "item_inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:sextuple_compressed_pure_antimatter"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:septuple_compressed_pure_antimatter"
+    }
+  ],
+  "processing_method": "clayium_neoforged:condenser",
+  "processing_ticks": 6,
+  "required_tier": 10
+}

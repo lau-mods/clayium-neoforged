@@ -66,15 +66,15 @@ public final class StorageLanguageEntries {
 
     public static void add(String locale, BiConsumer<String, String> add) {
         boolean japanese = locale.equals("ja_jp");
-        add.accept("block.clayium.storage_container", japanese ? "ストレージコンテナ" : "Storage Container");
-        add.accept("block.clayium.void_container", japanese ? "虚空コンテナ" : "Void Container");
-        add.accept("gui.clayium.storage.expanded", japanese ? "Clay Core 拡張済み" : "Clay Core expanded");
-        add.accept("gui.clayium.storage.void_hint", japanese ? "投入品を破棄します" : "Inserted items are discarded");
+        add.accept("block.clayium_neoforged.storage_container", japanese ? "ストレージコンテナ" : "Storage Container");
+        add.accept("block.clayium_neoforged.void_container", japanese ? "虚空コンテナ" : "Void Container");
+        add.accept("gui.clayium_neoforged.storage.expanded", japanese ? "Clay Core 拡張済み" : "Clay Core expanded");
+        add.accept("gui.clayium_neoforged.storage.void_hint", japanese ? "投入品を破棄します" : "Inserted items are discarded");
         StorageRegistration.METAL_CHESTS.values().forEach(definition -> {
             String material = japanese
                     ? JAPANESE_MATERIALS.get(definition.type().materialId())
                     : englishMaterial(definition.type().materialId());
-            add.accept("block.clayium." + definition.type().id(),
+            add.accept("block.clayium_neoforged." + definition.type().id(),
                     japanese ? material + "チェスト" : material + " Chest");
         });
     }

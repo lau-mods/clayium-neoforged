@@ -27,7 +27,7 @@ public final class AreaLanguageEntries {
 
     public static void add(String locale, BiConsumer<String, String> add) {
         (locale.equals("ja_jp") ? JAPANESE : ENGLISH)
-                .forEach((id, name) -> add.accept("block.clayium." + id, name));
+                .forEach((id, name) -> add.accept("block.clayium_neoforged." + id, name));
     }
 
     private AreaLanguageEntries() {

@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config_enabled",
+      "option": "injector_interface"
+    }
+  ],
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 300000000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:redstone_interface_tier_12"
+      }
+    },
+    {
+      "count": 30,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:redstone_interface_tier_13"
+    }
+  ],
+  "processing_method": "clayium_neoforged:ca_injector",
+  "processing_ticks": 4000,
+  "required_tier": 13
+}

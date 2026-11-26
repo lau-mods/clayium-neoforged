@@ -30,7 +30,7 @@ final class PanDuplicationCategory implements IRecipeCategory<PanDuplicationReci
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gui.clayium.recipe.pan_duplication");
+        return Component.translatable("gui.clayium_neoforged.recipe.pan_duplication");
     }
 
     @Override

@@ -52,12 +52,12 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         GadgetTranslations.forLocale(locale).forEach(this::add);
         WeaponTranslations.forLocale(locale).forEach(this::add);
         WaterWheelLanguageEntries.add(locale, this::add);
-        EnvironmentLanguageEntries.forLocale(locale).forEach((id, name) -> add("block.clayium." + id, name));
+        EnvironmentLanguageEntries.forLocale(locale).forEach((id, name) -> add("block.clayium_neoforged." + id, name));
         ClayProductionLanguageEntries.add(locale, this::add);
         EnergyConverterLanguageEntries.add(locale, this::add);
         FluidLanguageEntries.add(locale, this::add);
         try (var stream = MaterialLanguageProvider.class.getClassLoader()
-                .getResourceAsStream("data/clayium/original_material_translations.tsv")) {
+                .getResourceAsStream("data/clayium_neoforged/original_material_translations.tsv")) {
             if (stream == null) {
                 throw new IllegalStateException("Original material translations are missing");
             }
@@ -68,7 +68,7 @@ public final class MaterialLanguageProvider extends LanguageProvider {
                         throw new IllegalStateException("Invalid original material translation: " + line);
                     }
                     if (!foundation.containsKey(columns[0])
-                            && !columns[0].equals("item.clayium.copper_ingot")) {
+                            && !columns[0].equals("item.clayium_neoforged.copper_ingot")) {
                         add(columns[0], columns[locale.equals("ja_jp") ? 2 : 1]);
                     }
 
@@ -77,8 +77,8 @@ public final class MaterialLanguageProvider extends LanguageProvider {
         } catch (IOException exception) {
             throw new IllegalStateException("Cannot read original material translations", exception);
         }
-        add("tooltip.clayium.ce_value", locale.equals("ja_jp") ? "燃料価値: %1$s CE" : "Fuel value: %1$s CE");
-        add("tooltip.clayium.clay_units", locale.equals("ja_jp") ? "粘土換算: %1$s" : "Clay equivalent: %1$s");
+        add("tooltip.clayium_neoforged.ce_value", locale.equals("ja_jp") ? "燃料価値: %1$s CE" : "Fuel value: %1$s CE");
+        add("tooltip.clayium_neoforged.clay_units", locale.equals("ja_jp") ? "粘土換算: %1$s" : "Clay equivalent: %1$s");
         MachineLanguageEntries.add(locale, this::add);
         AutoCrafterLanguageEntries.add(locale, this::add);
         MinerLanguageEntries.add(locale, this::add);

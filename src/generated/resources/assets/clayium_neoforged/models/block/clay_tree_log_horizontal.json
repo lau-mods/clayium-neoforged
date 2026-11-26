@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "clayium_neoforged:block/log_claytree_top",
+    "side": "clayium_neoforged:block/log_claytree"
+  }
+}

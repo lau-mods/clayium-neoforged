@@ -304,7 +304,7 @@ public final class ClayWorkTableBlockEntity extends BlockEntity implements MenuP
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("container.clayium.clay_work_table");
+        return Component.translatable("container.clayium_neoforged.clay_work_table");
     }
 
     @Nullable

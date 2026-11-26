@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:impure_silicon_dust"
+    },
+    {
+      "count": 1,
+      "id": "clayium_neoforged:aluminium_dust"
+    }
+  ],
+  "processing_method": "clayium_neoforged:chemical_reactor",
+  "processing_ticks": 30,
+  "required_tier": 5
+}

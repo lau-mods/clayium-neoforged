@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=east,formed=false,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 90
+    },
+    "facing=east,formed=false,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 90
+    },
+    "facing=east,formed=true,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 90
+    },
+    "facing=east,formed=true,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 90
+    },
+    "facing=north,formed=false,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii"
+    },
+    "facing=north,formed=false,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii"
+    },
+    "facing=north,formed=true,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii"
+    },
+    "facing=north,formed=true,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii"
+    },
+    "facing=south,formed=false,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 180
+    },
+    "facing=south,formed=false,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 180
+    },
+    "facing=south,formed=true,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 180
+    },
+    "facing=south,formed=true,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 180
+    },
+    "facing=west,formed=false,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 270
+    },
+    "facing=west,formed=false,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 270
+    },
+    "facing=west,formed=true,pipe=false": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 270
+    },
+    "facing=west,formed=true,pipe=true": {
+      "model": "clayium_neoforged:block/ca_reactor_core_mk_iii",
+      "y": 270
+    }
+  }
+}

@@ -23,7 +23,7 @@ public final class ClayMaterials {
         Map<String, ClayMaterial> materials = new LinkedHashMap<>();
         Map<String, OriginalProperties> properties = readProperties();
         try (var stream = ClayMaterials.class.getClassLoader()
-                        .getResourceAsStream("data/clayium/original_varieties.tsv")) {
+                        .getResourceAsStream("data/clayium_neoforged/original_varieties.tsv")) {
             if (stream == null) {
                 throw new IllegalStateException("Original material ledger is missing");
             }
@@ -56,7 +56,7 @@ public final class ClayMaterials {
     private static Map<String, OriginalProperties> readProperties() {
         Map<String, OriginalProperties> properties = new LinkedHashMap<>();
         try (var stream = ClayMaterials.class.getClassLoader()
-                .getResourceAsStream("data/clayium/original_material_properties.tsv")) {
+                .getResourceAsStream("data/clayium_neoforged/original_material_properties.tsv")) {
             if (stream == null) {
                 throw new IllegalStateException("Original material properties are missing");
             }

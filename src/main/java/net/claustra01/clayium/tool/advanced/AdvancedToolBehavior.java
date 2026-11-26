@@ -31,14 +31,14 @@ public final class AdvancedToolBehavior {
                     level, context.getClickedPos(), context.getClickedFace(), player, maximumMode);
             stack.set(AdvancedToolRegistration.PATTERN.get(), pattern);
             player.displayClientMessage(
-                    Component.translatable("message.clayium.advanced_tool.pattern_saved", pattern.offsets().size()), true);
+                    Component.translatable("message.clayium_neoforged.advanced_tool.pattern_saved", pattern.offsets().size()), true);
             return InteractionResult.SUCCESS;
         }
         if (!level.isClientSide()) {
             int nextMode = mode >= maximumMode ? 0 : mode + 1;
             stack.set(AdvancedToolRegistration.MODE.get(), nextMode);
             player.displayClientMessage(Component.translatable(
-                    "message.clayium.advanced_tool.mode", modeName(nextMode, maximumMode)), true);
+                    "message.clayium_neoforged.advanced_tool.mode", modeName(nextMode, maximumMode)), true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
@@ -92,40 +92,40 @@ public final class AdvancedToolBehavior {
     public static void addTooltip(ItemStack stack, List<Component> tooltip) {
         Integer tier = stack.get(net.claustra01.clayium.registry.FoundationDataComponentRegistration.TIER.get());
         if (tier != null) {
-            tooltip.add(Component.translatable("tooltip.clayium.tier", tier));
+            tooltip.add(Component.translatable("tooltip.clayium_neoforged.tier", tier));
         }
         int maximumMode = ClayiumConfig.CLAY_STEEL_PICKAXE_RANGE.get();
         int mode = Math.min(stack.getOrDefault(AdvancedToolRegistration.MODE.get(), 0), maximumMode);
         tooltip.add(Component.translatable(
-                "tooltip.clayium.advanced_tool.mode", modeName(mode, maximumMode)).withStyle(ChatFormatting.AQUA));
+                "tooltip.clayium_neoforged.advanced_tool.mode", modeName(mode, maximumMode)).withStyle(ChatFormatting.AQUA));
         if (mode == maximumMode) {
             int size = stack.getOrDefault(
                     AdvancedToolRegistration.PATTERN.get(), AdvancedToolPattern.EMPTY).offsets().size();
-            tooltip.add(Component.translatable("tooltip.clayium.advanced_tool.pattern", size)
+            tooltip.add(Component.translatable("tooltip.clayium_neoforged.advanced_tool.pattern", size)
                     .withStyle(ChatFormatting.GRAY));
         }
         addDurability(stack, tooltip);
-        tooltip.add(Component.translatable("tooltip.clayium.advanced_tool.mode_change")
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.advanced_tool.mode_change")
                 .withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable("tooltip.clayium.advanced_tool.pattern_help")
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.advanced_tool.pattern_help")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 
     public static void addDurability(ItemStack stack, List<Component> tooltip) {
         tooltip.add(Component.translatable(
-                "tooltip.clayium.advanced_tool.durability",
+                "tooltip.clayium_neoforged.advanced_tool.durability",
                 stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage())
                 .withStyle(ChatFormatting.GRAY));
     }
 
     private static Component modeName(int mode, int maximumMode) {
         if (mode == 0 && maximumMode != 0) {
-            return Component.translatable("tooltip.clayium.advanced_tool.mode.single");
+            return Component.translatable("tooltip.clayium_neoforged.advanced_tool.mode.single");
         }
         if (mode == maximumMode) {
-            return Component.translatable("tooltip.clayium.advanced_tool.mode.remembered");
+            return Component.translatable("tooltip.clayium_neoforged.advanced_tool.mode.remembered");
         }
-        return Component.translatable("tooltip.clayium.advanced_tool.mode.area", mode * 2 + 1, mode * 2 + 1);
+        return Component.translatable("tooltip.clayium_neoforged.advanced_tool.mode.area", mode * 2 + 1, mode * 2 + 1);
     }
 
     private static int dot(BlockPos position, Direction direction) {

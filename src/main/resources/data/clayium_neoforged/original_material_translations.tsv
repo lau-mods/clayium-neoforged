@@ -1,0 +1,360 @@
+block.clayium_neoforged.advanced_industrial_clay	Advanced Industrial Clay	発展工業用粘土
+block.clayium_neoforged.aluminium_block	Aluminium Block	アルミニウムブロック
+block.clayium_neoforged.antimatter_block	Antimatter Block	反物質ブロック
+block.clayium_neoforged.clay_steel_block	Clay Steel Block	粘土鋼ブロック
+block.clayium_neoforged.clayium_block	Clayium Block	クレイウムブロック
+block.clayium_neoforged.compressed_clay	Compressed Clay	圧縮粘土
+block.clayium_neoforged.compressed_energetic_clay	Compressed Energetic Clay	圧縮エネルギー粘土
+block.clayium_neoforged.dense_clay	Dense Clay	高密度粘土
+block.clayium_neoforged.double_compressed_energetic_clay	Double Compressed Energetic Clay	2重圧縮エネルギー粘土
+block.clayium_neoforged.energetic_clay	Energetic Clay	エネルギー粘土
+block.clayium_neoforged.impure_silicon_block	Impure Silicon Block	不純なシリコンブロック
+block.clayium_neoforged.industrial_clay	Industrial Clay	工業用粘土
+block.clayium_neoforged.octuple_compressed_energetic_clay	Octuple Compressed Energetic Clay	8重圧縮エネルギー粘土
+block.clayium_neoforged.oec_block	OEC Block	OEC ブロック
+block.clayium_neoforged.opa_block	OPA Block	OPA ブロック
+block.clayium_neoforged.pure_antimatter_block	Pure Antimatter Block	純反物質ブロック
+block.clayium_neoforged.quadruple_compressed_energetic_clay	Quadruple Compressed Energetic Clay	4重圧縮エネルギー粘土
+block.clayium_neoforged.quintuple_compressed_energetic_clay	Quintuple Compressed Energetic Clay	5重圧縮エネルギー粘土
+block.clayium_neoforged.septuple_compressed_energetic_clay	Septuple Compressed Energetic Clay	7重圧縮エネルギー粘土
+block.clayium_neoforged.sextuple_compressed_energetic_clay	Sextuple Compressed Energetic Clay	6重圧縮エネルギー粘土
+block.clayium_neoforged.silicon_block	Silicon Block	シリコンブロック
+block.clayium_neoforged.silicone_block	Silicone Block	シリコーンブロック
+block.clayium_neoforged.triple_compressed_energetic_clay	Triple Compressed Energetic Clay	3重圧縮エネルギー粘土
+block.clayium_neoforged.ultimate_alloy_block	Ultimate Alloy Block	究極合金ブロック
+item.clayium_neoforged.actinium_ingot	Actinium Ingot	アクチニウムインゴット
+item.clayium_neoforged.advanced_circuit	Advanced Circuit	発展回路
+item.clayium_neoforged.advanced_industrial_clay_dust	Advanced Industrial Clay Dust	発展工業用粘土粉
+item.clayium_neoforged.advanced_industrial_clay_plate	Advanced Industrial Clay Plate	発展工業用粘土プレート
+item.clayium_neoforged.aluminium_dust	Aluminium Dust	アルミニウムの粉
+item.clayium_neoforged.aluminium_ingot	Aluminium Ingot	アルミニウムインゴット
+item.clayium_neoforged.aluminium_plate	Aluminium Plate	アルミニウムプレート
+item.clayium_neoforged.americium_ingot	Americium Ingot	アメリシウムインゴット
+item.clayium_neoforged.antimatter	Antimatter	反物質
+item.clayium_neoforged.antimatter_dust	Antimatter Dust	反物質の粉
+item.clayium_neoforged.antimatter_plate	Antimatter Plate	反物質プレート
+item.clayium_neoforged.antimatter_seed	Antimatter Seed	反物質の種
+item.clayium_neoforged.antimony_ingot	Antimony Ingot	アンチモンインゴット
+item.clayium_neoforged.az91_d_alloy_dust	AZ91D Alloy Dust	AZ91D 合金の粉
+item.clayium_neoforged.az91_d_alloy_ingot	AZ91D Alloy Ingot	AZ91D 合金インゴット
+item.clayium_neoforged.az91_d_alloy_plate	AZ91D Alloy Plate	AZ91D 合金プレート
+item.clayium_neoforged.barium_dust	Barium Dust	バリウムの粉
+item.clayium_neoforged.barium_ingot	Barium Ingot	バリウムインゴット
+item.clayium_neoforged.basic_circuit	Basic Circuit	基本回路
+item.clayium_neoforged.beryllium_dust	Beryllium Dust	ベリリウムの粉
+item.clayium_neoforged.beryllium_ingot	Beryllium Ingot	ベリリウムインゴット
+item.clayium_neoforged.bismuth_ingot	Bismuth Ingot	ビスマスインゴット
+item.clayium_neoforged.brass_dust	Brass Dust	ブラスの粉
+item.clayium_neoforged.brass_ingot	Brass Ingot	ブラスインゴット
+item.clayium_neoforged.bronze_dust	Bronze Dust	ブロンズの粉
+item.clayium_neoforged.bronze_ingot	Bronze Ingot	ブロンズインゴット
+item.clayium_neoforged.caesium_ingot	Caesium Ingot	セシウムインゴット
+item.clayium_neoforged.calcareous_clay_dust	Calcareous Clay Dust	石灰質粘土粉
+item.clayium_neoforged.calcium_chloride_dust	Calcium Chloride Dust	塩化カルシウム
+item.clayium_neoforged.calcium_dust	Calcium Dust	カルシウムの粉
+item.clayium_neoforged.calcium_ingot	Calcium Ingot	カルシウムインゴット
+item.clayium_neoforged.carbon_dust	Carbon Dust	炭素の粉
+item.clayium_neoforged.cee_board	CEE Board	CEE 回路板
+item.clayium_neoforged.cee_circuit	CEE Circuit	CEE 回路
+item.clayium_neoforged.cerium_ingot	Cerium Ingot	セリウムインゴット
+item.clayium_neoforged.charcoal_dust	Charcoal Dust	木炭の粉
+item.clayium_neoforged.chrome_dust	Chrome Dust	クロムの粉
+item.clayium_neoforged.chrome_ingot	Chrome Ingot	クロムインゴット
+item.clayium_neoforged.clay_anima	Clay Anima	粘土アニマ
+item.clayium_neoforged.clay_bearing	Clay Bearing	粘土軸受
+item.clayium_neoforged.clay_blade	Clay Blade	粘土ブレード
+item.clayium_neoforged.clay_brain	Clay Brain	粘土脳
+item.clayium_neoforged.clay_circuit	Clay Circuit	粘土回路
+item.clayium_neoforged.clay_circuit_board	Clay Circuit Board	粘土回路板
+item.clayium_neoforged.clay_core	Clay Core	粘土コア
+item.clayium_neoforged.clay_cutting_head	Clay Cutting Head	粘土切断機ヘッド
+item.clayium_neoforged.clay_cylinder	Clay Cylinder	粘土円柱
+item.clayium_neoforged.clay_disc	Clay Disc	粘土円盤
+item.clayium_neoforged.clay_dust	Clay Dust	粘土粉
+item.clayium_neoforged.clay_energy_excitor	Clay Energy Excitor	粘土エネルギー励起装置
+item.clayium_neoforged.clay_gear	Clay Gear	粘土歯車
+item.clayium_neoforged.clay_grinding_head	Clay Grinding Head	粘土粉砕機ヘッド
+item.clayium_neoforged.clay_needle	Clay Needle	粘土ニードル
+item.clayium_neoforged.clay_pipe	Clay Pipe	粘土パイプ
+item.clayium_neoforged.clay_plate	Clay Plate	粘土プレート
+item.clayium_neoforged.clay_psyche	Clay Psyche	粘土プシュケー
+item.clayium_neoforged.clay_ring	Clay Ring	粘土リング
+item.clayium_neoforged.clay_soul	Clay Soul	粘土ソウル
+item.clayium_neoforged.clay_spindle	Clay Spindle	粘土主軸
+item.clayium_neoforged.clay_spirit	Clay Spirit	粘土スピリット
+item.clayium_neoforged.clay_steel_dust	Clay Steel Dust	粘土鋼の粉
+item.clayium_neoforged.clay_steel_ingot	Clay Steel Ingot	粘土鋼インゴット
+item.clayium_neoforged.clay_steel_plate	Clay Steel Plate	粘土鋼プレート
+item.clayium_neoforged.clay_stick	Clay Stick	粘土棒
+item.clayium_neoforged.clay_wheel	Clay Wheel	粘土水車パーツ
+item.clayium_neoforged.clayium_dust	Clayium Dust	クレイウムの粉
+item.clayium_neoforged.clayium_ingot	Clayium Ingot	クレイウムインゴット
+item.clayium_neoforged.clayium_plate	Clayium Plate	クレイウムプレート
+item.clayium_neoforged.coal_dust	Coal Dust	石炭の粉
+item.clayium_neoforged.cobalt_ingot	Cobalt Ingot	コバルトインゴット
+item.clayium_neoforged.compressed_pure_antimatter	Compressed Pure Antimatter	圧縮純反物質
+item.clayium_neoforged.copper_dust	Copper Dust	銅の粉
+item.clayium_neoforged.copper_ingot	Copper Ingot	銅インゴット
+item.clayium_neoforged.curium_ingot	Curium Ingot	キュリウムインゴット
+item.clayium_neoforged.dense_clay_ball	Dense Clay Ball	高密度粘土玉
+item.clayium_neoforged.dense_clay_bearing	Dense Clay Bearing	高密度粘土軸受
+item.clayium_neoforged.dense_clay_blade	Dense Clay Blade	高密度粘土ブレード
+item.clayium_neoforged.dense_clay_cutting_head	Dense Clay Cutting Head	高密度粘土切断機ヘッド
+item.clayium_neoforged.dense_clay_cylinder	Dense Clay Cylinder	高密度粘土円柱
+item.clayium_neoforged.dense_clay_disc	Dense Clay Disc	高密度粘土円盤
+item.clayium_neoforged.dense_clay_dust	Dense Clay Dust	高密度粘土粉
+item.clayium_neoforged.dense_clay_gear	Dense Clay Gear	高密度粘土歯車
+item.clayium_neoforged.dense_clay_grinding_head	Dense Clay Grinding Head	高密度粘土粉砕機ヘッド
+item.clayium_neoforged.dense_clay_needle	Dense Clay Needle	高密度粘土ニードル
+item.clayium_neoforged.dense_clay_pipe	Dense Clay Pipe	高密度粘土パイプ
+item.clayium_neoforged.dense_clay_plate	Dense Clay Plate	高密度粘土プレート
+item.clayium_neoforged.dense_clay_ring	Dense Clay Ring	高密度粘土リング
+item.clayium_neoforged.dense_clay_spindle	Dense Clay Spindle	高密度粘土主軸
+item.clayium_neoforged.dense_clay_stick	Dense Clay Stick	高密度粘土棒
+item.clayium_neoforged.dense_clay_wheel	Dense Clay Wheel	高密度粘土水車パーツ
+item.clayium_neoforged.double_compressed_pure_antimatter	Double Compressed Pure Antimatter	2重圧縮純反物質
+item.clayium_neoforged.electrum_dust	Electrum Dust	エレクトラムの粉
+item.clayium_neoforged.electrum_ingot	Electrum Ingot	エレクトラムインゴット
+item.clayium_neoforged.energized_clay_dust	Energized Clay Dust	活性化粘土粉
+item.clayium_neoforged.europium_ingot	Europium Ingot	ユウロピウムインゴット
+item.clayium_neoforged.excited_clay_dust	Excited Clay Dust	励起粘土粉
+item.clayium_neoforged.francium_ingot	Francium Ingot	フランシウムインゴット
+item.clayium_neoforged.gold_dust	Gold Dust	金の粉
+item.clayium_neoforged.gold_ingot	Gold Ingot	金インゴット
+item.clayium_neoforged.hafnium_dust	Hafnium Dust	ハフニウムの粉
+item.clayium_neoforged.hafnium_ingot	Hafnium Ingot	ハフニウムインゴット
+item.clayium_neoforged.impure_aluminium_dust	Impure Aluminium Dust	不純なアルミニウムの粉
+item.clayium_neoforged.impure_aluminium_ingot	Impure Aluminium Ingot	不純なアルミニウムインゴット
+item.clayium_neoforged.impure_aluminium_plate	Impure Aluminium Plate	不純なアルミニウムプレート
+item.clayium_neoforged.impure_barium_dust	Impure Barium Dust	不純なバリウムの粉
+item.clayium_neoforged.impure_beryllium_dust	Impure Beryllium Dust	不純なベリリウムの粉
+item.clayium_neoforged.impure_calcium_dust	Impure Calcium Dust	不純なカルシウムの粉
+item.clayium_neoforged.impure_chrome_dust	Impure Chrome Dust	不純なクロムの粉
+item.clayium_neoforged.impure_copper_dust	Impure Copper Dust	不純な銅の粉
+item.clayium_neoforged.impure_glowstone_dust	Impure Glowstone Dust	不純なグロウストーンダスト
+item.clayium_neoforged.impure_hafnium_dust	Impure Hafnium Dust	不純なハフニウムの粉
+item.clayium_neoforged.impure_iron_dust	Impure Iron Dust	不純な鉄の粉
+item.clayium_neoforged.impure_lead_dust	Impure Lead Dust	不純な鉛の粉
+item.clayium_neoforged.impure_lithium_dust	Impure Lithium Dust	不純なリチウムの粉
+item.clayium_neoforged.impure_magnesium_dust	Impure Magnesium Dust	不純なマグネシウムの粉
+item.clayium_neoforged.impure_manganese_dust	Impure Manganese Dust	不純なマンガンの粉
+item.clayium_neoforged.impure_nickel_dust	Impure Nickel Dust	不純なニッケルの粉
+item.clayium_neoforged.impure_potassium_dust	Impure Potassium Dust	不純なカリウムの粉
+item.clayium_neoforged.impure_redstone	Impure Redstone	不純なレッドストーン
+item.clayium_neoforged.impure_silicon_dust	Impure Silicon Dust	不純なシリコンの粉
+item.clayium_neoforged.impure_silicon_ingot	Impure Silicon Ingot	不純なシリコンインゴット
+item.clayium_neoforged.impure_silicon_plate	Impure Silicon Plate	不純なシリコンプレート
+item.clayium_neoforged.impure_sodium_dust	Impure Sodium Dust	不純なナトリウムの粉
+item.clayium_neoforged.impure_strontium_dust	Impure Strontium Dust	不純なストロンチウムの粉
+item.clayium_neoforged.impure_titanium_dust	Impure Titanium Dust	不純なチタンの粉
+item.clayium_neoforged.impure_zinc_dust	Impure Zinc Dust	不純な亜鉛の粉
+item.clayium_neoforged.impure_zirconium_dust	Impure Zirconium Dust	不純なジルコニウムの粉
+item.clayium_neoforged.industrial_clay_dust	Industrial Clay Dust	工業用粘土粉
+item.clayium_neoforged.industrial_clay_plate	Industrial Clay Plate	工業用粘土プレート
+item.clayium_neoforged.integrated_circuit	Integrated Circuit	集積回路
+item.clayium_neoforged.invar_dust	Invar Dust	インバーの粉
+item.clayium_neoforged.invar_ingot	Invar Ingot	インバーインゴット
+item.clayium_neoforged.iridium_ingot	Iridium Ingot	イリジウムインゴット
+item.clayium_neoforged.iron_dust	Iron Dust	鉄の粉
+item.clayium_neoforged.iron_ingot	Iron Ingot	鉄インゴット
+item.clayium_neoforged.lanthanum_ingot	Lanthanum Ingot	ランタンインゴット
+item.clayium_neoforged.lapis_lazuli_dust	Lapis Lazuli Dust	ラピスラズリの粉
+item.clayium_neoforged.large_advanced_industrial_clay_plate	Large Advanced Industrial Clay Plate	発展工業用粘土大プレート
+item.clayium_neoforged.large_aluminium_plate	Large Aluminium Plate	アルミニウム大プレート
+item.clayium_neoforged.large_antimatter_plate	Large Antimatter Plate	反物質大プレート
+item.clayium_neoforged.large_az91_d_alloy_plate	Large AZ91D Alloy Plate	AZ91D 合金大プレート
+item.clayium_neoforged.large_clay_ball	Large Clay Ball	大粘土玉
+item.clayium_neoforged.large_clay_plate	Large Clay Plate	粘土大プレート
+item.clayium_neoforged.large_clay_steel_plate	Large Clay Steel Plate	粘土鋼大プレート
+item.clayium_neoforged.large_clayium_plate	Large Clayium Plate	クレイウム大プレート
+item.clayium_neoforged.large_dense_clay_plate	Large Dense Clay Plate	高密度粘土大プレート
+item.clayium_neoforged.large_impure_aluminium_plate	Large Impure Aluminium Plate	不純なアルミニウム大プレート
+item.clayium_neoforged.large_impure_silicon_plate	Large Impure Silicon Plate	不純なシリコン大プレート
+item.clayium_neoforged.large_industrial_clay_plate	Large Industrial Clay Plate	工業用粘土大プレート
+item.clayium_neoforged.large_octuple_energetic_clay_plate	Large Octuple Energetic Clay Plate	OEC 大プレート
+item.clayium_neoforged.large_octuple_pure_antimatter_plate	Large Octuple Pure Antimatter Plate	OPA 大プレート
+item.clayium_neoforged.large_pure_antimatter_plate	Large Pure Antimatter Plate	純反物質大プレート
+item.clayium_neoforged.large_silicon_plate	Large Silicon Plate	シリコン大プレート
+item.clayium_neoforged.large_silicone_plate	Large Silicone Plate	シリコーン大プレート
+item.clayium_neoforged.large_ultimate_alloy_plate	Large Ultimate Alloy Plate	究極合金大プレート
+item.clayium_neoforged.large_zk60_a_alloy_plate	Large ZK60A Alloy Plate	ZK60A 合金大プレート
+item.clayium_neoforged.laser_parts	Laser Parts	レーザーパーツ
+item.clayium_neoforged.lead_dust	Lead Dust	鉛の粉
+item.clayium_neoforged.lead_ingot	Lead Ingot	鉛インゴット
+item.clayium_neoforged.lithium_dust	Lithium Dust	リチウムの粉
+item.clayium_neoforged.lithium_ingot	Lithium Ingot	リチウムインゴット
+item.clayium_neoforged.magnesium_dust	Magnesium Dust	マグネシウムの粉
+item.clayium_neoforged.magnesium_ingot	Magnesium Ingot	マグネシウムインゴット
+item.clayium_neoforged.manganese_dust	Manganese Dust	マンガンの粉
+item.clayium_neoforged.manganese_ingot	Manganese Ingot	マンガンインゴット
+item.clayium_neoforged.manipulator_mk_i	Manipulator Mk I	マジック・ハンド Mk I
+item.clayium_neoforged.manipulator_mk_ii	Manipulator Mk II	マジック・ハンド Mk II
+item.clayium_neoforged.manipulator_mk_iii	Manipulator Mk III	マジック・ハンド Mk III
+item.clayium_neoforged.molybdenum_ingot	Molybdenum Ingot	モリブデンインゴット
+item.clayium_neoforged.neodymium_ingot	Neodymium Ingot	ネオジムインゴット
+item.clayium_neoforged.neptunium_ingot	Neptunium Ingot	ネプツニウムインゴット
+item.clayium_neoforged.nickel_dust	Nickel Dust	ニッケルの粉
+item.clayium_neoforged.nickel_ingot	Nickel Ingot	ニッケルインゴット
+item.clayium_neoforged.octuple_compressed_pure_antimatter	Octuple Compressed Pure Antimatter	8重圧縮純反物質
+item.clayium_neoforged.octuple_energetic_clay_dust	Octuple Energetic Clay Dust	OEC の粉
+item.clayium_neoforged.octuple_energetic_clay_plate	Octuple Energetic Clay Plate	OEC プレート
+item.clayium_neoforged.octuple_pure_antimatter_dust	Octuple Pure Antimatter Dust	OPA の粉
+item.clayium_neoforged.octuple_pure_antimatter_plate	Octuple Pure Antimatter Plate	OPA プレート
+item.clayium_neoforged.organic_clay	Organic Clay	有機粘土
+item.clayium_neoforged.osmium_ingot	Osmium Ingot	オスミウムインゴット
+item.clayium_neoforged.palladium_ingot	Palladium Ingot	パラジウムインゴット
+item.clayium_neoforged.phosphorus_dust	Phosphorus Dust	リンの粉
+item.clayium_neoforged.platinum_ingot	Platinum Ingot	白金インゴット
+item.clayium_neoforged.plutonium_ingot	Plutonium Ingot	プルトニウムインゴット
+item.clayium_neoforged.potassium_dust	Potassium Dust	カリウムの粉
+item.clayium_neoforged.potassium_ingot	Potassium Ingot	カリウムインゴット
+item.clayium_neoforged.praseodymium_ingot	Praseodymium Ingot	プラセオジムインゴット
+item.clayium_neoforged.precision_circuit	Precision Circuit	精密回路
+item.clayium_neoforged.promethium_ingot	Promethium Ingot	プロメチウムインゴット
+item.clayium_neoforged.protactinium_ingot	Protactinium Ingot	プロトアクチニウムインゴット
+item.clayium_neoforged.pure_antimatter	Pure Antimatter	純反物質
+item.clayium_neoforged.pure_antimatter_dust	Pure Antimatter Dust	純反物質の粉
+item.clayium_neoforged.pure_antimatter_plate	Pure Antimatter Plate	純反物質プレート
+item.clayium_neoforged.quadruple_compressed_pure_antimatter	Quadruple Compressed Pure Antimatter	4重圧縮純反物質
+item.clayium_neoforged.quartz_dust	Quartz Dust	クォーツの粉
+item.clayium_neoforged.quintuple_compressed_pure_antimatter	Quintuple Compressed Pure Antimatter	5重圧縮純反物質
+item.clayium_neoforged.radium_ingot	Radium Ingot	ラジウムインゴット
+item.clayium_neoforged.rhenium_ingot	Rhenium Ingot	レニウムインゴット
+item.clayium_neoforged.rubidium_ingot	Rubidium Ingot	ルビジウムインゴット
+item.clayium_neoforged.salt	Salt	塩
+item.clayium_neoforged.saltpeter	Saltpeter	硝石
+item.clayium_neoforged.samarium_ingot	Samarium Ingot	サマリウムインゴット
+item.clayium_neoforged.septuple_compressed_pure_antimatter	Septuple Compressed Pure Antimatter	7重圧縮純反物質
+item.clayium_neoforged.sextuple_compressed_pure_antimatter	Sextuple Compressed Pure Antimatter	6重圧縮純反物質
+item.clayium_neoforged.short_clay_stick	Short Clay Stick	粘土小棒
+item.clayium_neoforged.short_dense_clay_stick	Short Dense Clay Stick	高密度粘土小棒
+item.clayium_neoforged.silicon_dust	Silicon Dust	シリコンの粉
+item.clayium_neoforged.silicon_ingot	Silicon Ingot	シリコンインゴット
+item.clayium_neoforged.silicon_plate	Silicon Plate	シリコンプレート
+item.clayium_neoforged.silicone_dust	Silicone Dust	シリコーンの粉
+item.clayium_neoforged.silicone_ingot	Silicone Ingot	シリコーンインゴット
+item.clayium_neoforged.silicone_plate	Silicone Plate	シリコーンプレート
+item.clayium_neoforged.silver_ingot	Silver Ingot	銀インゴット
+item.clayium_neoforged.simple_circuit	Simple Circuit	簡易回路
+item.clayium_neoforged.small_clay_disc	Small Clay Disc	粘土小円盤
+item.clayium_neoforged.small_clay_ring	Small Clay Ring	粘土小リング
+item.clayium_neoforged.small_dense_clay_disc	Small Dense Clay Disc	高密度粘土小円盤
+item.clayium_neoforged.small_dense_clay_ring	Small Dense Clay Ring	高密度粘土小リング
+item.clayium_neoforged.sodium_carbonate_dust	Sodium Carbonate Dust	炭酸ナトリウム
+item.clayium_neoforged.sodium_dust	Sodium Dust	ナトリウムの粉
+item.clayium_neoforged.sodium_ingot	Sodium Ingot	ナトリウムインゴット
+item.clayium_neoforged.steel_dust	Steel Dust	スチールの粉
+item.clayium_neoforged.steel_ingot	Steel Ingot	スチールインゴット
+item.clayium_neoforged.strontium_dust	Strontium Dust	ストロンチウムの粉
+item.clayium_neoforged.strontium_ingot	Strontium Ingot	ストロンチウムインゴット
+item.clayium_neoforged.sulfur	Sulfur	硫黄
+item.clayium_neoforged.synchronous_parts	Synchronous Parts	シンクロパーツ
+item.clayium_neoforged.tantalum_ingot	Tantalum Ingot	タンタルインゴット
+item.clayium_neoforged.teleportation_parts	Teleportation Parts	空間転移パーツ
+item.clayium_neoforged.thorium_ingot	Thorium Ingot	トリウムインゴット
+item.clayium_neoforged.tin_ingot	Tin Ingot	錫インゴット
+item.clayium_neoforged.titanium_dust	Titanium Dust	チタンの粉
+item.clayium_neoforged.titanium_ingot	Titanium Ingot	チタンインゴット
+item.clayium_neoforged.triple_compressed_pure_antimatter	Triple Compressed Pure Antimatter	3重圧縮純反物質
+item.clayium_neoforged.tungsten_ingot	Tungsten Ingot	タングステンインゴット
+item.clayium_neoforged.ultimate_alloy_dust	Ultimate Alloy Dust	究極合金の粉
+item.clayium_neoforged.ultimate_alloy_ingot	Ultimate Alloy Ingot	究極合金インゴット
+item.clayium_neoforged.ultimate_alloy_plate	Ultimate Alloy Plate	究極合金プレート
+item.clayium_neoforged.ultimate_compound_ingot	Ultimate Compound Ingot	究極合金の素
+item.clayium_neoforged.uranium_ingot	Uranium Ingot	ウランインゴット
+item.clayium_neoforged.vanadium_ingot	Vanadium Ingot	バナジウムインゴット
+item.clayium_neoforged.zinc_aluminium_compound_dust	Zinc-Aluminium Compound Dust	亜鉛アルミ合金の粉
+item.clayium_neoforged.zinc_aluminium_compound_ingot	Zinc-Aluminium Compound Ingot	亜鉛アルミ合金インゴット
+item.clayium_neoforged.zinc_dust	Zinc Dust	亜鉛の粉
+item.clayium_neoforged.zinc_ingot	Zinc Ingot	亜鉛インゴット
+item.clayium_neoforged.zinc_zirconium_compound_dust	Zinc-Zirconium Compound Dust	亜鉛ジルコニウム合金の粉
+item.clayium_neoforged.zinc_zirconium_compound_ingot	Zinc-Zirconium Compound Ingot	亜鉛ジルコニウム合金インゴット
+item.clayium_neoforged.zirconium_dust	Zirconium Dust	ジルコニウムの粉
+item.clayium_neoforged.zirconium_ingot	Zirconium Ingot	ジルコニウムインゴット
+item.clayium_neoforged.zk60_a_alloy_dust	ZK60A Alloy Dust	ZK60A 合金の粉
+item.clayium_neoforged.zk60_a_alloy_ingot	ZK60A Alloy Ingot	ZK60A 合金インゴット
+item.clayium_neoforged.zk60_a_alloy_plate	ZK60A Alloy Plate	ZK60A 合金プレート
+item.clayium_neoforged.impure_osmium_ingot	Impure Osmium Ingot	不純なオスミウムインゴット
+block.clayium_neoforged.actinium_block	Actinium Block	アクチニウムブロック
+block.clayium_neoforged.americium_block	Americium Block	アメリシウムブロック
+block.clayium_neoforged.antimony_block	Antimony Block	アンチモンブロック
+block.clayium_neoforged.az91_d_alloy_block	AZ91D Alloy Block	AZ91D 合金ブロック
+block.clayium_neoforged.az91_d_alloy_hull	AZ91D Alloy Hull	AZ91D 合金マシン筐体
+block.clayium_neoforged.barium_block	Barium Block	バリウムブロック
+block.clayium_neoforged.beryllium_block	Beryllium Block	ベリリウムブロック
+block.clayium_neoforged.bismuth_block	Bismuth Block	ビスマスブロック
+block.clayium_neoforged.black_silicone_block	Black Silicone Block	黒色のシリコーンブロック
+block.clayium_neoforged.blue_silicone_block	Blue Silicone Block	青色のシリコーンブロック
+block.clayium_neoforged.brass_block	Brass Block	ブラスブロック
+block.clayium_neoforged.bronze_block	Bronze Block	ブロンズブロック
+block.clayium_neoforged.brown_silicone_block	Brown Silicone Block	茶色のシリコーンブロック
+block.clayium_neoforged.caesium_block	Caesium Block	セシウムブロック
+block.clayium_neoforged.calcium_block	Calcium Block	カルシウムブロック
+block.clayium_neoforged.cerium_block	Cerium Block	セリウムブロック
+block.clayium_neoforged.chrome_block	Chrome Block	クロムブロック
+block.clayium_neoforged.cobalt_block	Cobalt Block	コバルトブロック
+block.clayium_neoforged.copper_block	Copper Block	銅ブロック
+block.clayium_neoforged.curium_block	Curium Block	キュリウムブロック
+block.clayium_neoforged.cyan_silicone_block	Cyan Silicone Block	水色のシリコーンブロック
+block.clayium_neoforged.dense_clay_machine_hull	Dense Clay Machine Hull	高密度粘土マシン筐体
+block.clayium_neoforged.electrum_block	Electrum Block	エレクトラムブロック
+block.clayium_neoforged.elemental_milling_machine	Elemental Milling Machine	初期型フライス盤
+block.clayium_neoforged.europium_block	Europium Block	ユーロピウムブロック
+block.clayium_neoforged.francium_block	Francium Block	フランシウムブロック
+block.clayium_neoforged.gray_silicone_block	Gray Silicone Block	灰色のシリコーンブロック
+block.clayium_neoforged.green_silicone_block	Green Silicone Block	緑色のシリコーンブロック
+block.clayium_neoforged.hafnium_block	Hafnium Block	ハフニウムブロック
+block.clayium_neoforged.invar_block	Invar Block	インバーブロック
+block.clayium_neoforged.iridium_block	Iridium Block	イリジウムブロック
+block.clayium_neoforged.lanthanum_block	Lanthanum Block	ランタンブロック
+block.clayium_neoforged.lead_block	Lead Block	鉛ブロック
+block.clayium_neoforged.light_blue_silicone_block	Light Blue Silicone Block	空色のシリコーンブロック
+block.clayium_neoforged.light_gray_silicone_block	Light Gray Silicone Block	薄灰色のシリコーンブロック
+block.clayium_neoforged.lime_silicone_block	Lime Silicone Block	黄緑色のシリコーンブロック
+block.clayium_neoforged.lithium_block	Lithium Block	リチウムブロック
+block.clayium_neoforged.magenta_silicone_block	Magenta Silicone Block	赤紫色のシリコーンブロック
+block.clayium_neoforged.magnesium_block	Magnesium Block	マグネシウムブロック
+block.clayium_neoforged.manganese_block	Manganese Block	マンガンブロック
+block.clayium_neoforged.molybdenum_block	Molybdenum Block	モリブデンブロック
+block.clayium_neoforged.neodymium_block	Neodymium Block	ネオジムブロック
+block.clayium_neoforged.neptunium_block	Neptunium Block	ネプツニウムブロック
+block.clayium_neoforged.nickel_block	Nickel Block	ニッケルブロック
+block.clayium_neoforged.oec_machine_hull	OEC Machine Hull	OEC マシン筐体
+block.clayium_neoforged.opa_machine_hull	OPA Machine Hull	OPA マシン筐体
+block.clayium_neoforged.orange_silicone_block	Orange Silicone Block	橙色のシリコーンブロック
+block.clayium_neoforged.osmium_block	Osmium Block	オスミウムブロック
+block.clayium_neoforged.palladium_block	Palladium Block	パラジウムブロック
+block.clayium_neoforged.pink_silicone_block	Pink Silicone Block	桃色のシリコーンブロック
+block.clayium_neoforged.platinum_block	Platinum Block	白金ブロック
+block.clayium_neoforged.plutonium_block	Plutonium Block	プルトニウムブロック
+block.clayium_neoforged.potassium_block	Potassium Block	カリウムブロック
+block.clayium_neoforged.praseodymium_block	Praseodymium Block	プラセオジムブロック
+block.clayium_neoforged.promethium_block	Promethium Block	プロメチウムブロック
+block.clayium_neoforged.protactinium_block	Protactinium Block	プロトアクチニウムブロック
+block.clayium_neoforged.pure_antimatter_machine_hull	Pure Antimatter Machine Hull	純反物質マシン筐体
+block.clayium_neoforged.purple_silicone_block	Purple Silicone Block	紫色のシリコーンブロック
+block.clayium_neoforged.radium_block	Radium Block	ラジウムブロック
+block.clayium_neoforged.red_silicone_block	Red Silicone Block	赤色のシリコーンブロック
+block.clayium_neoforged.rhenium_block	Rhenium Block	レニウムブロック
+block.clayium_neoforged.rubidium_block	Rubidium Block	ルビジウムブロック
+block.clayium_neoforged.samarium_block	Samarium Block	サマリウムブロック
+block.clayium_neoforged.silver_block	Silver Block	銀ブロック
+block.clayium_neoforged.sodium_block	Sodium Block	ナトリウムブロック
+block.clayium_neoforged.steel_block	Steel Block	スチールブロック
+block.clayium_neoforged.strontium_block	Strontium Block	ストロンチウムブロック
+block.clayium_neoforged.tantalum_block	Tantalum Block	タンタルブロック
+block.clayium_neoforged.thorium_block	Thorium Block	トリウムブロック
+block.clayium_neoforged.tin_block	Tin Block	錫ブロック
+block.clayium_neoforged.titanium_block	Titanium Block	チタンブロック
+block.clayium_neoforged.tungsten_block	Tungsten Block	タングステンブロック
+block.clayium_neoforged.uranium_block	Uranium Block	ウラニウムブロック
+block.clayium_neoforged.vanadium_block	Vanadium Block	バナジウムブロック
+block.clayium_neoforged.white_silicone_block	White Silicone Block	白色のシリコーンブロック
+block.clayium_neoforged.yellow_silicone_block	Yellow Silicone Block	黄色のシリコーンブロック
+block.clayium_neoforged.zinc_block	Zinc Block	亜鉛ブロック
+block.clayium_neoforged.zirconium_block	Zirconium Block	ジルコニウムブロック
+block.clayium_neoforged.zk60_a_alloy_block	ZK60A Alloy Block	ZK60A 合金ブロック
+block.clayium_neoforged.zk60_a_alloy_hull	ZK60A Alloy Hull	ZK60A 合金マシン筐体
+item.clayium_neoforged.advanced_industrial_clay_shard	Advanced Industrial Clay Shard	発展工業用粘土片
+item.clayium_neoforged.compressed_clay_shard	Compressed Clay Shard	圧縮粘土片
+item.clayium_neoforged.industrial_clay_shard	Industrial Clay Shard	工業用粘土片

@@ -37,7 +37,7 @@ public final class ClayCraftingBoardBlockEntity extends BlockEntity implements M
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("container.clayium.clay_crafting_board");
+        return Component.translatable("container.clayium_neoforged.clay_crafting_board");
     }
 
     @Nullable

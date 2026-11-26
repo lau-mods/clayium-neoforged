@@ -19,8 +19,8 @@ await scenario(async ({ clients }) => {
   command(client, 'time set noon');
   command(client, 'weather clear');
   command(client, 'fill -4 99 -4 4 99 2 minecraft:smooth_stone');
-  command(client, 'setblock 0 100 0 clayium:grinder_tier_4[facing=north]');
-  command(client, 'setblock 2 100 0 clayium:grinder_tier_4[facing=north]');
+  command(client, 'setblock 0 100 0 clayium_neoforged:grinder_tier_4[facing=north]');
+  command(client, 'setblock 2 100 0 clayium_neoforged:grinder_tier_4[facing=north]');
 
   await camera(client, { x: 0.5, y: 100.5, z: -2.5, yaw: 0, pitch: 8 });
   await openMachine(client, 0, 100, 0);

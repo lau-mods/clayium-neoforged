@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "minecraft:clay_ball"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "minecraft:clay"
+    }
+  ],
+  "processing_method": "clayium_neoforged:condenser",
+  "processing_ticks": 20,
+  "required_tier": 2
+}

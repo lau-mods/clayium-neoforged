@@ -65,7 +65,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         }
         boolean formed = menu.reactorFormed();
         reactorStatus.setMessage(Component.translatable(
-                formed ? "gui.clayium.ca_reactor.constructed" : "gui.clayium.ca_reactor.invalid"));
+                formed ? "gui.clayium_neoforged.ca_reactor.constructed" : "gui.clayium_neoforged.ca_reactor.invalid"));
         reactorStatus.active = !formed;
     }
 
@@ -175,7 +175,7 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         if ((input || output) && y >= GAUGE_Y && y < GAUGE_Y + GAUGE_HEIGHT) {
             FluidStack fluid = input ? menu.inputFluid() : menu.outputFluid();
             graphics.renderTooltip(font, List.of(
-                    fluid.isEmpty() ? Component.translatable("gui.clayium.machine.empty") : fluid.getHoverName(),
+                    fluid.isEmpty() ? Component.translatable("gui.clayium_neoforged.machine.empty") : fluid.getHoverName(),
                     Component.literal(fluid.getAmount() + " / " + ClayMachineBlockEntity.FLUID_CAPACITY + " mB"))
                     .stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
         }
@@ -191,26 +191,26 @@ public final class ClayMachineScreen extends AbstractContainerScreen<ClayMachine
         graphics.pose().popPose();
         ClayMachineBlockEntity machine = menu.machine();
         int machineY = menu.machineAreaHeight();
-        graphics.drawString(font, Component.translatable("gui.clayium.machine.energy",
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.energy",
                 ClayEnergy.ofInternal(menu.storedEnergy()).formatGui()), 4, machineY - 12, 0x404040, false);
         if (machine instanceof MultiblockControllerBlockEntity) {
-            Component tier = Component.translatable("gui.clayium.machine.tier", menu.tier());
+            Component tier = Component.translatable("gui.clayium_neoforged.machine.tier", menu.tier());
             graphics.drawString(font, tier, imageWidth - 6 - font.width(tier), machineY - 12, 0x404040, false);
         }
         if (ClayMachineMenu.isCaMachine(machine)) {
-            graphics.drawString(font, Component.translatable("gui.clayium.machine.resonance",
+            graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.resonance",
                     LegacyNumerals.resonance(menu.resonance())), 80, machineY - 12, 0x404040, false);
         }
         if (menu.overclockFactor() != 1.0D) {
-            graphics.drawString(font, Component.translatable("gui.clayium.machine.overclock",
+            graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.overclock",
                     LegacyNumerals.resonance(menu.overclockFactor())), 80, machineY, 0x404040, false);
         }
         if (machine instanceof CaReactorCoreBlockEntity && menu.reactorFormed()) {
-            graphics.drawString(font, Component.translatable("gui.clayium.ca_reactor.rank_size",
+            graphics.drawString(font, Component.translatable("gui.clayium_neoforged.ca_reactor.rank_size",
                     String.format(Locale.ROOT, "%2.2g", menu.reactorAverageRank() + 1.0D),
                     String.format(Locale.ROOT, "%2d", menu.reactorHulls())), 6, 16, 0x404040, false);
             CaReactorFormula.calculate(menu.reactorHulls(), menu.reactorAverageRank()).ifPresent(formula ->
-                    graphics.drawString(font, Component.translatable("gui.clayium.ca_reactor.efficiency",
+                    graphics.drawString(font, Component.translatable("gui.clayium_neoforged.ca_reactor.efficiency",
                             String.format(Locale.ROOT, "%g", formula.efficiency())),
                             64, machineY - 12, 0x404040, false));
         }

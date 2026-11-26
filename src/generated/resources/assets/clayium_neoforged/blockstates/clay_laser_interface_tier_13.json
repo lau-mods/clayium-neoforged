@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "disconnected=false,facing=east,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 90
+    },
+    "disconnected=false,facing=east,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 90
+    },
+    "disconnected=false,facing=east,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked",
+      "y": 90
+    },
+    "disconnected=false,facing=east,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked",
+      "y": 90
+    },
+    "disconnected=false,facing=north,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13"
+    },
+    "disconnected=false,facing=north,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13"
+    },
+    "disconnected=false,facing=north,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked"
+    },
+    "disconnected=false,facing=north,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked"
+    },
+    "disconnected=false,facing=south,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 180
+    },
+    "disconnected=false,facing=south,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 180
+    },
+    "disconnected=false,facing=south,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked",
+      "y": 180
+    },
+    "disconnected=false,facing=south,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked",
+      "y": 180
+    },
+    "disconnected=false,facing=west,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 270
+    },
+    "disconnected=false,facing=west,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 270
+    },
+    "disconnected=false,facing=west,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked",
+      "y": 270
+    },
+    "disconnected=false,facing=west,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_linked",
+      "y": 270
+    },
+    "disconnected=true,facing=east,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 90
+    },
+    "disconnected=true,facing=east,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 90
+    },
+    "disconnected=true,facing=east,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected",
+      "y": 90
+    },
+    "disconnected=true,facing=east,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected",
+      "y": 90
+    },
+    "disconnected=true,facing=north,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13"
+    },
+    "disconnected=true,facing=north,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13"
+    },
+    "disconnected=true,facing=north,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected"
+    },
+    "disconnected=true,facing=north,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected"
+    },
+    "disconnected=true,facing=south,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 180
+    },
+    "disconnected=true,facing=south,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 180
+    },
+    "disconnected=true,facing=south,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected",
+      "y": 180
+    },
+    "disconnected=true,facing=south,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected",
+      "y": 180
+    },
+    "disconnected=true,facing=west,linked=false,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 270
+    },
+    "disconnected=true,facing=west,linked=false,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13",
+      "y": 270
+    },
+    "disconnected=true,facing=west,linked=true,pipe=false": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected",
+      "y": 270
+    },
+    "disconnected=true,facing=west,linked=true,pipe=true": {
+      "model": "clayium_neoforged:block/clay_laser_interface_tier_13_disconnected",
+      "y": 270
+    }
+  }
+}

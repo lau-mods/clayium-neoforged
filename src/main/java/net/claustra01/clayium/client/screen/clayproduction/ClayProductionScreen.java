@@ -45,7 +45,7 @@ public final class ClayProductionScreen extends AbstractContainerScreen<ClayProd
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 6, 6, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.machine.energy",
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.energy",
                 ClayEnergy.ofInternal(menu.displayedEnergy()).formatGui()), 4, menu.machineHeight() - 12,
                 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);

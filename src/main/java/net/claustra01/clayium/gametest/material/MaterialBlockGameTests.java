@@ -68,8 +68,8 @@ public final class MaterialBlockGameTests {
         Set<String> originalIds = OriginalRegistryCatalog.ORIGINAL_VARIETIES.stream()
                 .map(OriginalRegistryCatalog.OriginalVariety::namedId)
                 .collect(java.util.stream.Collectors.toSet());
-        JsonObject english = jsonResource("assets/clayium/lang/en_us.json");
-        JsonObject japanese = jsonResource("assets/clayium/lang/ja_jp.json");
+        JsonObject english = jsonResource("assets/clayium_neoforged/lang/en_us.json");
+        JsonObject japanese = jsonResource("assets/clayium_neoforged/lang/ja_jp.json");
         List<String> restoredBlocks = new ArrayList<>();
         restoredBlocks.addAll(MaterialRegistration.METAL_BLOCKS.keySet());
         restoredBlocks.addAll(MaterialRegistration.SILICONE_BLOCKS.keySet());
@@ -78,12 +78,12 @@ public final class MaterialBlockGameTests {
         require(restoredBlocks.size() + MaterialRegistration.SHARDS.size() == 83,
                 "The restored ledger must contain exactly 83 varieties");
         int translated = 0;
-        try (InputStream stream = resource("data/clayium/original_material_translations.tsv");
+        try (InputStream stream = resource("data/clayium_neoforged/original_material_translations.tsv");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             for (String line; (line = reader.readLine()) != null;) {
                 String[] columns = line.split("\t", -1);
-                if (columns.length == 3 && (restoredBlocks.contains(columns[0].replace("block.clayium.", ""))
-                        || MaterialRegistration.SHARDS.containsKey(columns[0].replace("item.clayium.", "")))) {
+                if (columns.length == 3 && (restoredBlocks.contains(columns[0].replace("block.clayium_neoforged.", ""))
+                        || MaterialRegistration.SHARDS.containsKey(columns[0].replace("item.clayium_neoforged.", "")))) {
                     require(english.get(columns[0]).getAsString().equals(columns[1])
                                     && japanese.get(columns[0]).getAsString().equals(columns[2]),
                             "Generated display name differs from the original lang ledger: " + columns[0]);
@@ -99,12 +99,12 @@ public final class MaterialBlockGameTests {
             require(originalIds.contains(id), "The restored ID is absent from the original ledger: " + id);
             require(BuiltInRegistries.BLOCK.containsKey(ClayiumMod.id(id)), "Missing block registry: " + id);
             require(BuiltInRegistries.ITEM.containsKey(ClayiumMod.id(id)), "Missing block item registry: " + id);
-            require(english.has("block.clayium." + id), "Missing English name: " + id);
-            require(japanese.has("block.clayium." + id), "Missing Japanese name: " + id);
-            jsonResource("assets/clayium/blockstates/" + id + ".json");
-            jsonResource("assets/clayium/models/block/" + id + ".json");
-            jsonResource("assets/clayium/models/item/" + id + ".json");
-            jsonResource("data/clayium/loot_table/blocks/" + id + ".json");
+            require(english.has("block.clayium_neoforged." + id), "Missing English name: " + id);
+            require(japanese.has("block.clayium_neoforged." + id), "Missing Japanese name: " + id);
+            jsonResource("assets/clayium_neoforged/blockstates/" + id + ".json");
+            jsonResource("assets/clayium_neoforged/models/block/" + id + ".json");
+            jsonResource("assets/clayium_neoforged/models/item/" + id + ".json");
+            jsonResource("data/clayium_neoforged/loot_table/blocks/" + id + ".json");
             Block block = BuiltInRegistries.BLOCK.get(ClayiumMod.id(id));
             require(block.defaultBlockState().is(block), "The restored block has no placeable default state: " + id);
             if (MaterialRegistration.METAL_BLOCKS.containsKey(id)
@@ -120,9 +120,9 @@ public final class MaterialBlockGameTests {
                             .get(FoundationDataComponentRegistration.TIER.get()) == null,
                     "The original untiered shard unexpectedly has a Tier: " + id);
             require(BuiltInRegistries.ITEM.containsKey(ClayiumMod.id(id)), "Missing shard registry: " + id);
-            require(english.has("item.clayium." + id) && japanese.has("item.clayium." + id),
+            require(english.has("item.clayium_neoforged." + id) && japanese.has("item.clayium_neoforged." + id),
                     "Missing shard translation: " + id);
-            jsonResource("assets/clayium/models/item/" + id + ".json");
+            jsonResource("assets/clayium_neoforged/models/item/" + id + ".json");
         }
         for (MaterialBlockDefinition definition : MaterialBlockDefinition.ORIGINAL_METAL_BLOCKS) {
             Integer tier = MaterialRegistration.METAL_BLOCKS.get(definition.id()).get().asItem()
@@ -297,14 +297,14 @@ public final class MaterialBlockGameTests {
                 "textures/item/compressedclay-shard-2.png",
                 "textures/item/compressedclay-shard-3.png");
         java.util.HashSet<String> manifestPaths = new java.util.HashSet<>();
-        try (InputStream stream = resource("assets/clayium/original_png.sha256");
+        try (InputStream stream = resource("assets/clayium_neoforged/original_png.sha256");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             for (String line; (line = reader.readLine()) != null;) {
                 String[] fields = line.split("  ", 2);
                 require(fields.length == 2, "Malformed original PNG manifest line");
                 String path = fields[1];
                 manifestPaths.add(path);
-                try (InputStream png = resource("assets/clayium/" + path)) {
+                try (InputStream png = resource("assets/clayium_neoforged/" + path)) {
                     String actual = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(png.readAllBytes()));
                     require(actual.equals(fields[0]), "Original PNG bytes changed: " + path);
                 }
@@ -315,11 +315,11 @@ public final class MaterialBlockGameTests {
         }
         require(count == 416, "The original PNG manifest must contain exactly 416 entries");
         require(manifestPaths.containsAll(required), "An M38 texture is not tracked by the original PNG manifest");
-        JsonObject metal = jsonResource("assets/clayium/models/block/copper_block.json");
+        JsonObject metal = jsonResource("assets/clayium_neoforged/models/block/copper_block.json");
         require(metal.getAsJsonObject("textures").size() == 4
                         && metal.getAsJsonArray("elements").size() == 3,
                 "Metal blocks do not use the original base/dark/light tint layers");
-        JsonObject silicone = jsonResource("assets/clayium/models/block/red_silicone_block.json");
+        JsonObject silicone = jsonResource("assets/clayium_neoforged/models/block/red_silicone_block.json");
         require(silicone.getAsJsonArray("elements").get(0).getAsJsonObject()
                         .getAsJsonObject("faces").getAsJsonObject("north").get("tintindex").getAsInt() == 0,
                 "Silicone blocks do not tint the original silhouette texture");
@@ -329,12 +329,12 @@ public final class MaterialBlockGameTests {
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void derivedOreTexturesUseTheRecordedModernStoneBackgrounds(GameTestHelper helper) {
         int count = 0;
-        try (InputStream stream = resource("assets/clayium/derived_ore_png.sha256");
+        try (InputStream stream = resource("assets/clayium_neoforged/derived_ore_png.sha256");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             for (String line; (line = reader.readLine()) != null;) {
                 String[] fields = line.split("  ", 2);
                 require(fields.length == 2, "Malformed derived ore PNG manifest line");
-                try (InputStream png = resource("assets/clayium/" + fields[1])) {
+                try (InputStream png = resource("assets/clayium_neoforged/" + fields[1])) {
                     String actual = HexFormat.of().formatHex(
                             MessageDigest.getInstance("SHA-256").digest(png.readAllBytes()));
                     require(actual.equals(fields[0]), "Derived ore PNG bytes changed: " + fields[1]);

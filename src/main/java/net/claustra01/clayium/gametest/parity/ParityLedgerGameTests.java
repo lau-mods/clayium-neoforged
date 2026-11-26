@@ -159,7 +159,7 @@ public final class ParityLedgerGameTests {
 
     private static List<LedgerRow> readLedger() {
         try (var stream = ParityLedgerGameTests.class.getResourceAsStream(
-                        "/data/clayium/parity_ledger.tsv")) {
+                        "/data/clayium_neoforged/parity_ledger.tsv")) {
             if (stream == null) throw new GameTestAssertException("The M44 parity ledger is absent");
             try (var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
                 String header = reader.readLine();

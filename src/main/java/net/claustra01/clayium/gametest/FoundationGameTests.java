@@ -305,14 +305,14 @@ public final class FoundationGameTests {
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void originalPngBytesAreUnchanged(GameTestHelper helper) {
-        try (InputStream manifestStream = resource("assets/clayium/original_png.sha256");
+        try (InputStream manifestStream = resource("assets/clayium_neoforged/original_png.sha256");
                 BufferedReader manifest = new BufferedReader(new InputStreamReader(manifestStream, StandardCharsets.UTF_8))) {
             List<String> entries = manifest.lines().toList();
             require(entries.size() == 416, "Expected 416 original PNG hashes, got " + entries.size());
             for (String entry : entries) {
                 String expectedHash = entry.substring(0, 64);
                 String path = entry.substring(66);
-                try (InputStream image = resource("assets/clayium/" + path)) {
+                try (InputStream image = resource("assets/clayium_neoforged/" + path)) {
                     String actualHash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(image.readAllBytes()));
                     require(actualHash.equals(expectedHash), "Original PNG bytes changed: " + path);
                 }
@@ -336,7 +336,7 @@ public final class FoundationGameTests {
                         "Translation differs from original: " + translation.getKey());
             }
             for (OriginalRegistryCatalog.RegisteredEntry entry : OriginalRegistryCatalog.REGISTERED_ENTRIES) {
-                String key = entry.block() ? "block.clayium." + entry.namedId() : "item.clayium." + entry.namedId();
+                String key = entry.block() ? "block.clayium_neoforged." + entry.namedId() : "item.clayium_neoforged." + entry.namedId();
                 require(language.has(key), "Registered object's visible name is missing: " + key);
             }
             Set<String> expectedKeys = new HashSet<>(original.keySet());
@@ -352,7 +352,7 @@ public final class FoundationGameTests {
             CreativeSourceLanguageEntries.add(locale, creativeSource::put);
             expectedKeys.addAll(creativeSource.keySet());
             EnvironmentLanguageEntries.forLocale(locale).keySet().forEach(
-                    id -> expectedKeys.add("block.clayium." + id));
+                    id -> expectedKeys.add("block.clayium_neoforged." + id));
             var multitrack = new HashMap<String, String>();
             MultitrackLanguageEntries.add(locale, multitrack::put);
             expectedKeys.addAll(multitrack.keySet());
@@ -406,55 +406,55 @@ public final class FoundationGameTests {
             expectedKeys.addAll(chunkLoader.keySet());
             expectedKeys.addAll(MultiblockLanguageEntries.forLocale(locale).keySet());
             for (var tier : net.claustra01.clayium.material.CompressionTier.values()) {
-                expectedKeys.add("block.clayium." + tier.id());
+                expectedKeys.add("block.clayium_neoforged." + tier.id());
             }
             for (var variant : net.claustra01.clayium.material.ClayMaterials.VARIANTS) {
                 if (!variant.id().startsWith("minecraft:")
                         && !MaterialRegistration.isVanillaBacked(variant.id())) {
                     expectedKeys.add((variant.shape() == net.claustra01.clayium.material.MaterialShape.BLOCK
-                            ? "block.clayium." : "item.clayium.") + variant.id());
+                            ? "block.clayium_neoforged." : "item.clayium_neoforged.") + variant.id());
                 }
             }
             for (String id : MaterialRegistration.COMPONENTS.keySet()) {
-                expectedKeys.add("item.clayium." + id);
+                expectedKeys.add("item.clayium_neoforged." + id);
             }
             MaterialRegistration.METAL_BLOCKS.keySet().forEach(id ->
-                    expectedKeys.add("block.clayium." + id));
+                    expectedKeys.add("block.clayium_neoforged." + id));
             MaterialRegistration.SILICONE_BLOCKS.keySet().forEach(id ->
-                    expectedKeys.add("block.clayium." + id));
+                    expectedKeys.add("block.clayium_neoforged." + id));
             MaterialRegistration.SHARDS.keySet().forEach(id ->
-                    expectedKeys.add("item.clayium." + id));
-            expectedKeys.add("block.clayium.oec_block");
-            expectedKeys.add("item.clayium.impure_osmium_ingot");
-            expectedKeys.add("tooltip.clayium.ce_value");
-            expectedKeys.add("tooltip.clayium.clay_units");
+                    expectedKeys.add("item.clayium_neoforged." + id));
+            expectedKeys.add("block.clayium_neoforged.oec_block");
+            expectedKeys.add("item.clayium_neoforged.impure_osmium_ingot");
+            expectedKeys.add("tooltip.clayium_neoforged.ce_value");
+            expectedKeys.add("tooltip.clayium_neoforged.clay_units");
             for (String id : MachineRegistration.MACHINES.keySet()) {
-                expectedKeys.add("block.clayium." + id);
+                expectedKeys.add("block.clayium_neoforged." + id);
             }
             for (String id : FormingMachineRegistration.MACHINES.keySet()) {
-                expectedKeys.add("block.clayium." + id);
+                expectedKeys.add("block.clayium_neoforged." + id);
             }
-            expectedKeys.add("block.clayium.elemental_milling_machine");
+            expectedKeys.add("block.clayium_neoforged.elemental_milling_machine");
             for (String id : AssemblyMachineRegistration.MACHINES.keySet()) {
-                expectedKeys.add("block.clayium." + id);
+                expectedKeys.add("block.clayium_neoforged." + id);
             }
             AssemblyMachineRegistration.MACHINE_HULL_DEFINITIONS.keySet().forEach(id ->
-                    expectedKeys.add("block.clayium." + id));
+                    expectedKeys.add("block.clayium_neoforged." + id));
             for (WaterWheelRegistration.WaterWheelDefinition definition : WaterWheelRegistration.DEFINITIONS) {
-                expectedKeys.add("block.clayium." + definition.id());
+                expectedKeys.add("block.clayium_neoforged." + definition.id());
             }
             for (String state : List.of("idle", "running", "output_full", "waiting_for_energy", "recipe_changed")) {
-                expectedKeys.add("gui.clayium.machine.state." + state);
+                expectedKeys.add("gui.clayium_neoforged.machine.state." + state);
             }
-            expectedKeys.add("gui.clayium.machine.energy");
-            expectedKeys.add("gui.clayium.machine.tier");
-            expectedKeys.add("gui.clayium.machine.resonance");
-            expectedKeys.add("gui.clayium.machine.overclock");
-            expectedKeys.add("gui.clayium.machine.laser");
-            expectedKeys.add("gui.clayium.machine.inventory");
-            expectedKeys.add("gui.clayium.machine.empty");
+            expectedKeys.add("gui.clayium_neoforged.machine.energy");
+            expectedKeys.add("gui.clayium_neoforged.machine.tier");
+            expectedKeys.add("gui.clayium_neoforged.machine.resonance");
+            expectedKeys.add("gui.clayium_neoforged.machine.overclock");
+            expectedKeys.add("gui.clayium_neoforged.machine.laser");
+            expectedKeys.add("gui.clayium_neoforged.machine.inventory");
+            expectedKeys.add("gui.clayium_neoforged.machine.empty");
             ClayTreeRegistration.BLOCKS.forEach(block ->
-                    expectedKeys.add("block.clayium." + block.getId().getPath()));
+                    expectedKeys.add("block.clayium_neoforged." + block.getId().getPath()));
             require(language.keySet().equals(expectedKeys),
                     "Generated language keys differ from the registered objects and tooltips");
         }
@@ -465,10 +465,10 @@ public final class FoundationGameTests {
             item.appendHoverText(stack, Item.TooltipContext.EMPTY, tooltip, TooltipFlag.NORMAL);
             Integer tier = stack.get(FoundationDataComponentRegistration.TIER.get());
             if (tier != null) {
-                require(tooltip.contains(Component.translatable("tooltip.clayium.tier", tier)),
+                require(tooltip.contains(Component.translatable("tooltip.clayium_neoforged.tier", tier)),
                         "Tier tooltip is absent: " + entry.namedId());
             }
-            String description = "tooltip.clayium." + entry.namedId() + ".line1";
+            String description = "tooltip.clayium_neoforged." + entry.namedId() + ".line1";
             if (english.has(description)) {
                 require(tooltip.contains(Component.translatable(description)),
                         "Original description is absent: " + entry.namedId());
@@ -478,7 +478,7 @@ public final class FoundationGameTests {
     }
 
     private static JsonObject language(String locale) {
-        try (InputStream stream = resource("assets/clayium/lang/" + locale + ".json");
+        try (InputStream stream = resource("assets/clayium_neoforged/lang/" + locale + ".json");
                 InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             return JsonParser.parseReader(reader).getAsJsonObject();
         } catch (IOException exception) {

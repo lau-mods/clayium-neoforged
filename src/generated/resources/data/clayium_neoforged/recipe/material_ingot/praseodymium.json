@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:praseodymium_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:praseodymium_ingot"
+  }
+}

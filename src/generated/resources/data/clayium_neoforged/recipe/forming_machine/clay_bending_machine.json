@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "clayium_neoforged:clay_circuit"
+    },
+    "H": {
+      "item": "clayium_neoforged:clay_machine_hull"
+    },
+    "P": {
+      "item": "clayium_neoforged:clay_plate"
+    },
+    "S": {
+      "item": "clayium_neoforged:clay_plate"
+    }
+  },
+  "pattern": [
+    " S ",
+    "CHC",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_bending_machine"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 100,
+  "item_inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:az91_d_alloy_ingot"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:precision_circuit"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:manipulator_mk_i"
+    }
+  ],
+  "processing_method": "clayium_neoforged:assembler",
+  "processing_ticks": 20,
+  "required_tier": 4
+}

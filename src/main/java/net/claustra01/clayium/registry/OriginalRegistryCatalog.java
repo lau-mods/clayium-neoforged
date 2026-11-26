@@ -139,7 +139,7 @@ public final class OriginalRegistryCatalog {
 
     private static List<OriginalVariety> readOriginalVarieties() {
         try (var stream = OriginalRegistryCatalog.class.getClassLoader()
-                        .getResourceAsStream("data/clayium/original_varieties.tsv")) {
+                        .getResourceAsStream("data/clayium_neoforged/original_varieties.tsv")) {
             if (stream == null) {
                 throw new IllegalStateException("Original variety ledger is missing");
             }

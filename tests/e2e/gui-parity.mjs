@@ -28,25 +28,25 @@ await scenario(async ({ clients }) => {
   await command(client, 'weather clear');
   await command(client, 'fill -10 99 -5 42 99 8 minecraft:smooth_stone');
 
-  await command(client, 'setblock -8 100 0 clayium:clay_work_table');
-  await command(client, 'setblock -7 100 0 clayium:clay_crafting_board');
-  await command(client, 'setblock -10 100 0 clayium:clay_water_wheel');
-  await command(client, 'setblock -9 100 2 clayium:ce_rf_converter');
-  await command(client, 'setblock -6 100 0 clayium:grinder_tier_4[facing=north]');
-  await command(client, 'setblock -5 100 0 clayium:grinder_tier_4[facing=north]');
-  await command(client, 'setblock -4 100 0 clayium:grinder_tier_4[facing=north]');
+  await command(client, 'setblock -8 100 0 clayium_neoforged:clay_work_table');
+  await command(client, 'setblock -7 100 0 clayium_neoforged:clay_crafting_board');
+  await command(client, 'setblock -10 100 0 clayium_neoforged:clay_water_wheel');
+  await command(client, 'setblock -9 100 2 clayium_neoforged:ce_rf_converter');
+  await command(client, 'setblock -6 100 0 clayium_neoforged:grinder_tier_4[facing=north]');
+  await command(client, 'setblock -5 100 0 clayium_neoforged:grinder_tier_4[facing=north]');
+  await command(client, 'setblock -4 100 0 clayium_neoforged:grinder_tier_4[facing=north]');
   await command(client, 'data merge block -4 100 0 {inventory:{Size:4,Items:[{Slot:0,id:"minecraft:iron_ingot",count:1},{Slot:1,id:"minecraft:cobblestone",count:64}]},energy:{clay_energy:100000L}}');
-  await command(client, 'setblock -2 100 0 clayium:buffer_tier_9[facing=north,north=disabled,east=output]');
-  await command(client, 'setblock 0 100 0 clayium:pan_core');
-  await command(client, 'setblock 1 100 0 clayium:pan_cable');
-  await command(client, 'setblock 2 100 0 clayium:pan_adapter_tier_10');
+  await command(client, 'setblock -2 100 0 clayium_neoforged:buffer_tier_9[facing=north,north=disabled,east=output]');
+  await command(client, 'setblock 0 100 0 clayium_neoforged:pan_core');
+  await command(client, 'setblock 1 100 0 clayium_neoforged:pan_cable');
+  await command(client, 'setblock 2 100 0 clayium_neoforged:pan_adapter_tier_10');
   await command(client, 'setblock 3 100 0 minecraft:crafting_table');
-  await command(client, 'setblock 4 100 0 clayium:europium_chest[facing=north]');
+  await command(client, 'setblock 4 100 0 clayium_neoforged:europium_chest[facing=north]');
   await command(client, 'data merge block 4 100 0 {inventory:{Size:832,Items:[{Slot:0,id:"minecraft:clay_ball",count:1},{Slot:104,id:"minecraft:diamond",count:2}]}}');
-  await command(client, 'setblock 6 100 0 clayium:area_activator[facing=north]');
-  await command(client, 'setblock 7 100 0 clayium:area_miner[facing=north]');
-  await command(client, 'setblock 8 100 0 clayium:fluid_translator_tier_8[facing=north]');
-  await command(client, 'setblock 10 100 0 clayium:auto_trader');
+  await command(client, 'setblock 6 100 0 clayium_neoforged:area_activator[facing=north]');
+  await command(client, 'setblock 7 100 0 clayium_neoforged:area_miner[facing=north]');
+  await command(client, 'setblock 8 100 0 clayium_neoforged:fluid_translator_tier_8[facing=north]');
+  await command(client, 'setblock 10 100 0 clayium_neoforged:auto_trader');
   await command(client, 'summon minecraft:villager 10.5 101 0.5 {NoAI:1b,PersistenceRequired:1b,VillagerData:{profession:"minecraft:librarian",level:2,type:"minecraft:plains"},Offers:{Recipes:[{buy:{id:"minecraft:emerald",count:2},sell:{id:"minecraft:bread",count:1},maxUses:12},{buy:{id:"minecraft:emerald",count:5},buyB:{id:"minecraft:book",count:1},sell:{id:"minecraft:diamond",count:1},maxUses:12,specialPrice:-2}]}}');
   await mct(client, 'wait', '--ticks', '140');
 
@@ -88,7 +88,7 @@ await scenario(async ({ clients }) => {
   await screenshot(client, 'AC-F046-001', 'original-tier-sized-buffer-inventory');
   await close(client);
 
-  await command(client, 'item replace entity @s weapon.mainhand with clayium:white_list_item_filter');
+  await command(client, 'item replace entity @s weapon.mainhand with clayium_neoforged:white_list_item_filter');
   await mct(client, 'input', 'key', 'down', 'use');
   await mct(client, 'input', 'key', 'up', 'use');
   await mct(client, 'gui', 'wait-open', '--timeout', '15');
@@ -194,13 +194,13 @@ await scenario(async ({ clients }) => {
   for (let index = 0; index < additionalWindows.length; index++) {
     const [id, label] = additionalWindows[index];
     const x = 12 + index * 2;
-    await command(client, `setblock ${x} 100 4 clayium:${id}`);
+    await command(client, `setblock ${x} 100 4 clayium_neoforged:${id}`);
     await camera(client, { x: x + 0.5, y: 100.6, z: 1.5, yaw: 0, pitch: 8 });
     await open(client, x, 100, 4);
     await screenshot(client, 'AC-F046-001', label);
     await close(client);
   }
-  await command(client, 'item replace entity @s hotbar.0 with clayium:gadget_holder');
+  await command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:gadget_holder');
   await mct(client, 'input', 'key', 'press', '1');
   await mct(client, 'input', 'click', '640', '360', '--button', 'right');
   await mct(client, 'gui', 'wait-open', '--timeout', '15');

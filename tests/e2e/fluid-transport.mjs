@@ -16,7 +16,7 @@ await scenario(async ({ clients }) => {
   command(client, 'fill -12 99 -18 12 99 3 minecraft:smooth_stone');
   for (let tier = 4; tier <= 13; tier++) {
     const x = -10 + (tier - 4) * 2;
-    command(client, `setblock ${x} 100 0 clayium:fluid_translator_tier_${tier}[facing=north]`);
+    command(client, `setblock ${x} 100 0 clayium_neoforged:fluid_translator_tier_${tier}[facing=north]`);
   }
 
   await camera(client, { x: 0.5, y: 100.2, z: -16.5, yaw: 0, pitch: 4 });

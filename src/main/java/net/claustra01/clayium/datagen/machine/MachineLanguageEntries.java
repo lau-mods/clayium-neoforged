@@ -54,12 +54,12 @@ public final class MachineLanguageEntries {
                             || definition.method().equals("chemical_reactor")
                             || definition.method().equals("chemical_metal_separator")
                             || definition.method().equals("matter_transformer")) {
-                        add.accept("block.clayium." + definition.id(), name);
+                        add.accept("block.clayium_neoforged." + definition.id(), name);
                         return;
                     }
                     String prefix = locale.equals("ja_jp")
                             ? japanesePrefixes[definition.tier()] : englishPrefixes[definition.tier()];
-                    add.accept("block.clayium." + definition.id(),
+                    add.accept("block.clayium_neoforged." + definition.id(),
                             prefix + (locale.equals("ja_jp") ? "" : " ") + name);
                 });
         AssemblyMachineRegistration.MACHINE_HULL_DEFINITIONS.values().stream()
@@ -68,23 +68,23 @@ public final class MachineLanguageEntries {
                 .forEach(definition -> {
                     String prefix = locale.equals("ja_jp")
                             ? japanesePrefixes[definition.tier()] : englishPrefixes[definition.tier()];
-                    add.accept("block.clayium." + definition.id(),
+                    add.accept("block.clayium_neoforged." + definition.id(),
                             prefix + (locale.equals("ja_jp") ? "マシン筐体" : " Machine Hull"));
                 });
-        add.accept("gui.clayium.machine.state.idle", locale.equals("ja_jp") ? "停止中" : "Idle");
-        add.accept("gui.clayium.machine.state.running", locale.equals("ja_jp") ? "処理中" : "Processing");
-        add.accept("gui.clayium.machine.state.output_full", locale.equals("ja_jp") ? "出力満杯" : "Output full");
-        add.accept("gui.clayium.machine.state.waiting_for_energy", locale.equals("ja_jp") ? "CE不足" : "Waiting for CE");
-        add.accept("gui.clayium.machine.state.recipe_changed", locale.equals("ja_jp") ? "レシピ更新待ち" : "Recipe changed");
+        add.accept("gui.clayium_neoforged.machine.state.idle", locale.equals("ja_jp") ? "停止中" : "Idle");
+        add.accept("gui.clayium_neoforged.machine.state.running", locale.equals("ja_jp") ? "処理中" : "Processing");
+        add.accept("gui.clayium_neoforged.machine.state.output_full", locale.equals("ja_jp") ? "出力満杯" : "Output full");
+        add.accept("gui.clayium_neoforged.machine.state.waiting_for_energy", locale.equals("ja_jp") ? "CE不足" : "Waiting for CE");
+        add.accept("gui.clayium_neoforged.machine.state.recipe_changed", locale.equals("ja_jp") ? "レシピ更新待ち" : "Recipe changed");
         // Original gui.Common.* entries.
-        add.accept("gui.clayium.machine.energy", "%sCE");
-        add.accept("gui.clayium.machine.tier", "Tier %s");
-        add.accept("gui.clayium.machine.resonance", locale.equals("ja_jp") ? "共鳴率 %s" : "Resonance %s");
-        add.accept("gui.clayium.machine.overclock",
+        add.accept("gui.clayium_neoforged.machine.energy", "%sCE");
+        add.accept("gui.clayium_neoforged.machine.tier", "Tier %s");
+        add.accept("gui.clayium_neoforged.machine.resonance", locale.equals("ja_jp") ? "共鳴率 %s" : "Resonance %s");
+        add.accept("gui.clayium_neoforged.machine.overclock",
                 locale.equals("ja_jp") ? "オーバークロック x%s" : "Overclock x%s");
-        add.accept("gui.clayium.machine.laser", locale.equals("ja_jp") ? "レーザー %s" : "Laser : %s");
-        add.accept("gui.clayium.machine.inventory", locale.equals("ja_jp") ? "持ち物" : "Inventory");
-        add.accept("gui.clayium.machine.empty", locale.equals("ja_jp") ? "空" : "Empty");
+        add.accept("gui.clayium_neoforged.machine.laser", locale.equals("ja_jp") ? "レーザー %s" : "Laser : %s");
+        add.accept("gui.clayium_neoforged.machine.inventory", locale.equals("ja_jp") ? "持ち物" : "Inventory");
+        add.accept("gui.clayium_neoforged.machine.empty", locale.equals("ja_jp") ? "空" : "Empty");
     }
 
     private record MachineName(String id, int tier, String method) {

@@ -16,7 +16,7 @@ await scenario(async ({ clients }) => {
   command(client, 'fill -5 99 -5 5 99 3 minecraft:smooth_stone');
   await camera(client, { x: 0.5, y: 100.6, z: -3.5, yaw: 0, pitch: 8 });
   command(client, 'tick freeze');
-  command(client, 'setblock 0 100 0 clayium:clay_3x3_chunk_loader[facing=north]');
+  command(client, 'setblock 0 100 0 clayium_neoforged:clay_3x3_chunk_loader[facing=north]');
   await screenshot(client, 'AC-F029-001', 'waiting-original-chunk-loader-front');
 
   command(client, 'tick unfreeze');

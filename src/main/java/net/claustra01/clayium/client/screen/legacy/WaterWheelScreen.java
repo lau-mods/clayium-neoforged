@@ -34,11 +34,11 @@ public final class WaterWheelScreen extends AbstractContainerScreen<WaterWheelMe
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 7, 6, LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.water_wheel.progress", menu.progress()), 6, 20,
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.water_wheel.progress", menu.progress()), 6, 20,
                 LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.water_wheel.flow", menu.flowingWater()), 90, 32,
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.water_wheel.flow", menu.flowingWater()), 90, 32,
                 LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.water_wheel.efficiency", menu.efficiency()), 90, 20,
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.water_wheel.efficiency", menu.efficiency()), 90, 20,
                 LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, playerInventoryTitle, 8, 32, LegacyGuiGraphics.TEXT_COLOR, false);
     }

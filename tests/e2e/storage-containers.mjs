@@ -54,11 +54,11 @@ await scenario(async ({ clients }) => {
   for (const [index, id] of chestIds.entries()) {
     const x = -18 + (index % 19) * 2;
     const z = Math.floor(index / 19) * 3;
-    await command(client, `setblock ${x} 100 ${z} clayium:${id}[facing=north]`);
+    await command(client, `setblock ${x} 100 ${z} clayium_neoforged:${id}[facing=north]`);
   }
-  await command(client, 'setblock -2 100 -5 clayium:storage_container[facing=north,expanded=false]');
-  await command(client, 'setblock 0 100 -5 clayium:storage_container[facing=north,expanded=true]');
-  await command(client, 'setblock 2 100 -5 clayium:void_container');
+  await command(client, 'setblock -2 100 -5 clayium_neoforged:storage_container[facing=north,expanded=false]');
+  await command(client, 'setblock 0 100 -5 clayium_neoforged:storage_container[facing=north,expanded=true]');
+  await command(client, 'setblock 2 100 -5 clayium_neoforged:void_container');
 
   await command(client, 'gamemode spectator');
   await settledCamera(client, { x: 0.5, y: 104.5, z: -31.5, yaw: 0, pitch: 8 });
@@ -66,7 +66,7 @@ await scenario(async ({ clients }) => {
     const x = -18 + (index % 19) * 2;
     const z = Math.floor(index / 19) * 3;
     const block = await mct(client, 'block', 'get', String(x), '100', String(z));
-    if (!JSON.stringify(block).includes(`clayium:${chestIds[index]}`)) {
+    if (!JSON.stringify(block).includes(`clayium_neoforged:${chestIds[index]}`)) {
       throw new Error(`Missing metal chest ${chestIds[index]}: ${JSON.stringify(block)}`);
     }
   }

@@ -29,9 +29,9 @@ public final class ClayShovelItem extends ShovelItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.translatable("tooltip.clayium.tier",
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.tier",
                 stack.getOrDefault(FoundationDataComponentRegistration.TIER.get(), 1)));
-        tooltip.add(Component.translatable("tooltip.clayium.clay_shovel"));
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.clay_shovel"));
         AdvancedToolBehavior.addDurability(stack, tooltip);
     }
 }

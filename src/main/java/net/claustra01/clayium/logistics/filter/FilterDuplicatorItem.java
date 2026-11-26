@@ -29,8 +29,8 @@ public final class FilterDuplicatorItem extends FoundationItem {
         }
         ItemFilterSettings settings = stack.getOrDefault(
                 LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY);
-        tooltip.add(Component.translatable("tooltip.clayium.filter_copy.stored"));
-        tooltip.add(Component.translatable("tooltip.clayium.item_filter.mode." + settings.mode().name().toLowerCase()));
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.filter_copy.stored"));
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.item_filter.mode." + settings.mode().name().toLowerCase()));
         UnifiedItemFilterItem.addEntries(settings, tooltip, 1);
     }
 
@@ -43,7 +43,7 @@ public final class FilterDuplicatorItem extends FoundationItem {
         if (player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 duplicator.set(LogisticsRegistration.FILTER_COPY.get(), false);
-                player.displayClientMessage(Component.translatable("message.clayium.filter_copy.cleared"), true);
+                player.displayClientMessage(Component.translatable("message.clayium_neoforged.filter_copy.cleared"), true);
             }
             return InteractionResultHolder.sidedSuccess(duplicator, level.isClientSide);
         }
@@ -57,11 +57,11 @@ public final class FilterDuplicatorItem extends FoundationItem {
                     ? FilterCopyValidator.copy(duplicator, other)
                     : FilterCopyValidator.copy(other, duplicator);
             if (!copied) {
-                player.displayClientMessage(Component.translatable("message.clayium.filter_copy.rejected"), true);
+                player.displayClientMessage(Component.translatable("message.clayium_neoforged.filter_copy.rejected"), true);
                 return InteractionResultHolder.fail(duplicator);
             }
             player.displayClientMessage(Component.translatable(
-                    hasCopy ? "message.clayium.filter_copy.applied" : "message.clayium.filter_copy.stored"), true);
+                    hasCopy ? "message.clayium_neoforged.filter_copy.applied" : "message.clayium_neoforged.filter_copy.stored"), true);
         }
         return InteractionResultHolder.sidedSuccess(duplicator, level.isClientSide);
     }

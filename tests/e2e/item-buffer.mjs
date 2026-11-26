@@ -17,7 +17,7 @@ await scenario(async ({ clients }) => {
   for (let tier = 4; tier <= 13; tier++) {
     const x = -9 + (tier - 4) * 2;
     const face = tier % 3 === 0 ? 'disabled' : tier % 2 === 0 ? 'output' : 'input';
-    command(client, `setblock ${x} 100 0 clayium:buffer_tier_${tier}[facing=north,north=${face}]`);
+    command(client, `setblock ${x} 100 0 clayium_neoforged:buffer_tier_${tier}[facing=north,north=${face}]`);
   }
 
   await camera(client, { x: 0.5, y: 100.0, z: -16.5, yaw: 0, pitch: 5 });
@@ -25,13 +25,13 @@ await scenario(async ({ clients }) => {
   for (let tier = 4; tier <= 13; tier++) {
     const x = -9 + (tier - 4) * 2;
     const block = mct(client, 'block', 'get', String(x), '100', '0');
-    if (!JSON.stringify(block).includes(`clayium:buffer_tier_${tier}`)) {
-      throw new Error(`Expected clayium:buffer_tier_${tier} at ${x} 100 0: ${JSON.stringify(block)}`);
+    if (!JSON.stringify(block).includes(`clayium_neoforged:buffer_tier_${tier}`)) {
+      throw new Error(`Expected clayium_neoforged:buffer_tier_${tier} at ${x} 100 0: ${JSON.stringify(block)}`);
     }
   }
   await screenshot(client, 'AC-F019-003', 'ten-tier-original-hulls-and-logistics-faces');
 
-  command(client, 'setblock 1 100 0 clayium:buffer_tier_9[facing=north,north=disabled,east=output]');
+  command(client, 'setblock 1 100 0 clayium_neoforged:buffer_tier_9[facing=north,north=disabled,east=output]');
   command(client, 'data merge block 1 100 0 {inventory:{Size:54,Items:[{Slot:0,id:"minecraft:oak_planks",count:16},{Slot:1,id:"minecraft:iron_pickaxe",count:1}]}}');
   await camera(client, { x: 1.5, y: 100.5, z: -2.5, yaw: 0, pitch: 8 });
   await mct(client, 'block', 'interact', '1', '100', '0');
@@ -39,7 +39,7 @@ await scenario(async ({ clients }) => {
   await mct(client, 'wait', '--ticks', '3');
   await screenshot(client, 'AC-F019-003', 'tier-nine-original-normal-inventory-gui');
   await mct(client, 'gui', 'close');
-  command(client, 'item replace entity @s weapon.mainhand with clayium:white_list_item_filter');
+  command(client, 'item replace entity @s weapon.mainhand with clayium_neoforged:white_list_item_filter');
   await camera(client, { x: 0.5, y: 101.0, z: -12.5, yaw: 180, pitch: -60 });
   await mct(client, 'input', 'key', 'down', 'use');
   await mct(client, 'input', 'key', 'up', 'use');

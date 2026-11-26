@@ -4,8 +4,8 @@ import crypto from 'node:crypto';
 
 const root = path.resolve(import.meta.dirname, '..');
 const originalPath = path.join(root, '.tmp/original_recipe_semantics.tsv');
-const ledgerPath = path.join(root, 'src/main/resources/data/clayium/survival_recipe_ledger.tsv');
-const recipeRoot = path.join(root, 'src/generated/resources/data/clayium/recipe');
+const ledgerPath = path.join(root, 'src/main/resources/data/clayium_neoforged/survival_recipe_ledger.tsv');
+const recipeRoot = path.join(root, 'src/generated/resources/data/clayium_neoforged/recipe');
 const concreteStatuses = new Set(['具体式抽出', '条件付き具体式抽出']);
 
 function readTsv(file) {
@@ -166,7 +166,7 @@ function normalizeActual(id, json) {
     weight: entry.weight,
   }));
   const conditions = (json['neoforge:conditions'] ?? []).map((condition) =>
-    condition.type === 'clayium:config_enabled' ? `config:${condition.option}` : `${condition.type}:${JSON.stringify(condition)}`);
+    condition.type === 'clayium_neoforged:config_enabled' ? `config:${condition.option}` : `${condition.type}:${JSON.stringify(condition)}`);
   const crafting = json.type === 'minecraft:crafting_shaped' ? {
     pattern: json.pattern ?? [],
     keys: Object.fromEntries(Object.entries(json.key ?? {}).map(([symbol, ingredient]) =>
@@ -195,7 +195,7 @@ const originalRows = readTsv(originalPath);
 const ledgerRows = readTsv(ledgerPath);
 const actualRecipes = walkJson(recipeRoot).map((file) => {
   const relative = path.relative(recipeRoot, file).replaceAll(path.sep, '/').replace(/\.json$/, '');
-  return normalizeActual(`clayium:${relative}`, parseJsonExact(fs.readFileSync(file, 'utf8')));
+  return normalizeActual(`clayium_neoforged:${relative}`, parseJsonExact(fs.readFileSync(file, 'utf8')));
 });
 const actualById = new Map(actualRecipes.map((recipe) => [recipe.id, recipe]));
 const ledgerByRecipe = new Map();
@@ -298,10 +298,10 @@ function materialRef(materialSymbol, shapeSymbol) {
   const shape = snake(shapeSymbol);
   if (shape === 'ball' && material === 'clay') return 'minecraft:clay_ball';
   if (shape === 'block' && material === 'clay') return 'minecraft:clay';
-  if (shape === 'gem' && ['antimatter', 'pure_antimatter'].includes(material)) return `clayium:${material}`;
+  if (shape === 'gem' && ['antimatter', 'pure_antimatter'].includes(material)) return `clayium_neoforged:${material}`;
   const prefixedShape = shape.match(/^(small|large|short)_(.+)$/);
-  if (prefixedShape) return `clayium:${prefixedShape[1]}_${material}_${prefixedShape[2]}`;
-  return `clayium:${material}_${shape}`;
+  if (prefixedShape) return `clayium_neoforged:${prefixedShape[1]}_${material}_${prefixedShape[2]}`;
+  return `clayium_neoforged:${material}_${shape}`;
 }
 
 function oreTag(name) {
@@ -360,34 +360,34 @@ function stackFromExpression(expression) {
         'septuple_compressed_energetic_clay', 'octuple_compressed_energetic_clay',
       ];
       if (metadata !== null && metadata >= 0n && metadata < BigInt(compressed.length)) {
-        return { ref: `clayium:${compressed[Number(metadata)]}`, count: numberValue(args[1]) ?? 1n };
+        return { ref: `clayium_neoforged:${compressed[Number(metadata)]}`, count: numberValue(args[1]) ?? 1n };
       }
       return null;
     }
     if (args[0] === 'CBlocks.blockMachineHull' && args.length >= 3) {
       const metadata = numberValue(args[2]);
       const ref = typeof metadata === 'bigint' ? machineHullRefs[Number(metadata)] : null;
-      return ref ? { ref: `clayium:${ref}`, count: numberValue(args[1]) ?? 1n } : null;
+      return ref ? { ref: `clayium_neoforged:${ref}`, count: numberValue(args[1]) ?? 1n } : null;
     }
     if (args[0] === 'CBlocks.blockCAReactorHull' && args.length >= 3) {
       const metadata = numberValue(args[2]);
       return typeof metadata === 'bigint'
-        ? { ref: `clayium:ca_reactor_hull_rank_${metadata + 1n}`, count: numberValue(args[1]) ?? 1n }
+        ? { ref: `clayium_neoforged:ca_reactor_hull_rank_${metadata + 1n}`, count: numberValue(args[1]) ?? 1n }
         : null;
     }
     if (args[0] === 'CBlocks.blockMetalChest' && args.length >= 3) {
       if (args[2] === 'Short.MAX_VALUE') {
-        return { ref: '#clayium:metal_chests', count: numberValue(args[1]) ?? 1n, alternative: true };
+        return { ref: '#clayium_neoforged:metal_chests', count: numberValue(args[1]) ?? 1n, alternative: true };
       }
       const material = args[2].match(/^CMaterials\.([A-Z0-9_]+)\.meta$/)?.[1];
       return material
-        ? { ref: `clayium:${materialAliases.get(material) ?? snake(material)}_metal_chest`, count: numberValue(args[1]) ?? 1n }
+        ? { ref: `clayium_neoforged:${materialAliases.get(material) ?? snake(material)}_metal_chest`, count: numberValue(args[1]) ?? 1n }
         : null;
     }
     if (args[0] === 'CBlocks.blockSiliconeColored' && args.length >= 3) {
       const metadata = numberValue(args[2]);
       const color = typeof metadata === 'bigint' ? siliconeColorRefs[Number(metadata)] : null;
-      return color ? { ref: `clayium:${color}_silicone_block`, count: numberValue(args[1]) ?? 1n } : null;
+      return color ? { ref: `clayium_neoforged:${color}_silicone_block`, count: numberValue(args[1]) ?? 1n } : null;
     }
     if (args.length >= 3 && numberValue(args[2]) !== 0n && args[2] !== 'Short.MAX_VALUE') return null;
     const inner = stackFromExpression(args[0]);
@@ -409,7 +409,7 @@ function stackFromExpression(expression) {
   if (compressedPureAntimatter) {
     const index = numberValue(compressedPureAntimatter[1]);
     const ref = typeof index === 'bigint' ? compressedPureAntimatterRefs[Number(index)] : null;
-    return ref ? { ref: `clayium:${ref}`, count: numberValue(compressedPureAntimatter[2]) ?? 1n } : null;
+    return ref ? { ref: `clayium_neoforged:${ref}`, count: numberValue(compressedPureAntimatter[2]) ?? 1n } : null;
   }
   const materialOre = value.match(/^CMaterials\.(?:getOD|getODExist|getODName)\((?:\(\s*)?CMaterials\.([A-Z0-9_]+)(?:\s*\))?,\s*(?:\([^)]*\)\s*)?CMaterials\.([A-Z0-9_]+)(?:,\s*([^,)]+))?\)$/s);
   if (materialOre) {
@@ -436,15 +436,15 @@ function stackFromExpression(expression) {
     const variant = snake(damaged[2]);
     const namedAlias = itemVariantAliases.get(`${damaged[1]}:${damaged[2]}`);
     const preferred = base === 'raw_clay_crafting_tools'
-      ? `clayium:raw_clay_${variant}`
+      ? `clayium_neoforged:raw_clay_${variant}`
       : damaged[1] === 'itemGadget' && gadgetVariantAliases.has(damaged[2])
-      ? `clayium:${gadgetVariantAliases.get(damaged[2])}`
-      : namedAlias ? `clayium:${namedAlias}`
-      : base === 'misc' ? `clayium:${variant}` : null;
+      ? `clayium_neoforged:${gadgetVariantAliases.get(damaged[2])}`
+      : namedAlias ? `clayium_neoforged:${namedAlias}`
+      : base === 'misc' ? `clayium_neoforged:${variant}` : null;
     const ref = preferred ?? uniqueCatalog([
-      `clayium:${base}_${variant}`,
-      `clayium:${variant}`,
-      `clayium:clay_${variant}`,
+      `clayium_neoforged:${base}_${variant}`,
+      `clayium_neoforged:${variant}`,
+      `clayium_neoforged:clay_${variant}`,
     ]);
     return ref ? { ref, count: numberValue(damaged[3]) ?? 1n } : null;
   }
@@ -453,30 +453,30 @@ function stackFromExpression(expression) {
     const index = numberValue(indexedItem[2]);
     if (typeof index !== 'bigint') return null;
     const alias = indexedItemAliases.get(`${indexedItem[1]}:${index}`);
-    return alias ? { ref: `clayium:${alias}`, count: 1n } : null;
+    return alias ? { ref: `clayium_neoforged:${alias}`, count: 1n } : null;
   }
   const item = value.match(/^(?:CRecipes\.i\()?CItems\.(item\w+)(?:,\s*([^,)]+))?\)?$/s);
   if (item) {
     const path = itemFieldAliases.get(item[1]) ?? snake(item[1].replace(/^item/, ''));
-    return { ref: `clayium:${path}`, count: numberValue(item[2]) ?? 1n };
+    return { ref: `clayium_neoforged:${path}`, count: numberValue(item[2]) ?? 1n };
   }
   const indexedBlock = value.match(/^CBlocks\.(blocks\w+)\[([^\]]+)]$/s);
   if (indexedBlock) {
     const tier = numberValue(indexedBlock[2]);
     if (tier === null || typeof tier !== 'bigint') return null;
     const base = snake(indexedBlock[1].replace(/^blocks/, ''));
-    return { ref: `clayium:${base}_tier_${tier}`, count: 1n };
+    return { ref: `clayium_neoforged:${base}_tier_${tier}`, count: 1n };
   }
   const namedBlockVariant = value.match(/^CBlocks\.(block\w+)\.get\("([^"]+)"\)$/s);
   if (namedBlockVariant) {
     const base = snake(namedBlockVariant[1].replace(/^block/, ''));
     const variant = snake(namedBlockVariant[2]);
     const alias = blockVariantAliases.get(`${namedBlockVariant[1]}:${namedBlockVariant[2]}`);
-    return { ref: `clayium:${alias ?? `${variant}_${base}`}`, count: 1n };
+    return { ref: `clayium_neoforged:${alias ?? `${variant}_${base}`}`, count: 1n };
   }
   const block = value.match(/^(?:CRecipes\.i\()?CBlocks\.(block\w+)(?:,\s*([^,)]+))?\)?$/s);
   if (block && !value.match(/,\s*\d+\s*,/)) {
-    return { ref: `clayium:${snake(block[1].replace(/^block/, ''))}`, count: numberValue(block[2]) ?? 1n };
+    return { ref: `clayium_neoforged:${snake(block[1].replace(/^block/, ''))}`, count: numberValue(block[2]) ?? 1n };
   }
   const itemStack = value.match(/^new ItemStack\((.*)\)$/s);
   if (itemStack) {
@@ -484,7 +484,7 @@ function stackFromExpression(expression) {
     if (stripCasts(args[0]) === 'CBlocks.blockMachineHull') {
       const metadata = numberValue(args[2]);
       const ref = typeof metadata === 'bigint' ? machineHullRefs[Number(metadata)] : null;
-      return ref ? { ref: `clayium:${ref}`, count: numberValue(args[1]) ?? 1n } : null;
+      return ref ? { ref: `clayium_neoforged:${ref}`, count: numberValue(args[1]) ?? 1n } : null;
     }
     if (args.length >= 3 && numberValue(args[2]) !== 0n && args[2] !== 'Short.MAX_VALUE') return null;
     const inner = stackFromExpression(args[0]);
@@ -615,26 +615,26 @@ function craftingCall(args, expression) {
 }
 
 const receiverMethods = new Map([
-  ['recipeAssembler', 'clayium:assembler'], ['recipeBendingMachine', 'clayium:bending_machine'],
-  ['recipeGrinder', 'clayium:grinder'], ['recipeReactor', 'clayium:reactor'],
-  ['recipeTransformer', 'clayium:matter_transformer'], ['recipeCondenser', 'clayium:condenser'],
-  ['recipeCAInjector', 'clayium:ca_injector'], ['recipeBlastFurnace', 'clayium:blast_furnace'],
-  ['recipeAlloySmelter', 'clayium:alloy_smelter'], ['recipeElectrolysisReactor', 'clayium:electrolysis_reactor'],
-  ['recipeEnergeticClayDecomposer', 'clayium:energetic_clay_decomposer'], ['recipeSmelter', 'clayium:smelter'],
-  ['recipeLathe', 'clayium:lathe'], ['recipeEnergeticClayCondenser', 'clayium:energetic_clay_condenser'],
-  ['recipeCuttingMachine', 'clayium:cutting_machine'], ['recipeCentrifuge', 'clayium:centrifuge'],
-  ['recipeChemicalReactor', 'clayium:chemical_reactor'], ['recipeDecomposer', 'clayium:decomposer'],
-  ['recipeWireDrawingMachine', 'clayium:wire_drawing_machine'], ['recipeInscriber', 'clayium:inscriber'],
-  ['recipeMillingMachine', 'clayium:milling_machine'], ['recipePipeDrawingMachine', 'clayium:pipe_drawing_machine'],
-  ['recipeCACondenser', 'clayium:ca_condenser'], ['recipeCAReactor', 'clayium:ca_reactor'],
+  ['recipeAssembler', 'clayium_neoforged:assembler'], ['recipeBendingMachine', 'clayium_neoforged:bending_machine'],
+  ['recipeGrinder', 'clayium_neoforged:grinder'], ['recipeReactor', 'clayium_neoforged:reactor'],
+  ['recipeTransformer', 'clayium_neoforged:matter_transformer'], ['recipeCondenser', 'clayium_neoforged:condenser'],
+  ['recipeCAInjector', 'clayium_neoforged:ca_injector'], ['recipeBlastFurnace', 'clayium_neoforged:blast_furnace'],
+  ['recipeAlloySmelter', 'clayium_neoforged:alloy_smelter'], ['recipeElectrolysisReactor', 'clayium_neoforged:electrolysis_reactor'],
+  ['recipeEnergeticClayDecomposer', 'clayium_neoforged:energetic_clay_decomposer'], ['recipeSmelter', 'clayium_neoforged:smelter'],
+  ['recipeLathe', 'clayium_neoforged:lathe'], ['recipeEnergeticClayCondenser', 'clayium_neoforged:energetic_clay_condenser'],
+  ['recipeCuttingMachine', 'clayium_neoforged:cutting_machine'], ['recipeCentrifuge', 'clayium_neoforged:centrifuge'],
+  ['recipeChemicalReactor', 'clayium_neoforged:chemical_reactor'], ['recipeDecomposer', 'clayium_neoforged:decomposer'],
+  ['recipeWireDrawingMachine', 'clayium_neoforged:wire_drawing_machine'], ['recipeInscriber', 'clayium_neoforged:inscriber'],
+  ['recipeMillingMachine', 'clayium_neoforged:milling_machine'], ['recipePipeDrawingMachine', 'clayium_neoforged:pipe_drawing_machine'],
+  ['recipeCACondenser', 'clayium_neoforged:ca_condenser'], ['recipeCAReactor', 'clayium_neoforged:ca_reactor'],
 ]);
 
 function methodFromExpression(expression, helperArgs) {
   if (expression.startsWith('GameRegistry.addShapelessRecipe')) return 'minecraft:crafting_shapeless';
   if (expression.startsWith('GameRegistry.addSmelting')) return 'minecraft:smelting';
   if (expression.startsWith('GameRegistry.addRecipe')) return 'minecraft:crafting_shaped';
-  if (expression.startsWith('this.addRecipe')) return 'clayium:clay_work_table';
-  if (expression.includes('WeightedList')) return 'clayium:chemical_metal_separator';
+  if (expression.startsWith('this.addRecipe')) return 'clayium_neoforged:clay_work_table';
+  if (expression.includes('WeightedList')) return 'clayium_neoforged:chemical_metal_separator';
   const receiver = expression.match(/^([A-Za-z0-9_]+)\.addRecipe/)?.[1]
     ?? helperArgs?.get(0)?.trim();
   return receiverMethods.get(receiver) ?? null;
@@ -677,7 +677,7 @@ function expectation(row) {
   let specialSemantics = [];
 
   if (target.includes('WeightedList.add')) {
-    method = 'clayium:chemical_metal_separator';
+    method = 'clayium_neoforged:chemical_metal_separator';
     const output = stackFromExpression(args.get(0));
     if (!output) return { unsupported: 'unresolved_random_output' };
     random = { ...output, chance: 1.0, weight: numberValue(args.get(1)) };
@@ -848,7 +848,7 @@ function completeness(expected, actual) {
   if (expected.method === 'minecraft:smelting' && expected.experience === null) missing.push('experience');
   if (expected.method === 'minecraft:smelting' && expected.cookingTime === null) missing.push('cookingTime');
   if (expected.specialSemantics?.length) missing.push(...expected.specialSemantics.map((value) => `special:${value}`));
-  if (expected.method.startsWith('clayium:')) {
+  if (expected.method.startsWith('clayium_neoforged:')) {
     if (expected.inputTierApplicable && expected.inputTier === null) missing.push('inputTier');
     if (expected.requiredTier === null) missing.push('requiredTier');
     if (expected.energy === null) missing.push('energy');
@@ -859,14 +859,14 @@ function completeness(expected, actual) {
 }
 
 const portTagEquivalenceMethods = new Set([
-  'minecraft:smelting', 'clayium:smelter', 'clayium:alloy_smelter',
-  'clayium:electrolysis_reactor', 'clayium:blast_furnace',
+  'minecraft:smelting', 'clayium_neoforged:smelter', 'clayium_neoforged:alloy_smelter',
+  'clayium_neoforged:electrolysis_reactor', 'clayium_neoforged:blast_furnace',
 ]);
 
 function equivalentInputRef(expected, actual, method) {
   if (expected === actual) return true;
   if (!portTagEquivalenceMethods.has(method)) return false;
-  const item = expected.match(/^clayium:(.+)_(dust|ingot)$/);
+  const item = expected.match(/^clayium_neoforged:(.+)_(dust|ingot)$/);
   if (!item) return false;
   const directory = item[2] === 'dust' ? 'dusts' : 'ingots';
   return actual === `#c:${directory}/${item[1]}`;
@@ -883,7 +883,7 @@ function candidateRecipes(expected) {
       recipe.inputs.some((actual) => actualInputMatches(stack, actual, expected.method)))
       && recipe.inputs.length === expected.inputs.length);
     if (exactInputs.length) candidates = exactInputs;
-    else if (outputRefs.some((ref) => !ref.startsWith('clayium:'))) candidates = [];
+    else if (outputRefs.some((ref) => !ref.startsWith('clayium_neoforged:'))) candidates = [];
   }
   return candidates;
 }
@@ -1207,7 +1207,7 @@ const report = {
   equivalenceRules: [{
     id: 'project-modern-material-tags',
     scope: [...portTagEquivalenceMethods].sort(),
-    rule: 'clayium:<material>_dust|ingot equals #c:dusts|ingots/<material> only for the listed methods',
+    rule: 'clayium_neoforged:<material>_dust|ingot equals #c:dusts|ingots/<material> only for the listed methods',
     evidence: 'AGENTS.md M19 requires OreDictionary-equivalent c:ingots and c:dusts inputs',
   }],
   originalConcreteCallSites: concrete.length,

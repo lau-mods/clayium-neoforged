@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 70000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:hafnium_ingot"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:tantalum_ingot"
+    }
+  ],
+  "processing_method": "clayium_neoforged:matter_transformer",
+  "processing_ticks": 200,
+  "required_tier": 8
+}

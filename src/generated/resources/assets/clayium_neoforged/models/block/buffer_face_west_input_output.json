@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "west": {
+          "texture": "#overlay"
+        }
+      },
+      "from": [
+        -0.01,
+        0,
+        0
+      ],
+      "to": [
+        0,
+        16,
+        16
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "overlay": "clayium_neoforged:block/import",
+    "particle": "clayium_neoforged:block/import"
+  }
+}

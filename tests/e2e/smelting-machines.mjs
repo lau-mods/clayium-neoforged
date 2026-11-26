@@ -32,7 +32,7 @@ await scenario(async ({ clients }) => {
     const x = -5 + (index % 6) * 2;
     const y = index < 6 ? 100 : 102;
     const z = index < 6 ? 0 : 2;
-    command(client, `setblock ${x} ${y} ${z} clayium:${id}[facing=north]`);
+    command(client, `setblock ${x} ${y} ${z} clayium_neoforged:${id}[facing=north]`);
   });
 
   await camera(client, { x: 0.5, y: 100.8, z: -12.5, yaw: 0, pitch: 7 }, 5_000);
@@ -41,8 +41,8 @@ await scenario(async ({ clients }) => {
   screenshot(client, 'AC-F013-002', 'all-eleven-original-fronts-and-tier-hulls');
 
   command(client, 'tick freeze');
-  command(client, 'data merge block -1 100 0 {inventory:{Size:4,Items:[{Slot:0,id:"clayium:magnesium_dust",count:1}]},energy:{clay_energy:10000000L}}');
-  command(client, 'data merge block -5 102 2 {inventory:{Size:6,Items:[{Slot:0,id:"clayium:magnesium_ingot",count:10},{Slot:1,id:"clayium:zinc_aluminium_compound_ingot",count:2}]},energy:{clay_energy:1000000000L}}');
+  command(client, 'data merge block -1 100 0 {inventory:{Size:4,Items:[{Slot:0,id:"clayium_neoforged:magnesium_dust",count:1}]},energy:{clay_energy:10000000L}}');
+  command(client, 'data merge block -5 102 2 {inventory:{Size:6,Items:[{Slot:0,id:"clayium_neoforged:magnesium_ingot",count:10},{Slot:1,id:"clayium_neoforged:zinc_aluminium_compound_ingot",count:2}]},energy:{clay_energy:1000000000L}}');
   command(client, 'tick step 20');
 
   await openMachine(client, -1, 100, 0);
@@ -53,7 +53,7 @@ await scenario(async ({ clients }) => {
   screenshot(client, 'AC-F013-002', 'alloy-smelter-two-input-running-gui');
   await mct(client, 'gui', 'close');
 
-  command(client, 'data merge block -3 102 2 {inventory:{Size:4,Items:[{Slot:0,id:"clayium:impure_aluminium_dust",count:1}]},energy:{clay_energy:10000000L}}');
+  command(client, 'data merge block -3 102 2 {inventory:{Size:4,Items:[{Slot:0,id:"clayium_neoforged:impure_aluminium_dust",count:1}]},energy:{clay_energy:10000000L}}');
   command(client, 'tick step 3');
   await openMachine(client, -3, 102, 2);
   screenshot(client, 'AC-F013-002', 'electrolysis-running-gui');

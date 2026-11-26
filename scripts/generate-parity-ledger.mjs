@@ -6,7 +6,7 @@ import { inflateSync } from 'node:zlib';
 
 const root = path.resolve(import.meta.dirname, '..');
 const originalJar = path.join(root, '.tmp/clayium-0.4.6.36.hotfix2.jar');
-const output = path.join(root, 'src/main/resources/data/clayium/parity_ledger.tsv');
+const output = path.join(root, 'src/main/resources/data/clayium_neoforged/parity_ledger.tsv');
 const expectedJarHash = 'c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2';
 
 function read(relative) {
@@ -87,7 +87,7 @@ if (![0, 1].includes(semanticMappingProcess.status) || !semanticMappingProcess.s
 }
 const semanticMapping = JSON.parse(semanticMappingProcess.stdout);
 const separatorComparison = semanticMapping.randomRouteComparisons.find(
-  comparison => comparison.recipeId === 'clayium:chemical_metal_separator/industrial_clay',
+  comparison => comparison.recipeId === 'clayium_neoforged:chemical_metal_separator/industrial_clay',
 );
 if (!separatorComparison?.complete || separatorComparison.expectedOutputs !== 19
     || separatorComparison.totalWeight !== 488) {
@@ -246,7 +246,7 @@ function originalRecipeEvidence(recipe) {
     return 'mods/clayium/util/crafting/CRecipes.class#registerMachineRecipes:source-lines-542-841';
   }
   const prefixes = new Set(splitRecipeRoutes(recipe.recipe_ids)
-    .map((id) => id.replace(/^clayium:/, '').split('/')[0]));
+    .map((id) => id.replace(/^clayium_neoforged:/, '').split('/')[0]));
   if (prefixes.has('workbench')) {
     return 'mods/clayium/util/crafting/ClayWorkTableRecipes.class#constructor:source-lines-33-48';
   }
@@ -328,7 +328,7 @@ function registeredVarietyTarget(kind, legacyId, namedId) {
   return namedId;
 }
 
-for (const line of read('src/main/resources/data/clayium/original_varieties.tsv').trim().split('\n')) {
+for (const line of read('src/main/resources/data/clayium_neoforged/original_varieties.tsv').trim().split('\n')) {
   const [kind, legacyId, namedId] = line.split('\t');
   if (!kind || !legacyId || !namedId) throw new Error(`Invalid original variety row: ${line}`);
   if (kind === 'material') {
@@ -357,7 +357,7 @@ for (const line of read('src/main/resources/data/clayium/original_varieties.tsv'
     removedCapsule
       ? `removed:${namedId};replacement=direct NeoForge fluid capabilities`
       : unifiedFilter
-        ? 'item:white_list_item_filter;mode/copy state=clayium:item_filter data component'
+        ? 'item:white_list_item_filter;mode/copy state=clayium_neoforged:item_filter data component'
       : excludedMachine
         ? `removed:${portTarget};replacement=direct NeoForge fluid capabilities`
       : vanillaCopperIngot
@@ -383,11 +383,11 @@ for (const line of read('src/main/resources/data/clayium/original_varieties.tsv'
       : vanillaCopperIngot
         ? 'The original copper-ingot varieties intentionally use minecraft:copper_ingot on 1.21.1.'
       : 'A metadata or material variant has one namespaced registry target.',
-    'src/main/resources/data/clayium/original_varieties.tsv',
+    'src/main/resources/data/clayium_neoforged/original_varieties.tsv',
   );
 }
 
-const recipeLines = read('src/main/resources/data/clayium/survival_recipe_ledger.tsv').trim().split('\n');
+const recipeLines = read('src/main/resources/data/clayium_neoforged/survival_recipe_ledger.tsv').trim().split('\n');
 const recipeHeader = recipeLines.shift().split('\t');
 for (const line of recipeLines) {
   const values = line.split('\t');
@@ -412,13 +412,13 @@ for (const line of recipeLines) {
     explicitlyChanged
       ? `classification=${recipe.classification}; PROJECT.md records this intentional NeoForge-era change.`
       : `classification=${recipe.classification}; the generated JSON matches the typed M39 route for method, Tier, ticks, CE, inputs and outputs (${recipeVerification}). Supplementary bytecode diagnostics=${independentlyVerified ? 'complete' : differingRoutes.length ? `differences:${differingRoutes.join('|')}` : 'partial'}; F-049 does not equate dynamic original call count with JSON count.`,
-    'src/main/resources/data/clayium/survival_recipe_ledger.tsv',
+    'src/main/resources/data/clayium_neoforged/survival_recipe_ledger.tsv',
   );
 }
 add(
   'recipe_semantics:chemical_metal_separator_weights', 'original_recipe_semantic',
   'hotfix2:mods/clayium/util/crafting/CRecipes.class#registerMaterialRecipes:WeightedList.add;original-call-0522..0540',
-  'src/generated/resources/data/clayium/recipe/chemical_metal_separator/industrial_clay.json',
+  'src/generated/resources/data/clayium_neoforged/recipe/chemical_metal_separator/industrial_clay.json',
   `outputs=${separatorComparison.expectedOutputs};total_weight=${separatorComparison.totalWeight};chance=1.0`,
   'scripts/map-original-recipe-semantics.mjs;metalSeparatorPreservesWeightsTimeEnergyAndFullOutput',
   '同等',
@@ -428,7 +428,7 @@ add(
 add(
   'recipe_semantics:storage_container_expansion', 'original_recipe_semantic',
   'hotfix2:mods/clayium/util/crafting/CRecipes.class#registerMachineRecipes:source-line-1346;original-call-0372;anonymous IRecipe copies input NBT',
-  'StorageContainerExpansionRecipe;clayium:storage_container_expansion',
+  'StorageContainerExpansionRecipe;clayium_neoforged:storage_container_expansion',
   'input=1*basic Storage Container(capacity=65536,contents preserved)+1*Clay Core;output=1*expanded Storage Container(capacity=2147483647,contents preserved)',
   'clayCoreCraftingExpandsStorageAndPreservesContents;storageContentsSurviveBreakingAndPlacement',
   '同等',
@@ -438,7 +438,7 @@ add(
 add(
   'recipe_semantics:rf_generator_runtime_config', 'original_recipe_semantic',
   'hotfix2:mods/clayium/util/crafting/CRecipes.class#registerMaterialRecipes:source-line-1256;ClayRFGenerator.getConfigMap()',
-  'clayium:energy_converter/{ce_rf_converter,advanced_ce_rf_converter,precision_ce_rf_converter,clay_steel_ce_rf_converter,clayium_ce_rf_converter,ultimate_ce_rf_converter,antimatter_ce_rf_converter,pure_antimatter_ce_rf_converter,oec_ce_rf_converter,opa_ce_rf_converter}',
+  'clayium_neoforged:energy_converter/{ce_rf_converter,advanced_ce_rf_converter,precision_ce_rf_converter,clay_steel_ce_rf_converter,clayium_ce_rf_converter,ultimate_ce_rf_converter,antimatter_ce_rf_converter,pure_antimatter_ce_rf_converter,oec_ce_rf_converter,opa_ce_rf_converter}',
   'original output set and order depend on user configuration; port has ten initially enabled Tier 4-13 CE-to-FE routes that datapacks may disable',
   'scripts/extract-original-recipe-semantics.mjs;allConverterTiersPreserveRatesRecipesRedstoneAndStoredFe;reloadedViewerDataMatchesMachineAcceptanceAndExecution',
   '明示的に変更済み',
@@ -448,7 +448,7 @@ add(
 add(
   'recipe_semantics:original_call_mapping', 'original_recipe_semantic',
   `hotfix2:mods/clayium/util/crafting/{CRecipes,ClayWorkTableRecipes}.class;${semanticMapping.originalConcreteCallSites} concrete semantic rows`,
-  'src/generated/resources/data/clayium/recipe;src/main/resources/data/clayium/survival_recipe_ledger.tsv',
+  'src/generated/resources/data/clayium_neoforged/recipe;src/main/resources/data/clayium_neoforged/survival_recipe_ledger.tsv',
   `concrete_calls=${semanticMapping.originalConcreteCallSites};compared=${semanticMapping.independentlyCompared};fully_verified_calls=${semanticMapping.verifiedComparisons};fully_verified_registry_ids=${semanticMapping.verifiedRegistryIds.length};differences=${semanticMapping.differences.length};unsupported=${semanticMapping.unsupported.total}`,
   'scripts/extract-original-recipe-semantics.mjs;scripts/map-original-recipe-semantics.mjs',
   '同等',
@@ -482,7 +482,7 @@ for (const asset of gui.assets) {
   add(
     `gui_asset:${asset.file}`, 'gui_asset',
     `hotfix2:assets/clayium/textures/gui/${asset.file};sha256=${asset.sha256}`,
-    `src/main/resources/assets/clayium/textures/gui/${asset.file}`,
+    `src/main/resources/assets/clayium_neoforged/textures/gui/${asset.file}`,
     `sha256=${asset.sha256}`,
     'originalGuiPngHashesRemainUnmodified', '同等',
     'The committed GUI texture hash equals the original JAR asset hash.',
@@ -524,7 +524,7 @@ for (const [mappingIndex, mapping] of rendering.mappings.entries()) {
   );
 }
 
-for (const line of read('src/main/resources/assets/clayium/original_png.sha256').trim().split('\n')) {
+for (const line of read('src/main/resources/assets/clayium_neoforged/original_png.sha256').trim().split('\n')) {
   const [hash, asset] = line.split(/\s{2}/);
   if (!hash || !asset) throw new Error(`Invalid PNG manifest row: ${line}`);
   const originalAsset = `assets/clayium/${asset}`
@@ -535,11 +535,11 @@ for (const line of read('src/main/resources/assets/clayium/original_png.sha256')
   add(
     `png:${asset}`, 'original_png',
     `hotfix2:${originalAsset};sha256=${hash}`,
-    `src/main/resources/assets/clayium/${asset}`,
+    `src/main/resources/assets/clayium_neoforged/${asset}`,
     `sha256=${hash}`,
     'allOriginalPngHashesAndTintLayersRemainUnmodified', '同等',
     'The original PNG bytes are retained exactly; modern models and renderers reference them without rewriting.',
-    'src/main/resources/assets/clayium/original_png.sha256',
+    'src/main/resources/assets/clayium_neoforged/original_png.sha256',
   );
 }
 
@@ -573,7 +573,7 @@ for (const match of chestSource.matchAll(chestPattern)) {
   add(
     `metal_chest:${id}`, 'metal_chest',
     `hotfix2:mods/clayium/block/tile/TileMetalChest.class:${material}`,
-    `clayium:${id}`,
+    `clayium_neoforged:${id}`,
     `columns=${columnsText};rows=${rowsText};pages=${pagesText}`,
     'fiftySevenMetalChestsHaveBothOriginalCraftingRoutesAndEquipmentIsReachable;legacyMenusExposeOriginalSlotRelationships',
     '同等', 'The material-specific original dimensions and page count are retained.',

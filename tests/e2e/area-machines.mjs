@@ -28,7 +28,7 @@ await scenario(async ({ clients }) => {
     [0, -4, 'clay_marker_prism'],
   ];
   for (const [x, z, id] of markers) {
-    command(client, `setblock ${x} 100 ${z} clayium:${id}`);
+    command(client, `setblock ${x} 100 ${z} clayium_neoforged:${id}`);
     const second = packedBlockPos(x + 2, 100, z + 2);
     command(client, `data merge block ${x} 100 ${z} {second_corner:${second}L}`);
   }
@@ -41,7 +41,7 @@ await scenario(async ({ clients }) => {
     [8, 4, 'area_activator', 'south'],
   ];
   for (const [x, z, id, facing] of machines) {
-    command(client, `setblock ${x} 100 ${z} clayium:${id}[facing=${facing}]`);
+    command(client, `setblock ${x} 100 ${z} clayium_neoforged:${id}[facing=${facing}]`);
     const minimum = packedBlockPos(x - 1, 100, z + 1);
     const maximum = packedBlockPos(x + 1, 102, z + 3);
     command(client, `data merge block ${x} 100 ${z} {area_min:${minimum}L,area_max:${maximum}L}`);

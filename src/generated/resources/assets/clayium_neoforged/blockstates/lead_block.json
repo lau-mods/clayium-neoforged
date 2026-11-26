@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "clayium_neoforged:block/lead_block"
+    }
+  }
+}

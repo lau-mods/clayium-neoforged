@@ -29,16 +29,16 @@ public final class ClayProductionLanguageEntries {
 
     public static void add(String locale, BiConsumer<String, String> add) {
         (locale.equals("ja_jp") ? JAPANESE : ENGLISH)
-                .forEach((id, name) -> add.accept("block.clayium." + id, name));
+                .forEach((id, name) -> add.accept("block.clayium_neoforged." + id, name));
         boolean japanese = locale.equals("ja_jp");
-        add.accept("gui.clayium.clay_production.stage", japanese ? "段階: %1$s" : "Stage: %1$s");
-        add.accept("gui.clayium.clay_production.remaining", japanese ? "残り: %1$s t" : "Left: %1$s t");
-        add.accept("gui.clayium.clay_production.state.idle", japanese ? "待機中" : "Idle");
-        add.accept("gui.clayium.clay_production.state.running", japanese ? "処理中" : "Processing");
-        add.accept("gui.clayium.clay_production.state.output_full", japanese ? "出力満杯" : "Output full");
-        add.accept("gui.clayium.clay_production.state.waiting_for_energy", japanese ? "CE不足" : "Waiting for CE");
-        add.accept("gui.clayium.clay_production.state.sky_blocked", japanese ? "上面が遮蔽" : "Sky blocked");
-        add.accept("gui.clayium.clay_production.state.invalid_input", japanese ? "対象外の入力" : "Invalid input");
+        add.accept("gui.clayium_neoforged.clay_production.stage", japanese ? "段階: %1$s" : "Stage: %1$s");
+        add.accept("gui.clayium_neoforged.clay_production.remaining", japanese ? "残り: %1$s t" : "Left: %1$s t");
+        add.accept("gui.clayium_neoforged.clay_production.state.idle", japanese ? "待機中" : "Idle");
+        add.accept("gui.clayium_neoforged.clay_production.state.running", japanese ? "処理中" : "Processing");
+        add.accept("gui.clayium_neoforged.clay_production.state.output_full", japanese ? "出力満杯" : "Output full");
+        add.accept("gui.clayium_neoforged.clay_production.state.waiting_for_energy", japanese ? "CE不足" : "Waiting for CE");
+        add.accept("gui.clayium_neoforged.clay_production.state.sky_blocked", japanese ? "上面が遮蔽" : "Sky blocked");
+        add.accept("gui.clayium_neoforged.clay_production.state.invalid_input", japanese ? "対象外の入力" : "Invalid input");
     }
 
     private ClayProductionLanguageEntries() {

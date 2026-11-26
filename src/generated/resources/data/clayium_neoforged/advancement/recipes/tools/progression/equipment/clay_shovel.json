@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_head": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:clay_plate"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:progression/equipment/clay_shovel"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_head"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:progression/equipment/clay_shovel"
+    ]
+  }
+}

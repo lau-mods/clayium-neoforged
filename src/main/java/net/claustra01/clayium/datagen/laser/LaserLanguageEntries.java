@@ -16,9 +16,9 @@ public final class LaserLanguageEntries {
         boolean japanese = locale.equals("ja_jp");
         List<String> names = japanese ? JAPANESE : ENGLISH;
         for (int index = 0; index < LaserSpecification.VALUES.size(); index++) {
-            add.accept("block.clayium." + LaserSpecification.VALUES.get(index).id(), names.get(index));
+            add.accept("block.clayium_neoforged." + LaserSpecification.VALUES.get(index).id(), names.get(index));
         }
-        add.accept("block.clayium.laser_reflector", japanese ? "レーザー反射器" : "Laser Reflector");
+        add.accept("block.clayium_neoforged.laser_reflector", japanese ? "レーザー反射器" : "Laser Reflector");
     }
 
     private LaserLanguageEntries() {

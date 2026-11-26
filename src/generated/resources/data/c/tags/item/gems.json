@@ -1,14 +1,14 @@
 {
   "values": [
-    "clayium:antimatter",
-    "clayium:compressed_pure_antimatter",
-    "clayium:double_compressed_pure_antimatter",
-    "clayium:triple_compressed_pure_antimatter",
-    "clayium:quadruple_compressed_pure_antimatter",
-    "clayium:quintuple_compressed_pure_antimatter",
-    "clayium:sextuple_compressed_pure_antimatter",
-    "clayium:septuple_compressed_pure_antimatter",
-    "clayium:octuple_compressed_pure_antimatter",
-    "clayium:pure_antimatter"
+    "clayium_neoforged:antimatter",
+    "clayium_neoforged:compressed_pure_antimatter",
+    "clayium_neoforged:double_compressed_pure_antimatter",
+    "clayium_neoforged:triple_compressed_pure_antimatter",
+    "clayium_neoforged:quadruple_compressed_pure_antimatter",
+    "clayium_neoforged:quintuple_compressed_pure_antimatter",
+    "clayium_neoforged:sextuple_compressed_pure_antimatter",
+    "clayium_neoforged:septuple_compressed_pure_antimatter",
+    "clayium_neoforged:octuple_compressed_pure_antimatter",
+    "clayium_neoforged:pure_antimatter"
   ]
 }

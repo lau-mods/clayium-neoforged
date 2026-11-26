@@ -14,26 +14,26 @@ public final class CaLanguageEntries {
         Map<Integer, String> prefixes = japanese ? JAPANESE_TIERS : ENGLISH_TIERS;
         int[] condenserTiers = {9, 10, 11};
         for (int tier : condenserTiers) {
-            add.accept("block.clayium.ca_condenser_tier_" + tier,
+            add.accept("block.clayium_neoforged.ca_condenser_tier_" + tier,
                     prefixes.get(tier) + (japanese ? "CA 凝縮機" : "CA Condenser"));
         }
         int[] injectorTiers = {9, 10, 11, 12, 13};
         for (int tier : injectorTiers) {
-            add.accept("block.clayium.ca_injector_tier_" + tier,
+            add.accept("block.clayium_neoforged.ca_injector_tier_" + tier,
                     prefixes.get(tier) + (japanese ? "CA 注入機" : "CA Injector"));
         }
-        add.accept("block.clayium.ca_resonating_collector",
+        add.accept("block.clayium_neoforged.ca_resonating_collector",
                 japanese ? "共鳴型反物質収集機" : "CA Resonating Collector");
         String[] ids = {"antimatter", "pure_antimatter", "oec", "opa"};
         String[] english = {"Antimatter", "Pure Antimatter", "OEC", "OPA"};
         String[] japaneseNames = {"反物質", "純反物質", "OEC", "OPA"};
         for (int index = 0; index < ids.length; index++) {
             String name = japanese ? japaneseNames[index] : english[index];
-            add.accept("block.clayium." + ids[index] + "_resonator",
+            add.accept("block.clayium_neoforged." + ids[index] + "_resonator",
                     name + (japanese ? "共鳴装置" : " Resonator"));
-            add.accept("block.clayium." + ids[index] + "_overclocker",
+            add.accept("block.clayium_neoforged." + ids[index] + "_overclocker",
                     name + (japanese ? "オーバークロッカー" : " Overclocker"));
-            add.accept("block.clayium." + ids[index] + "_energy_storage_upgrade",
+            add.accept("block.clayium_neoforged." + ids[index] + "_energy_storage_upgrade",
                     name + (japanese ? "エネルギーストレージアップグレード" : " Energy Storage Upgrade"));
         }
     }

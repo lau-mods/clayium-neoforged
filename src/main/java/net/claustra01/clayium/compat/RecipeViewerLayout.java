@@ -68,13 +68,13 @@ public record RecipeViewerLayout(
 
         List<TextLine> machineText = new ArrayList<>(List.of(
                 new TextLine(Component.translatable(
-                        "gui.clayium.recipe.tier", data.requiredTier()), TIER_X, TIER_Y, 0xFF000000),
+                        "gui.clayium_neoforged.recipe.tier", data.requiredTier()), TIER_X, TIER_Y, 0xFF000000),
                 new TextLine(Component.translatable(
-                        "gui.clayium.recipe.energy_equation",
+                        "gui.clayium_neoforged.recipe.energy_equation",
                         data.formattedClayEnergyPerTick(), data.processingTicks(), data.formattedClayEnergy()),
                         ENERGY_X, ENERGY_Y, 0xFF000000)));
         if (data.structureDependent()) {
-            machineText.add(new TextLine(Component.translatable("gui.clayium.recipe.structure"),
+            machineText.add(new TextLine(Component.translatable("gui.clayium_neoforged.recipe.structure"),
                     85, 43, 0xFF000000));
         }
         return new RecipeViewerLayout(WIDTH, HEIGHT, NEI_BACKGROUND, List.copyOf(slots),
@@ -91,14 +91,14 @@ public record RecipeViewerLayout(
                         new Slot(SlotKind.ITEM_INPUT, inputX(1), 21, 1),
                         new Slot(SlotKind.ITEM_OUTPUT, outputX(0), 21, 0)),
                 List.of(
-                        new TextLine(Component.translatable("gui.clayium.recipe.tier", tier),
+                        new TextLine(Component.translatable("gui.clayium_neoforged.recipe.tier", tier),
                                 TIER_X, TIER_Y, 0xFF000000),
-                        new TextLine(Component.translatable("gui.clayium.recipe.pan_rate",
+                        new TextLine(Component.translatable("gui.clayium_neoforged.recipe.pan_rate",
                                 net.claustra01.clayium.energy.ClayEnergy.ofInternal(
                                         RecipeViewerData.panEnergyPerTick(tier)).formatValue()),
                                 85, TIER_Y, 0xFF000000),
-                        new TextLine(Component.translatable("gui.clayium.recipe.pan_sample"), 32, 6, 0xFF000000),
-                        new TextLine(Component.translatable("gui.clayium.recipe.pan_ticks"), ENERGY_X, ENERGY_Y, 0xFF000000)),
+                        new TextLine(Component.translatable("gui.clayium_neoforged.recipe.pan_sample"), 32, 6, 0xFF000000),
+                        new TextLine(Component.translatable("gui.clayium_neoforged.recipe.pan_ticks"), ENERGY_X, ENERGY_Y, 0xFF000000)),
                 NEI_PROGRESS, 0);
     }
 

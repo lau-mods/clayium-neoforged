@@ -41,11 +41,11 @@ public final class RecipeViewerDescriptions {
         }
 
         public Component title() {
-            return Component.translatable("gui.clayium.recipe.description." + id + ".title");
+            return Component.translatable("gui.clayium_neoforged.recipe.description." + id + ".title");
         }
 
         public Component text() {
-            return Component.translatable("gui.clayium.recipe.description." + id + ".text");
+            return Component.translatable("gui.clayium_neoforged.recipe.description." + id + ".text");
         }
     }
 

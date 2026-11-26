@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:clay"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 4,
+      "id": "minecraft:clay_ball"
+    }
+  ],
+  "processing_method": "clayium_neoforged:ec_decomposer",
+  "processing_ticks": 1,
+  "required_tier": 13
+}

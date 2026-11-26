@@ -50,12 +50,12 @@ public final class GadgetTranslations {
         Map<String, String> translations = new LinkedHashMap<>();
         GadgetType[] types = GadgetType.values();
         for (int index = 0; index < types.length; index++) {
-            translations.put("item.clayium." + types[index].id(), names[index]);
+            translations.put("item.clayium_neoforged." + types[index].id(), names[index]);
         }
-        translations.put("screen.clayium.gadget_holder", japanese ? "粘土ガジェット設定" : "Clay Gadget Setup");
-        translations.put("screen.clayium.gadget_holder.installed", japanese ? "装着中のガジェット" : "Installed Gadgets");
-        translations.put("tooltip.clayium.gadget_holder.empty", japanese ? "ガジェット未装着" : "No gadgets installed");
-        translations.put("tooltip.clayium.gadget_holder.configured", japanese ? "%1$d 個装着中" : "%1$d installed");
+        translations.put("screen.clayium_neoforged.gadget_holder", japanese ? "粘土ガジェット設定" : "Clay Gadget Setup");
+        translations.put("screen.clayium_neoforged.gadget_holder.installed", japanese ? "装着中のガジェット" : "Installed Gadgets");
+        translations.put("tooltip.clayium_neoforged.gadget_holder.empty", japanese ? "ガジェット未装着" : "No gadgets installed");
+        translations.put("tooltip.clayium_neoforged.gadget_holder.configured", japanese ? "%1$d 個装着中" : "%1$d installed");
         return Map.copyOf(translations);
     }
 

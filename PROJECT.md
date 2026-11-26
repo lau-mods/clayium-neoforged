@@ -2,7 +2,7 @@
 
 Status: active
 Project ID: clayium-neoforged
-Mod ID: clayium
+Mod ID: clayium_neoforged
 
 ## Platform
 
@@ -129,7 +129,7 @@ Expected Result: 原作の鉱石ランクに応じた同等の資源を得られ
 
 #### Description
 
-依存Feature: F-002、F-005。鉄・金・銅の`raw_iron`、`raw_gold`、`raw_copper`を旧鉱石・金属と同じ系統のレシピに追加する。共通タグ`c:raw_materials/iron`等、鉱石タグ、インゴット・粉・板材タグを使用する。Raw Ore1個は通常製錬で得るインゴット1個に相当する最小金属量とし、Raw Ore→粉→インゴットで無限増殖しない。バニラ銅鉱石が複数のRaw Copperを落とす事実を尊重し、バニラのLootTableを改変しない。石・深層岩の既存バニラ鉱石ブロックのシルクタッチ加工も維持する。サクラ、マングローブ、ツツジ、開花したツツジ、竹、他の1.21.1既存樹種について木材・苗木・板材の同系統レシピに組み込む。原木は`minecraft:logs_that_burn`、板材は`minecraft:planks`等を利用し、レーザーで粘土樹化する対象は`clayium:laser_tree_sources`へ明示する。竹は板材として処理するが通常の苗木とは同一視しない。1.21.1に存在しない後続版の樹種は追加しない。
+依存Feature: F-002、F-005。鉄・金・銅の`raw_iron`、`raw_gold`、`raw_copper`を旧鉱石・金属と同じ系統のレシピに追加する。共通タグ`c:raw_materials/iron`等、鉱石タグ、インゴット・粉・板材タグを使用する。Raw Ore1個は通常製錬で得るインゴット1個に相当する最小金属量とし、Raw Ore→粉→インゴットで無限増殖しない。バニラ銅鉱石が複数のRaw Copperを落とす事実を尊重し、バニラのLootTableを改変しない。石・深層岩の既存バニラ鉱石ブロックのシルクタッチ加工も維持する。サクラ、マングローブ、ツツジ、開花したツツジ、竹、他の1.21.1既存樹種について木材・苗木・板材の同系統レシピに組み込む。原木は`minecraft:logs_that_burn`、板材は`minecraft:planks`等を利用し、レーザーで粘土樹化する対象は`clayium_neoforged:laser_tree_sources`へ明示する。竹は板材として処理するが通常の苗木とは同一視しない。1.21.1に存在しない後続版の樹種は追加しない。
 
 #### Acceptance Criteria
 
@@ -811,7 +811,7 @@ Expected Result: 青・緑・赤・白の識別、向き、反射とビームの
 
 #### Description
 
-依存Feature: F-004、F-030。原作の粘土樹の苗木、葉、原木とその加工レシピを実装する。原作同様、自然ワールド生成は行わず、対応するバニラ苗木にレーザーエネルギー値1000以上を照射することで粘土樹苗木を取得できる。サクラ、マングローブの芽、ツツジ、開花したツツジを含む独自タグ`clayium:laser_tree_sources`で対象を判定する。植樹・成長・伐採は1.21.1の植物・樹木処理へ移植し、原作のリチウム取得に必要な資源ルートを維持する。
+依存Feature: F-004、F-030。原作の粘土樹の苗木、葉、原木とその加工レシピを実装する。原作同様、自然ワールド生成は行わず、対応するバニラ苗木にレーザーエネルギー値1000以上を照射することで粘土樹苗木を取得できる。サクラ、マングローブの芽、ツツジ、開花したツツジを含む独自タグ`clayium_neoforged:laser_tree_sources`で対象を判定する。植樹・成長・伐採は1.21.1の植物・樹木処理へ移植し、原作のリチウム取得に必要な資源ルートを維持する。
 
 #### Acceptance Criteria
 
@@ -1091,7 +1091,7 @@ Expected Result: 毎tick最大64個の8重圧縮エネルギー粘土が補充�
 
 #### Description
 
-依存Feature: F-005、F-022、F-023、F-025、F-035、F-037。JEIによる機械レシピ閲覧、`c:`・`minecraft:`・`clayium:`タグ、NeoForgeのItemHandler／FluidHandler／EnergyStorage Capability、データパックによるレシピ差替えを提供する。**初回正式版では標準API互換のみを必須**とし、旧1.7.10版が対応した個別Mod（AE2、Ender IO、GregTech、Mekanism、IC2、Forestry、Galacticraft、TofuCraftなど）向け固有レシピ・依存コードは追加要件に含めない。KubeJS／CraftTweakerへの専用APIは任意の将来拡張であり、本体のレシピJSONとタグを正本とする。JEIが未導入でもModが起動する。
+依存Feature: F-005、F-022、F-023、F-025、F-035、F-037。JEIによる機械レシピ閲覧、`c:`・`minecraft:`・`clayium_neoforged:`タグ、NeoForgeのItemHandler／FluidHandler／EnergyStorage Capability、データパックによるレシピ差替えを提供する。**初回正式版では標準API互換のみを必須**とし、旧1.7.10版が対応した個別Mod（AE2、Ender IO、GregTech、Mekanism、IC2、Forestry、Galacticraft、TofuCraftなど）向け固有レシピ・依存コードは追加要件に含めない。KubeJS／CraftTweakerへの専用APIは任意の将来拡張であり、本体のレシピJSONとタグを正本とする。JEIが未導入でもModが起動する。
 
 #### Acceptance Criteria
 
@@ -1417,7 +1417,7 @@ Expected Result: 既存PNGは無改変で使用し、テクスチャ破損・表
 
 #### Description
 
-依存Feature: F-001～F-042、F-043～F-048。F-043～F-048を網羅しても、JARの総ファイル数一致だけで完全移植は証明できない。hotfix2と0.1.0（および修正後JAR）のレシピ、登録内容、内部計算、特殊操作、GUI/NEIとJEI表示、モデル/描画、エフェクト、言語・説明、操作手段を、**機能単位で追跡できる対応台帳**にする。原作はJava実装によって複数レシピを動的登録し、移植版は`clayium:machine`等のJSON中心であるため、旧バイトコードのレシピ登録呼び出し回数と新JSON数が等しいことを合格条件にしない。投入/出力数量、代替材料、加工方法、必要Tier、CE、処理tick、確率副産物、装置への適用条件を意味的に比較する。
+依存Feature: F-001～F-042、F-043～F-048。F-043～F-048を網羅しても、JARの総ファイル数一致だけで完全移植は証明できない。hotfix2と0.1.0（および修正後JAR）のレシピ、登録内容、内部計算、特殊操作、GUI/NEIとJEI表示、モデル/描画、エフェクト、言語・説明、操作手段を、**機能単位で追跡できる対応台帳**にする。原作はJava実装によって複数レシピを動的登録し、移植版は`clayium_neoforged:machine`等のJSON中心であるため、旧バイトコードのレシピ登録呼び出し回数と新JSON数が等しいことを合格条件にしない。投入/出力数量、代替材料、加工方法、必要Tier、CE、処理tick、確率副産物、装置への適用条件を意味的に比較する。
 
 各要素には原作クラス・JARパス・必要ならバイトコード命令箇所、移植先Registry ID / JSON / Javaクラス、原作の表示PNG/GUI画面名、現行の表示画面・操作手順、テスト名を記録し、判定を`同等`・`明示的に変更済み`・`欠落`・`未確認`に分類する。**未確認を同等とみなしてはならない。** 許可変更はStone/Deepslate鉱石と現高度、Raw Ore・新樹種、新流体直接輸送、カプセル廃止、CE→FEのみ、B/W統合、現行API置換、UtilityMode廃止、FE変換器初期レシピ有効化、旧ワールド非対応などPROJECT.md明記事項だけである。変更理由なくレシピ・数値・見た目・操作を簡略化してはいけない。
 

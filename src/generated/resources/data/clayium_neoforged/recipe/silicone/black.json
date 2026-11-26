@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "item": "clayium_neoforged:silicone_block"
+    },
+    {
+      "tag": "c:dyes/black"
+    }
+  ],
+  "result": {
+    "count": 8,
+    "id": "clayium_neoforged:black_silicone_block"
+  }
+}

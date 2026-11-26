@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 10000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:vine"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "minecraft:lily_pad"
+    }
+  ],
+  "processing_method": "clayium_neoforged:matter_transformer",
+  "processing_ticks": 20,
+  "required_tier": 9
+}

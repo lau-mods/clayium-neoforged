@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:quintuple_compressed_pure_antimatter"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:quadruple_compressed_pure_antimatter"
+  }
+}

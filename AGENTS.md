@@ -1,7 +1,7 @@
 # Clayium 開発・検証
 
 - Minecraft 1.21.1、NeoForge 21.1.264、Java 21 を使用する。バージョンの正本は `gradle.properties`。
-- Mod ID は `clayium`。Java の `ClayiumMod.MOD_ID` と生成される Mod metadata を一致させる。
+- Mod ID は `clayium_neoforged`。Java の `ClayiumMod.MOD_ID` と生成される Mod metadata を一致させる。
 - 通常のビルド確認は `./gradlew build`。
 
 ## Harness E2E runtime
@@ -41,7 +41,7 @@ runtime の検証は Harness の `deployMod` → `startRuntime` → 撮影 → `
 
 ## 原作登録台帳
 
-`CBlocks`、`CItems`、`CMaterials` と旧 lang の調査結果を次の方針で名前付き ID へ移す。`OriginalClassInventory` は CBlocks 92フィールド、カプセルを除く CItems 31フィールド、CMaterials 268素材・25形状を保持する。33 機械系列の機械可読台帳は `OriginalRegistryCatalog` が Tier 列と名前付き ID 規則を保持する。原作 `.lang` の表示名 747 種と `CMaterials.materialShapeMap` の実在する 245 組の原作キー・登録予定 ID は `data/clayium/original_varieties.tsv` に記録する。GameTest は現在登録済みの ID をこの台帳と照合する。
+`CBlocks`、`CItems`、`CMaterials` と旧 lang の調査結果を次の方針で名前付き ID へ移す。`OriginalClassInventory` は CBlocks 92フィールド、カプセルを除く CItems 31フィールド、CMaterials 268素材・25形状を保持する。33 機械系列の機械可読台帳は `OriginalRegistryCatalog` が Tier 列と名前付き ID 規則を保持する。原作 `.lang` の表示名 747 種と `CMaterials.materialShapeMap` の実在する 245 組の原作キー・登録予定 ID は `data/clayium_neoforged/original_varieties.tsv` に記録する。GameTest は現在登録済みの ID をこの台帳と照合する。
 
 | 原作区分 | 1.21.1 の追跡単位 | 状態・除外理由 |
 |---|---|---|
@@ -58,7 +58,7 @@ M01 の登録済み原作品種は `blockCompressedClay:0` → `dense_clay`、`:
 
 M05 の `WorldgenRegistration` は原作 `blockClayOre:0/1/2` をそれぞれ `clay_ore`、`dense_clay_ore`、`large_dense_clay_ore` に対応させ、`deepslate_clay_ore`、`deepslate_dense_clay_ore`、`deepslate_large_dense_clay_ore` を追加する。通常鉱石は幸運が効く粘土玉4～16個、シルクタッチでは自身を落とし、高密度・大型は工具や幸運に関係なく適正採掘時に自身を1個落とす。全6種の採掘ランクは石ツルハシ、硬度3.0、爆発耐性5.0。深層岩版モデルも対応する原作の石版PNGをそのまま参照する。
 
-`clayium:composite_clay_ore` は `targets`（石・深層岩の置換タグと3ランクの状態）、`primary_size`、`dense_size`、`large_chance`、`discard_chance_on_air_exposure`、`independent_large` をCodecで読み込む。主要層は通常鉱脈の同基点に高密度部分を作り、高密度の基点+8,+0,+8だけを50%で大型化する。独立大型層は大型鉱石だけを生成する。露出抑制の初期値は0である。
+`clayium_neoforged:composite_clay_ore` は `targets`（石・深層岩の置換タグと3ランクの状態）、`primary_size`、`dense_size`、`large_chance`、`discard_chance_on_air_exposure`、`independent_large` をCodecで読み込む。主要層は通常鉱脈の同基点に高密度部分を作り、高密度の基点+8,+0,+8だけを50%で大型化する。独立大型層は大型鉱石だけを生成する。露出抑制の初期値は0である。
 
 | M05 の ConfiguredFeature / PlacedFeature ID | Y（両端を含む） | 試行回数/chunk | サイズ | 高密度サイズ |
 |---|---:|---:|---:|---:|
@@ -114,17 +114,17 @@ M04 の CE は `ClayEnergy` の非負 `long` 内部値で保持し、1 CE を 10
 
 ## M18 ガジェット
 
-`gadget_holder` は10スロットで、装着品は ItemStack の `clayium:gadgets` Data Component に保存する。17品目と原作キーは `clay_gadget_template`=`item.itemGadget.Blank.name`、`clay_gadget_overclock_i/ii/iii/iv`=`item.itemGadget.AntimatterOverclock/PureAntimatterOverclock/OECOverclock/OPAOverclock.name`、`clay_gadget_flight/free_flight/supersonic_flight`=`item.itemGadget.Flight0/Flight1/Flight2.name`、`clay_gadget_extra_health_i/ii/iii`=`item.itemGadget.Health0/Health1/Health2.name`、`clay_gadget_economical_auto_eat/auto_eat`=`item.itemGadget.AutoEat0/AutoEat1.name`、`clay_gadget_repeatedly_attack`=`item.itemGadget.RepeatedlyAttack.name`、`clay_gadget_long_arm/longer_arm/longest_arm`=`item.itemGadget.LongArm0/LongArm1/LongArm2.name`。速度・跳躍ガジェットは登録しない。
+`gadget_holder` は10スロットで、装着品は ItemStack の `clayium_neoforged:gadgets` Data Component に保存する。17品目と原作キーは `clay_gadget_template`=`item.itemGadget.Blank.name`、`clay_gadget_overclock_i/ii/iii/iv`=`item.itemGadget.AntimatterOverclock/PureAntimatterOverclock/OECOverclock/OPAOverclock.name`、`clay_gadget_flight/free_flight/supersonic_flight`=`item.itemGadget.Flight0/Flight1/Flight2.name`、`clay_gadget_extra_health_i/ii/iii`=`item.itemGadget.Health0/Health1/Health2.name`、`clay_gadget_economical_auto_eat/auto_eat`=`item.itemGadget.AutoEat0/AutoEat1.name`、`clay_gadget_repeatedly_attack`=`item.itemGadget.RepeatedlyAttack.name`、`clay_gadget_long_arm/longer_arm/longest_arm`=`item.itemGadget.LongArm0/LongArm1/LongArm2.name`。速度・跳躍ガジェットは登録しない。
 
-プレイヤーの永続状態は `clayium:gadget_player_state` Data Attachment に置く。固定 modifier ID は `clayium:gadget_extra_health`（最大体力 +20/+80/+180、保存する）、`clayium:gadget_long_arm`（block_interaction_range +3/+7/+20）、`clayium:gadget_flight`（NeoForge `CREATIVE_FLIGHT` +1）。オーバークロック I～IV の使用間隔は8/4/2/1 tick、超音速飛行速度は0.2。通常飛行は飛行中80 tickごとに空腹消耗1、自由飛行は消耗なし。倹約自動摂食は不足空腹値を超えない最大栄養、通常型は最小栄養を選び、有害効果の食品は除く。効果は毎 PlayerTick とログイン・次元移動・死亡後 Clone で再評価し、ホルダー取外しで解除する。ログアウト時は保存前に体力 modifier を外さない。
+プレイヤーの永続状態は `clayium_neoforged:gadget_player_state` Data Attachment に置く。固定 modifier ID は `clayium_neoforged:gadget_extra_health`（最大体力 +20/+80/+180、保存する）、`clayium_neoforged:gadget_long_arm`（block_interaction_range +3/+7/+20）、`clayium_neoforged:gadget_flight`（NeoForge `CREATIVE_FLIGHT` +1）。オーバークロック I～IV の使用間隔は8/4/2/1 tick、超音速飛行速度は0.2。通常飛行は飛行中80 tickごとに空腹消耗1、自由飛行は消耗なし。倹約自動摂食は不足空腹値を超えない最大栄養、通常型は最小栄養を選び、有害効果の食品は除く。効果は毎 PlayerTick とログイン・次元移動・死亡後 Clone で再評価し、ホルダー取外しで解除する。ログアウト時は保存前に体力 modifier を外さない。
 
-通常自動摂食の製作は `progression/equipment/clay_gadget_auto_eat` の `clayium:nbt_preserving_auto_eat` 特殊レシピを使い、倹約自動摂食のData Componentを維持して置換する。通常のShapeless Recipeは併設しない。
+通常自動摂食の製作は `progression/equipment/clay_gadget_auto_eat` の `clayium_neoforged:nbt_preserving_auto_eat` 特殊レシピを使い、倹約自動摂食のData Componentを維持して置換する。通常のShapeless Recipeは併設しない。
 
 ## M03 機械レシピ
 
-Serializer は `clayium:machine`。RecipeType は加工方法ごとに `clayium:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`chemical_metal_separator`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`salt_extractor`、`clay_work_table`（すべて `clayium:` 名前空間）を登録する。
+Serializer は `clayium_neoforged:machine`。RecipeType は加工方法ごとに `clayium_neoforged:bending_machine`、`wire_drawing_machine`、`pipe_drawing_machine`、`cutting_machine`、`lathe`、`milling_machine`、`condenser`、`grinder`、`decomposer`、`ec_condenser`、`assembler`、`inscriber`、`centrifuge`、`smelter`、`chemical_reactor`、`chemical_metal_separator`、`alloy_smelter`、`blast_furnace`、`electrolysis_reactor`、`reactor`、`matter_transformer`、`ca_condenser`、`ca_injector`、`ca_reactor`、`ec_decomposer`、`salt_extractor`、`clay_work_table`（すべて `clayium_neoforged:` 名前空間）を登録する。
 
-レシピ JSON は `type: clayium:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。原作で `ProgressionRate` を参照した登録箇所は、同じJSONの任意 `progression_rate` に `ticks`、`outputs`、`ticks_and_outputs`、`stacks` のいずれかをDatagenから設定し、実行・キャッシュ・Viewerが同じ値を読む。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky`、`requires_adjacent_water_source` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
+レシピ JSON は `type: clayium_neoforged:machine`、`processing_method`（上記 ID）、非負の `required_tier`、`clay_energy`（内部 long）、正の `processing_ticks` を必須にする。`item_inputs` は `{ingredient, count}`、`fluid_inputs` と `fluid_outputs` は FluidStack、`item_outputs` は ItemStack、`random_outputs` は `{stack, weight, chance}` の配列で、省略時は空配列。出力配列の少なくとも一つに要素が必要。`weight` は正、`chance` は 0～1。原作で `ProgressionRate` を参照した登録箇所は、同じJSONの任意 `progression_rate` に `ticks`、`outputs`、`ticks_and_outputs`、`stacks` のいずれかをDatagenから設定し、実行・キャッシュ・Viewerが同じ値を読む。`environment` は省略時に制限なし、指定時は `dimension`、`minimum_y`、`maximum_y`、`requires_sky`、`requires_adjacent_water_source` を扱い、Y の下限は上限以下とする。NeoForge の `neoforge:conditions` で欠落した外部品目を無効化する。`ClayiumRecipeEnergy.e(v,t)` は `floor(v × 10^(t-2))`、原作の `floor(100 × v × 10^(t-4))` と同じ値を返す。
 
 サーバーのデータパック適用後、全プレイヤー向け `OnDatapackSyncEvent` でキャッシュを失効させ、新しい RecipeManager を持つ `ClayiumRecipesReloadedEvent` を機械・表示・PAN に通知する。クライアントの `RecipesUpdatedEvent` でも検索キャッシュを更新する。GameTest 用レシピ ID は `gametest/machine_recipe`、`gametest/conditional_missing_external_item`、`gametest/reload_changed`、`gametest/reload_removed`、`gametest/chemical_fluid_input`。テスト中の追加レシピは `gametest/reload_added`。
 
@@ -152,7 +152,7 @@ GameTest は `metalSeparatorPreservesWeightsTimeEnergyAndFullOutput` と `chemic
 
 ## M08 水車と流水動力
 
-`tile.blockClayWaterWheel.name` は `clayium:clay_water_wheel`（Tier 1）、`tile.blockDenseClayWaterWheel.name` は `clayium:dense_clay_water_wheel`（Tier 2）に対応する。両ブロックは `clayium:water_wheel` BlockEntity を使う。
+`tile.blockClayWaterWheel.name` は `clayium_neoforged:clay_water_wheel`（Tier 1）、`tile.blockDenseClayWaterWheel.name` は `clayium_neoforged:dense_clay_water_wheel`（Tier 2）に対応する。両ブロックは `clayium_neoforged:water_wheel` BlockEntity を使う。
 
 中心3×3×3の流水数を20 tickごとに走査し、毎tick `random.nextInt(40) < 流水数` なら進捗へ効率を加える。初期効率は `1000*max(tier,1)^3`、閾値は20,000。閾値到達ごとに20%の確率で効率を1下げ、隣接するTier 2～3の `processing_machine` へ `max(tier,1)^8` 内部CEを供給する。供給先の蓄積は `5*max(tier,1)^8` 内部CEを上限とする。進捗と効率は保存する。
 
@@ -182,7 +182,7 @@ Item ID と原作キーは `basic_clay_shooter`=`item.itemClayShooter0.name`、`
 
 ## M16 CE→FE変換器
 
-`EnergyConverterRegistration` は次の同名 Block/Item を登録し、全機種が `clayium:energy_converter` BlockEntity と燃料1スロットを使う。原作キーは各行の `tile.block<原作名>RFGenerator.name`。
+`EnergyConverterRegistration` は次の同名 Block/Item を登録し、全機種が `clayium_neoforged:energy_converter` BlockEntity と燃料1スロットを使う。原作キーは各行の `tile.block<原作名>RFGenerator.name`。
 
 | Tier | ID | 原作名 | 内部CE/t | FE生成/t | FE出力上限/t | FE容量 |
 |---:|---|---|---:|---:|---:|---:|
@@ -220,8 +220,8 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 
 ## M10 アイテムバッファと統合フィルター
 
-- `buffer_tier_4`～`buffer_tier_13` は `LogisticsRegistration` に登録する。BlockEntity と Menu は `clayium:buffer`、単体フィルター Menu は `clayium:item_filter`。
-- 原作台帳の `white_list_item_filter` をホワイト／ブラック統合フィルター、`direction_memory_card` を設定複写アイテムとして使う。Data Component は `clayium:item_filter` と `clayium:buffer_configuration`。フィルターは手持ちで使用して単体GUIを開き、5×2の記憶枠とホワイト／ブラックを編集する。
+- `buffer_tier_4`～`buffer_tier_13` は `LogisticsRegistration` に登録する。BlockEntity と Menu は `clayium_neoforged:buffer`、単体フィルター Menu は `clayium_neoforged:item_filter`。
+- 原作台帳の `white_list_item_filter` をホワイト／ブラック統合フィルター、`direction_memory_card` を設定複写アイテムとして使う。Data Component は `clayium_neoforged:item_filter` と `clayium_neoforged:buffer_configuration`。フィルターは手持ちで使用して単体GUIを開き、5×2の記憶枠とホワイト／ブラックを編集する。
 - バッファ在庫は原作 `TileClayBuffer.initParamsByTier` の列×行に従い、Tier 4～13で順に `2×1`、`3×2`、`4×3`、`5×4`、`9×4`、Tier 9以降 `9×6` とする。GUIはこの在庫だけを `ContainerNormalInventory` 相当で表示する。保存NBTは `inventory`、共有I/O状態、挿入・抽出tick、次の搬入・搬出方向を使用する。
 - 各面は `INPUT`、`OUTPUT`、`INPUT_OUTPUT`、`DISABLED`。設置時は正面基準の搬入口1面だけを `INPUT`、他面を `DISABLED` とする。搬送は ItemHandler Block Capability だけを通し、Tier 4～13 の周期と上限は GR-04 に従う。
 - 面設定・各面の記憶フィルター・pipe化はブロックへ設定工具を使用して変更する。バッファGUI専用の制御Payloadは持たない。`direction_memory_card` はしゃがんで使用するとコピー、通常使用で貼り付ける。
@@ -236,9 +236,9 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 
 ## M12 粘土生産装置
 
-`ClayProductionRegistration` は `energetic_clay_condenser_mk_i/ii`（Tier 3/4、原作 ECCondenser）、`automatic_clay_condenser_mk_i/ii`（Tier 5/7、原作 AutoClayCondenser）、`solar_clay_fabricator_mk_i/ii`（Tier 5/6）、`lithium_solar_clay_fabricator`（Tier 7）、`clay_fabricator_mk_i/ii/iii`（Tier 8/9/13）を同名 Block/Item で登録する。BlockEntity と Menu は `clayium:clay_production_machine`。原作キーは順に `tile.blockEnergeticClayCondenser.name`／`tile.blockEnergeticClayCondenserMK2.name`、`tile.blockAutoClayCondenser.name`／`tile.blockAutoClayCondenserMK2.name`、`tile.blockSolarClayFabricatorMK1.name`／`tile.blockSolarClayFabricatorMK2.name`、`tile.blockLithiumSolarClayFabricator.name`、`tile.blockClayFabricatorMK1.name`／`MK2.name`／`MK3.name` に対応する。
+`ClayProductionRegistration` は `energetic_clay_condenser_mk_i/ii`（Tier 3/4、原作 ECCondenser）、`automatic_clay_condenser_mk_i/ii`（Tier 5/7、原作 AutoClayCondenser）、`solar_clay_fabricator_mk_i/ii`（Tier 5/6）、`lithium_solar_clay_fabricator`（Tier 7）、`clay_fabricator_mk_i/ii/iii`（Tier 8/9/13）を同名 Block/Item で登録する。BlockEntity と Menu は `clayium_neoforged:clay_production_machine`。原作キーは順に `tile.blockEnergeticClayCondenser.name`／`tile.blockEnergeticClayCondenserMK2.name`、`tile.blockAutoClayCondenser.name`／`tile.blockAutoClayCondenserMK2.name`、`tile.blockSolarClayFabricatorMK1.name`／`tile.blockSolarClayFabricatorMK2.name`、`tile.blockLithiumSolarClayFabricator.name`、`tile.blockClayFabricatorMK1.name`／`MK2.name`／`MK3.name` に対応する。
 
-共通内部在庫は入力0、出力1、処理中退避2、燃料3、圧縮上限見本4に加え、全自動圧縮機用の5×4在庫を5～24に持つ。燃料はエネルギー粘土凝縮機だけ、上限見本と5×4在庫は全自動圧縮機だけが使用する。保存キーは `inventory`、`energy`、`state`、`progress`、`required_progress`、`energy_per_tick`、`displayed_ce_per_tick`、`active_input_level`、`active_recipe`。エネルギー粘土凝縮の `clayium:ec_condenser` レシピは `clayproduction/ec_condenser_level_4`～`12`。9個を入力し、必要Tier・CE・tickをデータパックのレシピから読む。全自動圧縮は5×4在庫内で9:1を行い、Mk II は出力の再圧縮を同 tick に進める。
+共通内部在庫は入力0、出力1、処理中退避2、燃料3、圧縮上限見本4に加え、全自動圧縮機用の5×4在庫を5～24に持つ。燃料はエネルギー粘土凝縮機だけ、上限見本と5×4在庫は全自動圧縮機だけが使用する。保存キーは `inventory`、`energy`、`state`、`progress`、`required_progress`、`energy_per_tick`、`displayed_ce_per_tick`、`active_input_level`、`active_recipe`。エネルギー粘土凝縮の `clayium_neoforged:ec_condenser` レシピは `clayproduction/ec_condenser_level_4`～`12`。9個を入力し、必要Tier・CE・tickをデータパックのレシピから読む。全自動圧縮は5×4在庫内で9:1を行い、Mk II は出力の再圧縮を同 tick に進める。
 
 ソーラーは上面の空が見え、昼で雨が降っていない間だけ進む。Mk I/II の入力段階上限は4/6、リチウム型は9で `lithium_ingot` を段階8として段階9へ変換する。ソーラー所要tickは `floor(base^入力段階 × 初期倍率)`、初期倍率は `ClayProductionRules.solarTicks` に定義し、表示CE/tは `(出力CE内部値−入力CE内部値)/所要tick`。粘土製造機は見本を保持し、そのスタック数を複製する。Mk I は段階11（6重）まで、Mk II/III は段階13（8重）まで。Mk I/II の時間は `max(1, floor(base^段階 × 個数^指数 × 初期倍率))`、Mk III は1 tick。GameTest は `ClayProductionGameTests` の凝縮・ソーラー・複製テスト、外観 E2E は `tests/e2e/clay-production.mjs`。
 
@@ -246,13 +246,13 @@ GameTest は `allElevenSmeltingMachinesUseOriginalTiersAndRejectFe`、`smeltingA
 
 `VanillaCompatRecipes` は `grinder/raw_{iron,gold,copper}`（Raw Ore 1個→対応粉1個）、`grinder/raw_{iron,gold,copper}_block`（原鉱石ブロック1個→対応粉9個）、`grinder/{iron,gold,copper}_ore`（石・深層岩鉱石1個→対応粉2個）を生成する。いずれも Tier 4、40 tick、`ClayiumRecipeEnergy.e(1.0, 4)`。入力は NeoForge の `Tags.Items.RAW_MATERIALS_*`、`STORAGE_BLOCKS_RAW_*`、`ORES_*` を使用し、バニラの鉱石 LootTable は変更しない。Raw Ore と粉の精錬はそれぞれ1個のインゴットを作る。
 
-原木・葉・苗木の物質変換系列にサクラ、マングローブ、ツツジ、開花ツツジを追加し、既存系列と同じ Tier 8 の段階で処理する。粘土作業台・作業板の製作は `minecraft:planks` を使い、竹板材を受け付ける。竹は苗木として扱わない。アイテムタグ `clayium:laser_tree_sources` は `#minecraft:saplings` を参照する。M32 の同名ブロックタグは旧6樹種の苗木、サクラ苗木、マングローブの芽、ツツジ、開花ツツジを明示し、照射対象を決める。
+原木・葉・苗木の物質変換系列にサクラ、マングローブ、ツツジ、開花ツツジを追加し、既存系列と同じ Tier 8 の段階で処理する。粘土作業台・作業板の製作は `minecraft:planks` を使い、竹板材を受け付ける。竹は苗木として扱わない。アイテムタグ `clayium_neoforged:laser_tree_sources` は `#minecraft:saplings` を参照する。M32 の同名ブロックタグは旧6樹種の苗木、サクラ苗木、マングローブの芽、ツツジ、開花ツツジを明示し、照射対象を決める。
 
 ## M32 粘土樹
 
-`ClayTreeRegistration` は `clay_tree_sapling`、`clay_tree_leaf`、`clay_tree_log` の同名 Block/Item を登録する。M29 のレーザー受信 Capability はブロックタグ `clayium:laser_tree_sources` を照合し、受信した単一ビームの `energy()` が1000以上で、粘土樹苗木が生存できる位置だけを変換する。999以下、不適格ブロック、吊り下がったマングローブの芽は変換しない。
+`ClayTreeRegistration` は `clay_tree_sapling`、`clay_tree_leaf`、`clay_tree_log` の同名 Block/Item を登録する。M29 のレーザー受信 Capability はブロックタグ `clayium_neoforged:laser_tree_sources` を照合し、受信した単一ビームの `energy()` が1000以上で、粘土樹苗木が生存できる位置だけを変換する。999以下、不適格ブロック、吊り下がったマングローブの芽は変換しない。
 
-`clayium:clay_tree` ConfiguredFeature は高さ5～7の直立幹、半径2・高さ3の葉冠を持ち、`TreeGrower` の植樹成長だけに使用する。PlacedFeature や自然生成の Biome Modifier には追加しない。原木は自身を落とす。葉はハサミ・シルクタッチで自身を落とし、通常採取では粘土粉5%、高密度粘土粉0.5%を独立抽選し、幸運補正を適用する。原木の粉砕は Tier 5・200 tick・1000内部CEで有機粘土1個、遠心分離は Tier 6・400 tick・10000内部CEで発展工業用粘土粉16、マンガン粉5、リチウム粉3、ジルコニウム粉1を出す。GameTest は `laserThresholdTagsAndNaturalGenerationMatchClayTreeRules` と `plantedTreeGrowthDropsAndOriginalProcessingRouteAreComplete`、外観 E2E は `tests/e2e/clay-tree.mjs`。
+`clayium_neoforged:clay_tree` ConfiguredFeature は高さ5～7の直立幹、半径2・高さ3の葉冠を持ち、`TreeGrower` の植樹成長だけに使用する。PlacedFeature や自然生成の Biome Modifier には追加しない。原木は自身を落とす。葉はハサミ・シルクタッチで自身を落とし、通常採取では粘土粉5%、高密度粘土粉0.5%を独立抽選し、幸運補正を適用する。原木の粉砕は Tier 5・200 tick・1000内部CEで有機粘土1個、遠心分離は Tier 6・400 tick・10000内部CEで発展工業用粘土粉16、マンガン粉5、リチウム粉3、ジルコニウム粉1を出す。GameTest は `laserThresholdTagsAndNaturalGenerationMatchClayTreeRules` と `plantedTreeGrowthDropsAndOriginalProcessingRouteAreComplete`、外観 E2E は `tests/e2e/clay-tree.mjs`。
 
 GameTest は `rawOresPreserveMetalBalanceAndVanillaDrops` と `modernWoodsUseTagsAndBambooIsNotASapling`。
 
@@ -270,14 +270,14 @@ GameTest は `matchingColorsCrossWithoutMixingAndKeepTierSpeedFiltersAndState` �
 
 `StorageRegistration` は `storage_container`、`void_container` と57素材の `<material>_chest` を同名 Block/Item で登録する。BlockEntity/Menu ID は `storage_container`、`void_container`、`metal_chest`。ストレージは1品目を `long` で数え、初期容量65,536、Clay Core適用後は2,147,483,647。保存 NBT は `stored`、`amount`、`expanded`。破壊ドロップは同じ値を Item の `custom_data` に保持し、設置時に復元する。外部 `IItemHandler` は1スロットを通常スタック単位で公開し、搬入と搬出はその都度実残量を更新する。虚空コンテナは明示的な ItemHandler/GUI 投入だけを破棄する。金属チェストの保存 NBT は `inventory` で、Capability は全スロットを公開する。
 
-`storage_container_expansion` は `clayium:storage_container_expansion` 特殊レシピで、未拡張ストレージコンテナ1個とClay Core 1個だけを受け入れ、保存品目・数量を保持した拡張済みコンテナを返す。
+`storage_container_expansion` は `clayium_neoforged:storage_container_expansion` 特殊レシピで、未拡張ストレージコンテナ1個とClay Core 1個だけを受け入れ、保存品目・数量を保持した拡張済みコンテナを返す。
 
 GR-08 の金属チェスト台帳は `素材:横×縦×ページ` とする。`SILICON:9×5×1 ALUMINIUM:9×6×1 CLAY_STEEL:9×8×1 CLAYIUM:13×8×1 ULTIMATE_ALLOY:13×8×3 MAGNESIUM:9×6×1 SODIUM:9×6×1 LITHIUM:9×7×1 ZIRCONIUM:9×7×1 ZINC:9×6×1 MANGANESE:9×6×1 CALCIUM:9×6×1 POTASSIUM:9×6×1 NICKEL:9×6×1 BERYLLIUM:10×8×1 LEAD:9×6×1 HAFNIUM:9×8×1 CHROME:13×8×1 TITANIUM:13×8×1 STRONTIUM:10×8×1 BARIUM:10×8×1 AZ91D_ALLOY:13×8×1 ZK60A_ALLOY:13×8×1 RUBIDIUM:13×3×1 CAESIUM:13×3×1 FRANCIUM:13×4×1 RADIUM:13×4×1 ACTINIUM:13×5×1 THORIUM:13×5×1 PROTACTINIUM:13×6×1 URANIUM:13×6×2 NEPTUNIUM:13×6×3 PLUTONIUM:13×6×4 AMERICIUM:13×6×5 CURIUM:13×6×6 LANTHANUM:13×2×2 CERIUM:13×2×4 PRASEODYMIUM:13×2×6 NEODYMIUM:13×2×8 PROMETHIUM:13×4×8 SAMARIUM:13×6×8 EUROPIUM:13×8×8 VANADIUM:4×8×1 COBALT:11×6×1 PALLADIUM:11×8×1 PLATINUM:13×8×2 IRIDIUM:13×8×3 OSMIUM:13×8×4 RHENIUM:13×8×5 TANTALUM:10×8×1 TUNGSTEN:13×8×1 MOLYBDENUM:13×8×2 ANTIMONY:9×6×1 BISMUTH:9×6×1 BRASS:9×6×1 ELECTRUM:13×8×1 INVAR:9×8×1`。ユーロピウムは832スロット。ページボタンは `clickMenuButton` の0始まりのページ番号でサーバーへ送る。各メニューは自分の表示ページを持ち、スロットの `isActive` とプレイヤーの shift 移動範囲を同じページへ限定する。
 
 GameTest は `storageCapacityExpansionOverflowPersistenceAndVoidAreExact`、`storageContentsSurviveBreakingAndPlacement`、`allFiftySevenMetalChestsMatchTheCapacityLedger`、`metalChestMenusKeepIndependentServerAuthoritativePages`。外観 E2E は `tests/e2e/storage-containers.mjs`。
 ## M23 座標同期インターフェース
 
-- `InterfaceRegistration` は `clay_interface_tier_5`～`13`、`redstone_interface_tier_5`～`13`、`clay_laser_interface_tier_7`～`13` の25種を同名 Block/Item に登録する。ID は `<stem>_tier_<Tier>`、共通 BlockEntity は `clayium:interface` とし、Menu/GUIは持たない。同期工具は `clayium:synchronizer`、記録先の Data Component は `clayium:synchronized_target`。
+- `InterfaceRegistration` は `clay_interface_tier_5`～`13`、`redstone_interface_tier_5`～`13`、`clay_laser_interface_tier_7`～`13` の25種を同名 Block/Item に登録する。ID は `<stem>_tier_<Tier>`、共通 BlockEntity は `clayium_neoforged:interface` とし、Menu/GUIは持たない。同期工具は `clayium_neoforged:synchronizer`、記録先の Data Component は `clayium_neoforged:synchronized_target`。
 - インターフェースの保存 NBT は `target_dimension`、`target_pos`、`owner`。シンクロナイザーは BlockEntity を右クリックして次元と座標を記録し、インターフェースを右クリックして接続する。対象の次元、ロード済みチャンク、BlockEntity、操作権限を接続時と機能アクセス時にサーバーで確認し、未ロードチャンクをロードしない。
 - 状態は `UNLINKED` が登録先なし、`CONNECTED` がアクセス可能な対象、`DISCONNECTED` が記録先にアクセスできない状態。接続状態はブロック状態の外観へ同期する。ItemHandler は対象の Capability を代理公開し、赤石制御は当該 tick の中継だけ有効とする。レーザー受信と赤石制御は BlockCapability を介して接続し、レーザー本体とマルチブロック処理は後続マイルストーンが利用する。
 - `progression/ca_injector/interface/*` の22件は各系列の隣接Tierを反物質で更新するCA注入レシピで、`EnableInjectorRecipeOfInterface` のConfig連動conditionがtrueの場合だけ読み込む。
@@ -285,13 +285,13 @@ GameTest は `storageCapacityExpansionOverflowPersistenceAndVoidAreExact`、`sto
 
 ## M24 クリエイティブ用エネルギー源
 
-`CreativeSourceRegistration` は原作キー `tile.blockCreativeCESource.name` を同名 Block/Item `creative_ce_source` と BlockEntity `clayium:creative_ce_source` に登録する。Tier は13。毎 tick、搬出前に内部在庫の `octuple_compressed_energetic_clay` を最大64個へ補充し、通常バッファの面設定と Tier 13 の `TierManager.bufferTransport` に従って搬出する。INPUT 面は搬入せず、外部からの ItemHandler 挿入も受け付けない。面設定と在庫などの NBT は通常バッファから継承する。FE Capability とサバイバル製作レシピは持たず、クリエイティブタブからのみ入手できる。
+`CreativeSourceRegistration` は原作キー `tile.blockCreativeCESource.name` を同名 Block/Item `creative_ce_source` と BlockEntity `clayium_neoforged:creative_ce_source` に登録する。Tier は13。毎 tick、搬出前に内部在庫の `octuple_compressed_energetic_clay` を最大64個へ補充し、通常バッファの面設定と Tier 13 の `TierManager.bufferTransport` に従って搬出する。INPUT 面は搬入せず、外部からの ItemHandler 挿入も受け付けない。面設定と在庫などの NBT は通常バッファから継承する。FE Capability とサバイバル製作レシピは持たず、クリエイティブタブからのみ入手できる。
 
 GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsAreCeFuelWithoutFeOrSurvivalRecipe`。
 
 ## M25 自動クラフト装置
 
-`auto_crafter_tier_{5,6,7,8,9}` は `clayium:auto_crafter` BlockEntity と Menu を共用する。3×3のゴーストパターン、材料9スロット、出力6スロット、CE燃料1スロットを持つ。上面と水平面の Item Capability は材料・燃料への搬入、下面は出力からの搬出に限定する。
+`auto_crafter_tier_{5,6,7,8,9}` は `clayium_neoforged:auto_crafter` BlockEntity と Menu を共用する。3×3のゴーストパターン、材料9スロット、出力6スロット、CE燃料1スロットを持つ。上面と水平面の Item Capability は材料・燃料への搬入、下面は出力からの搬出に限定する。
 
 保存 NBT は `inventory`、`pattern`、`energy`、`craft_tick`。ゴーストパターンは破壊時にドロップせず、結果プレビューは保存しない。
 
@@ -301,7 +301,7 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 ## M22 直接流体輸送
 
-`FluidRegistration` は `fluid_translator_tier_4`～`13` を同名 Block/Item で登録し、共通の `clayium:fluid_transport` BlockEntity と Menu を使う。`fluid_transfer_machine_tier_5` は登録しない。単一タンク容量と全方向合計の毎 tick 転送上限は GR-06 の値を使用する。外部接続は `Capabilities.FluidHandler.BLOCK` のみとし、1 mB 単位で直接搬送する。
+`FluidRegistration` は `fluid_translator_tier_4`～`13` を同名 Block/Item で登録し、共通の `clayium_neoforged:fluid_transport` BlockEntity と Menu を使う。`fluid_transfer_machine_tier_5` は登録しない。単一タンク容量と全方向合計の毎 tick 転送上限は GR-06 の値を使用する。外部接続は `Capabilities.FluidHandler.BLOCK` のみとし、1 mB 単位で直接搬送する。
 
 面状態は `INPUT`、`OUTPUT`、`BOTH`、`DISABLED` とし、設定工具で変更する。流体フィルターと赤石条件は持たない。保存 NBT は `tank`、`pending`、共有I/O状態、`next_output_direction`、`next_input_direction`。
 
@@ -309,7 +309,7 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 ## M29 色別粘土レーザー
 
-- `ClayEnergyLaser` は `clay_energy_laser_tier_7`～`10` の同名 Block/Item と共通 BlockEntity `clayium:clay_energy_laser` に登録する。Tier 7/8/9/10 は青/緑/赤/白、消費は毎 tick 0.4/4/40/400 CE、成分は `[1,0,0]`/`[0,1,0]`/`[0,0,1]`/`[3,3,3]`。`laser_reflector` は同名 Block/Item と BlockEntity `clayium:laser_reflector` を使う。
+- `ClayEnergyLaser` は `clay_energy_laser_tier_7`～`10` の同名 Block/Item と共通 BlockEntity `clayium_neoforged:clay_energy_laser` に登録する。Tier 7/8/9/10 は青/緑/赤/白、消費は毎 tick 0.4/4/40/400 CE、成分は `[1,0,0]`/`[0,1,0]`/`[0,0,1]`/`[3,3,3]`。`laser_reflector` は同名 Block/Item と BlockEntity `clayium_neoforged:laser_reflector` を使う。
 - 光路は最大32ブロックで、ブロック変化時と10 tick ごとに再計算する。反射器は受信したビームの age を増やして同一 tick のビームを合成し、次の tick に一度転送する。age 10以上は成分ごとの最大値で合成し、それ未満は加算する。`LaserBeam.energy()` は原作の色別減衰式の積から1を引く。`LaserReceiver` はビームと age を受け渡し、レーザーインターフェースが同期先へ中継する。
 - 赤石入力中は停止する。COMMON Config の `InvertClayLaserRSCondition` が true のときは停止条件を反転する。レーザーの保存 NBT は `inventory` と `energy`。照射状態、長さ、反射ビームは表示同期だけに使う。
 - `LaserQuality` はCLIENT Configの1～32で、ビームを構成する交差平面数へ直接使う。専用サーバーはこの描画値を所有しない。
@@ -317,34 +317,34 @@ GameTest は `replenishesSixtyFourFuelAndTransfersEveryTick` と `suppliedItemsA
 
 ## M26 自動取引装置
 
-`TradeRegistration` は原作キー `tile.blockAutoTrader.name` の `clayium:auto_trader` を同名 Block/Item/BlockEntity/Menu に登録する。Tier 8 は原作の自動取引装置の段階に対応し、取引1回の消費は `ClayiumRecipeEnergy.e(1.0, 8)` 内部CE。装置から x/z ±1、上方 y+1～y+4 の生存 `Merchant` を探索し、取引中の商人は使用しない。
+`TradeRegistration` は原作キー `tile.blockAutoTrader.name` の `clayium_neoforged:auto_trader` を同名 Block/Item/BlockEntity/Menu に登録する。Tier 8 は原作の自動取引装置の段階に対応し、取引1回の消費は `ClayiumRecipeEnergy.e(1.0, 8)` 内部CE。装置から x/z ±1、上方 y+1～y+4 の生存 `Merchant` を探索し、取引中の商人は使用しない。
 
 検証順は商人の存在、取引中ロック、選択オファーの存在、在庫切れ、出力空き、必要材料、CE とする。要求数は現行割引を反映した `getCostA`/`getCostB` を使い、確定時に `notifyTrade` で商人の取引回数と経験値を更新する。失敗時は在庫、CE、取引回数を変更しない。スロットは入力A 0、入力B 1、出力 2、燃料 3。上面と水平面は入力、下面は出力。保存NBTは `inventory`、`energy`、`selected_offer`、`state`。
 
-`clayium:trade_select` Payload は開いているメニュー、位置、距離、選択番号をサーバーで検証する。GUI の取引一覧、選択、現在価格、CE は `clayium:trade_snapshot` で同期する。GameTest は `selectedTradeUsesDiscountedCostsCeOutputUsesAndVillagerExperience` と `failedConditionsAreAtomicAndSelectionPayloadIsServerValidated`、画面 E2E は `tests/e2e/auto-trader.mjs`。
+`clayium_neoforged:trade_select` Payload は開いているメニュー、位置、距離、選択番号をサーバーで検証する。GUI の取引一覧、選択、現在価格、CE は `clayium_neoforged:trade_snapshot` で同期する。GameTest は `selectedTradeUsesDiscountedCostsCeOutputUsesAndVillagerExperience` と `failedConditionsAreAtomicAndSelectionPayloadIsServerValidated`、画面 E2E は `tests/e2e/auto-trader.mjs`。
 
 ## M27 基本採掘機・右クリック代行機
 
-`MinerRegistration` は原作キー `tile.blockMiner.name` と `tile.blockActivator.name` を Tier 6 の同名 Block/Item `block_breaker` と `activator` に登録する。両方が `clayium:basic_block_operation` BlockEntity を使用する。3×3の操作在庫0～8と非消費の収穫フィルター9を持ち、20 tick ごとに正面の対象を操作する。保存 NBT は `inventory`、`owner`、`operation_tick` と操作モード状態を使用する。
+`MinerRegistration` は原作キー `tile.blockMiner.name` と `tile.blockActivator.name` を Tier 6 の同名 Block/Item `block_breaker` と `activator` に登録する。両方が `clayium_neoforged:basic_block_operation` BlockEntity を使用する。3×3の操作在庫0～8と非消費の収穫フィルター9を持ち、20 tick ごとに正面の対象を操作する。保存 NBT は `inventory`、`owner`、`operation_tick` と操作モード状態を使用する。
 
 `BlockOperationService` は所有者 UUID の FakePlayer でサーバー側の破壊・使用イベントと権限を確認する。採掘機は工具スロットを持たず、未エンチャントのダイヤモンドツルハシを使って LootTable を評価し、出力容量を確認してから破壊する。右クリック代行機は機械側から対象面をクリックし、消費・耐久・返却物を在庫に反映する。保護対象と未ロードチャンクは操作せず、チャンクを強制ロードしない。GameTest は `blockBreakerUsesLootProtectionAndLoadedChunks` と `activatorMatchesPlayerUseAndDeniedActionsHaveNoSideEffects`。
 
 ## M28 3×3チャンクローダー
 
-`clay_3x3_chunk_loader` は Tier 6 の同名 Block/Item と `clayium:chunk_loader` BlockEntityを使い、GUIは持たない。NeoForge `TicketController` の所有者は装置の BlockPos で、中心チャンクから X/Z 各±1の ticking ticket 9件だけを取得する。9件の途中で拒否された場合は取得済み分を戻し、`ticket_status=unavailable` を保存してブロック状態の外観へ反映する。
+`clay_3x3_chunk_loader` は Tier 6 の同名 Block/Item と `clayium_neoforged:chunk_loader` BlockEntityを使い、GUIは持たない。NeoForge `TicketController` の所有者は装置の BlockPos で、中心チャンクから X/Z 各±1の ticking ticket 9件だけを取得する。9件の途中で拒否された場合は取得済み分を戻し、`ticket_status=unavailable` を保存してブロック状態の外観へ反映する。
 
 撤去時は9件を明示解放する。次元アンロード時の実行中 ticket は NeoForge の dimension lifecycle に委ね、永続 ticket はサーバー再起動時の `LoadingValidationCallback` で検証する。正しい位置に装置があり、ticking 9件が正確な3×3で、non-ticking ticket がない所有者だけを復元する。不正な範囲、不正な種別、装置がない所有者、Entity所有 ticket は孤児として削除する。GameTest は `loadsExactlyNineTickingChunks` と `ticketsReleaseAndRestartValidationRemovesOrphans`、外観 E2E は `tests/e2e/chunk-loader.mjs`。GameTest は level の live ticket を解放して次元アンロードを模擬し、保存済み ticket だけから再取得することで再起動時の検証を行う。実際の次元アンロードでは NeoForge がその ServerLevel の live ticket を破棄する。NeoForge 21.1 の TicketController は上限での拒否を返さず、false は同一所有者の重複 ticket を示すため、拒否表示は E2E で保存状態を用いて確認する。
 
 ## M30 マーカーと範囲装置
 
-`clay_marker`、`clay_marker_open_pit`、`clay_marker_ground_leveling`、`clay_marker_prism` は共通の `clayium:area_marker` BlockEntity を使う。通常は選択したYを維持し、露天掘は下限、整地は上限、角柱は上下限を対象 Level の `getMinBuildHeight()` と `getMaxBuildHeight()-1` まで広げる。選択範囲は両端を含み、x→z→yの順次カーソルで走査する。マーカー保存NBTは `second_corner` と `owner`。同じ次元で同種・同一所有者の2点を順に右クリックすると対角を選ぶ。各軸64ブロック以内とし、64は原作 `TileClayMarker.maxRange` に由来する。最後に選んだマーカーを範囲装置へ右クリックで適用すると選択記憶を消去し、選択が無ければ装置のGUIを開く。
+`clay_marker`、`clay_marker_open_pit`、`clay_marker_ground_leveling`、`clay_marker_prism` は共通の `clayium_neoforged:area_marker` BlockEntity を使う。通常は選択したYを維持し、露天掘は下限、整地は上限、角柱は上下限を対象 Level の `getMinBuildHeight()` と `getMaxBuildHeight()-1` まで広げる。選択範囲は両端を含み、x→z→yの順次カーソルで走査する。マーカー保存NBTは `second_corner` と `owner`。同じ次元で同種・同一所有者の2点を順に右クリックすると対角を選ぶ。各軸64ブロック以内とし、64は原作 `TileClayMarker.maxRange` に由来する。最後に選んだマーカーを範囲装置へ右クリックで適用すると選択記憶を消去し、選択が無ければ装置のGUIを開く。
 
-`area_item_collector` Tier 7、`area_miner` Tier 8、`advanced_area_miner` Tier 9、`area_replacer` Tier 10、`area_activator` Tier 8 は共通の `clayium:area_machine` BlockEntity とMenuを使う。内部在庫0～15を通常機は3×3の処理グリッド、置換機は4×2の出力と4×2の置換材として使用し、16～18を収穫・幸運・シルクタッチの非消費フィルター、19をCE燃料とする。M27の `BlockOperationService` で権限、保護イベント、LootTable、幸運・シルクタッチ、右クリックを処理し、未ロードチャンクや記録次元外を操作しない。保存NBTは `inventory`、`energy`、`progress`、`area_min`、`area_max`、`cursor`、`target_dimension`、`owner`、`status`。未ロード、保護、出力満杯、置換材不足では現在座標を維持し、状態を `UNLOADED`、`PROTECTED`、`OUTPUT_FULL`、`NO_MATERIAL` とする。所有者・次元・CE不足は `NO_OWNER`、`WRONG_DIMENSION`、`NO_ENERGY`。正常な再試行で状態を解除する。
+`area_item_collector` Tier 7、`area_miner` Tier 8、`advanced_area_miner` Tier 9、`area_replacer` Tier 10、`area_activator` Tier 8 は共通の `clayium_neoforged:area_machine` BlockEntity とMenuを使う。内部在庫0～15を通常機は3×3の処理グリッド、置換機は4×2の出力と4×2の置換材として使用し、16～18を収穫・幸運・シルクタッチの非消費フィルター、19をCE燃料とする。M27の `BlockOperationService` で権限、保護イベント、LootTable、幸運・シルクタッチ、右クリックを処理し、未ロードチャンクや記録次元外を操作しない。保存NBTは `inventory`、`energy`、`progress`、`area_min`、`area_max`、`cursor`、`target_dimension`、`owner`、`status`。未ロード、保護、出力満杯、置換材不足では現在座標を維持し、状態を `UNLOADED`、`PROTECTED`、`OUTPUT_FULL`、`NO_MATERIAL` とする。所有者・次元・CE不足は `NO_OWNER`、`WRONG_DIMENSION`、`NO_ENERGY`。正常な再試行で状態を解除する。
 
 原作 hotfix2 JAR の `TileAreaMiner` は進捗100/tick、400/採掘作業、内部CE1000/tick、`TileAreaCollector` は進捗100/tick、10/収集作業、内部CE100/tick。Tier 8と9の採掘機でこの基本値は同じである。両クラスのレーザー倍率は `1+4*log10(1+floor(laserEnergy)/1000)`、CEと進捗の双方に乗じる。5機種ともM29の `LaserReceiver` Capabilityを受け、レーザーは次tickに適用する。マーカーと装置の BlockEntityRenderer は選択枠を描画し、原作PNGを参照する。GameTest は `markerHeightExpansionUsesWorldBoundsAndNeverScansOutside` と `areaMachinesPreserveCountsProtectionTierSpeedAndLaserAcceleration`、E2E は `tests/e2e/area-machines.mjs`。
 ## M33 粘土高炉・粘土反応炉
 
-`clay_blast_furnace` と `clay_reactor` は制御 Block/Item、`clayium:multiblock_controller` は共通 BlockEntity。Tier 7～9 の `clay_steel_machine_hull`、`clayium_machine_hull`、`ultimate_machine_hull` は `AssemblyMachineRegistration.MACHINE_HULLS` に置く。Tier 3～6、10 の既存筐体も同じ登録表から参照する。
+`clay_blast_furnace` と `clay_reactor` は制御 Block/Item、`clayium_neoforged:multiblock_controller` は共通 BlockEntity。Tier 7～9 の `clay_steel_machine_hull`、`clayium_machine_hull`、`ultimate_machine_hull` は `AssemblyMachineRegistration.MACHINE_HULLS` に置く。Tier 3～6、10 の既存筐体も同じ登録表から参照する。
 
 構造は制御ブロックを前面中央に置いた中空3×3×3とし、中心を空気、ほかの外殻を筐体または同等Tier以上のアイテム／赤石インターフェースとする。反応炉だけは下面中央のレーザーインターフェースを必須とする。高炉は各部材 Tier 6 以上、反応炉は Tier 7 以上とし、構造 Tier は全構成部材の最低 Tier。原作 `TileClayReactor.isConstructed` と同じく、構造走査時に外殻のインターフェースを制御ブロックへ自動結線し、シンクロナイザーを構造成立または手動加工の前提にしない。ブロック変更とインターフェース同期変更時に再判定し、結果をキャッシュする。制御ブロックの `FORMED` BlockState と BlockEntity NBT の `formed`、`structure_tier` を保存・同期する。構造破損時には予約入力を戻して処理を止める。
 
@@ -375,13 +375,13 @@ GameTest は `allEightCaMachinesPreserveOriginalTiersRecipesAndResonance`、`res
 
 `clay_pickaxe`、`clay_shovel`、`clay_steel_pickaxe`、`clay_steel_shovel` は原作の `item.itemClayPickaxe.name`、`item.itemClayShovel.name`、`item.itemClaySteelPickaxe.name`、`item.itemClaySteelShovel.name` に対応する。耐久は粘土工具500、粘土鋼工具10,000。粘土ツルハシの粘土鉱石速度は32、粘土シャベルの粘土鉱石速度は12、粘土・テラコッタ速度は32。粘土鋼工具の有効ブロック速度は基礎速度の6倍。通常粘土鉱石のドロップ補正はツルハシ4倍、シャベル3倍の幸運係数を使い、シルクタッチでは補正しない。
 
-粘土鋼工具の操作モードは `clayium:advanced_tool_mode`、記憶形状は `clayium:advanced_tool_pattern` Data Component に保存する。モード0は単体、1～最大値未満は `(2m+1)×(2m+1)` の面内採掘、最大値は記憶形状。サーバー設定 `ClaySteelPickaxeRange` は初期2、範囲0～64で、形状登録時の半径にも使う。粘土ブロックへの使用で周囲の粘土形状を記録する。追加採掘は M27 の `BlockOperationService` を通し、有効な工具対象、保護、権限とドロップを確認する。
+粘土鋼工具の操作モードは `clayium_neoforged:advanced_tool_mode`、記憶形状は `clayium_neoforged:advanced_tool_pattern` Data Component に保存する。モード0は単体、1～最大値未満は `(2m+1)×(2m+1)` の面内採掘、最大値は記憶形状。サーバー設定 `ClaySteelPickaxeRange` は初期2、範囲0～64で、形状登録時の半径にも使う。粘土ブロックへの使用で周囲の粘土形状を記録する。追加採掘は M27 の `BlockOperationService` を通し、有効な工具対象、保護、権限とドロップを確認する。
 
 GameTest は `threeByThreeMiningStaysInPlaneAndRespectsBreakProtection`、`rememberedClayShapeRotatesMinesAndSurvivesItemSerialization`、`fourClayToolsKeepOriginalDurabilitySpeedOreHarvestAndConfig`。外観 E2E は `tests/e2e/advanced-clay-tools.mjs`。
 
 ## M35 巨大CA反応炉
 
-`CaReactorRegistration` は `ca_reactor_core_mk_{i,ii,iii,iv}` と `ca_reactor_coil_mk_{i,ii,iii,iv}` を Tier 10～13、`ca_reactor_hull_rank_{1..10}` を同名 Block/Item として登録する。原作キーはコアが `tile.block{Antimatter,PureAntimatter,OEC,OPA}CAReactorCore.name`、コイルが `tile.blockCAReactorCoil.{antimatter,pureantimatter,oec,opa}.name`、筐体が `tile.blockCAReactorHull.{0..9}.name`。筐体アイテムの Tier はランク1～4が10～13、ランク5～10は13。4コアは `clayium:ca_reactor_core` BlockEntity と共通加工機 Menu を使う。
+`CaReactorRegistration` は `ca_reactor_core_mk_{i,ii,iii,iv}` と `ca_reactor_coil_mk_{i,ii,iii,iv}` を Tier 10～13、`ca_reactor_hull_rank_{1..10}` を同名 Block/Item として登録する。原作キーはコアが `tile.block{Antimatter,PureAntimatter,OEC,OPA}CAReactorCore.name`、コイルが `tile.blockCAReactorCoil.{antimatter,pureantimatter,oec,opa}.name`、筐体が `tile.blockCAReactorHull.{0..9}.name`。筐体アイテムの Tier はランク1～4が10～13、ランク5～10は13。4コアは `clayium_neoforged:ca_reactor_core` BlockEntity と共通加工機 Menu を使う。
 
 コアに直接接するコイルから中空リングの連結成分を探索する。コイルは最低8個・最大128個、各コイルの隣接コイルは2個、非コイル面は筐体、同期済みアイテム・レーザーインターフェース、または唯一のコアで覆う。別のコアが同じリングに接すると無効。筐体は50個以上、コイルTierはコアと同じ、インターフェースTierはコア以上、筐体ランクはコアTier−3以下。インターフェースの同期先はコアの次元・座標と一致させる。変更通知時に構造キャッシュを失効させ、毎tickは探索しない。コアから各軸8ブロック以内の変更と、探索済み部材に接する変更を監視する。
 
@@ -391,7 +391,7 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 
 ## M36 PAN
 
-`pan_core` と `pan_cable` は Tier 11。`pan_adapter_tier_10`～`13` と `pan_duplicator_tier_4`～`13` は原作台帳に対応する。コアと複製機は共通の `clayium:pan` BlockEntity と Menu を使い、複製機のスロットは見本0、反物質1、出力2、CE燃料3。保存NBTは `inventory`、`energy`、`progress`、`active_consumption`。後者は再読み込み後の閉包変更時だけ進捗を破棄するために使う。
+`pan_core` と `pan_cable` は Tier 11。`pan_adapter_tier_10`～`13` と `pan_duplicator_tier_4`～`13` は原作台帳に対応する。コアと複製機は共通の `clayium_neoforged:pan` BlockEntity と Menu を使い、複製機のスロットは見本0、反物質1、出力2、CE燃料3。保存NBTは `inventory`、`energy`、`progress`、`active_consumption`。後者は再読み込み後の閉包変更時だけ進捗を破棄するために使う。
 
 探索は深度1000、最大10000ノード、1 tick 256ノード、200 tickごとの再走査とし、設置・撤去・レシピ再読込で失効する。レシピ収集と閉包反復も1 tick 256件まで。原作 hotfix2 JAR の `mods.clayium.block.tile.TilePANCore` は粘土ブロック・丸石・原木を原価1、圧縮粘土を順に10～10^13、塩を `TileCobblestoneGenerator.progressMax * TileSaltExtractor.energyPerWork / 6 = 500`、反物質を100000、金属分離の不純粉を `(TileChemicalMetalSeparator.baseConsumingEnergy * baseCraftTime + 1000) * 488 / weight` とする。`PANACFactoryCraftingTable` はクラフト費用10を加える。循環・零費用だけでは候補を増やさず、未知の Data Component 付きスタックを禁止する。
 
@@ -401,7 +401,7 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 
 - JEI API は `compileOnly`、開発確認用本体は `localRuntime`とする。JEI は `neoforge.mods.toml` のクライアント任意依存であり、プラグインクラスを通常のClayiumロード経路から参照しない。
 - M03の全 `ClayiumRecipeMethod` にJEIカテゴリを用意し、クライアントの実際の `RecipeManager` からレシピを登録する。必要Tier、材料、生成物、TierManager適用後の処理tickと合計CE、直接流体入出力の正確なmB量を表示する。粘土作業台、CA反応炉、PAN複製も閲覧対象にする。
-- 他Modとのアイテム・流体・FE接続は `Capabilities.ItemHandler.BLOCK`、`Capabilities.FluidHandler.BLOCK`、`Capabilities.EnergyStorage.BLOCK` だけを使用する。FE入力はCE→FE変換器と通常機械のいずれも受け付けず、既存の `c:`、`minecraft:`、`clayium:` タグを正本とする。
+- 他Modとのアイテム・流体・FE接続は `Capabilities.ItemHandler.BLOCK`、`Capabilities.FluidHandler.BLOCK`、`Capabilities.EnergyStorage.BLOCK` だけを使用する。FE入力はCE→FE変換器と通常機械のいずれも受け付けず、既存の `c:`、`minecraft:`、`clayium_neoforged:` タグを正本とする。
 - GameTest は `itemFluidAndFeTransferOnlyThroughNeoForgeCapabilities`、`commonMinecraftAndClayiumTagsResolveToRegisteredItems`、`recipeViewerDataMatchesReloadedDatapackRecipes`。閲覧Mod未導入で全GameTestが起動することも確認する。JEI画面のE2Eは `tests/e2e/recipe-viewers.mjs`。
 
 ## M38 未登録素材・設置ブロック・初期フライス盤
@@ -416,9 +416,9 @@ GameTest は `reactorAcceptsOnlyCoveredTierMatchedRingsAndInvalidatesItsCache` �
 
 ## M39 生存製作経路
 
-生存製作台帳の正本は `data/clayium/survival_recipe_ledger.tsv`。1行を1個の名前付き Registry ID とし、`recipe_ids`、`method`、`required_tier`、`processing_ticks`、`clay_energy`、`inputs`、`outputs`、`original_source` を記録する。同じ品目の複数経路は各列を `|` で対応付ける。M39で追加した経路を `restored`、以前から有効な経路を `runtime_existing`、原作の創造専用品を `intentional_exclusion`、カプセル廃止・直接流体・B/W統合を `explicit_change` と分類する。
+生存製作台帳の正本は `data/clayium_neoforged/survival_recipe_ledger.tsv`。1行を1個の名前付き Registry ID とし、`recipe_ids`、`method`、`required_tier`、`processing_ticks`、`clay_energy`、`inputs`、`outputs`、`original_source` を記録する。同じ品目の複数経路は各列を `|` で対応付ける。M39で追加した経路を `restored`、以前から有効な経路を `runtime_existing`、原作の創造専用品を `intentional_exclusion`、カプセル廃止・直接流体・B/W統合を `explicit_change` と分類する。
 
-製作レシピは `ClayiumDataGenerators` に登録した `ProgressionRecipeProvider` が `datagen/progression/` のドメイン別生成クラスを呼び、`progression/` 以下へ生成する。材料・数量・配置・加工方法・Tier・tick・CE は hotfix2 `CRecipes` の各登録呼出しに従う。原作の作業台・組立機・CA注入機・反応炉の区別を保ち、既存Providerの経路を重複生成しない。金属チェスト57種は素材インゴット8個と `Tags.Items.CHESTS_WOODEN`、または素材インゴット8個と `clayium:metal_chests` の中央素材で作り、内容物は引き継がない。
+製作レシピは `ClayiumDataGenerators` に登録した `ProgressionRecipeProvider` が `datagen/progression/` のドメイン別生成クラスを呼び、`progression/` 以下へ生成する。材料・数量・配置・加工方法・Tier・tick・CE は hotfix2 `CRecipes` の各登録呼出しに従う。原作の作業台・組立機・CA注入機・反応炉の区別を保ち、既存Providerの経路を重複生成しない。金属チェスト57種は素材インゴット8個と `Tags.Items.CHESTS_WOODEN`、または素材インゴット8個と `clayium_neoforged:metal_chests` の中央素材で作り、内容物は引き継がない。
 
 GameTest は `allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePaths`、`survivalDependencyGraphReachesNonTierCaPanAndContainersWithoutTierLeap`、`fiftySevenMetalChestsHaveBothOriginalCraftingRoutesAndEquipmentIsReachable`、`reloadedViewerDataMatchesMachineAcceptanceAndExecution`。外観E2Eは `tests/e2e/survival-recipes.mjs`。
 
@@ -428,7 +428,7 @@ GameTest は `allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePath
 - `TileAreaMiner` のフィルター順は通常採掘対象、幸運、シルクタッチの3スロット。幸運はレベル3で、同じ対象が幸運とシルクタッチの両方に一致するとシルクタッチが上書きする。フィルタースロットは外部 Item Capability に公開しない。範囲代行機の対象はブロック・Entity・両方、視線判定とスニークは独立設定で、`RayTraceMemory` とともに保存する。
 - `ClayLaserManager` の照射距離は描画長32、探索距離1～31、透過対象は空気とガラス。照射履歴は10件で、対象ブロック・状態または距離が変わると履歴と累積を消去する。岩石破壊閾値は `floor(hardness+1)*100`。石炭・鉄・金・ダイヤ・レッドストーン・ラピス・エメラルド鉱石は対応する素材ブロックへ変換し、深層岩版も同じ結果とする。苗木は累積300～999で段階を1つ進め、300,000以上で粘土樹苗木へ変換する。既存 `LaserReceiver` を先に処理し、受理されなかったブロックだけ一般照射を行う。破壊・変換は FakePlayer の保護イベントを通す。
 - Quartz Crucible は不純シリコンを最大8個保持する。右クリックと開口部へ落下した `ItemEntity` の双方から空き分だけ取り込み、加熱完了後は糸1個だけを消費する。同じEntityを二重に消費しない。
-- `item_filter_duplicator` は原作 `filterduplicator.png` を使うTier 7品。主手に複写器、副手に統合フィルターを持って使用すると、最初は設定を複写器へ保存し、次の使用で副手のフィルターへ適用する。`clayium:item_filter` は両アイテムの設定、`clayium:filter_copy` は複写器だけのCopy状態を保存する。条件上限は100、入れ子深度は16で、祖先と同じ設定へ戻る循環を拒否する。Copy状態はスニーク使用で解除し、コピー後のフィルター編集はコピー元へ波及しない。
+- `item_filter_duplicator` は原作 `filterduplicator.png` を使うTier 7品。主手に複写器、副手に統合フィルターを持って使用すると、最初は設定を複写器へ保存し、次の使用で副手のフィルターへ適用する。`clayium_neoforged:item_filter` は両アイテムの設定、`clayium_neoforged:filter_copy` は複写器だけのCopy状態を保存する。条件上限は100、入れ子深度は16で、祖先と同じ設定へ戻る循環を拒否する。Copy状態はスニーク使用で解除し、コピー後のフィルター編集はコピー元へ波及しない。
 - レーザー本体と反射器の保存NBT `irradiation` は `total`、`history`、`target`、`target_block`、`target_distance` を含む。範囲装置の保存NBTは `activator_target`、`activator_ray_trace`、`activator_sneaking`、`ray_trace_memory` を含む。範囲装置の操作は開いているMenuの `clickMenuButton` でサーバー側検証を行う。
 
 GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndActivatorPreservePriorityProtectionAndInteraction`、`laserTransmitsConvertsAccumulatesAndHonorsProtection`、`crucibleAndFilterCopiesConsumeValidateAndPersistExactly`。外観 E2E は `tests/e2e/original-behaviors.mjs`。
@@ -460,7 +460,7 @@ GameTest は `craftingToolsReturnDamageAndRawClayExactlyOnce`、`areaFiltersAndA
 
 ## M44 最終原作対応ゲート
 
-`scripts/generate-parity-ledger.mjs` は `.tmp/clayium-0.4.6.36.hotfix2.jar` に置いた SHA-256 が `c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2` の hotfix2 JAR を入力とし、`data/clayium/parity_ledger.tsv` を再生成する。生成時にJAR内の英日言語キー、`CMaterials.class` の材料・形状、416 PNGの実バイト、renderer classの実在を独立に検査する。`scripts/extract-original-recipe-semantics.mjs` は `CFR_JAR` で指定した `.tmp/` 内のCFRとJAR内の `CRecipes`、`ClayWorkTableRecipes` を読み、中間結果を `.tmp/original_recipe_semantics.tsv` へ出力する。`scripts/verify-recipe-parity.mjs` は655件の型付きM39対応に対する移植版884 JSONの方法、Tier、tick、CE、入力、出力、確率フィールドを検査する。この検査は移植側台帳とJSONの整合を証明するもので、原作命令引数の意味比較を代替しない。台帳は登録品種992、レシピ672、GUI 20、GUI PNG 19、renderer 25、原作PNG 416、原作機械系列33・168機種（実登録32系列・167機種）、金属チェスト57、設定と除外方針を機能単位で記録する。証拠のない項目は `未確認`、未実装は `欠落` とし、件数を合わせるために `同等` へ変更してはならない。
+`scripts/generate-parity-ledger.mjs` は `.tmp/clayium-0.4.6.36.hotfix2.jar` に置いた SHA-256 が `c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2` の hotfix2 JAR を入力とし、`data/clayium_neoforged/parity_ledger.tsv` を再生成する。生成時にJAR内の英日言語キー、`CMaterials.class` の材料・形状、416 PNGの実バイト、renderer classの実在を独立に検査する。`scripts/extract-original-recipe-semantics.mjs` は `CFR_JAR` で指定した `.tmp/` 内のCFRとJAR内の `CRecipes`、`ClayWorkTableRecipes` を読み、中間結果を `.tmp/original_recipe_semantics.tsv` へ出力する。`scripts/verify-recipe-parity.mjs` は655件の型付きM39対応に対する移植版884 JSONの方法、Tier、tick、CE、入力、出力、確率フィールドを検査する。この検査は移植側台帳とJSONの整合を証明するもので、原作命令引数の意味比較を代替しない。台帳は登録品種992、レシピ672、GUI 20、GUI PNG 19、renderer 25、原作PNG 416、原作機械系列33・168機種（実登録32系列・167機種）、金属チェスト57、設定と除外方針を機能単位で記録する。証拠のない項目は `未確認`、未実装は `欠落` とし、件数を合わせるために `同等` へ変更してはならない。
 
 原作レシピ意味比較は `scripts/extract-original-recipe-semantics.mjs` の原作側展開値と `scripts/map-original-recipe-semantics.mjs` の移植JSON比較を使用する。全必須フィールドと全経路が一致した Registry ID だけを `同等` とし、比較済み差異は `欠落`、未対応経路は `未確認` とする。GUI・renderer は、`build/reports/m44/visual-parity.json` に原作JAR SHA-256、相異なる2クライアント、試験した移植JARのパスとSHA-256、台帳 `unitId`、対象に対応する正規E2Eシナリオ、判定 `同等`、差分画素数0、原作画像・移植画像・比較artifactの各相対パスとSHA-256が揃う場合だけ検証候補とする。生成器は全ファイルの実在とハッシュ、PNGの形式と寸法、復号後の全画素一致まで検査してから `同等` へ昇格する。E2E名、スクリーンショット予定名、自己申告した判定だけを実行証拠として扱わない。
 

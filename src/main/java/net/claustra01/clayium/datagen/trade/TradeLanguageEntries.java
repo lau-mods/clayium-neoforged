@@ -6,9 +6,9 @@ import net.claustra01.clayium.machine.trade.AutoTraderBlockEntity;
 public final class TradeLanguageEntries {
     public static void add(String locale, BiConsumer<String, String> add) {
         boolean japanese = locale.equals("ja_jp");
-        add.accept("block.clayium.auto_trader", japanese ? "自動取引装置" : "Auto Trader");
-        add.accept("gui.clayium.auto_trader.offers", japanese ? "取引一覧" : "Trades");
-        add.accept("gui.clayium.auto_trader.uses", japanese ? "%1$s / %2$s 回" : "%1$s / %2$s uses");
+        add.accept("block.clayium_neoforged.auto_trader", japanese ? "自動取引装置" : "Auto Trader");
+        add.accept("gui.clayium_neoforged.auto_trader.offers", japanese ? "取引一覧" : "Trades");
+        add.accept("gui.clayium_neoforged.auto_trader.uses", japanese ? "%1$s / %2$s 回" : "%1$s / %2$s uses");
         for (AutoTraderBlockEntity.State state : AutoTraderBlockEntity.State.values()) {
             String english = switch (state) {
                 case READY -> "Ready";
@@ -32,7 +32,7 @@ public final class TradeLanguageEntries {
                 case MISSING_INPUT -> "必要材料が不足しています";
                 case WAITING_FOR_ENERGY -> "CE不足";
             };
-            add.accept("gui.clayium.auto_trader.state." + state.name().toLowerCase(java.util.Locale.ROOT),
+            add.accept("gui.clayium_neoforged.auto_trader.state." + state.name().toLowerCase(java.util.Locale.ROOT),
                     japanese ? japaneseText : english);
         }
     }

@@ -1,0 +1,113 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#hull"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#hull"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#hull"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#hull"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#hull"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#hull"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "north": {
+          "texture": "#front"
+        }
+      },
+      "from": [
+        0,
+        0,
+        -0.01
+      ],
+      "to": [
+        16,
+        16,
+        0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#hull"
+        },
+        "east": {
+          "texture": "#hull"
+        },
+        "north": {
+          "texture": "#front"
+        },
+        "up": {
+          "texture": "#hull"
+        },
+        "west": {
+          "texture": "#hull"
+        }
+      },
+      "from": [
+        3,
+        3,
+        -1
+      ],
+      "to": [
+        13,
+        13,
+        -0.01
+      ]
+    },
+    {
+      "faces": {
+        "north": {
+          "texture": "#status"
+        }
+      },
+      "from": [
+        5,
+        5,
+        -1.01
+      ],
+      "to": [
+        11,
+        11,
+        -1
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "front": "clayium_neoforged:block/redstoneinterface",
+    "hull": "clayium_neoforged:block/machinehull-8",
+    "particle": "#hull",
+    "status": "clayium_neoforged:block/export_rf"
+  }
+}

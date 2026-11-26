@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=east": {
+      "model": "clayium_neoforged:block/area_replacer",
+      "y": 90
+    },
+    "active=false,facing=north": {
+      "model": "clayium_neoforged:block/area_replacer"
+    },
+    "active=false,facing=south": {
+      "model": "clayium_neoforged:block/area_replacer",
+      "y": 180
+    },
+    "active=false,facing=west": {
+      "model": "clayium_neoforged:block/area_replacer",
+      "y": 270
+    },
+    "active=true,facing=east": {
+      "model": "clayium_neoforged:block/area_replacer_active",
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "clayium_neoforged:block/area_replacer_active"
+    },
+    "active=true,facing=south": {
+      "model": "clayium_neoforged:block/area_replacer_active",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "clayium_neoforged:block/area_replacer_active",
+      "y": 270
+    }
+  }
+}

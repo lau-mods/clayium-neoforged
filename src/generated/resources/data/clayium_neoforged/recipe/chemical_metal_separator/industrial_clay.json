@@ -1,0 +1,169 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 5000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_dust"
+      }
+    }
+  ],
+  "processing_method": "clayium_neoforged:chemical_metal_separator",
+  "processing_ticks": 40,
+  "random_outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_aluminium_dust"
+      },
+      "weight": 200
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_magnesium_dust"
+      },
+      "weight": 60
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_sodium_dust"
+      },
+      "weight": 40
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_lithium_dust"
+      },
+      "weight": 7
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_zirconium_dust"
+      },
+      "weight": 5
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_zinc_dust"
+      },
+      "weight": 10
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_manganese_dust"
+      },
+      "weight": 80
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_calcium_dust"
+      },
+      "weight": 20
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_potassium_dust"
+      },
+      "weight": 15
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_nickel_dust"
+      },
+      "weight": 13
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_iron_dust"
+      },
+      "weight": 9
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_beryllium_dust"
+      },
+      "weight": 8
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_lead_dust"
+      },
+      "weight": 6
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_hafnium_dust"
+      },
+      "weight": 4
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_chrome_dust"
+      },
+      "weight": 3
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_titanium_dust"
+      },
+      "weight": 3
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_strontium_dust"
+      },
+      "weight": 2
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_barium_dust"
+      },
+      "weight": 2
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "clayium_neoforged:impure_copper_dust"
+      },
+      "weight": 1
+    }
+  ],
+  "required_tier": 6
+}

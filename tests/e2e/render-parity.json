@@ -1,7 +1,7 @@
 {
   "source": {
     "modVersion": "0.4.6.36.hotfix2",
-    "assetManifest": "src/main/resources/assets/clayium/original_png.sha256",
+    "assetManifest": "src/main/resources/assets/clayium_neoforged/original_png.sha256",
     "assetCount": 416,
     "classification": {
       "確定差分": "旧実装と移植前の形状または状態が異なり、M42で修正した項目。",

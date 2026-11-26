@@ -13,7 +13,7 @@ export function attestVisualRun(scenarioPath) {
   const screenshotDirectory = path.resolve(process.env.HARNESS_SCREENSHOT_DIR);
   const source = path.resolve(root, scenarioPath);
   const helperSource = path.resolve(root, 'tests/e2e/visual-run-attestation.mjs');
-  const portJar = path.resolve(root, 'build/libs/clayium-0.1.0.jar');
+  const portJar = path.resolve(root, 'build/libs/clayium_neoforged-0.0.1.jar');
   const result = JSON.parse(fs.readFileSync(resultFile, 'utf8'));
   if (result.error !== null || result.scenarioId !== scenarioPath || !fs.existsSync(portJar)) {
     return;

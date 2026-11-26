@@ -1,0 +1,57 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "clayium_neoforged:block/pan_cable_center"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium_neoforged:block/pan_cable_down"
+      },
+      "when": {
+        "down": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium_neoforged:block/pan_cable_up"
+      },
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium_neoforged:block/pan_cable_north"
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium_neoforged:block/pan_cable_south"
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium_neoforged:block/pan_cable_west"
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "clayium_neoforged:block/pan_cable_east"
+      },
+      "when": {
+        "east": "true"
+      }
+    }
+  ]
+}

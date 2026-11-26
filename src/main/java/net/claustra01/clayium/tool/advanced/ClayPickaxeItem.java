@@ -26,10 +26,10 @@ public final class ClayPickaxeItem extends PickaxeItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.translatable("tooltip.clayium.tier",
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.tier",
                 stack.getOrDefault(FoundationDataComponentRegistration.TIER.get(), 1)));
-        tooltip.add(Component.translatable("tooltip.clayium.clay_pickaxe.line1"));
-        tooltip.add(Component.translatable("tooltip.clayium.clay_pickaxe.line2"));
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.clay_pickaxe.line1"));
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.clay_pickaxe.line2"));
         AdvancedToolBehavior.addDurability(stack, tooltip);
     }
 }

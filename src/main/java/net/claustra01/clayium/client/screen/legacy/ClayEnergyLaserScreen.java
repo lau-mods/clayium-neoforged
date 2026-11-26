@@ -35,7 +35,7 @@ public final class ClayEnergyLaserScreen extends AbstractContainerScreen<ClayEne
         graphics.drawString(font, title, 6, 6, LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
                 LegacyGuiGraphics.TEXT_COLOR, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.machine.energy",
+        graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.energy",
                 ClayEnergy.ofInternal(menu.storedEnergy()).formatGui()), 4, ClayEnergyLaserMenu.MACHINE_HEIGHT - 12,
                 LegacyGuiGraphics.TEXT_COLOR, false);
     }

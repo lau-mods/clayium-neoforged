@@ -105,7 +105,7 @@ public final class MachineRecipeGameTests {
         noOutput.remove("random_outputs");
         require(ClayiumMachineRecipe.CODEC.codec().parse(JsonOps.INSTANCE, noOutput).error().isPresent(),
                 "Recipe without output was accepted");
-        assertInvalid(validJson, "processing_method", "clayium:missing_method");
+        assertInvalid(validJson, "processing_method", "clayium_neoforged:missing_method");
         JsonObject badChance = validJson.deepCopy();
         badChance.getAsJsonArray("random_outputs").get(0).getAsJsonObject().addProperty("chance", 1.5F);
         require(ClayiumMachineRecipe.CODEC.codec().parse(JsonOps.INSTANCE, badChance).error().isPresent(),
@@ -184,11 +184,11 @@ public final class MachineRecipeGameTests {
         };
         NeoForge.EVENT_BUS.addListener(ClayiumRecipesReloadedEvent.class, listener);
         try {
-            Path recipes = pack.resolve("data/clayium/recipe/gametest");
+            Path recipes = pack.resolve("data/clayium_neoforged/recipe/gametest");
             Files.createDirectories(recipes);
             JsonObject rich = ClayiumMachineRecipe.CODEC.codec().encodeStart(JsonOps.INSTANCE, initialRich)
                     .getOrThrow().getAsJsonObject();
-            rich.addProperty("type", "clayium:machine");
+            rich.addProperty("type", "clayium_neoforged:machine");
             rich.getAsJsonArray("fluid_inputs").get(0).getAsJsonObject().addProperty("amount", 700);
             rich.getAsJsonArray("random_outputs").get(0).getAsJsonObject().addProperty("chance", 0.75F);
             Files.writeString(recipes.resolve("machine_recipe.json"), rich.toString());
@@ -199,7 +199,7 @@ public final class MachineRecipeGameTests {
             writeRecipe(recipes.resolve("reload_added.json"), simpleRecipe(10, 50_000L, Items.IRON_INGOT));
             Files.writeString(recipes.resolve("reload_removed.json"),
                     "{\"neoforge:conditions\":[{\"type\":\"neoforge:mod_loaded\",\"modid\":\"absent_mod\"}],"
-                    + "\"type\":\"clayium:machine\",\"processing_method\":\"clayium:assembler\","
+                    + "\"type\":\"clayium_neoforged:machine\",\"processing_method\":\"clayium_neoforged:assembler\","
                     + "\"required_tier\":4,\"item_outputs\":[{\"id\":\"minecraft:diamond\",\"count\":1}],"
                     + "\"clay_energy\":200000,\"processing_ticks\":30}");
             server.getPackRepository().reload();
@@ -269,7 +269,7 @@ public final class MachineRecipeGameTests {
     private static void writeRecipe(Path file, ClayiumMachineRecipe recipe) throws IOException {
         JsonObject json = (JsonObject) ClayiumMachineRecipe.CODEC.codec()
                 .encodeStart(JsonOps.INSTANCE, recipe).getOrThrow();
-        json.addProperty("type", "clayium:machine");
+        json.addProperty("type", "clayium_neoforged:machine");
         Files.writeString(file, json.toString());
     }
 

@@ -13,7 +13,7 @@ await scenario(async ({ clients }) => {
   command(client, 'time set noon');
   command(client, 'weather clear');
   command(client, 'fill -3 99 -4 3 99 3 minecraft:smooth_stone');
-  command(client, 'setblock 0 100 0 clayium:auto_trader');
+  command(client, 'setblock 0 100 0 clayium_neoforged:auto_trader');
   command(client, 'data merge block 0 100 0 {inventory:{Size:4,Items:[{Slot:0,id:"minecraft:emerald",count:3},{Slot:1,id:"minecraft:book",count:1}]}}');
   command(client, 'summon minecraft:villager 0.5 101 0.5 {NoAI:1b,PersistenceRequired:1b,VillagerData:{profession:"minecraft:librarian",level:2,type:"minecraft:plains"},Offers:{Recipes:[{buy:{id:"minecraft:emerald",count:2},sell:{id:"minecraft:bread",count:1},maxUses:12,xp:1},{buy:{id:"minecraft:emerald",count:5},buyB:{id:"minecraft:book",count:1},sell:{id:"minecraft:diamond",count:1},maxUses:12,xp:3,specialPrice:-2}]}}');
   await mct(client, 'wait', '--ticks', '120');

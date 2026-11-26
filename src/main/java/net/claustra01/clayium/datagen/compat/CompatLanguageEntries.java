@@ -8,20 +8,20 @@ public final class CompatLanguageEntries {
         boolean japanese = locale.equals("ja_jp");
         for (ClayiumRecipeMethod method : ClayiumRecipeMethod.values()) {
             String title = localizedName(method, japanese);
-            add.accept("gui.clayium.recipe." + method.id(), title);
+            add.accept("gui.clayium_neoforged.recipe." + method.id(), title);
         }
-        add.accept("gui.clayium.recipe.show", japanese ? "レシピを見る" : "Show recipes");
-        add.accept("gui.clayium.recipe.tier", japanese ? "Tier: %s" : "Tier: %s");
-        add.accept("gui.clayium.recipe.energy_equation",
+        add.accept("gui.clayium_neoforged.recipe.show", japanese ? "レシピを見る" : "Show recipes");
+        add.accept("gui.clayium_neoforged.recipe.tier", japanese ? "Tier: %s" : "Tier: %s");
+        add.accept("gui.clayium_neoforged.recipe.energy_equation",
                 japanese ? "%1$s CE/t × %2$s tick = %3$s CE" : "%1$s CE/t × %2$s ticks = %3$s CE");
-        add.accept("gui.clayium.recipe.weight", japanese ? "重み %1$s/%2$s" : "Weight %1$s/%2$s");
-        add.accept("gui.clayium.recipe.probability_weight",
+        add.accept("gui.clayium_neoforged.recipe.weight", japanese ? "重み %1$s/%2$s" : "Weight %1$s/%2$s");
+        add.accept("gui.clayium_neoforged.recipe.probability_weight",
                 japanese ? "確率 %1$s%%（重み %2$s/%3$s）" : "%1$s%% chance (weight %2$s/%3$s)");
-        add.accept("gui.clayium.recipe.structure", japanese ? "構造倍率は稼働時に適用" : "Structure multipliers apply at runtime");
-        add.accept("gui.clayium.recipe.pan_duplication", japanese ? "PAN複製" : "PAN Duplication");
-        add.accept("gui.clayium.recipe.pan_rate", "%s CE/t");
-        add.accept("gui.clayium.recipe.pan_sample", japanese ? "見本を保持、反物質1個を消費" : "Keep sample, use 1 antimatter");
-        add.accept("gui.clayium.recipe.pan_ticks", japanese ? "時間 = ceil(コアの複製費用 ÷ CE/t)" : "Time = ceil(core cost / CE/t)");
+        add.accept("gui.clayium_neoforged.recipe.structure", japanese ? "構造倍率は稼働時に適用" : "Structure multipliers apply at runtime");
+        add.accept("gui.clayium_neoforged.recipe.pan_duplication", japanese ? "PAN複製" : "PAN Duplication");
+        add.accept("gui.clayium_neoforged.recipe.pan_rate", "%s CE/t");
+        add.accept("gui.clayium_neoforged.recipe.pan_sample", japanese ? "見本を保持、反物質1個を消費" : "Keep sample, use 1 antimatter");
+        add.accept("gui.clayium_neoforged.recipe.pan_ticks", japanese ? "時間 = ceil(コアの複製費用 ÷ CE/t)" : "Time = ceil(core cost / CE/t)");
         description(add, japanese, "cobblestone_generator",
                 "丸石製造機",
                 "水と溶岩を水平に隣接させると丸石を生成します。Tierが上がるほど生成間隔が短くなります。",
@@ -57,8 +57,8 @@ public final class CompatLanguageEntries {
             String japaneseText,
             String englishTitle,
             String englishText) {
-        add.accept("gui.clayium.recipe.description." + id + ".title", japanese ? japaneseTitle : englishTitle);
-        add.accept("gui.clayium.recipe.description." + id + ".text", japanese ? japaneseText : englishText);
+        add.accept("gui.clayium_neoforged.recipe.description." + id + ".title", japanese ? japaneseTitle : englishTitle);
+        add.accept("gui.clayium_neoforged.recipe.description." + id + ".text", japanese ? japaneseText : englishText);
     }
 
     // Category titles use the original recipe.* translations shared by all machine tiers.

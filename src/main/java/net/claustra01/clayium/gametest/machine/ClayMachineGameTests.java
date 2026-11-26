@@ -112,7 +112,7 @@ public final class ClayMachineGameTests {
         tick(helper, changed);
         require(changed.activeRecipe() != null, "The recipe-change fixture did not reserve its input");
         CompoundTag changedTag = changed.saveWithFullMetadata(helper.getLevel().registryAccess());
-        changedTag.putString("active_recipe", "clayium:missing_after_reload");
+        changedTag.putString("active_recipe", "clayium_neoforged:missing_after_reload");
         ClayMachineBlockEntity reloaded = load(helper, changed, changedTag);
         tick(helper, reloaded);
         require(reloaded.activeRecipe() == null, "A removed recipe remained active after reload");

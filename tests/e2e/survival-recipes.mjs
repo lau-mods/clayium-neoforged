@@ -24,7 +24,7 @@ await scenario(async ({ clients }) => {
   for (const [index, id] of restored.entries()) {
     const state = ['multitrack_buffer_tier_13', 'pan_adapter_tier_13',
       'pan_duplicator_tier_13'].includes(id) ? '' : '[facing=north]';
-    await command(client, `setblock ${-12 + index * 2} 100 0 clayium:${id}${state}`);
+    await command(client, `setblock ${-12 + index * 2} 100 0 clayium_neoforged:${id}${state}`);
   }
   await camera(client, { x: 0.5, y: 101.2, z: -10.5, yaw: 0, pitch: 13 }, 5_000);
   await screenshot(client, 'AC-F043-001', 'restored-machine-family-representatives');
@@ -37,7 +37,7 @@ await scenario(async ({ clients }) => {
   for (const [index, id] of structures.entries()) {
     const state = ['clay_water_wheel', 'dense_clay_water_wheel', 'area_miner',
       'advanced_area_miner', 'clay_3x3_chunk_loader'].includes(id) ? '[facing=north]' : '';
-    await command(client, `setblock ${-12 + index * 2} 100 6 clayium:${id}${state}`);
+    await command(client, `setblock ${-12 + index * 2} 100 6 clayium_neoforged:${id}${state}`);
   }
   await camera(client, { x: 0.5, y: 101.2, z: -4.5, yaw: 0, pitch: 13 }, 5_000);
   await screenshot(client, 'AC-F043-002', 'non-tier-ca-pan-and-container-progression');
@@ -47,7 +47,7 @@ await scenario(async ({ clients }) => {
     'europium_chest', 'osmium_chest', 'tungsten_chest', 'invar_chest',
   ];
   for (const [index, id] of chests.entries()) {
-    await command(client, `setblock ${-7 + index * 2} 100 12 clayium:${id}[facing=north]`);
+    await command(client, `setblock ${-7 + index * 2} 100 12 clayium_neoforged:${id}[facing=north]`);
   }
   await camera(client, { x: 0.5, y: 101.2, z: 3.5, yaw: 0, pitch: 13 }, 5_000);
   await screenshot(client, 'AC-F043-003', 'metal-chest-material-representatives');
@@ -59,7 +59,7 @@ await scenario(async ({ clients }) => {
     'clay_gadget_extra_health_iii', 'clay_gadget_longest_arm',
   ];
   for (const [index, id] of equipment.entries()) {
-    await command(client, `item replace entity @s hotbar.${index} with clayium:${id}`);
+    await command(client, `item replace entity @s hotbar.${index} with clayium_neoforged:${id}`);
   }
   await camera(client, { x: 0.5, y: 100, z: 3.5, yaw: 0, pitch: 0 });
   await command(client, 'gamemode survival');
@@ -69,7 +69,7 @@ await scenario(async ({ clients }) => {
   await screenshot(client, 'AC-F043-003', 'distinct-tools-shooters-holder-and-gadgets');
 
   await mct(client, 'input', 'key', 'press', 'escape');
-  await command(client, 'item replace entity @s hotbar.0 with clayium:smelter_tier_4');
+  await command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:smelter_tier_4');
   await mct(client, 'input', 'key', 'press', 'e');
   await mct(client, 'gui', 'wait-open', '--timeout', '15');
   const recipeLayout = await mct(client, 'gui', 'layout');
@@ -84,10 +84,10 @@ await scenario(async ({ clients }) => {
   await mct(client, 'wait', '--ticks', '10');
 
   await command(client, 'clear @s');
-  await command(client, 'item replace entity @s hotbar.0 with clayium:basic_machine_hull');
-  await command(client, 'item replace entity @s hotbar.1 with clayium:simple_circuit');
-  await command(client, 'item replace entity @s hotbar.2 with clayium:energetic_clay');
-  await command(client, 'setblock 0 100 -6 clayium:assembler_tier_4[facing=north]');
+  await command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:basic_machine_hull');
+  await command(client, 'item replace entity @s hotbar.1 with clayium_neoforged:simple_circuit');
+  await command(client, 'item replace entity @s hotbar.2 with clayium_neoforged:energetic_clay');
+  await command(client, 'setblock 0 100 -6 clayium_neoforged:assembler_tier_4[facing=north]');
   await camera(client, { x: 0.5, y: 100, z: -8.5, yaw: 0, pitch: 10 });
   await mct(client, 'input', 'key', 'press', '9');
   await mct(client, 'block', 'interact', '0', '100', '-6');
@@ -109,7 +109,7 @@ await scenario(async ({ clients }) => {
   await mct(client, 'gui', 'close');
 
   await command(client, 'clear @s');
-  await command(client, 'item replace entity @s hotbar.0 with clayium:silicon_ingot 8');
+  await command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:silicon_ingot 8');
   await command(client, 'item replace entity @s hotbar.1 with minecraft:chest');
   await command(client, 'setblock 2 100 -6 minecraft:crafting_table');
   await camera(client, { x: 2.5, y: 100, z: -8.5, yaw: 0, pitch: 10 });

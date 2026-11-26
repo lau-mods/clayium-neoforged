@@ -93,7 +93,7 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
                     scrollRow = 0;
                 }));
         search = addRenderableWidget(new EditBox(font, leftPos + 88, topPos + 133, 77, 12,
-                Component.translatable("gui.clayium.pan.search")));
+                Component.translatable("gui.clayium_neoforged.pan.search")));
         search.setMaxLength(128);
         search.setBordered(true);
         search.setResponder(value -> scrollRow = 0);
@@ -327,7 +327,7 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
         graphics.drawString(font, title, menu.kind() == PanBlock.Kind.DUPLICATOR ? 6 : 7, 6,
                 LegacyGuiGraphics.TEXT_COLOR, false);
         if (menu.kind() == PanBlock.Kind.CORE) {
-            drawFitted(graphics, Component.translatable("gui.clayium.pan.energy", format(menu.requiredEnergy())),
+            drawFitted(graphics, Component.translatable("gui.clayium_neoforged.pan.energy", format(menu.requiredEnergy())),
                     4, 132, 64, LegacyGuiGraphics.TEXT_COLOR);
         } else if (menu.kind() == PanBlock.Kind.ADAPTER) {
             if (menu.adapterPages() > 1) {
@@ -335,11 +335,11 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
                 graphics.drawString(font, page, 169 - font.width(page), 64,
                         LegacyGuiGraphics.TEXT_COLOR, false);
             }
-            drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
+            drawFitted(graphics, Component.translatable("gui.clayium_neoforged.pan.network",
                     menu.nodes(), menu.adapters()), 7, 64, 120, 0x405060);
         } else {
             // GuiClayEnergyTemp footer.
-            graphics.drawString(font, Component.translatable("gui.clayium.machine.energy",
+            graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.energy",
                     net.claustra01.clayium.energy.ClayEnergy.ofInternal(menu.storedEnergy()).formatGui()),
                     4, 72 - 12, LegacyGuiGraphics.TEXT_COLOR, false);
         }
@@ -358,10 +358,10 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             ItemStack stack = stack(candidate);
             graphics.renderTooltip(font, List.of(
                     stack.getHoverName(),
-                    Component.translatable("gui.clayium.pan.cost", format(candidate.cost())),
-                    Component.translatable("gui.clayium.pan.consumption", format(candidate.consumption())),
+                    Component.translatable("gui.clayium_neoforged.pan.cost", format(candidate.cost())),
+                    Component.translatable("gui.clayium_neoforged.pan.consumption", format(candidate.consumption())),
                     Component.translatable(candidate.prohibited()
-                            ? "gui.clayium.pan.prohibited" : "gui.clayium.pan.permitted")),
+                            ? "gui.clayium_neoforged.pan.prohibited" : "gui.clayium_neoforged.pan.permitted")),
                     java.util.Optional.empty(), mouseX, mouseY);
         }
     }

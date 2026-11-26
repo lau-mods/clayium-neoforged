@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 10000000,
+  "item_inputs": [
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "minecraft:rotten_flesh"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "minecraft:porkchop"
+    }
+  ],
+  "processing_method": "clayium_neoforged:matter_transformer",
+  "processing_ticks": 200,
+  "required_tier": 9
+}

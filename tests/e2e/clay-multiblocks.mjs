@@ -19,14 +19,14 @@ function synchronize(client, x, y, z, targetX, targetY, targetZ) {
 }
 
 function shell(client, minX, minY, minZ, hull, controller, tier, reactor) {
-  command(client, `fill ${minX} ${minY} ${minZ} ${minX + 2} ${minY + 2} ${minZ + 2} clayium:${hull} hollow`);
-  command(client, `setblock ${minX + 1} ${minY + 1} ${minZ} clayium:${controller}[facing=north]`);
-  command(client, `setblock ${minX + 1} ${minY + 1} ${minZ + 2} clayium:clay_interface_tier_${tier}[facing=south]`);
-  command(client, `setblock ${minX + 1} ${minY + 2} ${minZ + 1} clayium:redstone_interface_tier_${tier}[facing=north]`);
+  command(client, `fill ${minX} ${minY} ${minZ} ${minX + 2} ${minY + 2} ${minZ + 2} clayium_neoforged:${hull} hollow`);
+  command(client, `setblock ${minX + 1} ${minY + 1} ${minZ} clayium_neoforged:${controller}[facing=north]`);
+  command(client, `setblock ${minX + 1} ${minY + 1} ${minZ + 2} clayium_neoforged:clay_interface_tier_${tier}[facing=south]`);
+  command(client, `setblock ${minX + 1} ${minY + 2} ${minZ + 1} clayium_neoforged:redstone_interface_tier_${tier}[facing=north]`);
   synchronize(client, minX + 1, minY + 1, minZ + 2, minX + 1, minY + 1, minZ);
   synchronize(client, minX + 1, minY + 2, minZ + 1, minX + 1, minY + 1, minZ);
   if (reactor) {
-    command(client, `setblock ${minX + 1} ${minY} ${minZ + 1} clayium:clay_laser_interface_tier_${tier}[facing=north]`);
+    command(client, `setblock ${minX + 1} ${minY} ${minZ + 1} clayium_neoforged:clay_laser_interface_tier_${tier}[facing=north]`);
     synchronize(client, minX + 1, minY, minZ + 1, minX + 1, minY + 1, minZ);
   }
 }
@@ -42,9 +42,9 @@ await scenario(async ({ clients }) => {
   shell(client, -6, 100, 0, 'precision_machine_hull', 'clay_blast_furnace', 6, false);
   shell(client, 3, 100, 0, 'clay_steel_machine_hull', 'clay_reactor', 7, true);
 
-  command(client, 'setblock -2 100 -3 clayium:clay_interface_tier_7[facing=north]');
-  command(client, 'setblock 0 100 -3 clayium:redstone_interface_tier_7[facing=north]');
-  command(client, 'setblock 2 100 -3 clayium:clay_laser_interface_tier_7[facing=north]');
+  command(client, 'setblock -2 100 -3 clayium_neoforged:clay_interface_tier_7[facing=north]');
+  command(client, 'setblock 0 100 -3 clayium_neoforged:redstone_interface_tier_7[facing=north]');
+  command(client, 'setblock 2 100 -3 clayium_neoforged:clay_laser_interface_tier_7[facing=north]');
   await mct(client, 'wait', '--ticks', '25');
   await command(client, 'gamemode spectator');
 

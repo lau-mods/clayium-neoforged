@@ -13,22 +13,22 @@ await scenario(async ({ clients }) => {
   command(client, 'time set noon');
   command(client, 'weather clear');
   command(client, 'fill -10 99 -8 10 99 10 minecraft:grass_block');
-  command(client, 'place feature clayium:clay_tree 0 100 2');
-  command(client, 'setblock -5 100 1 clayium:clay_tree_sapling');
-  command(client, 'setblock -5 100 4 clayium:clay_tree_log[axis=y]');
-  command(client, 'setblock -5 101 4 clayium:clay_tree_log[axis=x]');
-  command(client, 'setblock -5 100 7 clayium:clay_tree_leaf[persistent=true]');
+  command(client, 'place feature clayium_neoforged:clay_tree 0 100 2');
+  command(client, 'setblock -5 100 1 clayium_neoforged:clay_tree_sapling');
+  command(client, 'setblock -5 100 4 clayium_neoforged:clay_tree_log[axis=y]');
+  command(client, 'setblock -5 101 4 clayium_neoforged:clay_tree_log[axis=x]');
+  command(client, 'setblock -5 100 7 clayium_neoforged:clay_tree_leaf[persistent=true]');
 
   await waitFor(
     () => mct(client, 'block', 'get', '0', '104', '2'),
-    value => JSON.stringify(value).includes('clayium:clay_tree_log'),
+    value => JSON.stringify(value).includes('clayium_neoforged:clay_tree_log'),
     10000,
   );
   await mct(client, 'wait', '--ticks', '20');
   await camera(client, { x: -9.5, y: 102.0, z: -6.5, yaw: -40, pitch: 15 }, 5_000);
   await waitFor(
     () => mct(client, 'block', 'get', '-5', '100', '1'),
-    value => JSON.stringify(value).includes('clayium:clay_tree_sapling'),
+    value => JSON.stringify(value).includes('clayium_neoforged:clay_tree_sapling'),
     10_000,
   );
   await mct(client, 'wait', '--ticks', '20');

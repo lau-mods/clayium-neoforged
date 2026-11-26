@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 300000,
+  "item_inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "tag": "c:ingots/zinc"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:ingots/zirconium"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 10,
+      "id": "clayium_neoforged:zinc_zirconium_compound_ingot"
+    }
+  ],
+  "processing_method": "clayium_neoforged:alloy_smelter",
+  "processing_ticks": 50,
+  "required_tier": 6
+}

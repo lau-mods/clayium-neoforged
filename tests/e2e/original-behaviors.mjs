@@ -14,10 +14,10 @@ await scenario(async ({ clients }) => {
   command(client, 'weather clear');
   command(client, 'fill -10 99 -8 10 99 8 minecraft:smooth_stone');
 
-  command(client, 'setblock -6 100 1 clayium:area_miner[facing=south]');
-  command(client, 'setblock -2 100 1 clayium:area_activator[facing=south]');
-  command(client, 'setblock 2 100 1 clayium:quartz_crucible');
-  command(client, 'setblock 6 100 1 clayium:clay_energy_laser_tier_10[facing=east]');
+  command(client, 'setblock -6 100 1 clayium_neoforged:area_miner[facing=south]');
+  command(client, 'setblock -2 100 1 clayium_neoforged:area_activator[facing=south]');
+  command(client, 'setblock 2 100 1 clayium_neoforged:quartz_crucible');
+  command(client, 'setblock 6 100 1 clayium_neoforged:clay_energy_laser_tier_10[facing=east]');
   command(client, 'setblock 7 100 1 minecraft:glass');
   command(client, 'setblock 9 100 1 minecraft:deepslate_diamond_ore');
   command(client, 'data merge block 6 100 1 {energy:{clay_energy:9000000000000000000L}}');
@@ -46,11 +46,11 @@ await scenario(async ({ clients }) => {
   await mct(client, 'gui', 'close');
 
   command(client, 'clear @s');
-  command(client, 'item replace entity @s hotbar.0 with clayium:clay_rolling_pin[minecraft:damage=59]');
-  command(client, 'item replace entity @s hotbar.1 with clayium:clay_slicer[minecraft:damage=59]');
-  command(client, 'item replace entity @s hotbar.2 with clayium:clay_spatula[minecraft:damage=35]');
-  command(client, 'item replace entity @s hotbar.3 with clayium:white_list_item_filter');
-  command(client, 'item replace entity @s hotbar.4 with clayium:item_filter_duplicator[clayium:filter_copy=true]');
+  command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:clay_rolling_pin[minecraft:damage=59]');
+  command(client, 'item replace entity @s hotbar.1 with clayium_neoforged:clay_slicer[minecraft:damage=59]');
+  command(client, 'item replace entity @s hotbar.2 with clayium_neoforged:clay_spatula[minecraft:damage=35]');
+  command(client, 'item replace entity @s hotbar.3 with clayium_neoforged:white_list_item_filter');
+  command(client, 'item replace entity @s hotbar.4 with clayium_neoforged:item_filter_duplicator[clayium_neoforged:filter_copy=true]');
   command(client, 'gamemode survival');
   await mct(client, 'input', 'key', 'press', 'e');
   await mct(client, 'gui', 'wait-open', '--timeout', '15');

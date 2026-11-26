@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_machine_hull": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium_neoforged:clay_machine_hull"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:forming_machine/lathe_tier_3"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_machine_hull"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:forming_machine/lathe_tier_3"
+    ]
+  }
+}

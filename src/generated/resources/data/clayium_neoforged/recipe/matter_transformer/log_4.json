@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 1000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:jungle_log"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "minecraft:acacia_log"
+    }
+  ],
+  "processing_method": "clayium_neoforged:matter_transformer",
+  "processing_ticks": 80,
+  "required_tier": 8
+}

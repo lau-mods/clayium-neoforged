@@ -13,10 +13,10 @@ await scenario(async ({ clients }) => {
   }
   command(client, 'gamemode creative');
   command(client, 'clear @s');
-  command(client, 'item replace entity @s hotbar.0 with clayium:clay_pickaxe[minecraft:damage=250]');
-  command(client, 'item replace entity @s hotbar.1 with clayium:clay_shovel[minecraft:damage=250]');
-  command(client, 'item replace entity @s hotbar.2 with clayium:clay_steel_pickaxe[clayium:advanced_tool_mode=1,minecraft:damage=5000]');
-  command(client, 'item replace entity @s hotbar.3 with clayium:clay_steel_shovel[clayium:advanced_tool_mode=2,minecraft:damage=5000]');
+  command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:clay_pickaxe[minecraft:damage=250]');
+  command(client, 'item replace entity @s hotbar.1 with clayium_neoforged:clay_shovel[minecraft:damage=250]');
+  command(client, 'item replace entity @s hotbar.2 with clayium_neoforged:clay_steel_pickaxe[clayium_neoforged:advanced_tool_mode=1,minecraft:damage=5000]');
+  command(client, 'item replace entity @s hotbar.3 with clayium_neoforged:clay_steel_shovel[clayium_neoforged:advanced_tool_mode=2,minecraft:damage=5000]');
   command(client, 'gamemode survival');
 
   await mct(client, 'input', 'key', 'press', 'e');

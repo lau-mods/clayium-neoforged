@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 100000000,
+  "item_inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_plate"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:platinum_ingot"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:ca_reactor_coil_mk_i"
+    }
+  ],
+  "processing_method": "clayium_neoforged:reactor",
+  "processing_ticks": 10000000000000,
+  "required_tier": 10
+}

@@ -1,0 +1,10 @@
+{
+  "parent": "clayium_neoforged:block/hull_with_overlays",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "front": "#side",
+    "hull": "clayium_neoforged:block/az91dhull",
+    "side": "clayium_neoforged:block/autotraderside",
+    "top": "clayium_neoforged:block/autotradertop"
+  }
+}

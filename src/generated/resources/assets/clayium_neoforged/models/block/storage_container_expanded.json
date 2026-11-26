@@ -1,0 +1,10 @@
+{
+  "parent": "clayium_neoforged:block/hull_with_overlays",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "front": "clayium_neoforged:block/storagecontainerex",
+    "hull": "clayium_neoforged:block/az91dhull",
+    "side": "clayium_neoforged:block/storagecontainerside",
+    "top": "clayium_neoforged:block/storagecontainertop"
+  }
+}

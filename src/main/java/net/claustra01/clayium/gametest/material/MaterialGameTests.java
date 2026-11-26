@@ -173,7 +173,7 @@ public final class MaterialGameTests {
                 continue;
             }
             String prefix = variant.shape() == MaterialShape.BLOCK ? "block" : "item";
-            String key = prefix + ".clayium." + variant.id();
+            String key = prefix + ".clayium_neoforged." + variant.id();
             require(english.has(key), "English material name is missing: " + key);
             require(japanese.has(key), "Japanese material name is missing: " + key);
 
@@ -187,11 +187,11 @@ public final class MaterialGameTests {
             List<Component> tooltip = new ArrayList<>();
             stack.getItem().appendHoverText(stack, Item.TooltipContext.EMPTY, tooltip, TooltipFlag.NORMAL);
             if (tier != null) {
-                require(tooltip.contains(Component.translatable("tooltip.clayium.tier", tier)),
+                require(tooltip.contains(Component.translatable("tooltip.clayium_neoforged.tier", tier)),
                         "Material tier tooltip is absent: " + variant.id());
             }
             if (MaterialAppearance.usesTint(variant)) {
-                JsonObject model = jsonResource("assets/clayium/models/item/" + variant.id() + ".json");
+                JsonObject model = jsonResource("assets/clayium_neoforged/models/item/" + variant.id() + ".json");
                 JsonObject textures = model.getAsJsonObject("textures");
                 require(textures.has("layer0") && (variant.shape().name().equals("BALL")
                         || textures.has("layer1") && textures.has("layer2")),
@@ -199,7 +199,7 @@ public final class MaterialGameTests {
             }
         }
         for (String id : MaterialRegistration.COMPONENTS.keySet()) {
-            require(english.has("item.clayium." + id) && japanese.has("item.clayium." + id),
+            require(english.has("item.clayium_neoforged." + id) && japanese.has("item.clayium_neoforged." + id),
                     "Named component translation is absent: " + id);
         }
         require(ClayMaterials.MATERIALS.get("copper").color(0) == 0xFFA05A0A,
@@ -214,7 +214,7 @@ public final class MaterialGameTests {
     }
 
     private static JsonObject language(String locale) {
-        return jsonResource("assets/clayium/lang/" + locale + ".json");
+        return jsonResource("assets/clayium_neoforged/lang/" + locale + ".json");
     }
 
     private static JsonObject jsonResource(String path) {

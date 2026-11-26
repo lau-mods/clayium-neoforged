@@ -148,7 +148,7 @@ public final class StandardCompatibilityGameTests {
         require(new ItemStack(Items.OAK_PLANKS).is(ItemTags.PLANKS),
                 "The vanilla minecraft:planks tag is unavailable");
         require(new ItemStack(Items.OAK_SAPLING).is(laserTreeSources),
-                "The clayium:laser_tree_sources tag does not include vanilla saplings");
+                "The clayium_neoforged:laser_tree_sources tag does not include vanilla saplings");
         helper.succeed();
     }
 

@@ -1,0 +1,22 @@
+{
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 0,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:clay"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_cylinder"
+    }
+  ],
+  "processing_method": "clayium_neoforged:clay_work_table",
+  "processing_ticks": 4,
+  "progression_rate": "ticks",
+  "required_tier": 2
+}

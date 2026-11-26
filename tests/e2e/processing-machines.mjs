@@ -26,7 +26,7 @@ await scenario(async ({ clients }) => {
     const x = -6 + (index % 7) * 2;
     const z = index < 7 ? 0 : 2;
     const y = index < 7 ? 100 : 102;
-    command(client, `setblock ${x} ${y} ${z} clayium:${id}[facing=north]`);
+    command(client, `setblock ${x} ${y} ${z} clayium_neoforged:${id}[facing=north]`);
   });
 
   await camera(client, { x: 0.5, y: 100.5, z: -12.5, yaw: 0, pitch: 8 }, 5_000);
@@ -37,8 +37,8 @@ await scenario(async ({ clients }) => {
     const z = index < 7 ? 0 : 2;
     const y = index < 7 ? 100 : 102;
     const block = mct(client, 'block', 'get', String(x), String(y), String(z));
-    if (!JSON.stringify(block).includes(`clayium:${id}`)) {
-      throw new Error(`Expected clayium:${id} at ${x} ${y} ${z}: ${JSON.stringify(block)}`);
+    if (!JSON.stringify(block).includes(`clayium_neoforged:${id}`)) {
+      throw new Error(`Expected clayium_neoforged:${id} at ${x} ${y} ${z}: ${JSON.stringify(block)}`);
     }
   });
   screenshot(client, 'AC-F011-002', 'all-fourteen-original-fronts-and-tier-hulls');

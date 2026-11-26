@@ -1,11 +1,11 @@
 {
   "values": [
-    "clayium:clay_ore",
-    "clayium:deepslate_clay_ore",
-    "clayium:dense_clay_ore",
-    "clayium:deepslate_dense_clay_ore",
-    "clayium:large_dense_clay_ore",
-    "clayium:deepslate_large_dense_clay_ore",
-    "clayium:clayium_block"
+    "clayium_neoforged:clay_ore",
+    "clayium_neoforged:deepslate_clay_ore",
+    "clayium_neoforged:dense_clay_ore",
+    "clayium_neoforged:deepslate_dense_clay_ore",
+    "clayium_neoforged:large_dense_clay_ore",
+    "clayium_neoforged:deepslate_large_dense_clay_ore",
+    "clayium_neoforged:clayium_block"
   ]
 }

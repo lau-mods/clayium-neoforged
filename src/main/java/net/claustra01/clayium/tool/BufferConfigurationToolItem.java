@@ -75,10 +75,10 @@ public final class BufferConfigurationToolItem extends FoundationItem {
     public void appendHoverText(
             ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.translatable("tooltip.clayium.memory_card.copy").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("tooltip.clayium.memory_card.paste").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.memory_card.copy").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("tooltip.clayium_neoforged.memory_card.paste").withStyle(ChatFormatting.GRAY));
         if (stack.has(LogisticsRegistration.BUFFER_CONFIGURATION.get())) {
-            tooltip.add(Component.translatable("tooltip.clayium.memory_card.stored").withStyle(ChatFormatting.GREEN));
+            tooltip.add(Component.translatable("tooltip.clayium_neoforged.memory_card.stored").withStyle(ChatFormatting.GREEN));
         }
     }
 }

@@ -48,7 +48,7 @@ public final class NormalInventoryScreen extends AbstractContainerScreen<NormalI
         }
         double resonance = menu.resonance();
         if (!Double.isNaN(resonance)) {
-            graphics.drawString(font, Component.translatable("gui.clayium.machine.resonance",
+            graphics.drawString(font, Component.translatable("gui.clayium_neoforged.machine.resonance",
                     LegacyNumerals.resonance(resonance)), 80, menu.machineHeight() - 12,
                     LegacyGuiGraphics.TEXT_COLOR, false);
         }

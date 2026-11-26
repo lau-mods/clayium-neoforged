@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config_enabled",
+      "option": "hardcore_aluminium"
+    }
+  ],
+  "type": "clayium_neoforged:machine",
+  "clay_energy": 25,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium_neoforged:large_impure_aluminium_plate"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 4,
+      "id": "clayium_neoforged:impure_aluminium_dust"
+    }
+  ],
+  "processing_method": "clayium_neoforged:grinder",
+  "processing_ticks": 80,
+  "required_tier": 0
+}

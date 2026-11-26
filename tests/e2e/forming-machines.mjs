@@ -33,7 +33,7 @@ await scenario(async ({ clients }) => {
     const x = -8 + column * 2;
     const y = 100 + row * 2;
     const z = row * 2;
-    command(client, `setblock ${x} ${y} ${z} clayium:${id}[facing=north]`);
+    command(client, `setblock ${x} ${y} ${z} clayium_neoforged:${id}[facing=north]`);
   });
   for (const [index, id] of machines.entries()) {
     const column = index % 9;
@@ -42,8 +42,8 @@ await scenario(async ({ clients }) => {
     const y = 100 + row * 2;
     const z = row * 2;
     const block = await mct(client, 'block', 'get', String(x), String(y), String(z));
-    if (!JSON.stringify(block).includes(`clayium:${id}`)) {
-      throw new Error(`Expected clayium:${id} at ${x} ${y} ${z}: ${JSON.stringify(block)}`);
+    if (!JSON.stringify(block).includes(`clayium_neoforged:${id}`)) {
+      throw new Error(`Expected clayium_neoforged:${id} at ${x} ${y} ${z}: ${JSON.stringify(block)}`);
     }
   }
 
@@ -61,8 +61,8 @@ await scenario(async ({ clients }) => {
     ['milling_machine_tier_3', 'dense_clay_plate', 'milling'],
   ];
   for (const [machine, input, label] of examples) {
-    command(client, `setblock 0 100 -6 clayium:${machine}[facing=north]`);
-    command(client, `data merge block 0 100 -6 {inventory:{Size:4,Items:[{Slot:0,id:"clayium:${input}",count:64}]},energy:{clay_energy:1000000L}}`);
+    command(client, `setblock 0 100 -6 clayium_neoforged:${machine}[facing=north]`);
+    command(client, `data merge block 0 100 -6 {inventory:{Size:4,Items:[{Slot:0,id:"clayium_neoforged:${input}",count:64}]},energy:{clay_energy:1000000L}}`);
     await camera(client, { x: 0.5, y: 101.6, z: -8.5, yaw: 0, pitch: 12 });
     await mct(client, 'look', 'at', '0.5', '100.5', '-5.5');
     await mct(client, 'block', 'interact', '0', '100', '-6');

@@ -30,7 +30,7 @@ await scenario(async ({ clients }) => {
     const x = -4 + (index % 5) * 2;
     const y = index < 5 ? 100 : 102;
     const z = index < 5 ? 0 : 2;
-    command(client, `setblock ${x} ${y} ${z} clayium:${id}[facing=north]`);
+    command(client, `setblock ${x} ${y} ${z} clayium_neoforged:${id}[facing=north]`);
   });
 
   await camera(client, { x: 0.5, y: 101.0, z: -12.5, yaw: 0, pitch: 7 }, 5_000);
@@ -39,14 +39,14 @@ await scenario(async ({ clients }) => {
   screenshot(client, 'AC-F012-002', 'all-ten-original-fronts-and-tier-hulls');
 
   command(client, 'tick freeze');
-  command(client, 'data merge block 0 100 0 {inventory:{Size:6,Items:[{Slot:0,id:"clayium:precision_circuit",count:1},{Slot:1,id:"clayium:energized_clay_dust",count:32}]},energy:{clay_energy:100000000L}}');
+  command(client, 'data merge block 0 100 0 {inventory:{Size:6,Items:[{Slot:0,id:"clayium_neoforged:precision_circuit",count:1},{Slot:1,id:"clayium_neoforged:energized_clay_dust",count:32}]},energy:{clay_energy:100000000L}}');
   command(client, 'tick step 30');
 
   await openMachine(client, 0, 100, 0);
   screenshot(client, 'AC-F012-002', 'assembler-two-input-progress-and-ce');
   await mct(client, 'gui', 'close');
 
-  command(client, 'data merge block -4 102 2 {inventory:{Size:6,Items:[{Slot:0,id:"clayium:impure_silicon_plate",count:1},{Slot:1,id:"clayium:energized_clay_dust",count:32}]},energy:{clay_energy:1000000L}}');
+  command(client, 'data merge block -4 102 2 {inventory:{Size:6,Items:[{Slot:0,id:"clayium_neoforged:impure_silicon_plate",count:1},{Slot:1,id:"clayium_neoforged:energized_clay_dust",count:32}]},energy:{clay_energy:1000000L}}');
   command(client, 'tick step 45');
   await openMachine(client, -4, 102, 2);
   command(client, 'tick step 10');
@@ -54,7 +54,7 @@ await scenario(async ({ clients }) => {
   screenshot(client, 'AC-F012-002', 'inscriber-two-input-progress-and-ce');
   await mct(client, 'gui', 'close');
 
-  command(client, 'data merge block 0 102 2 {inventory:{Size:7,Items:[{Slot:0,id:"clayium:advanced_industrial_clay_dust",count:2}]},energy:{clay_energy:1000000L}}');
+  command(client, 'data merge block 0 102 2 {inventory:{Size:7,Items:[{Slot:0,id:"clayium_neoforged:advanced_industrial_clay_dust",count:2}]},energy:{clay_energy:1000000L}}');
   command(client, 'tick step 5');
   await openMachine(client, 0, 102, 2);
   screenshot(client, 'AC-F012-002', 'centrifuge-four-output-progress-and-ce');

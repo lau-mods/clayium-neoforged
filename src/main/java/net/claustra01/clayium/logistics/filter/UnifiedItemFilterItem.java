@@ -59,7 +59,7 @@ public final class UnifiedItemFilterItem extends Item {
         ItemFilterSettings settings = stack.getOrDefault(
                 LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY);
         tooltip.add(Component.translatable(
-                "tooltip.clayium.item_filter.mode." + settings.mode().name().toLowerCase(java.util.Locale.ROOT)));
+                "tooltip.clayium_neoforged.item_filter.mode." + settings.mode().name().toLowerCase(java.util.Locale.ROOT)));
         addEntries(settings, tooltip, 0);
     }
 

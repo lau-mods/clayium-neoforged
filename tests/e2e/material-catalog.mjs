@@ -37,15 +37,15 @@ await scenario(async ({ clients }) => {
   const client = clients[0];
   command(client, 'gamemode creative');
   command(client, 'clear @s');
-  command(client, 'item replace entity @s hotbar.0 with clayium:clay_dust');
-  command(client, 'item replace entity @s hotbar.1 with clayium:industrial_clay_plate');
-  command(client, 'item replace entity @s hotbar.2 with clayium:aluminium_ingot');
-  command(client, 'item replace entity @s hotbar.3 with clayium:clay_core');
-  command(client, 'item replace entity @s hotbar.4 with clayium:clayium_ingot');
-  command(client, 'item replace entity @s hotbar.5 with clayium:ultimate_alloy_plate');
-  command(client, 'item replace entity @s hotbar.6 with clayium:antimatter');
-  command(client, 'item replace entity @s hotbar.7 with clayium:pure_antimatter');
-  command(client, 'item replace entity @s hotbar.8 with clayium:octuple_compressed_pure_antimatter');
+  command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:clay_dust');
+  command(client, 'item replace entity @s hotbar.1 with clayium_neoforged:industrial_clay_plate');
+  command(client, 'item replace entity @s hotbar.2 with clayium_neoforged:aluminium_ingot');
+  command(client, 'item replace entity @s hotbar.3 with clayium_neoforged:clay_core');
+  command(client, 'item replace entity @s hotbar.4 with clayium_neoforged:clayium_ingot');
+  command(client, 'item replace entity @s hotbar.5 with clayium_neoforged:ultimate_alloy_plate');
+  command(client, 'item replace entity @s hotbar.6 with clayium_neoforged:antimatter');
+  command(client, 'item replace entity @s hotbar.7 with clayium_neoforged:pure_antimatter');
+  command(client, 'item replace entity @s hotbar.8 with clayium_neoforged:octuple_compressed_pure_antimatter');
   command(client, 'gamemode survival');
 
   await selectLanguage(client, 27);

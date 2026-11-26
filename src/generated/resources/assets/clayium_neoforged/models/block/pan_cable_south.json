@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#cable"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#cable"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#cable"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#cable"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#cable"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#cable"
+        }
+      },
+      "from": [
+        6,
+        6,
+        10
+      ],
+      "to": [
+        10,
+        10,
+        16
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cable": "clayium_neoforged:block/pancable",
+    "particle": "#cable"
+  }
+}

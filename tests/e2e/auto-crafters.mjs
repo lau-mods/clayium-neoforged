@@ -14,7 +14,7 @@ await scenario(async ({ clients }) => {
   command(client, 'weather clear');
   command(client, 'fill -8 99 -10 8 99 3 minecraft:smooth_stone');
   for (let tier = 5; tier <= 9; tier++) {
-    command(client, `setblock ${-4 + (tier - 5) * 2} 100 0 clayium:auto_crafter_tier_${tier}[facing=north]`);
+    command(client, `setblock ${-4 + (tier - 5) * 2} 100 0 clayium_neoforged:auto_crafter_tier_${tier}[facing=north]`);
   }
 
   await camera(client, { x: 0.5, y: 100.4, z: -8.5, yaw: 0, pitch: 5 });

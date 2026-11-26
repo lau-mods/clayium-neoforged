@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "clayium_neoforged:basic_circuit"
+    },
+    "H": {
+      "item": "clayium_neoforged:clay_machine_hull"
+    },
+    "P": {
+      "item": "clayium_neoforged:advanced_industrial_clay_plate"
+    },
+    "S": {
+      "item": "clayium_neoforged:raw_clay_rolling_pin"
+    }
+  },
+  "pattern": [
+    " S ",
+    "CHC",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:lathe_tier_4"
+  }
+}

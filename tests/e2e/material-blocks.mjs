@@ -42,7 +42,7 @@ async function placeGrid(client, ids, startRow) {
     const x = -14 + (index % 15) * 2;
     const z = startRow + Math.floor(index / 15) * 2;
     const state = id === 'elemental_milling_machine' ? '[facing=north]' : '';
-    await command(client, `setblock ${x} 100 ${z} clayium:${id}${state}`);
+    await command(client, `setblock ${x} 100 ${z} clayium_neoforged:${id}${state}`);
   }
 }
 
@@ -81,15 +81,15 @@ await scenario(async ({ clients }) => {
 
   await command(client, 'gamemode creative');
   await command(client, 'clear @s');
-  await command(client, 'item replace entity @s hotbar.0 with clayium:compressed_clay_shard');
-  await command(client, 'item replace entity @s hotbar.1 with clayium:industrial_clay_shard');
-  await command(client, 'item replace entity @s hotbar.2 with clayium:advanced_industrial_clay_shard');
-  await command(client, 'item replace entity @s hotbar.3 with clayium:copper_block');
-  await command(client, 'item replace entity @s hotbar.4 with clayium:red_silicone_block');
-  await command(client, 'item replace entity @s hotbar.5 with clayium:pure_antimatter_machine_hull');
-  await command(client, 'item replace entity @s hotbar.6 with clayium:az91_d_alloy_hull');
-  await command(client, 'item replace entity @s hotbar.7 with clayium:zk60_a_alloy_hull');
-  await command(client, 'item replace entity @s hotbar.8 with clayium:elemental_milling_machine');
+  await command(client, 'item replace entity @s hotbar.0 with clayium_neoforged:compressed_clay_shard');
+  await command(client, 'item replace entity @s hotbar.1 with clayium_neoforged:industrial_clay_shard');
+  await command(client, 'item replace entity @s hotbar.2 with clayium_neoforged:advanced_industrial_clay_shard');
+  await command(client, 'item replace entity @s hotbar.3 with clayium_neoforged:copper_block');
+  await command(client, 'item replace entity @s hotbar.4 with clayium_neoforged:red_silicone_block');
+  await command(client, 'item replace entity @s hotbar.5 with clayium_neoforged:pure_antimatter_machine_hull');
+  await command(client, 'item replace entity @s hotbar.6 with clayium_neoforged:az91_d_alloy_hull');
+  await command(client, 'item replace entity @s hotbar.7 with clayium_neoforged:zk60_a_alloy_hull');
+  await command(client, 'item replace entity @s hotbar.8 with clayium_neoforged:elemental_milling_machine');
   await command(client, 'gamemode survival');
   await mct(client, 'input', 'key', 'press', 'e');
   await mct(client, 'gui', 'wait-open', '--timeout', '15');

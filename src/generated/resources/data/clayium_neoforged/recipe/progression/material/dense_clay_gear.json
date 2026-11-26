@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "i": {
+      "item": "clayium_neoforged:short_dense_clay_stick"
+    },
+    "o": {
+      "item": "clayium_neoforged:small_dense_clay_ring"
+    }
+  },
+  "pattern": [
+    "iii",
+    "ioi",
+    "iii"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:dense_clay_gear"
+  }
+}

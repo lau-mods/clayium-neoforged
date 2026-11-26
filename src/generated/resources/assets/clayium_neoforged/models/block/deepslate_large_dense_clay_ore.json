@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "clayium_neoforged:block/deepslate_large_dense_clay_ore"
+  }
+}
