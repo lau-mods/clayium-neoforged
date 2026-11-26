@@ -36,8 +36,7 @@ public enum ClayiumRecipeMethod {
     CA_CONDENSER("ca_condenser"),
     CA_INJECTOR("ca_injector"),
     CA_REACTOR("ca_reactor"),
-    EC_DECOMPOSER("ec_decomposer"),
-    FLUID_TRANSFER_MACHINE("fluid_transfer_machine");
+    EC_DECOMPOSER("ec_decomposer");
 
     private static final Map<String, ClayiumRecipeMethod> BY_ID = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(ClayiumRecipeMethod::id, Function.identity()));

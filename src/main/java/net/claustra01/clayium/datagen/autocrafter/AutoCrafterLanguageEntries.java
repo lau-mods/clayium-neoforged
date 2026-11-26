@@ -26,7 +26,6 @@ public final class AutoCrafterLanguageEntries {
         add.accept("gui.clayium.auto_crafter.outputs", locale.equals("ja_jp") ? "出力" : "Outputs");
         add.accept("gui.clayium.auto_crafter.cycle",
                 locale.equals("ja_jp") ? "%1$s tickごとに最大%2$s回" : "Up to %2$s craft(s) / %1$s tick(s)");
-        add.accept("gui.clayium.auto_crafter.stored_ce", locale.equals("ja_jp") ? "蓄積: %s CE" : "Stored: %s CE");
     }
 
     private AutoCrafterLanguageEntries() {

@@ -7,7 +7,6 @@ import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.machine.ClayMachineBlockEntity;
 import net.claustra01.clayium.machine.ClayMachineMenu;
 import net.claustra01.clayium.machine.series.ProcessingSeries;
-import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.registry.MachineRegistration;
 import net.claustra01.clayium.registry.MaterialRegistration;
 import net.claustra01.clayium.registry.PanRegistration;
@@ -212,24 +211,8 @@ public final class ClayMachineGameTests {
         ClayMachineMenu menu = new ClayMachineMenu(
                 1, player.getInventory(), machine, new SimpleContainerData(18));
         require(menu.stillValid(player), "A nearby player could not use the open machine menu");
-        player.containerMenu = menu;
-        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, Direction.NORTH.get3DDataValue(), 1));
-        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
-                "A valid server payload did not change the face");
-        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos.above(), Direction.NORTH.get3DDataValue(), 0));
-        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, 6, 0));
-        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, Direction.NORTH.get3DDataValue(), 5));
-        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
-                "Invalid server payload changed the face");
         player.setPos(machinePos.getX() + 9.0D, machinePos.getY(), machinePos.getZ());
         require(!menu.stillValid(player), "A remote player retained machine menu access");
-        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, Direction.NORTH.get3DDataValue(), 0));
-        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
-                "A remote payload changed the face");
-        player.containerMenu = player.inventoryMenu;
-        MachineFaceModePayload.apply(player, new MachineFaceModePayload(machinePos, Direction.NORTH.get3DDataValue(), 0));
-        require(machine.faceMode(Direction.NORTH) == ClayMachineBlockEntity.FaceMode.OUTPUT,
-                "A closed menu payload changed the face");
 
         machine.setFaceMode(Direction.NORTH, ClayMachineBlockEntity.FaceMode.DISABLED);
         IItemHandler disabled = machine.itemHandler(Direction.NORTH);

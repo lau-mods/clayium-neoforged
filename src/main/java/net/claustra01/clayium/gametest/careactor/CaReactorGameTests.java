@@ -49,18 +49,18 @@ public final class CaReactorGameTests {
         var player = helper.makeMockServerPlayerInLevel();
         ClayMachineMenu menu = (ClayMachineMenu)core.createMenu(0, player.getInventory(), player);
         require(menu.reactorFormed() && menu.reactorCoils() == 16
-                        && menu.reactorHulls() == core.hullCount() && menu.reactorAverageRank() == 1.0D,
+                        && menu.reactorHulls() == core.hullCount() && menu.reactorAverageRank() == 0.0D,
                 "The menu did not expose the formed reactor structure to its client data slots");
         CompoundTag update = core.getUpdateTag(helper.getLevel().registryAccess());
         CaReactorCoreBlockEntity display = new CaReactorCoreBlockEntity(core.getBlockPos(), core.getBlockState());
         display.loadWithComponents(update, helper.getLevel().registryAccess());
         require(display.isFormed() && display.coilCount() == 16
-                        && display.hullCount() == core.hullCount() && display.averageRank() == 1.0D,
+                        && display.hullCount() == core.hullCount() && display.averageRank() == 0.0D,
                 "The block-entity update did not restore the formed client display");
         CompoundTag packet = ((ClientboundBlockEntityDataPacket)core.getUpdatePacket()).getTag();
         require(packet.getBoolean("reactor_formed") && packet.getInt("reactor_coils") == 16
                         && packet.getInt("reactor_hulls") == core.hullCount()
-                        && packet.getDouble("reactor_average_rank") == 1.0D,
+                        && packet.getDouble("reactor_average_rank") == 0.0D,
                 "The block update packet omitted the reactor display state");
         start(core);
         require(core.activeRecipe() != null, "The valid reactor did not start its recipe");
@@ -125,7 +125,7 @@ public final class CaReactorGameTests {
         reject(helper, lowInterface.core(), "An interface below the core tier was accepted");
 
         BuildResult highHull = build(helper, 2, 10, 1);
-        helper.setBlock(highHull.hulls().getFirst(), CaReactorRegistration.HULLS.get(8).block().get());
+        helper.setBlock(highHull.hulls().getFirst(), CaReactorRegistration.HULLS.get(3).block().get());
         reject(helper, highHull.core(), "A hull above the core rank limit was accepted");
 
         BuildResult branch = build(helper, 2, 10, 1);
@@ -163,12 +163,11 @@ public final class CaReactorGameTests {
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void reactorUsesHotfixTwoFormulaCompressionEnergyTimeAndSafeStops(GameTestHelper helper) {
         CaReactorFormula formula = CaReactorFormula.calculate(50, 2.0D).orElseThrow();
-        requireClose(formula.outputMultiplier(), 0.2D * Math.pow(1.02D, 50) * Math.pow(7.5D, 2),
-                "The hotfix2 0.2 output coefficient was lost");
+        requireClose(formula.efficiency(), 0.2D * Math.pow(1.02D, 50) * Math.pow(7.5D, 2),
+                "The hotfix2 efficiency 0.2*1.02^N*7.5^R changed");
         requireClose(formula.energyMultiplier(), Math.pow(1.01D, 100),
                 "The CA reactor energy multiplier changed");
         require(formula.compressionRank() == 2, "The average rank did not select compression rank two");
-        requireClose(formula.timeMultiplier(), 81.0D, "The 9^R time multiplier changed");
         require(CaReactorFormula.calculate(50, Double.NaN).isEmpty()
                         && CaReactorFormula.calculate(-1, 1.0D).isEmpty()
                         && CaReactorFormula.calculate(Integer.MAX_VALUE, Double.MAX_VALUE).isEmpty(),
@@ -176,38 +175,26 @@ public final class CaReactorGameTests {
         require(formula.scale(Long.MAX_VALUE, Long.MAX_VALUE).isEmpty(),
                 "A process exceeding long range was not stopped safely");
 
-        require(CaReactorFormula.calculate(505, 1.0D).orElseThrow().outputCount(1, true) > 64L,
-                "A large valid output was incorrectly capped at one stack");
-
-        BuildResult overflowing = build(helper, 3, 11, 8);
-        CaReactorCoreBlockEntity stopped = overflowing.core();
-        start(stopped);
-        require(stopped.isFormed() && stopped.activeRecipe() == null
-                        && stopped.inventory().getStackInSlot(0).getCount() == 1
-                        && stopped.energyStorage().stored().internalValue() == Long.MAX_VALUE / 2,
-                "An overflowing runtime process consumed resources");
-
-        ProcessResult rankOne = process(helper, 2, 1);
-        ProcessResult rankTwo = process(helper, 3, 2);
-        require(rankOne.hulls() != rankTwo.hulls() && rankOne.rank() != rankTwo.rank(),
+        ProcessResult rankZero = process(helper, 2, 1);
+        ProcessResult rankOne = process(helper, 3, 2);
+        require(rankZero.hulls() != rankOne.hulls() && rankZero.rank() != rankOne.rank(),
                 "The comparison reactors did not have distinct N and R");
-        for (ProcessResult result : List.of(rankOne, rankTwo)) {
-            long expectedTicks = (long)Math.floor(20.0D * Math.pow(9.0D, result.rank()));
+        for (ProcessResult result : List.of(rankZero, rankOne)) {
+            double efficiency = 0.2D * Math.pow(1.02D, result.hulls()) * Math.pow(7.5D, result.rank());
+            long timeToCraft = (long)(1000.0D * 20 * Math.pow(9.0D, (int)result.rank()));
+            long expectedTicks = (long)Math.ceil((double)timeToCraft / Math.floor(1000.0D * efficiency));
             long expectedEnergyPerTick = (long)Math.floor(100_000_000.0D
                     * Math.pow(1.01D, result.hulls() * result.rank()));
-            long expectedCount = Math.max(1L, (long)Math.floor(0.2D * Math.pow(1.02D, result.hulls())
-                    * Math.pow(7.5D, result.rank()) / Math.pow(9.0D, (int)result.rank())));
             require(result.requiredProgress() == expectedTicks && result.elapsedTicks() == expectedTicks,
                     "The reactor did not take the hotfix2 processing time");
             require(result.consumedEnergy() == expectedEnergyPerTick * expectedTicks,
                     "The reactor did not consume the hotfix2 CE amount");
-            require(result.output().getCount() == expectedCount,
-                    "The reactor did not produce the hotfix2 output count");
+            require(result.output().getCount() == 1,
+                    "The reactor did not produce exactly one item per craft");
         }
-        require(rankOne.output().is(MaterialRegistration.MATERIAL_ITEMS.get(
-                        "compressed_pure_antimatter").get())
-                        && rankTwo.output().is(MaterialRegistration.MATERIAL_ITEMS.get(
-                                "double_compressed_pure_antimatter").get()),
+        require(rankZero.output().is(MaterialRegistration.MATERIAL_ITEMS.get("pure_antimatter").get())
+                        && rankOne.output().is(MaterialRegistration.MATERIAL_ITEMS.get(
+                                "compressed_pure_antimatter").get()),
                 "Runtime output did not use the structure compression rank");
         helper.succeed();
     }

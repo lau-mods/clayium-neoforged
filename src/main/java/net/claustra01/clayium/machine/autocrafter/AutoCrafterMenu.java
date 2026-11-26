@@ -41,7 +41,13 @@ public final class AutoCrafterMenu extends AbstractContainerMenu {
                 addSlot(new GhostSlot(autoCrafter, column + row * 3, 5 + column * 18, 18 + row * 18));
             }
         }
-        addSlot(new LockedSlot(autoCrafter.preview(), 0, 117, 36, true));
+        // The original ContainerAutoCrafter has no preview slot; it stays server-side only.
+        addSlot(new LockedSlot(autoCrafter.preview(), 0, -1000, -1000, true) {
+            @Override
+            public boolean isActive() {
+                return false;
+            }
+        });
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
                 addSlot(new SlotItemHandler(autoCrafter.inventory(), column + row * 3,
@@ -55,7 +61,8 @@ public final class AutoCrafterMenu extends AbstractContainerMenu {
                         135 + column * 18, 18 + row * 18, false));
             }
         }
-        addSlot(new SlotItemHandler(autoCrafter.inventory(), AutoCrafterBlockEntity.FUEL_SLOT, 117, 60));
+        // Original GuiClayEnergyTemp: the energy item sits outside the window at (-12, machineGuiSizeY - 16).
+        addSlot(new SlotItemHandler(autoCrafter.inventory(), AutoCrafterBlockEntity.FUEL_SLOT, -12, 84 - 16));
         addPlayerInventory(inventory);
         addDataSlots(data);
     }
@@ -163,7 +170,7 @@ public final class AutoCrafterMenu extends AbstractContainerMenu {
         }
     }
 
-    private static final class LockedSlot extends SlotItemHandler {
+    private static class LockedSlot extends SlotItemHandler {
         private final boolean lockPickup;
 
         private LockedSlot(net.neoforged.neoforge.items.IItemHandler handler, int slot, int x, int y, boolean lockPickup) {

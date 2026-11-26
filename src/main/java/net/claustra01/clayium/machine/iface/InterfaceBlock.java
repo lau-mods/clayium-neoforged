@@ -5,9 +5,6 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -21,11 +18,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.phys.BlockHitResult;
 
 public final class InterfaceBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LINKED = BooleanProperty.create("linked");
+    public static final BooleanProperty DISCONNECTED = BooleanProperty.create("disconnected");
     public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
 
     private final InterfaceType interfaceType;
@@ -38,6 +35,7 @@ public final class InterfaceBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LINKED, false)
+                .setValue(DISCONNECTED, false)
                 .setValue(PIPE, false));
     }
 
@@ -71,7 +69,7 @@ public final class InterfaceBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING, LINKED, PIPE);
+        builder.add(FACING, LINKED, DISCONNECTED, PIPE);
     }
 
     @Override protected net.minecraft.world.phys.shapes.VoxelShape getShape(
@@ -86,16 +84,6 @@ public final class InterfaceBlock extends BaseEntityBlock {
     @Override protected net.minecraft.world.phys.shapes.VoxelShape getOcclusionShape(
             BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos) {
         return net.claustra01.clayium.logistics.PipeShapes.occlusionShape(state, PIPE);
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(
-            BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer
-                && level.getBlockEntity(pos) instanceof InterfaceBlockEntity blockEntity) {
-            serverPlayer.openMenu(blockEntity, pos);
-        }
-        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override
@@ -115,7 +103,7 @@ public final class InterfaceBlock extends BaseEntityBlock {
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())
                 && level.getBlockEntity(pos) instanceof InterfaceBlockEntity blockEntity) {
-            blockEntity.disconnect();
+            blockEntity.disconnectForRemoval();
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }

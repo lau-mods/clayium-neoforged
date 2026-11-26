@@ -8,7 +8,6 @@ import net.claustra01.clayium.logistics.ConfigurableIoDevice;
 import net.claustra01.clayium.logistics.IoTransportKind;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.logistics.filter.ItemFilter;
-import net.claustra01.clayium.registry.LogisticsRegistration;
 import net.claustra01.clayium.registry.MultitrackRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,7 +33,6 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class MultitrackBufferBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     public static final int TRACKS = 6;
-    public static final int SLOTS_PER_TRACK = 9;
 
     private final Track[] tracks = new Track[TRACKS];
     private final int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
@@ -47,8 +45,9 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
 
     public MultitrackBufferBlockEntity(BlockPos pos, BlockState state) {
         super(MultitrackRegistration.MULTITRACK_BUFFER_BLOCK_ENTITY.get(), pos, state);
+        int slots = slotsPerTrack(((MultitrackBufferBlock)state.getBlock()).tier());
         for (int index = 0; index < TRACKS; index++) {
-            tracks[index] = new Track();
+            tracks[index] = new Track(slots);
         }
     }
 
@@ -179,8 +178,28 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         return ((MultitrackBufferBlock)getBlockState().getBlock()).tier();
     }
 
+    /** Original TileMultitrackBuffer.initParamsByTier trackNum. */
     public int trackCount() {
-        return Math.min(6, tier() - 2);
+        return trackCount(tier());
+    }
+
+    public static int trackCount(int tier) {
+        return Math.max(1, Math.min(6, tier - 2));
+    }
+
+    /** Original TileMultitrackBuffer.initParamsByTier trackInvSize. */
+    public static int slotsPerTrack(int tier) {
+        return switch (tier) {
+            case 4 -> 1;
+            case 5 -> 2;
+            case 6, 7 -> 4;
+            case 8 -> 6;
+            default -> 9;
+        };
+    }
+
+    public int slotsPerTrack() {
+        return tracks[0].inventory.getSlots();
     }
 
     public Track track(int index) {
@@ -271,16 +290,14 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
     }
 
     public Container dropInventory() {
-        SimpleContainer dropped = new SimpleContainer(trackCount() * (SLOTS_PER_TRACK + 1));
+        SimpleContainer dropped = new SimpleContainer(trackCount() * slotsPerTrack());
         int droppedSlot = 0;
         for (int index = 0; index < trackCount(); index++) {
             Track track = tracks[index];
-            for (int slot = 0; slot < SLOTS_PER_TRACK; slot++) {
+            for (int slot = 0; slot < track.inventory.getSlots(); slot++) {
                 dropped.setItem(droppedSlot++, track.inventory.getStackInSlot(slot).copy());
                 track.inventory.setStackInSlot(slot, ItemStack.EMPTY);
             }
-            dropped.setItem(droppedSlot++, track.filter.getStackInSlot(0).copy());
-            track.filter.setStackInSlot(0, ItemStack.EMPTY);
         }
         return dropped;
     }
@@ -325,7 +342,9 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             }
             Track track = tracks[index];
             CompoundTag saved = trackData.getCompound(Integer.toString(index));
-            track.inventory.deserializeNBT(registries, saved.getCompound("inventory"));
+            CompoundTag inventory = saved.getCompound("inventory").copy();
+            inventory.putInt("Size", track.inventory.getSlots());
+            track.inventory.deserializeNBT(registries, inventory);
             track.filter.deserializeNBT(registries, saved.getCompound("filter"));
             track.nextOutputDirection = saved.getInt("next_output_direction");
             track.nextInputDirection = saved.getInt("next_input_direction");
@@ -341,8 +360,8 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         private int nextOutputDirection;
         private int nextInputDirection;
 
-        private Track() {
-            inventory = new ItemStackHandler(SLOTS_PER_TRACK) {
+        private Track(int slots) {
+            inventory = new ItemStackHandler(slots) {
                 @Override
                 protected void onContentsChanged(int slot) {
                     setChanged();
@@ -360,11 +379,6 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
                 }
 
                 @Override
-                public boolean isItemValid(int slot, ItemStack stack) {
-                    return stack.is(LogisticsRegistration.ITEM_FILTER.get());
-                }
-
-                @Override
                 public int getSlotLimit(int slot) {
                     return 1;
                 }
@@ -375,6 +389,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
             return inventory;
         }
 
+        /** Original SlotMemory 54+track: a remembered one-item copy, never consumed or dropped. */
         public ItemStackHandler filter() {
             return filter;
         }
@@ -384,7 +399,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         }
 
         private boolean accepts(ItemStack stack) {
-            return ItemFilter.accepts(filter.getStackInSlot(0), stack);
+            return ItemFilter.matchesMemory(filter.getStackInSlot(0), stack);
         }
     }
 
@@ -398,7 +413,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         }
 
         @Override public int getSlots() { return direction != null
-                && track.faceMode(direction) == BufferBlockEntity.FaceMode.DISABLED ? 0 : SLOTS_PER_TRACK; }
+                && track.faceMode(direction) == BufferBlockEntity.FaceMode.DISABLED ? 0 : track.inventory.getSlots(); }
         @Override public ItemStack getStackInSlot(int slot) { return track.inventory.getStackInSlot(slot); }
         @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             return direction == null || track.faceMode(direction).canInput()
@@ -416,11 +431,11 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
     }
 
     private final class CombinedTrackHandler implements IItemHandler {
-        @Override public int getSlots() { return trackCount() * SLOTS_PER_TRACK; }
-        @Override public ItemStack getStackInSlot(int slot) { return track(slot / SLOTS_PER_TRACK).inventory.getStackInSlot(slot % SLOTS_PER_TRACK); }
-        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) { return track(slot / SLOTS_PER_TRACK).inventory.insertItem(slot % SLOTS_PER_TRACK, stack, simulate); }
-        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) { return track(slot / SLOTS_PER_TRACK).inventory.extractItem(slot % SLOTS_PER_TRACK, amount, simulate); }
-        @Override public int getSlotLimit(int slot) { return track(slot / SLOTS_PER_TRACK).inventory.getSlotLimit(slot % SLOTS_PER_TRACK); }
-        @Override public boolean isItemValid(int slot, ItemStack stack) { return track(slot / SLOTS_PER_TRACK).accepts(stack); }
+        @Override public int getSlots() { return trackCount() * slotsPerTrack(); }
+        @Override public ItemStack getStackInSlot(int slot) { return track(slot / slotsPerTrack()).inventory.getStackInSlot(slot % slotsPerTrack()); }
+        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) { return track(slot / slotsPerTrack()).inventory.insertItem(slot % slotsPerTrack(), stack, simulate); }
+        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) { return track(slot / slotsPerTrack()).inventory.extractItem(slot % slotsPerTrack(), amount, simulate); }
+        @Override public int getSlotLimit(int slot) { return track(slot / slotsPerTrack()).inventory.getSlotLimit(slot % slotsPerTrack()); }
+        @Override public boolean isItemValid(int slot, ItemStack stack) { return track(slot / slotsPerTrack()).accepts(stack); }
     }
 }

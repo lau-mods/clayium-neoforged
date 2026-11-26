@@ -8,11 +8,8 @@ const { scenario, command, camera, screenshot, mct } = await import(process.env.
 
 async function capture(client, x, label) {
   await camera(client, { x: x + 0.5, y: 100.5, z: -2.5, yaw: 0, pitch: 8 });
-  await mct(client, 'block', 'interact', String(x), '100', '0');
-  await mct(client, 'gui', 'wait-open', '--timeout', '15');
   await mct(client, 'wait', '--ticks', '3');
-  screenshot(client, 'AC-F024-002', label);
-  await mct(client, 'gui', 'close');
+  await screenshot(client, 'AC-F024-002', label);
 }
 
 await scenario(async ({ clients }) => {
@@ -39,7 +36,7 @@ await scenario(async ({ clients }) => {
   command(client, 'clear @s clayium:synchronizer');
   await mct(client, 'wait', '--ticks', '20');
 
-  await capture(client, -4, 'unlinked-target-always-visible');
-  await capture(client, 0, 'connected-dimension-coordinates-and-status');
-  await capture(client, 4, 'removed-target-shows-disconnected-status');
+  await capture(client, -4, 'unlinked-interface-block');
+  await capture(client, 0, 'connected-interface-block');
+  await capture(client, 4, 'disconnected-interface-block');
 });

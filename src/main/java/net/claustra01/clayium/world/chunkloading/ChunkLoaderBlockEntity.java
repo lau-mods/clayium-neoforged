@@ -1,23 +1,16 @@
 package net.claustra01.clayium.world.chunkloading;
 
-import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.ChunkLoaderRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuProvider {
-    private final ContainerData menuData = new ChunkLoaderContainerData();
+public final class ChunkLoaderBlockEntity extends BlockEntity {
     private TicketStatus ticketStatus = TicketStatus.WAITING;
 
     public ChunkLoaderBlockEntity(BlockPos pos, BlockState state) {
@@ -27,6 +20,7 @@ public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuPro
     public static void serverTick(
             Level level, BlockPos pos, BlockState state, ChunkLoaderBlockEntity chunkLoader) {
         if (chunkLoader.ticketStatus == TicketStatus.ACTIVE) {
+            chunkLoader.publishTicketStatus();
             return;
         }
         chunkLoader.requestTickets();
@@ -36,22 +30,12 @@ public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuPro
         return ticketStatus;
     }
 
-    public void releaseTickets() {
+    void releaseTicketsForRemoval() {
         if (level instanceof ServerLevel serverLevel) {
             ChunkLoaderTicketService.release(serverLevel, worldPosition);
         }
-        setTicketStatus(TicketStatus.WAITING);
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return getBlockState().getBlock().getName();
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-        return new ChunkLoaderMenu(containerId, inventory, this, menuData);
+        ticketStatus = TicketStatus.WAITING;
+        setChanged();
     }
 
     @Override
@@ -67,6 +51,7 @@ public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuPro
         super.loadAdditional(tag, registries);
         ticketStatus = "unavailable".equals(tag.getString("ticket_status"))
                 ? TicketStatus.UNAVAILABLE : TicketStatus.WAITING;
+        publishTicketStatus();
     }
 
     private void requestTickets() {
@@ -78,14 +63,25 @@ public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuPro
     }
 
     private void setTicketStatus(TicketStatus status) {
-        if (ticketStatus == status) {
-            return;
-        }
+        boolean changed = ticketStatus != status;
         ticketStatus = status;
-        setChanged();
+        publishTicketStatus();
+        if (changed) {
+            setChanged();
+        }
     }
 
-    public enum TicketStatus {
+    private void publishTicketStatus() {
+        if (level != null && !level.isClientSide) {
+            BlockState state = level.getBlockState(worldPosition);
+            if (state.is(ChunkLoaderRegistration.CHUNK_LOADER.get())
+                    && state.getValue(ChunkLoaderBlock.STATUS) != ticketStatus) {
+                level.setBlock(worldPosition, state.setValue(ChunkLoaderBlock.STATUS, ticketStatus), 3);
+            }
+        }
+    }
+
+    public enum TicketStatus implements StringRepresentable {
         WAITING("waiting"),
         ACTIVE("active"),
         UNAVAILABLE("unavailable");
@@ -96,24 +92,9 @@ public final class ChunkLoaderBlockEntity extends BlockEntity implements MenuPro
             this.serializedName = serializedName;
         }
 
+        @Override
         public String getSerializedName() {
             return serializedName;
-        }
-    }
-
-    private final class ChunkLoaderContainerData implements ContainerData {
-        @Override
-        public int get(int index) {
-            return index == 0 ? ticketStatus.ordinal() : 0;
-        }
-
-        @Override
-        public void set(int index, int value) {
-        }
-
-        @Override
-        public int getCount() {
-            return 1;
         }
     }
 }

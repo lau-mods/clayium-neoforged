@@ -28,10 +28,10 @@ public final class FilterDuplicatorItem extends FoundationItem {
             return;
         }
         ItemFilterSettings settings = stack.getOrDefault(
-                LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.ALLOW_ALL);
+                LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY);
         tooltip.add(Component.translatable("tooltip.clayium.filter_copy.stored"));
         tooltip.add(Component.translatable("tooltip.clayium.item_filter.mode." + settings.mode().name().toLowerCase()));
-        tooltip.add(Component.translatable("tooltip.clayium.item_filter.rules", settings.rules().size()));
+        UnifiedItemFilterItem.addEntries(settings, tooltip, 1);
     }
 
     @Override

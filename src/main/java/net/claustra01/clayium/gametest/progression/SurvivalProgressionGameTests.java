@@ -66,7 +66,8 @@ public final class SurvivalProgressionGameTests {
     public static void allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePaths(
             GameTestHelper helper) {
         List<ResourceLocation> candidates = candidateRecipeIds();
-        require(candidates.size() == 123, "The fixed candidate inventory no longer contains 123 machines");
+        // 123 original candidates minus the explicitly removed Fluid Transfer Machine.
+        require(candidates.size() == 122, "The fixed candidate inventory no longer contains 122 machines");
         Map<String, String[]> ledger = readLedger();
         for (ResourceLocation id : candidates) {
             RecipeHolder<?> holder = helper.getLevel().getRecipeManager().byKey(id).orElseThrow();
@@ -261,6 +262,9 @@ public final class SurvivalProgressionGameTests {
             for (int tier : family.tiers()) {
                 machineVariants++;
                 String id = OriginalRegistryCatalog.machineId(family, tier);
+                if (!OriginalRegistryCatalog.isRegisteredMachine(family, tier)) {
+                    continue;
+                }
                 require(reachable.contains(BuiltInRegistries.ITEM.get(ClayiumMod.id(id))),
                         id + " is registered but unreachable from the survival dependency closure");
             }
@@ -456,7 +460,7 @@ public final class SurvivalProgressionGameTests {
         for (GadgetType type : GadgetType.values()) {
             equipment.add(type.id());
         }
-        equipment.addAll(List.of("white_list_item_filter", "fluid_filter", "synchronizer"));
+        equipment.addAll(List.of("white_list_item_filter", "synchronizer"));
         Map<String, String[]> ledger = readLedger();
         for (String id : equipment) {
             ResourceLocation recipeId = ClayiumMod.id("progression/equipment/" + id);

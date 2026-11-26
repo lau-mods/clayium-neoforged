@@ -55,12 +55,59 @@
         16,
         0
       ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#hull"
+        },
+        "east": {
+          "texture": "#hull"
+        },
+        "north": {
+          "texture": "#front"
+        },
+        "up": {
+          "texture": "#hull"
+        },
+        "west": {
+          "texture": "#hull"
+        }
+      },
+      "from": [
+        3,
+        3,
+        -1
+      ],
+      "to": [
+        13,
+        13,
+        -0.01
+      ]
+    },
+    {
+      "faces": {
+        "north": {
+          "texture": "#status"
+        }
+      },
+      "from": [
+        5,
+        5,
+        -1.01
+      ],
+      "to": [
+        11,
+        11,
+        -1
+      ]
     }
   ],
   "render_type": "minecraft:cutout",
   "textures": {
-    "front": "clayium:block/fluidtransfermachine",
-    "hull": "clayium:block/machinehull-4",
-    "particle": "#hull"
+    "front": "clayium:block/redstoneinterface",
+    "hull": "clayium:block/machinehull-9",
+    "particle": "#hull",
+    "status": "clayium:block/export_rf"
   }
 }

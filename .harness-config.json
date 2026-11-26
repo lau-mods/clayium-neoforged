@@ -56,7 +56,8 @@
       "loader": "neoforge",
       "wsPort": 25596,
       "width": 1280,
-      "height": 720
+      "height": 720,
+      "maxMemoryMiB": 3072
     }
   },
   "runtime": {

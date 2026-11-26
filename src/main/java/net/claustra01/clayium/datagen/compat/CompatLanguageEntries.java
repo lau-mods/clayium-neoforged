@@ -91,7 +91,6 @@ public final class CompatLanguageEntries {
             case CA_INJECTOR -> japanese ? "CA 注入機" : "CA Injector";
             case CA_REACTOR -> japanese ? "反物質反応炉" : "CA Reactor";
             case EC_DECOMPOSER -> japanese ? "エネルギー粘土分解機" : "Energetic Clay Decomposer";
-            case FLUID_TRANSFER_MACHINE -> japanese ? "液体転移装置" : "Fluid Transfer Machine";
         };
     }
 

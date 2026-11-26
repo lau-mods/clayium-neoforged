@@ -42,33 +42,23 @@ public final class MinerGameTests {
                 helper, machinePosition, MinerRegistration.BLOCK_BREAKER.get(), owner);
         BlockPos target = helper.absolutePos(machinePosition.relative(Direction.EAST));
 
-        breaker.inventory().setStackInSlot(0, new ItemStack(Items.DIAMOND_PICKAXE));
+        // Original Tier 6 blockMiner: no tool slot; use the fixed unenchanted diamond pickaxe.
         helper.getLevel().setBlockAndUpdate(target, Blocks.STONE.defaultBlockState());
         require(breaker.runOperationNow() == BlockOperationResult.SUCCESS, "The breaker did not mine stone");
         require(helper.getLevel().getBlockState(target).isAir(), "The mined stone remained in the world");
         require(outputCount(breaker, Items.COBBLESTONE) == 1, "Stone did not use its current loot table");
 
-        Holder<Enchantment> fortune = helper.getLevel().registryAccess()
-                .lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);
-        Holder<Enchantment> silkTouch = helper.getLevel().registryAccess()
-                .lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH);
-        int normalDrops = mineClayOre(helper, breaker, target, null, 12);
-        int fortuneDrops = mineClayOre(helper, breaker, target, fortune, 12);
-        require(fortuneDrops > normalDrops, "Fortune did not increase the block breaker's aggregate ore drops");
-
         clearOutputs(breaker);
-        ItemStack silkTool = new ItemStack(Items.DIAMOND_PICKAXE);
-        silkTool.enchant(silkTouch, 1);
-        breaker.inventory().setStackInSlot(0, silkTool);
-        helper.getLevel().setBlockAndUpdate(target, WorldgenRegistration.CLAY_ORE.get().defaultBlockState());
-        require(breaker.runOperationNow() == BlockOperationResult.SUCCESS, "Silk Touch mining failed");
-        require(outputCount(breaker, WorldgenRegistration.CLAY_ORE.get().asItem()) == 1,
-                "Silk Touch did not preserve clay ore");
-
-        clearOutputs(breaker);
-        ItemStack protectedTool = new ItemStack(Items.DIAMOND_PICKAXE);
-        breaker.inventory().setStackInSlot(0, protectedTool);
+        ItemStack harvestFilter = net.claustra01.clayium.registry.LogisticsRegistration.ITEM_FILTER.toStack();
+        harvestFilter.set(net.claustra01.clayium.registry.LogisticsRegistration.ITEM_FILTER_SETTINGS.get(),
+                net.claustra01.clayium.logistics.filter.ItemFilterSettings.EMPTY.withItem(0, new ItemStack(Items.DIRT)));
+        breaker.inventory().setStackInSlot(BasicOperationBlockEntity.HARVEST_FILTER_SLOT, harvestFilter);
         helper.getLevel().setBlockAndUpdate(target, Blocks.STONE.defaultBlockState());
+        require(breaker.runOperationNow() == BlockOperationResult.NO_TARGET
+                        && helper.getLevel().getBlockState(target).is(Blocks.STONE),
+                "The harvest filter did not exclude stone");
+        breaker.inventory().setStackInSlot(BasicOperationBlockEntity.HARVEST_FILTER_SLOT, ItemStack.EMPTY);
+
         Consumer<BlockEvent.BreakEvent> protect = event -> {
             if (event.getPos().equals(target) && event.getPlayer().getUUID().equals(owner)) {
                 event.setCanceled(true);
@@ -81,22 +71,19 @@ public final class MinerGameTests {
         } finally {
             NeoForge.EVENT_BUS.unregister(protect);
         }
-        require(helper.getLevel().getBlockState(target).is(Blocks.STONE), "A protected block was removed");
-        require(protectedTool.getDamageValue() == 0 && outputCount(breaker, Items.COBBLESTONE) == 0,
-                "A denied break damaged the tool or produced output");
+        require(helper.getLevel().getBlockState(target).is(Blocks.STONE)
+                        && outputCount(breaker, Items.COBBLESTONE) == 0,
+                "A protected block was removed or produced output");
 
         helper.getLevel().setBlockAndUpdate(target, Blocks.BEDROCK.defaultBlockState());
-        ItemStack bedrockTool = new ItemStack(Items.DIAMOND_PICKAXE);
-        breaker.inventory().setStackInSlot(0, bedrockTool);
         require(breaker.runOperationNow() == BlockOperationResult.DENIED,
                 "The breaker removed an unbreakable block");
         require(helper.getLevel().getBlockState(target).is(Blocks.BEDROCK)
-                        && breaker.inventory().getStackInSlot(0).getDamageValue() == 0
                         && outputCount(breaker, Items.COBBLESTONE) == 0,
-                "A denied bedrock break changed the tool or outputs");
+                "A denied bedrock break changed the outputs");
 
-        for (int slot = BasicOperationBlockEntity.OUTPUT_START;
-                slot < BasicOperationBlockEntity.OUTPUT_START + BasicOperationBlockEntity.OUTPUT_SLOTS;
+        for (int slot = 0;
+                slot < BasicOperationBlockEntity.GRID_SLOTS;
                 slot++) {
             breaker.inventory().setStackInSlot(slot, new ItemStack(Items.DIAMOND_BLOCK, 64));
         }
@@ -114,9 +101,8 @@ public final class MinerGameTests {
         } finally {
             NeoForge.EVENT_BUS.unregister(observeDrops);
         }
-        require(dropEvents[0] == 0 && helper.getLevel().getBlockState(target).is(Blocks.STONE)
-                        && breaker.inventory().getStackInSlot(0).getDamageValue() == 0,
-                "A rejected break posted drops or changed the world or tool");
+        require(dropEvents[0] == 0 && helper.getLevel().getBlockState(target).is(Blocks.STONE),
+                "A rejected break posted drops or changed the world");
 
         BlockPos unloaded = new BlockPos(29_999_000, 64, 29_999_000);
         int chunkX = unloaded.getX() >> 4;
@@ -216,31 +202,10 @@ public final class MinerGameTests {
         return operation;
     }
 
-    private static int mineClayOre(
-            GameTestHelper helper,
-            BasicOperationBlockEntity breaker,
-            BlockPos target,
-            Holder<Enchantment> enchantment,
-            int attempts) {
-        int total = 0;
-        for (int attempt = 0; attempt < attempts; attempt++) {
-            clearOutputs(breaker);
-            ItemStack tool = new ItemStack(Items.DIAMOND_PICKAXE);
-            if (enchantment != null) {
-                tool.enchant(enchantment, 3);
-            }
-            breaker.inventory().setStackInSlot(0, tool);
-            helper.getLevel().setBlockAndUpdate(target, WorldgenRegistration.CLAY_ORE.get().defaultBlockState());
-            require(breaker.runOperationNow() == BlockOperationResult.SUCCESS, "Clay ore mining failed");
-            total += outputCount(breaker, Items.CLAY_BALL);
-        }
-        return total;
-    }
-
     private static int outputCount(BasicOperationBlockEntity operation, Item item) {
         int count = 0;
-        for (int slot = BasicOperationBlockEntity.OUTPUT_START;
-                slot < BasicOperationBlockEntity.OUTPUT_START + BasicOperationBlockEntity.OUTPUT_SLOTS;
+        for (int slot = 0;
+                slot < BasicOperationBlockEntity.GRID_SLOTS;
                 slot++) {
             ItemStack stack = operation.inventory().getStackInSlot(slot);
             if (stack.is(item)) {
@@ -251,8 +216,8 @@ public final class MinerGameTests {
     }
 
     private static void clearOutputs(BasicOperationBlockEntity operation) {
-        for (int slot = BasicOperationBlockEntity.OUTPUT_START;
-                slot < BasicOperationBlockEntity.OUTPUT_START + BasicOperationBlockEntity.OUTPUT_SLOTS;
+        for (int slot = 0;
+                slot < BasicOperationBlockEntity.GRID_SLOTS;
                 slot++) {
             operation.inventory().setStackInSlot(slot, ItemStack.EMPTY);
         }

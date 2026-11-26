@@ -614,10 +614,10 @@
     },
     {
       "original": "GuiItemFilterString",
-      "ported": "FilterScreen and BufferScreen",
+      "ported": "FilterScreen memory-list replacement",
       "window": "176x130; ContainerItemFilterString machineY=36",
-      "parts": "B/W mode, condition type, tag, rules and example",
-      "allowedDifference": "approved unified B/W filter adds condition editor",
+      "parts": "B/W mode and ten remembered item/filter stacks",
+      "allowedDifference": "The string-condition editor is replaced by the original whitelist memory grid with a unified B/W toggle.",
       "originalLayout": {
         "source": "mods.clayium.gui.client.GuiItemFilterString + mods.clayium.gui.container.ContainerItemFilterString",
         "window": "176x130; ContainerItemFilterString machineY=36",
@@ -629,29 +629,20 @@
         "scroll": "none",
         "tooltips": "text field and slot tooltips"
       },
-      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#unified-filter-buffer-settings-window",
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#memory-filter-grid-and-mode",
       "portedScreens": [
-        "FilterScreen",
-        "BufferScreen"
+        "FilterScreen"
       ],
       "portedLayout": {
         "FilterScreen": {
           "window": [
             176,
-            200
+            148
           ],
-          "slots": "example 8,77; player 8,118",
-          "buttons": "mode 8,30; type 58,30; tag 110,30; add 32,77; remove 54,77",
-          "text": "title 8,8; rule count 8,56",
-          "screenshot": "unified-filter-buffer-settings-window"
-        },
-        "BufferScreen": {
-          "window": [
-            220,
-            226
-          ],
-          "slots": "storage 29,69 10x3 per page; filter 7,83; example 7,106; player 29,141",
-          "screenshot": "unified-filter-buffer-settings-window"
+          "slots": "memory 43,18 5x2; player 8,66; hotbar 8,124",
+          "buttons": "B/W mode 136,28",
+          "text": "title 6,6; inventory label 8,54",
+          "screenshot": "memory-filter-grid-and-mode"
         }
       }
     },
@@ -836,7 +827,6 @@
     "MultitrackBufferScreen",
     "DistributorScreen",
     "FluidTransportScreen",
-    "InterfaceScreen",
     "AutoCrafterScreen",
     "AutoTraderScreen",
     "AreaMachineScreen",
@@ -844,7 +834,6 @@
     "StorageContainerScreen",
     "VoidContainerScreen",
     "GadgetHolderScreen",
-    "ChunkLoaderScreen",
     "ClayProductionScreen"
   ],
   "portedLayouts": {
@@ -896,20 +885,20 @@
     "FilterScreen": {
       "window": [
         176,
-        200
+        148
       ],
-      "slots": "example 8,77; player 8,118",
-      "buttons": "mode 8,30; type 58,30; tag 110,30; add 32,77; remove 54,77",
-      "text": "title 8,8; rule count 8,56",
-      "screenshot": "unified-filter-buffer-settings-window"
+      "slots": "memory 43,18 5x2; player 8,66; hotbar 8,124",
+      "buttons": "B/W mode 136,28",
+      "text": "title 6,6; inventory label 8,54",
+      "screenshot": "memory-filter-grid-and-mode"
     },
     "BufferScreen": {
       "window": [
-        220,
-        226
+        176,
+        220
       ],
-      "slots": "storage 29,69 10x3 per page; filter 7,83; example 7,106; player 29,141",
-      "screenshot": "unified-filter-buffer-settings-window"
+      "slots": "Tier 9 storage 8,18 9x6; player 8,138; hotbar 8,196",
+      "screenshot": "original-tier-sized-buffer-inventory"
     },
     "MultitrackBufferScreen": {
       "window": [
@@ -931,18 +920,10 @@
     "FluidTransportScreen": {
       "window": [
         176,
-        201
+        166
       ],
-      "slots": "filter 152,54; player 8,113",
-      "screenshot": "direct-fluid-empty-state-and-face-controls"
-    },
-    "InterfaceScreen": {
-      "window": [
-        176,
-        112
-      ],
-      "slots": "none; server-synchronized connection status",
-      "screenshot": "interface-synchronization"
+      "slots": "no machine slots; player 8,84; hotbar 8,142",
+      "screenshot": "direct-fluid-tank-and-millibucket-value"
     },
     "AutoCrafterScreen": {
       "window": [
@@ -1005,14 +986,6 @@
       "slots": "gadget 17,29 8x2; player 8,91",
       "text": "installed label 17,18",
       "screenshot": "gadget-holder-original-slot-grid"
-    },
-    "ChunkLoaderScreen": {
-      "window": [
-        176,
-        112
-      ],
-      "slots": "none",
-      "screenshot": "chunk-loader-status"
     },
     "ClayProductionScreen": {
       "window": [

@@ -13,15 +13,17 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
+/** Fluid buffer GUI kept at the level of the item buffer: title, one tank and the player inventory. */
 public final class FluidTransportMenu extends AbstractContainerMenu {
+    public static final int MACHINE_HEIGHT = 72;
+
     private final BlockPos transportPos;
     private final FluidTransportBlockEntity transport;
     private final ContainerData data;
 
     public FluidTransportMenu(int containerId, Inventory inventory, BlockPos pos) {
-        this(containerId, inventory, transportAt(inventory, pos), new SimpleContainerData(19));
+        this(containerId, inventory, transportAt(inventory, pos), new SimpleContainerData(FluidTransportBlockEntity.DATA_COUNT));
     }
 
     public FluidTransportMenu(
@@ -33,9 +35,6 @@ public final class FluidTransportMenu extends AbstractContainerMenu {
         this.transport = transport;
         transportPos = transport == null ? BlockPos.ZERO : transport.getBlockPos();
         this.data = data;
-        if (transport != null) {
-            addSlot(new SlotItemHandler(transport.filterInventory(), 0, 152, 54));
-        }
         addPlayerInventory(inventory);
         addDataSlots(data);
     }
@@ -48,39 +47,17 @@ public final class FluidTransportMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory inventory) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 113 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, MACHINE_HEIGHT + 12 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 171));
+            addSlot(new Slot(inventory, column, 8 + column * 18, MACHINE_HEIGHT + 70));
         }
     }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        Slot slot = slots.get(index);
-        if (!slot.hasItem()) {
-            return ItemStack.EMPTY;
-        }
-        ItemStack original = slot.getItem().copy();
-        ItemStack moving = slot.getItem();
-        if (index == 0) {
-            if (!moveItemStackTo(moving, 1, slots.size(), true)) {
-                return ItemStack.EMPTY;
-            }
-        } else if (moving.is(FluidRegistration.FLUID_FILTER.get())) {
-            if (!moveItemStackTo(moving, 0, 1, false)) {
-                return ItemStack.EMPTY;
-            }
-        } else {
-            return ItemStack.EMPTY;
-        }
-        if (moving.isEmpty()) {
-            slot.set(ItemStack.EMPTY);
-        } else {
-            slot.setChanged();
-        }
-        return original;
+        return ItemStack.EMPTY;
     }
 
     @Override
@@ -128,21 +105,8 @@ public final class FluidTransportMenu extends AbstractContainerMenu {
         return combined(8);
     }
 
-    public FluidTransportBlockEntity.RedstoneCondition redstoneCondition() {
-        return enumValue(FluidTransportBlockEntity.RedstoneCondition.values(), data.get(10));
-    }
-
     public FluidTransportBlockEntity.FaceMode faceMode(Direction direction) {
-        return enumValue(FluidTransportBlockEntity.FaceMode.values(), data.get(11 + direction.get3DDataValue()));
-    }
-
-    public boolean filterBlacklist() {
-        return data.get(17) != 0;
-    }
-
-    public String filteredFluidName() {
-        int id = data.get(18);
-        return id == 0 ? "*" : new FluidStack(BuiltInRegistries.FLUID.byId(id - 1), 1).getHoverName().getString();
+        return enumValue(FluidTransportBlockEntity.FaceMode.values(), data.get(10 + direction.get3DDataValue()));
     }
 
     private static <T> T enumValue(T[] values, int ordinal) {

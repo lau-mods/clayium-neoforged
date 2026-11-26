@@ -17,7 +17,8 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 
 public final class GadgetHolderItem extends FoundationItem {
-    public static final int SLOT_COUNT = 16;
+    /** Original GUI 23: ContainerInItemStack(player, 5, 2, "Items"). */
+    public static final int SLOT_COUNT = 10;
 
     public GadgetHolderItem(Properties properties) {
         super(properties);
@@ -31,7 +32,7 @@ public final class GadgetHolderItem extends FoundationItem {
             serverPlayer.openMenu(
                     new SimpleMenuProvider(
                             (containerId, inventory, ignored) -> new GadgetHolderMenu(containerId, inventory, holderSlot),
-                            Component.translatable("screen.clayium.gadget_holder")),
+                            holder.getHoverName()),
                     buffer -> buffer.writeVarInt(holderSlot));
         }
         return InteractionResultHolder.sidedSuccess(holder, level.isClientSide());

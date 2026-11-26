@@ -51,6 +51,36 @@ public record ClayEnergy(long internalValue) implements Comparable<ClayEnergy> {
         return formatValue() + " CE";
     }
 
+    /**
+     * Stored-energy text of the original GuiClayEnergyTemp:
+     * {@code UtilLocale.ClayEnergyNumeral(clayEnergy, false)} followed by {@code CE}.
+     */
+    public String formatGui() {
+        return numeral(internalValue, false) + "CE";
+    }
+
+    static String numeral(long ce, boolean trimZeros) {
+        if (ce == 0L) {
+            return "0";
+        }
+        double n = ce * 10.0D;
+        int k = (int)Math.floor(Math.log10(n));
+        int p = Math.min(k / 3, NUMERAL_PREFIXES.length - 1);
+        int d = (int)(n * 1000.0D / Math.pow(10.0D, p * 3));
+        boolean flag = p == 0 || trimZeros;
+        String whole = String.valueOf(d / 1000) + ".";
+        if (d % 10 != 0 || !flag) {
+            return whole + d / 100 % 10 + d / 10 % 10 + d % 10 + NUMERAL_PREFIXES[p];
+        }
+        if (d % 100 != 0) {
+            return whole + d / 100 % 10 + d / 10 % 10 + NUMERAL_PREFIXES[p];
+        }
+        if (d % 1000 != 0) {
+            return whole + d / 100 % 10 + NUMERAL_PREFIXES[p];
+        }
+        return d / 1000 + NUMERAL_PREFIXES[p];
+    }
+
     public String formatValue() {
         if (internalValue == 0L) {
             return "0";

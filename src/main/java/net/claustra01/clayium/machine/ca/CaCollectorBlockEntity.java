@@ -17,7 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class CaCollectorBlockEntity extends BlockEntity {
+public final class CaCollectorBlockEntity extends BlockEntity implements net.minecraft.world.MenuProvider,
+        net.claustra01.clayium.logistics.NormalInventoryHost {
     public static final long BASE_CRAFT_TIME = 10_000L;
     private static final int OUTPUT_SLOTS = 9;
 
@@ -104,6 +105,40 @@ public final class CaCollectorBlockEntity extends BlockEntity {
 
     public IItemHandler itemHandler(@Nullable net.minecraft.core.Direction direction) {
         return output;
+    }
+
+    @Override
+    public ItemStackHandler normalInventory() {
+        return output;
+    }
+
+    /** Original TileCACollector: a 3x3 inventory. */
+    @Override
+    public net.claustra01.clayium.logistics.NormalInventoryLayout normalLayout() {
+        return new net.claustra01.clayium.logistics.NormalInventoryLayout(3, 3, 1);
+    }
+
+    /** Original ContainerCACollector: machineGuiSizeY += 14. */
+    @Override
+    public int extraMachineHeight() {
+        return 14;
+    }
+
+    @Override
+    public double displayedResonance() {
+        return level == null ? 1.0D : AugmentScanner.resonance(level, worldPosition);
+    }
+
+    @Override
+    public net.minecraft.network.chat.Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public net.minecraft.world.inventory.AbstractContainerMenu createMenu(
+            int id, net.minecraft.world.entity.player.Inventory inventory, net.minecraft.world.entity.player.Player player) {
+        return new net.claustra01.clayium.logistics.NormalInventoryMenu(
+                net.claustra01.clayium.registry.CaRegistration.COLLECTOR_MENU.get(), id, inventory, this);
     }
 
     public ItemStackHandler output() {

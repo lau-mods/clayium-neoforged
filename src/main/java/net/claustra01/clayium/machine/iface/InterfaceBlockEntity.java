@@ -4,29 +4,23 @@ import java.util.Optional;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
 import net.claustra01.clayium.logistics.IoTransportKind;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.laser.LaserBeam;
 import net.claustra01.clayium.multiblock.MultiblockStructureNotifier;
 import net.claustra01.clayium.multiblock.careactor.CaReactorStructureNotifier;
+import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -34,9 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 
-public final class InterfaceBlockEntity extends BlockEntity implements MenuProvider, LaserReceiver, ConfigurableIoDevice {
+public final class InterfaceBlockEntity extends BlockEntity implements LaserReceiver, ConfigurableIoDevice {
     private final IItemHandler[] itemHandlers = new IItemHandler[Direction.values().length + 1];
-    private final ContainerData menuData = new InterfaceContainerData();
     private final int[] insertionRoutes = {-1, -1, -1, 0, -1, -1};
     private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
     private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
@@ -54,6 +47,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, InterfaceBlockEntity blockEntity) {
+        blockEntity.setConnectionState(blockEntity.connectionStatus());
         if (blockEntity.interfaceType() != InterfaceType.REDSTONE) {
             return;
         }
@@ -100,7 +94,7 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         }
         target = newTarget;
         owner = newOwner;
-        setLinkedState(true);
+        setConnectionState(connectionStatus());
         setChangedAndSync();
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
@@ -110,10 +104,22 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
     }
 
     public void disconnect() {
+        disconnect(true);
+    }
+
+    void disconnectForRemoval() {
+        disconnect(false);
+    }
+
+    private void disconnect(boolean publishAppearance) {
         target = null;
         owner = null;
-        setLinkedState(false);
-        setChangedAndSync();
+        if (publishAppearance) {
+            setConnectionState(ConnectionStatus.UNLINKED);
+            setChangedAndSync();
+        } else {
+            setChanged();
+        }
         if (level != null) {
             level.invalidateCapabilities(worldPosition);
             MultiblockStructureNotifier.componentChanged(level, worldPosition);
@@ -181,17 +187,6 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
-    public Component getDisplayName() {
-        return getBlockState().getBlock().getName();
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-        return new InterfaceMenu(containerId, inventory, this, menuData);
-    }
-
-    @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         if (target != null) {
@@ -243,13 +238,21 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         }
     }
 
-    private void setLinkedState(boolean linked) {
+    private void setConnectionState(ConnectionStatus status) {
         if (level == null || level.isClientSide) {
             return;
         }
-        BlockState state = getBlockState();
-        if (state.getValue(InterfaceBlock.LINKED) != linked) {
-            level.setBlock(worldPosition, state.setValue(InterfaceBlock.LINKED, linked), 3);
+        BlockState state = level.getBlockState(worldPosition);
+        if (!(state.getBlock() instanceof InterfaceBlock)) {
+            return;
+        }
+        boolean linked = status != ConnectionStatus.UNLINKED;
+        boolean disconnected = status == ConnectionStatus.DISCONNECTED;
+        if (state.getValue(InterfaceBlock.LINKED) != linked
+                || state.getValue(InterfaceBlock.DISCONNECTED) != disconnected) {
+            level.setBlock(worldPosition, state
+                    .setValue(InterfaceBlock.LINKED, linked)
+                    .setValue(InterfaceBlock.DISCONNECTED, disconnected), 3);
         }
     }
 
@@ -257,26 +260,6 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
         UNLINKED,
         CONNECTED,
         DISCONNECTED
-    }
-
-    private final class InterfaceContainerData implements ContainerData {
-        @Override
-        public int get(int index) {
-            return switch (index) {
-                case 0 -> tier();
-                case 1 -> connectionStatus().ordinal();
-                default -> 0;
-            };
-        }
-
-        @Override
-        public void set(int index, int value) {
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
     }
 
     private final class TargetItemHandler implements IItemHandler {

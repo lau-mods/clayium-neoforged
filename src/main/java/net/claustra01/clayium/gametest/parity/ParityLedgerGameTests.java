@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import net.claustra01.clayium.ClayiumMod;
@@ -18,6 +19,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.GameTestRegistry;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -27,7 +29,7 @@ public final class ParityLedgerGameTests {
     private static final Map<String, Integer> EXPECTED_SCOPE_COUNTS = Map.ofEntries(
             Map.entry("reference", 1),
             Map.entry("registered_variety", 992),
-            Map.entry("survival_recipe", 674),
+            Map.entry("survival_recipe", 672),
             Map.entry("original_recipe_semantic", 4),
             Map.entry("gui", 20),
             Map.entry("gui_asset", 19),
@@ -45,6 +47,9 @@ public final class ParityLedgerGameTests {
         List<LedgerRow> rows = readLedger();
         Map<String, Integer> actualCounts = new HashMap<>();
         Set<String> ids = new HashSet<>();
+        Set<String> registeredTests = GameTestRegistry.getAllTestFunctions().stream()
+                .map(function -> function.testName().toLowerCase(Locale.ROOT))
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
         for (LedgerRow row : rows) {
             require(ids.add(row.unitId()), "Duplicate parity unit: " + row.unitId());
             actualCounts.merge(row.scope(), 1, Integer::sum);
@@ -56,6 +61,14 @@ public final class ParityLedgerGameTests {
                     "Missing port evidence for " + row.unitId());
             require(!row.testEvidence().isBlank() && !row.testEvidence().equals("-"),
                     "Missing test evidence for " + row.unitId());
+            for (String evidence : row.testEvidence().split(";")) {
+                if (evidence.matches("[A-Za-z][A-Za-z0-9]+")) {
+                    String expected = evidence.toLowerCase(Locale.ROOT);
+                    require(registeredTests.stream().anyMatch(name -> name.equals(expected)
+                                    || name.endsWith("." + expected) || name.endsWith(":" + expected)),
+                            "Unknown GameTest evidence for " + row.unitId() + ": " + evidence);
+                }
+            }
             if (row.scope().equals("registered_variety") && row.decision().equals("同等")) {
                 String[] target = row.portEvidence().split(":", 2);
                 require(target.length == 2, "Malformed registered-variety target: " + row.portEvidence());
@@ -100,6 +113,11 @@ public final class ParityLedgerGameTests {
             for (int tier : family.tiers()) {
                 variants++;
                 String id = OriginalRegistryCatalog.machineId(family, tier);
+                if (!OriginalRegistryCatalog.isRegisteredMachine(family, tier)) {
+                    require(!BuiltInRegistries.BLOCK.containsKey(ClayiumMod.id(id)),
+                            "An explicitly excluded machine is still registered: " + id);
+                    continue;
+                }
                 require(machineIds.add(id), "Duplicate machine variant in the catalog: " + id);
                 require(BuiltInRegistries.BLOCK.containsKey(ClayiumMod.id(id)),
                         "Catalog machine block is not registered: " + id);

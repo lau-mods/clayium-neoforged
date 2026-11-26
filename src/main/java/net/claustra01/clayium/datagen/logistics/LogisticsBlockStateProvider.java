@@ -50,13 +50,6 @@ public final class LogisticsBlockStateProvider extends BlockStateProvider {
                 }
             }
         }
-        ModelFile filter = models().getBuilder("buffer_filter_face")
-                .parent(new ModelFile.UncheckedModelFile("minecraft:block/block"))
-                .texture("overlay", ClayiumMod.id("block/filter"))
-                .texture("particle", ClayiumMod.id("block/filter"))
-                .renderType("minecraft:cutout")
-                .element().from(0, 0, -0.02F).to(16, 16, -0.01F)
-                .face(Direction.NORTH).texture("#overlay").end().end();
         LogisticsRegistration.BUFFERS.values().forEach(definition -> {
             ResourceLocation hull = ClayiumMod.id("block/machinehull-" + (definition.tier() - 1));
             ModelFile model = models().getBuilder(definition.id())
@@ -66,10 +59,6 @@ public final class LogisticsBlockStateProvider extends BlockStateProvider {
                     .element().from(0, 0, 0).to(16, 16, 16).cube("#hull").end();
             var multipart = getMultipartBuilder(definition.block().get());
             multipart.part().modelFile(model).addModel().end();
-            for (Direction facing : Direction.Plane.HORIZONTAL) {
-                multipart.part().modelFile(filter).rotationY(((int)facing.toYRot() + 180) % 360).addModel()
-                        .condition(BufferBlock.FILTERED, true).condition(BufferBlock.FACING, facing).end();
-            }
             simpleBlockItem(definition.block().get(), model);
         });
     }

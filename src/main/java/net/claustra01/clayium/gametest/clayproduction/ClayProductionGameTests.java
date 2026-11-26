@@ -94,22 +94,24 @@ public final class ClayProductionGameTests {
             ClayProductionBlockEntity machine = machine(helper,
                     ClayProductionType.AUTOMATIC_CLAY_CONDENSER_MK_II, new BlockPos(level + 1, 2, 1));
             machines[level] = machine;
-            machine.inventory().setStackInSlot(ClayProductionBlockEntity.INPUT_SLOT,
+            machine.inventory().setStackInSlot(ClayProductionBlockEntity.AUTO_GRID_START,
                     new ItemStack(ClayProductionRules.itemForLevel(level), 9));
         }
         ClayProductionBlockEntity limited = machine(helper,
                 ClayProductionType.AUTOMATIC_CLAY_CONDENSER_MK_I, new BlockPos(15, 2, 1));
-        limited.inventory().setStackInSlot(ClayProductionBlockEntity.INPUT_SLOT,
+        limited.inventory().setStackInSlot(ClayProductionBlockEntity.AUTO_GRID_START,
                 new ItemStack(ClayProductionRules.itemForLevel(2), 9));
         limited.inventory().setStackInSlot(ClayProductionBlockEntity.LIMIT_SLOT,
                 new ItemStack(ClayProductionRules.itemForLevel(2)));
         helper.runAfterDelay(3, () -> {
             for (int level = 0; level < 13; level++) {
-                ItemStack output = machines[level].inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT);
+                // TileAutoClayCondenser.sortInventory leaves the single result in the first grid slot.
+                ItemStack output = machines[level].inventory().getStackInSlot(ClayProductionBlockEntity.AUTO_GRID_START);
                 require(output.is(ClayProductionRules.itemForLevel(level + 1)) && output.getCount() == 1,
                         "Automatic compression failed at level " + level);
             }
-            require(limited.inventory().getStackInSlot(ClayProductionBlockEntity.OUTPUT_SLOT).isEmpty(),
+            ItemStack untouched = limited.inventory().getStackInSlot(ClayProductionBlockEntity.AUTO_GRID_START);
+            require(untouched.is(ClayProductionRules.itemForLevel(2)) && untouched.getCount() == 9,
                     "Compression limit was ignored");
             helper.succeed();
         });
@@ -121,29 +123,33 @@ public final class ClayProductionGameTests {
         ClayProductionBlockEntity energetic = machine(helper,
                 ClayProductionType.ENERGETIC_CLAY_CONDENSER_MK_I, new BlockPos(1, 2, 1));
         ClayProductionMenu fuelMenu = (ClayProductionMenu)energetic.createMenu(1, player.getInventory(), player);
-        require(fuelMenu.slots.size() == 40 && fuelMenu.hasFuelSlot() && !fuelMenu.hasLimitSlot(),
-                "Energetic condenser exposed the wrong slots");
+        require(fuelMenu.slots.size() == 39 && fuelMenu.slots.get(2).x == -12,
+                "Energetic condenser does not keep input, output and the outside energy slot");
         player.getInventory().setItem(9, new ItemStack(ClayProductionRules.itemForLevel(5)));
-        fuelMenu.quickMoveStack(player, 4);
+        fuelMenu.quickMoveStack(player, 3);
         require(energetic.inventory().getStackInSlot(ClayProductionBlockEntity.FUEL_SLOT).getCount() == 1,
                 "Shift-click failed to fill the CE fuel slot");
 
         ClayProductionBlockEntity automatic = machine(helper,
                 ClayProductionType.AUTOMATIC_CLAY_CONDENSER_MK_I, new BlockPos(3, 2, 1));
-        automatic.inventory().setStackInSlot(ClayProductionBlockEntity.INPUT_SLOT, new ItemStack(Items.CLAY));
         ClayProductionMenu limitMenu = (ClayProductionMenu)automatic.createMenu(2, player.getInventory(), player);
-        require(limitMenu.slots.size() == 40 && limitMenu.hasLimitSlot() && !limitMenu.hasFuelSlot(),
-                "Automatic condenser exposed the wrong slots");
-        player.getInventory().setItem(9, new ItemStack(ClayProductionRules.itemForLevel(1)));
-        limitMenu.quickMoveStack(player, 4);
-        require(automatic.inventory().getStackInSlot(ClayProductionBlockEntity.LIMIT_SLOT).getCount() == 1,
-                "Shift-click failed to fill the compression limit slot");
+        require(limitMenu.slots.size() == 21 + 36 && limitMenu.slots.get(0).x == 43 && limitMenu.slots.get(0).y == 18
+                        && limitMenu.slots.get(20).x == 151 && limitMenu.slots.get(20).y == 18,
+                "Automatic condenser does not keep ContainerAutoClayCondenser's 5x4 grid and limit memory");
+        limitMenu.setCarried(new ItemStack(ClayProductionRules.itemForLevel(1), 5));
+        limitMenu.clicked(20, 0, net.minecraft.world.inventory.ClickType.PICKUP, player);
+        require(automatic.inventory().getStackInSlot(ClayProductionBlockEntity.LIMIT_SLOT).getCount() == 1
+                        && limitMenu.getCarried().getCount() == 5,
+                "The limit memory did not remember a non-consumed copy");
+        player.getInventory().setItem(9, new ItemStack(Items.CLAY, 3));
+        limitMenu.quickMoveStack(player, 21);
+        require(automatic.inventory().getStackInSlot(ClayProductionBlockEntity.AUTO_GRID_START).is(Items.CLAY),
+                "Shift-click did not insert clay into the condenser grid");
 
         ClayProductionBlockEntity solar = machine(helper,
                 ClayProductionType.SOLAR_CLAY_FABRICATOR_MK_I, new BlockPos(5, 2, 1));
         ClayProductionMenu solarMenu = (ClayProductionMenu)solar.createMenu(3, player.getInventory(), player);
-        require(solarMenu.slots.size() == 39 && !solarMenu.hasFuelSlot() && !solarMenu.hasLimitSlot(),
-                "Solar machine exposed unused slots");
+        require(solarMenu.slots.size() == 38, "Solar machine exposed unused slots");
         helper.succeed();
     }
 
@@ -212,8 +218,11 @@ public final class ClayProductionGameTests {
         helper.runAfterDelay(2, () -> {
             var player = helper.makeMockPlayer(GameType.CREATIVE);
             ClayProductionMenu menu = (ClayProductionMenu)machine.createMenu(1, player.getInventory(), player);
-            require(menu.requiredProgress() == 890 && menu.cePerTick() == 1011,
-                    "GUI CE/t did not show the 900000 internal CE difference divided by 890 ticks");
+            require(menu.requiredProgress() == 890
+                            && machine.displayedCePerTick() == 1011,
+                    "CE/t did not use the 900000 internal CE difference divided by 890 ticks");
+            require(menu.displayedEnergy() == (long)(Math.pow(10.0D, 6) * menu.progress() / 890L),
+                    "The GUI did not show TileSolarClayFabricator's progress clay value");
             helper.succeed();
         });
     }

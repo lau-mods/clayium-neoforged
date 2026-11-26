@@ -1,6 +1,7 @@
 package net.claustra01.clayium.client.screen.gadget;
 
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
+import net.claustra01.clayium.gadget.GadgetHolderItem;
 import net.claustra01.clayium.gadget.GadgetHolderMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -11,25 +12,24 @@ public final class GadgetHolderScreen extends AbstractContainerScreen<GadgetHold
     public GadgetHolderScreen(GadgetHolderMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 173;
-        inventoryLabelY = 79;
+        imageHeight = GadgetHolderMenu.MACHINE_HEIGHT + 94;
+        inventoryLabelY = GadgetHolderMenu.MACHINE_HEIGHT;
     }
 
+    /** Original GuiTemp over ContainerInItemStack(5, 2): slots at (43 + 18i, 18 + 18j). */
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 79,
-                0, 0, 176, 90, 256, 256);
-        for (int slot = 0; slot < 16; slot++) {
-            int x = leftPos + 16 + slot % 8 * 18;
-            int y = topPos + 28 + slot / 8 * 18;
-            LegacyGuiGraphics.slot(graphics, x + 1, y + 1);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + GadgetHolderMenu.MACHINE_HEIGHT,
+                0, 0, 176, 94, 256, 256);
+        for (int slot = 0; slot < GadgetHolderItem.SLOT_COUNT; slot++) {
+            LegacyGuiGraphics.slot(graphics, leftPos + menu.slots.get(slot).x, topPos + menu.slots.get(slot).y);
         }
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, 8, 8, LegacyGuiGraphics.TEXT_COLOR, false);
+        graphics.drawString(font, title, 6, 6, LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, playerInventoryTitle, 8, inventoryLabelY,
                 LegacyGuiGraphics.TEXT_COLOR, false);
     }

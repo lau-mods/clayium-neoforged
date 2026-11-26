@@ -158,9 +158,27 @@ public final class RenderingGameTests {
                 helper.getLevel().dimension(), helper.absolutePos(targetPos)), null);
         require(helper.getBlockState(interfacePos).getValue(InterfaceBlock.LINKED),
                 "Synchronized interface did not expose its linked face state");
+        require(!helper.getBlockState(interfacePos).getValue(InterfaceBlock.DISCONNECTED),
+                "Connected interface exposed the disconnected face state");
+        helper.setBlock(targetPos, Blocks.AIR);
+        InterfaceBlockEntity.serverTick(
+                helper.getLevel(), blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
+        require(helper.getBlockState(interfacePos).getValue(InterfaceBlock.LINKED),
+                "Interface forgot its synchronization when its target disappeared");
+        require(helper.getBlockState(interfacePos).getValue(InterfaceBlock.DISCONNECTED),
+                "Interface did not expose its disconnected face state after target removal");
         blockEntity.disconnect();
         require(!helper.getBlockState(interfacePos).getValue(InterfaceBlock.LINKED),
                 "Disconnected interface retained its linked face state");
+        require(!helper.getBlockState(interfacePos).getValue(InterfaceBlock.DISCONNECTED),
+                "Unlinked interface retained its disconnected face state");
+        helper.setBlock(targetPos, Blocks.CHEST);
+        blockEntity.synchronize(new SynchronizedTarget(
+                helper.getLevel().dimension(), helper.absolutePos(targetPos)), null);
+        helper.setBlock(interfacePos, Blocks.AIR);
+        require(helper.getBlockState(interfacePos).isAir()
+                        && helper.getLevel().getBlockEntity(helper.absolutePos(interfacePos)) == null,
+                "Removing a linked interface restored a block without its block entity");
         helper.succeed();
     }
 

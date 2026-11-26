@@ -22,8 +22,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class CobblestoneGeneratorBlockEntity extends BlockEntity implements ConfigurableIoDevice {
-    private final ItemStackHandler output = new ItemStackHandler(1) {
+public final class CobblestoneGeneratorBlockEntity extends BlockEntity implements ConfigurableIoDevice,
+        net.minecraft.world.MenuProvider, net.claustra01.clayium.logistics.NormalInventoryHost {
+    private final ItemStackHandler output;
+    private ItemStackHandler createOutput(int slots) {
+        return new ItemStackHandler(slots) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -33,7 +36,8 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
         public boolean isItemValid(int slot, ItemStack stack) {
             return false;
         }
-    };
+        };
+    }
     private int progress;
     private final int[] insertionRoutes = {-1, -1, -1, -1, -1, -1};
     private final int[] extractionRoutes = {-1, -1, 0, -1, -1, -1};
@@ -43,6 +47,8 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
 
     public CobblestoneGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(EnvironmentMachineRegistration.COBBLESTONE_GENERATOR_BLOCK_ENTITY.get(), pos, state);
+        NormalInventoryLayoutHolder.Size size = NormalInventoryLayoutHolder.size(((CobblestoneGeneratorBlock)state.getBlock()).tier());
+        output = createOutput(size.columns() * size.rows());
         for (Direction direction : Direction.values()) sidedHandlers.put(direction, new OutputHandler(direction));
     }
 
@@ -55,8 +61,15 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
         if (level == null || !hasHorizontalWaterAndLava()) {
             return;
         }
-        ItemStack stored = output.getStackInSlot(0);
-        if (!stored.isEmpty() && (!stored.is(Items.COBBLESTONE) || stored.getCount() >= stored.getMaxStackSize())) {
+        // Original UtilTransfer.produceItemStack into every inventory slot.
+        int destination = -1;
+        for (int slot = 0; slot < output.getSlots() && destination < 0; slot++) {
+            ItemStack stack = output.getStackInSlot(slot);
+            if (stack.isEmpty() || stack.is(Items.COBBLESTONE) && stack.getCount() < stack.getMaxStackSize()) {
+                destination = slot;
+            }
+        }
+        if (destination < 0) {
             return;
         }
         progress++;
@@ -65,8 +78,9 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
             return;
         }
         progress = 0;
+        ItemStack stored = output.getStackInSlot(destination);
         if (stored.isEmpty()) {
-            output.setStackInSlot(0, new ItemStack(Items.COBBLESTONE));
+            output.setStackInSlot(destination, new ItemStack(Items.COBBLESTONE));
         } else {
             stored.grow(1);
             setChanged();
@@ -107,6 +121,44 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
         return ((CobblestoneGeneratorBlock)getBlockState().getBlock()).tier();
     }
 
+    @Override
+    public ItemStackHandler normalInventory() {
+        return output;
+    }
+
+    @Override
+    public net.claustra01.clayium.logistics.NormalInventoryLayout normalLayout() {
+        NormalInventoryLayoutHolder.Size size = NormalInventoryLayoutHolder.size(tier());
+        return new net.claustra01.clayium.logistics.NormalInventoryLayout(size.columns(), size.rows(), 1);
+    }
+
+    @Override
+    public net.minecraft.network.chat.Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public net.minecraft.world.inventory.AbstractContainerMenu createMenu(
+            int id, net.minecraft.world.entity.player.Inventory inventory, net.minecraft.world.entity.player.Player player) {
+        return new net.claustra01.clayium.logistics.NormalInventoryMenu(
+                EnvironmentMachineRegistration.COBBLESTONE_GENERATOR_MENU.get(), id, inventory, this);
+    }
+
+    /** Original TileCobblestoneGenerator extends TileClayBuffer: inventoryX/Y by tier (default 1x1). */
+    static final class NormalInventoryLayoutHolder {
+        record Size(int columns, int rows) { }
+
+        static Size size(int tier) {
+            return switch (tier) {
+                case 4 -> new Size(2, 1);
+                case 5 -> new Size(3, 2);
+                case 6 -> new Size(4, 3);
+                case 7 -> new Size(5, 4);
+                default -> new Size(1, 1);
+            };
+        }
+    }
+
     public ItemStackHandler output() {
         return output;
     }
@@ -129,9 +181,11 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
     }
 
     public Container dropInventory() {
-        SimpleContainer dropped = new SimpleContainer(1);
-        dropped.setItem(0, output.getStackInSlot(0).copy());
-        output.setStackInSlot(0, ItemStack.EMPTY);
+        SimpleContainer dropped = new SimpleContainer(output.getSlots());
+        for (int slot = 0; slot < output.getSlots(); slot++) {
+            dropped.setItem(slot, output.getStackInSlot(slot).copy());
+            output.setStackInSlot(slot, ItemStack.EMPTY);
+        }
         return dropped;
     }
 
@@ -147,7 +201,9 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         if (tag.contains("inventory")) {
-            output.deserializeNBT(registries, tag.getCompound("inventory"));
+            CompoundTag saved = tag.getCompound("inventory").copy();
+            saved.putInt("Size", output.getSlots());
+            output.deserializeNBT(registries, saved);
         }
         progress = tag.getInt("progress");
         loadIoState(tag, registries);

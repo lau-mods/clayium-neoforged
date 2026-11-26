@@ -2,45 +2,45 @@ package net.claustra01.clayium.multiblock.careactor;
 
 import java.util.Optional;
 
+/**
+ * Original hotfix2 {@code TileCAReactor} rules. {@code averageRank} is the mean hull metadata
+ * (rank 1 hull = 0). Efficiency speeds the craft; each craft yields one item.
+ */
 public record CaReactorFormula(
         int hullCount,
         double averageRank,
-        double outputMultiplier,
+        double efficiency,
         double energyMultiplier,
-        int compressionRank,
-        double timeMultiplier) {
+        int compressionRank) {
     public static Optional<CaReactorFormula> calculate(int hullCount, double averageRank) {
         if (hullCount < 0 || !Double.isFinite(averageRank) || averageRank < 0.0D) {
             return Optional.empty();
         }
-        double output = 0.2D * Math.pow(1.02D, hullCount) * Math.pow(7.5D, averageRank);
+        double efficiency = 0.2D * Math.pow(1.02D, hullCount) * Math.pow(7.5D, averageRank);
         double energy = Math.pow(1.01D, hullCount * averageRank);
-        double time = Math.pow(9.0D, averageRank);
-        if (!positiveFinite(output) || !positiveFinite(energy) || !positiveFinite(time)) {
+        if (!positiveFinite(efficiency) || !positiveFinite(energy)) {
             return Optional.empty();
         }
         return Optional.of(new CaReactorFormula(
-                hullCount,
-                averageRank,
-                output,
-                energy,
-                Math.min((int)averageRank, 8),
-                time));
+                hullCount, averageRank, efficiency, energy, Math.min((int)averageRank, 8)));
     }
 
+    /**
+     * {@code machineTimeToCraft = (long)(1000 * ticks * 9^rank)} advanced by
+     * {@code 1000 * efficiency} per tick (truncated because the counter is a long).
+     */
     public Optional<ScaledProcess> scale(long recipeTicks, long recipeEnergy) {
-        long ticks = checkedFloor(recipeTicks * timeMultiplier);
+        double total = 1000.0D * recipeTicks * Math.pow(9.0D, compressionRank);
+        double perTick = Math.floor(1000.0D * efficiency);
         long energy = recipeEnergy == 0L ? 0L : checkedFloor(recipeEnergy * energyMultiplier);
-        if (ticks < 1L || energy < 0L || energy != 0L && ticks > Long.MAX_VALUE / energy) {
+        if (!Double.isFinite(total) || total > Long.MAX_VALUE || perTick < 1.0D || energy < 0L) {
+            return Optional.empty();
+        }
+        long ticks = Math.max(1L, (long)Math.ceil((double)(long)total / perTick));
+        if (energy != 0L && ticks > Long.MAX_VALUE / energy) {
             return Optional.empty();
         }
         return Optional.of(new ScaledProcess(ticks, energy));
-    }
-
-    public long outputCount(long baseCount, boolean compress) {
-        long count = checkedFloor(baseCount * outputMultiplier
-                / (compress ? Math.pow(9.0D, compressionRank) : 1.0D));
-        return count < 0L ? -1L : Math.max(1L, count);
     }
 
     private static long checkedFloor(double value) {

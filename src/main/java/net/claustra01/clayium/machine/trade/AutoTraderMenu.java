@@ -39,7 +39,8 @@ public final class AutoTraderMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.INPUT_A_SLOT, 36, 53));
             addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.INPUT_B_SLOT, 62, 53));
             addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.OUTPUT_SLOT, 120, 53));
-            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.FUEL_SLOT, 8, 53));
+            // Original GuiClayEnergyTemp: the energy item sits outside the window.
+            addSlot(new SlotItemHandler(autoTrader.inventory(), AutoTraderBlockEntity.FUEL_SLOT, -12, 88 - 16));
         }
         addPlayerInventory(inventory);
 

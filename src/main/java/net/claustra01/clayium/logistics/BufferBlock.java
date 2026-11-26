@@ -3,16 +3,12 @@ package net.claustra01.clayium.logistics;
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.LogisticsRegistration;
-import net.claustra01.clayium.registry.WorkbenchRegistration;
-import net.claustra01.clayium.tool.BufferConfigurationToolItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -35,7 +31,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BufferBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty FILTERED = BooleanProperty.create("filtered");
     public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
     public static final EnumProperty<BufferBlockEntity.FaceMode> DOWN = EnumProperty.create("down", BufferBlockEntity.FaceMode.class);
     public static final EnumProperty<BufferBlockEntity.FaceMode> UP = EnumProperty.create("up", BufferBlockEntity.FaceMode.class);
@@ -51,7 +46,6 @@ public class BufferBlock extends BaseEntityBlock {
         super(properties);
         this.tier = tier;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH)
-                .setValue(FILTERED, false)
                 .setValue(PIPE, false)
                 .setValue(DOWN, BufferBlockEntity.FaceMode.DISABLED)
                 .setValue(UP, BufferBlockEntity.FaceMode.DISABLED)
@@ -59,6 +53,28 @@ public class BufferBlock extends BaseEntityBlock {
                 .setValue(SOUTH, BufferBlockEntity.FaceMode.INPUT)
                 .setValue(WEST, BufferBlockEntity.FaceMode.DISABLED)
                 .setValue(EAST, BufferBlockEntity.FaceMode.DISABLED));
+    }
+
+    /** Original TileClayBuffer.initParamsByTier inventoryX. */
+    public int inventoryColumns() {
+        return switch (tier) {
+            case 4 -> 2;
+            case 5 -> 3;
+            case 6 -> 4;
+            case 7 -> 5;
+            default -> tier >= 8 ? 9 : 1;
+        };
+    }
+
+    /** Original TileClayBuffer.initParamsByTier inventoryY. */
+    public int inventoryRows() {
+        return switch (tier) {
+            case 4 -> 1;
+            case 5 -> 2;
+            case 6 -> 3;
+            case 7, 8 -> 4;
+            default -> tier >= 9 ? 6 : 1;
+        };
     }
 
     public int tier() {
@@ -94,7 +110,7 @@ public class BufferBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING, FILTERED, PIPE, DOWN, UP, NORTH, SOUTH, WEST, EAST);
+        builder.add(FACING, PIPE, DOWN, UP, NORTH, SOUTH, WEST, EAST);
     }
 
     @Override
@@ -117,42 +133,6 @@ public class BufferBlock extends BaseEntityBlock {
             serverPlayer.openMenu(buffer, pos);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
-    }
-
-    @Override
-    protected ItemInteractionResult useItemOn(
-            ItemStack stack,
-            BlockState state,
-            Level level,
-            BlockPos pos,
-            Player player,
-            net.minecraft.world.InteractionHand hand,
-            BlockHitResult hitResult) {
-        if (stack.is(WorkbenchRegistration.DIRECTION_MEMORY_CARD.get())
-                && level.getBlockEntity(pos) instanceof BufferBlockEntity buffer) {
-            if (!level.isClientSide) {
-                if (player.isShiftKeyDown()) {
-                    BufferConfigurationToolItem.copyFrom(stack, buffer);
-                } else {
-                    BufferConfigurationToolItem.pasteTo(stack, buffer);
-                }
-            }
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
-        }
-        if (stack.is(LogisticsRegistration.ITEM_FILTER.get())
-                && level.getBlockEntity(pos) instanceof BufferBlockEntity buffer) {
-            if (!level.isClientSide) {
-                if (!buffer.filterStack().isEmpty()) {
-                    return ItemInteractionResult.FAIL;
-                }
-                buffer.setFilterStack(stack.copyWithCount(1));
-                if (!player.getAbilities().instabuild) {
-                    stack.shrink(1);
-                }
-            }
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
-        }
-        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     @Override

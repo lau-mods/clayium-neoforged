@@ -12,6 +12,12 @@ public final class MachineScreenRegistration {
     @SubscribeEvent
     public static void register(RegisterMenuScreensEvent event) {
         event.register(MachineRegistration.MACHINE_MENU.get(), ClayMachineScreen::new);
+        event.register(net.claustra01.clayium.registry.EnvironmentMachineRegistration.COBBLESTONE_GENERATOR_MENU.get(),
+                net.claustra01.clayium.client.screen.logistics.NormalInventoryScreen::new);
+        event.register(net.claustra01.clayium.registry.CaRegistration.COLLECTOR_MENU.get(),
+                net.claustra01.clayium.client.screen.logistics.NormalInventoryScreen::new);
+        event.register(net.claustra01.clayium.registry.LaserRegistration.LASER_MENU.get(),
+                net.claustra01.clayium.client.screen.legacy.ClayEnergyLaserScreen::new);
     }
 
     private MachineScreenRegistration() {

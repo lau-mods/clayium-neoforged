@@ -162,6 +162,7 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider, C
                 case 10 -> tier();
                 case 11 -> connectedCore() != null && !connectedCore().isProhibited(inventory.getStackInSlot(SAMPLE_SLOT))
                         && connectedCore().closure.consumption(inventory.getStackInSlot(SAMPLE_SLOT)) > 0L ? 1 : 0;
+                case 12, 13, 14, 15 -> (int)((energy.stored().internalValue() >>> ((index - 12) * 16)) & 0xFFFFL);
                 default -> 0;
             };
         }
@@ -172,7 +173,7 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider, C
 
         @Override
         public int getCount() {
-            return 12;
+            return 16;
         }
     };
 

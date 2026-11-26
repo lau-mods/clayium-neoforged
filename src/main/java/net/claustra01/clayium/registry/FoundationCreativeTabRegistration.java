@@ -35,7 +35,6 @@ public final class FoundationCreativeTabRegistration {
                                 MultiblockRegistration.ITEMS.forEach(output::accept);
                                 ClayTreeRegistration.ITEMS.forEach(output::accept);
                                 FluidRegistration.ITEMS.forEach(output::accept);
-                                output.accept(FluidRegistration.FLUID_FILTER);
                                 LogisticsRegistration.BLOCK_ITEMS.forEach(output::accept);
                                 output.accept(CreativeSourceRegistration.CREATIVE_ENERGY_SOURCE_ITEM);
                                 MultitrackRegistration.BLOCK_ITEMS.forEach(output::accept);

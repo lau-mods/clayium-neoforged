@@ -98,6 +98,8 @@ public class ClayMachineBlockEntity extends BlockEntity
     private final int reservedSlot;
     private final int fuelSlot;
     private final ItemStackHandler inventory;
+    public static final int DATA_COUNT = 30;
+    public static final int FLUID_CAPACITY = 16_000;
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
     private final int[] insertionRoutes = {-1, 0, -1, 1, -1, -1};
     private final int[] extractionRoutes = {0, -1, -1, -1, -1, -1};
@@ -185,7 +187,7 @@ public class ClayMachineBlockEntity extends BlockEntity
     }
 
     private FluidTank tank() {
-        return new FluidTank(16_000) {
+        return new FluidTank(FLUID_CAPACITY) {
             @Override
             protected void onContentsChanged() {
                 setChanged();
@@ -854,6 +856,11 @@ public class ClayMachineBlockEntity extends BlockEntity
         return Long.MAX_VALUE - left < right ? Long.MAX_VALUE : left + right;
     }
 
+    /** Resonance shown by the original GuiClayContainerTemp for TileCAMachines. */
+    public double displayedResonance() {
+        return level == null ? 1.0D : AugmentScanner.resonance(level, worldPosition);
+    }
+
     public double overclockFactor() {
         return level == null ? 1.0D : AugmentScanner.overclockFactor(level, worldPosition);
     }
@@ -1211,6 +1218,9 @@ public class ClayMachineBlockEntity extends BlockEntity
                         ? reactor.hullCount() : 0;
                 case 21 -> ClayMachineBlockEntity.this instanceof CaReactorCoreBlockEntity reactor
                         ? (int)Math.round(reactor.averageRank() * 100.0D) : 0;
+                case 22, 23, 24, 25 -> (int)(energy.stored().internalValue() >>> ((index - 22) * 16)) & 0xFFFF;
+                case 26, 27 -> (Float.floatToIntBits((float)displayedResonance()) >>> ((index - 26) * 16)) & 0xFFFF;
+                case 28, 29 -> (Float.floatToIntBits((float)overclockFactor()) >>> ((index - 28) * 16)) & 0xFFFF;
                 default -> 0;
             };
         }
@@ -1221,7 +1231,7 @@ public class ClayMachineBlockEntity extends BlockEntity
 
         @Override
         public int getCount() {
-            return 22;
+            return DATA_COUNT;
         }
     }
 

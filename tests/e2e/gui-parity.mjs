@@ -22,6 +22,7 @@ async function close(client) {
 await scenario(async ({ clients }) => {
   const client = clients[0];
   await command(client, 'gamemode creative');
+  await command(client, 'clear @s');
   await command(client, 'gamerule sendCommandFeedback false');
   await command(client, 'time set noon');
   await command(client, 'weather clear');
@@ -35,7 +36,7 @@ await scenario(async ({ clients }) => {
   await command(client, 'setblock -5 100 0 clayium:grinder_tier_4[facing=north]');
   await command(client, 'setblock -4 100 0 clayium:grinder_tier_4[facing=north]');
   await command(client, 'data merge block -4 100 0 {inventory:{Size:4,Items:[{Slot:0,id:"minecraft:iron_ingot",count:1},{Slot:1,id:"minecraft:cobblestone",count:64}]},energy:{clay_energy:100000L}}');
-  await command(client, 'setblock -2 100 0 clayium:buffer_tier_9[facing=north,north=disabled,east=output,filtered=true]');
+  await command(client, 'setblock -2 100 0 clayium:buffer_tier_9[facing=north,north=disabled,east=output]');
   await command(client, 'setblock 0 100 0 clayium:pan_core');
   await command(client, 'setblock 1 100 0 clayium:pan_cable');
   await command(client, 'setblock 2 100 0 clayium:pan_adapter_tier_10');
@@ -84,8 +85,16 @@ await scenario(async ({ clients }) => {
 
   await camera(client, { x: -2.0, y: 100.6, z: -2.5, yaw: 0, pitch: 8 });
   await open(client, -2, 100, 0);
-  await screenshot(client, 'AC-F046-001', 'unified-filter-buffer-settings-window');
+  await screenshot(client, 'AC-F046-001', 'original-tier-sized-buffer-inventory');
   await close(client);
+
+  await command(client, 'item replace entity @s weapon.mainhand with clayium:white_list_item_filter');
+  await mct(client, 'input', 'key', 'down', 'use');
+  await mct(client, 'input', 'key', 'up', 'use');
+  await mct(client, 'gui', 'wait-open', '--timeout', '15');
+  await screenshot(client, 'AC-F046-002', 'memory-filter-grid-and-mode');
+  await close(client);
+  await command(client, 'clear @s');
 
   await camera(client, { x: 0.5, y: 100.6, z: -2.5, yaw: 0, pitch: 8 });
   let layout = await open(client, 0, 100, 0);
@@ -144,7 +153,7 @@ await scenario(async ({ clients }) => {
 
   await camera(client, { x: 8.5, y: 100.6, z: -2.5, yaw: 0, pitch: 8 });
   await open(client, 8, 100, 0);
-  await screenshot(client, 'AC-F046-003', 'direct-fluid-empty-state-and-face-controls');
+  await screenshot(client, 'AC-F046-003', 'direct-fluid-tank-and-millibucket-value');
   await close(client);
 
   await camera(client, { x: 10.5, y: 100.6, z: -2.5, yaw: 0, pitch: 8 });
@@ -170,12 +179,10 @@ await scenario(async ({ clients }) => {
   await close(client);
   const additionalWindows = [
     ['auto_crafter_tier_5', 'auto-crafter-pattern-and-output'],
-    ['clay_interface_tier_5', 'interface-synchronization'],
     ['multitrack_buffer_tier_9', 'multitrack-color-and-filter'],
     ['distributor_tier_7', 'distributor-output-rules'],
     ['storage_container', 'storage-count-and-capacity'],
     ['void_container', 'void-container-target'],
-    ['clay_3x3_chunk_loader', 'chunk-loader-status'],
     ['energetic_clay_condenser_mk_i', 'clay-production-progress'],
     ['ca_reactor_core_mk_i', 'ca-reactor-structure-status'],
     ['chemical_metal_separator', 'metal-separator-output-layout'],

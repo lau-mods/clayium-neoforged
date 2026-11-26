@@ -4,30 +4,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.MinerRegistration;
+import net.claustra01.clayium.world.area.AreaGuiHost;
+import net.claustra01.clayium.world.area.AreaMachineBlockEntity;
+import net.claustra01.clayium.world.area.AreaMachineMenu;
+import net.claustra01.clayium.world.area.RayTraceMemory;
 import net.claustra01.clayium.world.operation.BlockOperationResult;
 import net.claustra01.clayium.world.operation.BlockOperationService;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class BasicOperationBlockEntity extends BlockEntity {
-    public static final int INPUT_SLOT = 0;
-    public static final int OUTPUT_START = 1;
-    public static final int OUTPUT_SLOTS = 9;
+/**
+ * Original Tier 6 blockMiner (TileAreaMiner) and blockActivator (TileAreaActivator) without
+ * area mode: a 3x3 inventory, a harvest SlotMemory filter, and the start/stop/loop/box buttons.
+ * Without area mode the original consumes no CE.
+ */
+public final class BasicOperationBlockEntity extends BlockEntity implements MenuProvider, AreaGuiHost {
+    public static final int GRID_SLOTS = 9;
+    public static final int HARVEST_FILTER_SLOT = 9;
     private static final int OPERATION_INTERVAL = 20;
 
-    private final ItemStackHandler inventory = new ItemStackHandler(OUTPUT_START + OUTPUT_SLOTS) {
+    private final ItemStackHandler inventory = new ItemStackHandler(GRID_SLOTS + 1) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -35,12 +53,18 @@ public final class BasicOperationBlockEntity extends BlockEntity {
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return slot == INPUT_SLOT;
+            return slot < GRID_SLOTS;
         }
     };
     private final IItemHandler itemHandler = new OperationItemHandler();
     @Nullable private UUID owner;
     private int operationTick;
+    /** TileAreaMiner.initState without area mode: state 3 (loop). */
+    private AreaMachineBlockEntity.RunMode runMode = AreaMachineBlockEntity.RunMode.LOOP;
+    private int boxState;
+    private AreaMachineBlockEntity.ActivatorTarget activatorTarget = AreaMachineBlockEntity.ActivatorTarget.BLOCK;
+    private boolean activatorRayTrace;
+    private boolean activatorSneaking;
 
     public BasicOperationBlockEntity(BlockPos pos, BlockState state) {
         super(MinerRegistration.BLOCK_ENTITY.get(), pos, state);
@@ -48,9 +72,16 @@ public final class BasicOperationBlockEntity extends BlockEntity {
 
     public static void serverTick(
             Level level, BlockPos pos, BlockState state, BasicOperationBlockEntity operation) {
+        if (operation.runMode == AreaMachineBlockEntity.RunMode.STOPPED) {
+            return;
+        }
         if (++operation.operationTick >= OPERATION_INTERVAL) {
             operation.operationTick = 0;
-            operation.runOperationNow();
+            BlockOperationResult result = operation.runOperationNow();
+            if (operation.runMode == AreaMachineBlockEntity.RunMode.ONCE
+                    && result != BlockOperationResult.UNLOADED) {
+                operation.runMode = AreaMachineBlockEntity.RunMode.STOPPED;
+            }
             operation.setChanged();
         }
     }
@@ -61,33 +92,52 @@ public final class BasicOperationBlockEntity extends BlockEntity {
         }
         Direction facing = getBlockState().getValue(BasicOperationBlock.FACING);
         BlockPos target = worldPosition.relative(facing);
+        if (operationType() == BasicOperationType.BLOCK_BREAKER || activatorTarget == AreaMachineBlockEntity.ActivatorTarget.BLOCK) {
+            BlockState targetState = serverLevel.getBlockState(target);
+            if (targetState.isAir() || !ItemFilter.accepts(
+                    inventory.getStackInSlot(HARVEST_FILTER_SLOT), new ItemStack(targetState.getBlock().asItem()))) {
+                return BlockOperationResult.NO_TARGET;
+            }
+        }
         return operationType() == BasicOperationType.BLOCK_BREAKER
                 ? breakTarget(serverLevel, target)
                 : activateTarget(serverLevel, target, facing);
     }
 
+    /** Original-style toolless inventory: evaluate drops with an unenchanted diamond pickaxe. */
     private BlockOperationResult breakTarget(ServerLevel level, BlockPos target) {
-        BlockOperationResult result = BlockOperationService.breakBlock(
+        return BlockOperationService.breakBlock(
                 level,
                 worldPosition,
                 target,
                 owner,
-                inventory.getStackInSlot(INPUT_SLOT).copy(),
-                stack -> inventory.setStackInSlot(INPUT_SLOT, stack),
+                new ItemStack(Items.DIAMOND_PICKAXE),
+                stack -> { },
                 stacks -> insertOutputs(stacks, true).isEmpty(),
                 stacks -> insertOutputs(stacks, false));
-        return result;
     }
 
     private BlockOperationResult activateTarget(ServerLevel level, BlockPos target, Direction facing) {
-        ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
+        int useSlot = useSlot();
+        ItemStack input = useSlot < 0 ? ItemStack.EMPTY : inventory.getStackInSlot(useSlot);
         ItemStack used = input.isEmpty() ? ItemStack.EMPTY : input.copyWithCount(1);
-        BlockOperationService.UseResult use = BlockOperationService.useBlock(
-                level, worldPosition, target, facing, owner, used);
+        BlockOperationService.UseResult use = null;
+        if (activatorTarget != AreaMachineBlockEntity.ActivatorTarget.BLOCK) {
+            RayTraceMemory memory = RayTraceMemory.standard(facing);
+            use = BlockOperationService.useEntity(level, worldPosition, target, owner, used,
+                    memory.startAt(target), memory.look(), activatorRayTrace, activatorSneaking);
+            if (use.result() != BlockOperationResult.SUCCESS
+                    && activatorTarget == AreaMachineBlockEntity.ActivatorTarget.ENTITY) {
+                return use.result();
+            }
+        }
+        if (use == null || use.result() != BlockOperationResult.SUCCESS) {
+            use = BlockOperationService.useBlock(level, worldPosition,
+                    RayTraceMemory.standard(facing).directHit(target), owner, used, activatorSneaking);
+        }
         if (use.result() != BlockOperationResult.SUCCESS) {
             return use.result();
         }
-
         List<ItemStack> returned = new ArrayList<>(use.returnedItems());
         if (!input.isEmpty()) {
             ItemStack remainingInput = input.copy();
@@ -104,7 +154,7 @@ public final class BasicOperationBlockEntity extends BlockEntity {
             } else if (!held.isEmpty()) {
                 returned.add(held.copy());
             }
-            inventory.setStackInSlot(INPUT_SLOT, remainingInput);
+            inventory.setStackInSlot(useSlot, remainingInput);
         }
         for (ItemStack stack : returned) {
             insertOutputs(List.of(stack), false).forEach(remainder ->
@@ -116,10 +166,20 @@ public final class BasicOperationBlockEntity extends BlockEntity {
         return BlockOperationResult.SUCCESS;
     }
 
+    /** Original TileAreaActivator: the first non-empty inventory slot is used. */
+    private int useSlot() {
+        for (int slot = 0; slot < GRID_SLOTS; slot++) {
+            if (!inventory.getStackInSlot(slot).isEmpty()) {
+                return slot;
+            }
+        }
+        return -1;
+    }
+
     private List<ItemStack> insertOutputs(List<ItemStack> stacks, boolean simulate) {
-        List<ItemStack> contents = new ArrayList<>(OUTPUT_SLOTS);
-        for (int slot = 0; slot < OUTPUT_SLOTS; slot++) {
-            contents.add(inventory.getStackInSlot(OUTPUT_START + slot).copy());
+        List<ItemStack> contents = new ArrayList<>(GRID_SLOTS);
+        for (int slot = 0; slot < GRID_SLOTS; slot++) {
+            contents.add(inventory.getStackInSlot(slot).copy());
         }
         List<ItemStack> remainders = new ArrayList<>();
         for (ItemStack stack : stacks) {
@@ -142,7 +202,7 @@ public final class BasicOperationBlockEntity extends BlockEntity {
         }
         if (!simulate) {
             for (int slot = 0; slot < contents.size(); slot++) {
-                inventory.setStackInSlot(OUTPUT_START + slot, contents.get(slot));
+                inventory.setStackInSlot(slot, contents.get(slot));
             }
         }
         return remainders;
@@ -152,6 +212,7 @@ public final class BasicOperationBlockEntity extends BlockEntity {
         return ((BasicOperationBlock)getBlockState().getBlock()).operationType();
     }
 
+    @Override
     public ItemStackHandler inventory() {
         return inventory;
     }
@@ -165,12 +226,74 @@ public final class BasicOperationBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    public AreaMachineBlockEntity.RunMode runMode() {
+        return runMode;
+    }
+
+    public int boxState() {
+        return boxState;
+    }
+
     public Container dropInventory() {
-        SimpleContainer drops = new SimpleContainer(inventory.getSlots());
-        for (int slot = 0; slot < inventory.getSlots(); slot++) {
+        SimpleContainer drops = new SimpleContainer(GRID_SLOTS);
+        for (int slot = 0; slot < GRID_SLOTS; slot++) {
             drops.setItem(slot, inventory.getStackInSlot(slot));
         }
         return drops;
+    }
+
+    @Override public int guiTier() { return 6; }
+    @Override public int gridColumns() { return 3; }
+    @Override public int gridRows() { return 3; }
+    @Override public boolean hasReplacementGrid() { return false; }
+    @Override public int harvestFilterSlot() { return HARVEST_FILTER_SLOT; }
+    @Override public int fortuneFilterSlot() { return -1; }
+    @Override public int silkTouchFilterSlot() { return -1; }
+    @Override public int fuelSlot() { return -1; }
+    @Override public boolean isActivator() { return operationType() == BasicOperationType.ACTIVATOR; }
+    @Override public long storedEnergy() { return 0L; }
+    @Override public long laserEnergy() { return 0L; }
+    @Override public AreaMachineBlockEntity.ActivatorTarget activatorTarget() { return activatorTarget; }
+    @Override public boolean activatorRayTrace() { return activatorRayTrace; }
+    @Override public boolean activatorSneaking() { return activatorSneaking; }
+
+    @Override
+    public boolean applyControl(int action) {
+        switch (action) {
+            case BUTTON_START -> { runMode = AreaMachineBlockEntity.RunMode.ONCE; operationTick = 0; }
+            case BUTTON_STOP -> runMode = AreaMachineBlockEntity.RunMode.STOPPED;
+            case BUTTON_LOOP -> { runMode = AreaMachineBlockEntity.RunMode.LOOP; operationTick = 0; }
+            case BUTTON_BOX -> boxState = (boxState + 1) % 3;
+            case BUTTON_TARGET, BUTTON_RAY_TRACE, BUTTON_SNEAK -> {
+                if (!isActivator()) {
+                    return false;
+                }
+                switch (action) {
+                    case BUTTON_TARGET -> activatorTarget = activatorTarget.next();
+                    case BUTTON_RAY_TRACE -> activatorRayTrace = !activatorRayTrace;
+                    default -> activatorSneaking = !activatorSneaking;
+                }
+            }
+            default -> {
+                return false;
+            }
+        }
+        setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+        return true;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new AreaMachineMenu(containerId, playerInventory, this);
     }
 
     @Override
@@ -181,20 +304,50 @@ public final class BasicOperationBlockEntity extends BlockEntity {
             tag.putUUID("owner", owner);
         }
         tag.putInt("operation_tick", operationTick);
+        tag.putString("run_mode", runMode.name());
+        tag.putInt("box_state", boxState);
+        tag.putString("activator_target", activatorTarget.name());
+        tag.putBoolean("activator_ray_trace", activatorRayTrace);
+        tag.putBoolean("activator_sneaking", activatorSneaking);
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        inventory.deserializeNBT(registries, tag.getCompound("inventory"));
+        if (tag.contains("inventory")) {
+            CompoundTag saved = tag.getCompound("inventory").copy();
+            saved.putInt("Size", inventory.getSlots());
+            inventory.deserializeNBT(registries, saved);
+        }
         owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
         operationTick = Math.max(0, tag.getInt("operation_tick"));
+        runMode = tag.contains("run_mode")
+                ? AreaMachineBlockEntity.RunMode.valueOf(tag.getString("run_mode"))
+                : AreaMachineBlockEntity.RunMode.LOOP;
+        boxState = Math.floorMod(tag.getInt("box_state"), 3);
+        activatorTarget = tag.contains("activator_target")
+                ? AreaMachineBlockEntity.ActivatorTarget.valueOf(tag.getString("activator_target"))
+                : AreaMachineBlockEntity.ActivatorTarget.BLOCK;
+        activatorRayTrace = tag.getBoolean("activator_ray_trace");
+        activatorSneaking = tag.getBoolean("activator_sneaking");
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("box_state", boxState);
+        return tag;
     }
 
     private final class OperationItemHandler implements IItemHandler {
         @Override
         public int getSlots() {
-            return inventory.getSlots();
+            return GRID_SLOTS;
         }
 
         @Override
@@ -204,12 +357,12 @@ public final class BasicOperationBlockEntity extends BlockEntity {
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return slot == INPUT_SLOT ? inventory.insertItem(slot, stack, simulate) : stack;
+            return isActivator() ? inventory.insertItem(slot, stack, simulate) : stack;
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return slot >= OUTPUT_START ? inventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+            return inventory.extractItem(slot, amount, simulate);
         }
 
         @Override
@@ -219,7 +372,7 @@ public final class BasicOperationBlockEntity extends BlockEntity {
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return slot == INPUT_SLOT;
+            return isActivator();
         }
     }
 }

@@ -26,13 +26,15 @@ public final class VoidContainerScreen extends AbstractContainerScreen<VoidConta
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 79, topPos + 34, 0, 0, 18, 18);
+        // ContainerVacuumContainer: LargeSlotTexture at ((W-16)/2, 35), SlotMemory at (142,18).
+        LegacyGuiGraphics.largeSlot(graphics, leftPos + 80, topPos + 35);
+        LegacyGuiGraphics.slot(graphics, leftPos + 142, topPos + 18);
         graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 94);
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
+        graphics.drawString(font, title, 6, 6, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 }

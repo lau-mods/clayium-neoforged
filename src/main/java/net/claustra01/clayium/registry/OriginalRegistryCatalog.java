@@ -44,6 +44,15 @@ public final class OriginalRegistryCatalog {
             family("FluidTranslator", "fluid_translator", 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
             family("FluidTransferMachine", "fluid_transfer_machine", 5));
 
+    /** Original machine variants intentionally not registered, with the reason. */
+    public static final java.util.Map<String, String> EXCLUDED_MACHINES = java.util.Map.of(
+            "fluid_transfer_machine_tier_5",
+            "Fluid capsules were replaced by direct fluid transport; the capsule filler is removed");
+
+    public static boolean isRegisteredMachine(MachineFamily family, int tier) {
+        return !EXCLUDED_MACHINES.containsKey(machineId(family, tier));
+    }
+
     public static final List<RegisteredEntry> REGISTERED_ENTRIES = List.of(
             new RegisteredEntry("blockCompressedClay:0", "dense_clay", true),
             new RegisteredEntry("blockCompressedClay:1", "compressed_clay", true),

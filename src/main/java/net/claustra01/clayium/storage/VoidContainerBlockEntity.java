@@ -18,27 +18,43 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class VoidContainerBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
     private final int[] insertionRoutes = {-1, 0, -1, -1, -1, -1};
     private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
     private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
             insertionRoutes, extractionRoutes, () -> 1, () -> 0);
+    /** Original TileVacuumContainer filter SlotMemory: a remembered one-item copy. */
+    private final ItemStackHandler memory = new ItemStackHandler(1) {
+        @Override protected void onContentsChanged(int slot) { setChanged(); }
+        @Override public int getSlotLimit(int slot) { return 1; }
+    };
     private final IItemHandler unsidedHandler = new IItemHandler() {
         @Override public int getSlots() { return 1; }
         @Override public ItemStack getStackInSlot(int slot) { return ItemStack.EMPTY; }
         @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return ItemStack.EMPTY;
+            return accepts(stack) ? ItemStack.EMPTY : stack;
         }
         @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
             return ItemStack.EMPTY;
         }
         @Override public int getSlotLimit(int slot) { return 64; }
-        @Override public boolean isItemValid(int slot, ItemStack stack) { return true; }
+        @Override public boolean isItemValid(int slot, ItemStack stack) { return accepts(stack); }
     };
     public VoidContainerBlockEntity(BlockPos pos, BlockState state) {
         super(StorageRegistration.VOID_CONTAINER_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    /** TileVacuumContainer.checkFilterSlot: same item type or a matching remembered filter. */
+    public boolean accepts(ItemStack stack) {
+        return ItemFilter.matchesMemory(memory.getStackInSlot(0), stack);
+    }
+
+    public ItemStackHandler memoryInventory() {
+        return memory;
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
@@ -70,11 +86,15 @@ public final class VoidContainerBlockEntity extends BlockEntity implements MenuP
 
     @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
+        tag.put("filter", memory.serializeNBT(registries));
         saveIoState(tag, registries);
     }
 
     @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
+        if (tag.contains("filter")) {
+            memory.deserializeNBT(registries, tag.getCompound("filter"));
+        }
         loadIoState(tag, registries);
     }
 

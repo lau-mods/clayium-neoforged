@@ -4,45 +4,6 @@
       "apply": {
         "model": "clayium:block/buffer_tier_10"
       }
-    },
-    {
-      "apply": {
-        "model": "clayium:block/buffer_filter_face"
-      },
-      "when": {
-        "facing": "north",
-        "filtered": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "clayium:block/buffer_filter_face",
-        "y": 90
-      },
-      "when": {
-        "facing": "east",
-        "filtered": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "clayium:block/buffer_filter_face",
-        "y": 180
-      },
-      "when": {
-        "facing": "south",
-        "filtered": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "clayium:block/buffer_filter_face",
-        "y": 270
-      },
-      "when": {
-        "facing": "west",
-        "filtered": "true"
-      }
     }
   ]
 }

@@ -164,7 +164,6 @@ public final class FoundationGameTests {
         expectedItems.add(InterfaceRegistration.SYNCHRONIZER.getId());
         FluidRegistration.BLOCKS.forEach(block -> expectedBlocks.add(block.getId()));
         FluidRegistration.ITEMS.forEach(item -> expectedItems.add(item.getId()));
-        expectedItems.add(FluidRegistration.FLUID_FILTER.getId());
         LogisticsRegistration.BUFFERS.values().forEach(definition -> {
             expectedBlocks.add(definition.block().getId());
             expectedItems.add(definition.item().getId());
@@ -447,8 +446,11 @@ public final class FoundationGameTests {
             for (String state : List.of("idle", "running", "output_full", "waiting_for_energy", "recipe_changed")) {
                 expectedKeys.add("gui.clayium.machine.state." + state);
             }
-            expectedKeys.add("gui.clayium.machine.faces");
-            expectedKeys.add("gui.clayium.machine.required_energy");
+            expectedKeys.add("gui.clayium.machine.energy");
+            expectedKeys.add("gui.clayium.machine.tier");
+            expectedKeys.add("gui.clayium.machine.resonance");
+            expectedKeys.add("gui.clayium.machine.overclock");
+            expectedKeys.add("gui.clayium.machine.laser");
             expectedKeys.add("gui.clayium.machine.inventory");
             expectedKeys.add("gui.clayium.machine.empty");
             ClayTreeRegistration.BLOCKS.forEach(block ->

@@ -4,7 +4,6 @@ import java.util.List;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
 import net.claustra01.clayium.logistics.distributor.DistributorBlockEntity;
-import net.claustra01.clayium.logistics.filter.ItemFilterRule;
 import net.claustra01.clayium.logistics.filter.ItemFilterSettings;
 import net.claustra01.clayium.logistics.multitrack.MultitrackBufferBlockEntity;
 import net.claustra01.clayium.registry.LogisticsRegistration;
@@ -51,7 +50,6 @@ public final class MultitrackGameTests {
         east.setFaceMode(0, Direction.WEST, BufferBlockEntity.FaceMode.INPUT);
         south.setFaceMode(1, Direction.NORTH, BufferBlockEntity.FaceMode.INPUT);
         west.track(0).inventory().setStackInSlot(0, new ItemStack(Items.CLAY_BALL, 8));
-        west.track(0).inventory().setStackInSlot(1, new ItemStack(Items.DIAMOND, 8));
         north.track(1).inventory().setStackInSlot(0, new ItemStack(Items.IRON_INGOT, 8));
         junction.track(0).filter().setStackInSlot(0, whitelist(Items.CLAY_BALL));
         junction.track(1).filter().setStackInSlot(0, whitelist(Items.IRON_INGOT));
@@ -69,9 +67,14 @@ public final class MultitrackGameTests {
                         && count(south.track(1).inventory(), Items.IRON_INGOT) == 4
                         && count(south.track(1).inventory(), Items.CLAY_BALL) == 0,
                 "The crossing mixed colors or missed the tier 4 rate");
+        require(west.track(0).inventory().getSlots() == 1 && junction.track(0).inventory().getSlots() == 1,
+                "Tier 4 tracks do not keep the original one-slot trackInvSize");
+        west.track(0).inventory().setStackInSlot(0, new ItemStack(Items.DIAMOND, 8));
+        junction.track(0).inventory().setStackInSlot(0, ItemStack.EMPTY);
+        tick(helper, west, 8);
         require(count(west.track(0).inventory(), Items.DIAMOND) == 8
-                        && count(east.track(0).inventory(), Items.DIAMOND) == 0,
-                "The junction filter transferred a rejected item");
+                        && count(junction.track(0).inventory(), Items.DIAMOND) == 0,
+                "The junction track filter accepted a rejected item");
 
         CompoundTag saved = junction.saveWithFullMetadata(helper.getLevel().registryAccess());
         MultitrackBufferBlockEntity loaded = new MultitrackBufferBlockEntity(junction.getBlockPos(), junction.getBlockState());
@@ -177,9 +180,8 @@ public final class MultitrackGameTests {
 
     private static ItemStack whitelist(Item item) {
         ItemStack filter = LogisticsRegistration.ITEM_FILTER.toStack();
-        filter.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), new ItemFilterSettings(
-                ItemFilterSettings.Mode.WHITELIST,
-                List.of(ItemFilterRule.fromExample(ItemFilterRule.MatchType.FUZZY, new ItemStack(item)))));
+        filter.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(),
+                ItemFilterSettings.EMPTY.withItem(0, new ItemStack(item)));
         return filter;
     }
 

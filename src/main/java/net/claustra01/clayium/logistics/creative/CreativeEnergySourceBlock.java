@@ -16,6 +16,17 @@ public final class CreativeEnergySourceBlock extends BufferBlock {
         super(properties, 13);
     }
 
+    /** Original TileCreativeEnergySource: a 1x1 inventory. */
+    @Override
+    public int inventoryColumns() {
+        return 1;
+    }
+
+    @Override
+    public int inventoryRows() {
+        return 1;
+    }
+
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CreativeEnergySourceBlockEntity(pos, state);

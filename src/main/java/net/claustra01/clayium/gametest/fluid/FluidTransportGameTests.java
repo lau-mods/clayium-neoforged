@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import net.claustra01.clayium.ClayiumMod;
-import net.claustra01.clayium.fluid.FluidFilterSettings;
 import net.claustra01.clayium.fluid.FluidTransportBlockEntity;
 import net.claustra01.clayium.fluid.FluidTransportSpecification;
 import net.claustra01.clayium.registry.FluidRegistration;
@@ -102,22 +101,23 @@ public final class FluidTransportGameTests {
         }
 
         FluidTransportSpecification tierFive = FluidTransportSpecification.TRANSLATORS.get(1);
-        require(FluidTransportSpecification.TRANSFER_MACHINE.tier() == 5
-                        && FluidTransportSpecification.TRANSFER_MACHINE.capacity() == 8_000
-                        && FluidTransportSpecification.TRANSFER_MACHINE.transferPerTick() == 500,
-                "The direct fluid transfer machine differs from its Tier 5 transport values");
-        FluidTransportBlockEntity transferMachine = placed(
-                helper, FluidTransportSpecification.TRANSFER_MACHINE, machinePosition);
-        transferMachine.setFaceMode(Direction.EAST, FluidTransportBlockEntity.FaceMode.OUTPUT);
-        transferMachine.tank().fill(new FluidStack(Fluids.WATER, 500), IFluidHandler.FluidAction.EXECUTE);
-        TestTank transferReceiver = new TestTank(1_000);
-        TEST_TANKS.put(receiverPosition, transferReceiver);
-        helper.getLevel().invalidateCapabilities(receiverPosition);
-        FluidTransportBlockEntity.serverTick(
-                helper.getLevel(), transferMachine.getBlockPos(), transferMachine.getBlockState(), transferMachine);
-        require(transferReceiver.amount() == 500 && transferMachine.tank().isEmpty(),
-                "The FluidTransferMachine did not use the shared direct-fluid transport path");
-
+        require(FluidTransportSpecification.VALUES.size() == 10
+                        && FluidTransportSpecification.VALUES.stream().noneMatch(
+                                specification -> specification.id().startsWith("fluid_transfer_machine")),
+                "The removed fluid transfer machine is still registered");
+        FluidTransportBlockEntity routed = placed(helper, tierFive, new BlockPos(6, 2, 2));
+        routed.setFaceMode(Direction.EAST, FluidTransportBlockEntity.FaceMode.OUTPUT);
+        routed.tank().fill(new FluidStack(Fluids.WATER, 500), IFluidHandler.FluidAction.EXECUTE);
+        IFluidHandler routedInput = helper.getLevel().getCapability(
+                Capabilities.FluidHandler.BLOCK, routed.getBlockPos(), Direction.UP);
+        IFluidHandler routedOutput = helper.getLevel().getCapability(
+                Capabilities.FluidHandler.BLOCK, routed.getBlockPos(), Direction.EAST);
+        require(routedInput != null && routedOutput != null
+                        && routedInput.drain(1, IFluidHandler.FluidAction.SIMULATE).isEmpty()
+                        && routedOutput.fill(new FluidStack(Fluids.WATER, 1),
+                                IFluidHandler.FluidAction.SIMULATE) == 0
+                        && routedOutput.drain(1, IFluidHandler.FluidAction.SIMULATE).getAmount() == 1,
+                "Fluid capability operations ignored the configured input and output faces");
         FluidTransportBlockEntity transport = placed(helper, tierFive, machinePosition);
         transport.setFaceMode(Direction.EAST, FluidTransportBlockEntity.FaceMode.OUTPUT);
         transport.tank().fill(new FluidStack(Fluids.WATER, 1_000), IFluidHandler.FluidAction.EXECUTE);
@@ -165,55 +165,29 @@ public final class FluidTransportGameTests {
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
-    public static void fluidFiltersFacesAndRestartPreserveExactAmounts(GameTestHelper helper) {
+    public static void fluidFacesAndRestartPreserveExactAmounts(GameTestHelper helper) {
         FluidTransportSpecification specification = FluidTransportSpecification.TRANSLATORS.get(1);
         BlockPos machinePosition = new BlockPos(2, 2, 2);
         BlockPos sourcePosition = helper.absolutePos(machinePosition.relative(Direction.NORTH));
         FluidTransportBlockEntity transport = placed(helper, specification, machinePosition);
-        transport.tank().fill(new FluidStack(Fluids.LAVA, 250), IFluidHandler.FluidAction.EXECUTE);
-        transport.toggleFilterMode();
-        transport.filterCurrentFluid();
-        require(transport.filterInventory().getStackInSlot(0).isEmpty(),
-                "Filter buttons created an item without an installed filter");
-        ItemStack filter = FluidRegistration.FLUID_FILTER.toStack();
-        filter.set(FluidRegistration.FLUID_FILTER_SETTINGS.get(), new FluidFilterSettings(
-                Optional.of(BuiltInRegistries.FLUID.getKey(Fluids.WATER)), false));
-        transport.filterInventory().setStackInSlot(0, filter);
         transport.setFaceMode(Direction.EAST, FluidTransportBlockEntity.FaceMode.OUTPUT);
         BlockPos receiverPosition = helper.absolutePos(machinePosition.relative(Direction.EAST));
         TestTank receiver = new TestTank(2_000);
         TEST_TANKS.put(receiverPosition, receiver);
         helper.getLevel().setBlockAndUpdate(receiverPosition, Blocks.IRON_BLOCK.defaultBlockState());
         helper.getLevel().invalidateCapabilities(receiverPosition);
-        IFluidHandler filteredOutput = helper.getLevel().getCapability(
-                Capabilities.FluidHandler.BLOCK, transport.getBlockPos(), Direction.EAST);
-        require(filteredOutput != null
-                        && filteredOutput.drain(250, IFluidHandler.FluidAction.SIMULATE).isEmpty(),
-                "An output face ignored the installed fluid filter");
-        FluidTransportBlockEntity.serverTick(
-                helper.getLevel(), transport.getBlockPos(), transport.getBlockState(), transport);
-        require(receiver.amount() == 0 && transport.tank().getFluidAmount() == 250,
-                "Non-matching fluid was pushed through a filtered output");
-        transport.tank().drain(250, IFluidHandler.FluidAction.EXECUTE);
 
         TestTank source = new TestTank(2_000);
-        source.fluid = new FluidStack(Fluids.LAVA, 1_000);
+        source.fluid = new FluidStack(Fluids.WATER, 1_000);
         TEST_TANKS.put(sourcePosition, source);
         helper.getLevel().setBlockAndUpdate(sourcePosition, Blocks.IRON_BLOCK.defaultBlockState());
         helper.getLevel().invalidateCapabilities(sourcePosition);
         FluidTransportBlockEntity.serverTick(
                 helper.getLevel(), transport.getBlockPos(), transport.getBlockState(), transport);
-        require(transport.tank().isEmpty() && source.amount() == 1_000,
-                "A fluid rejected by the filter was transferred");
-
-        source.fluid = new FluidStack(Fluids.WATER, 1_000);
-        FluidTransportBlockEntity.serverTick(
-                helper.getLevel(), transport.getBlockPos(), transport.getBlockState(), transport);
         require(transport.tank().getFluidAmount() == 500 && source.amount() == 500,
-                "The matching fluid did not move through an input face");
+                "The fluid did not move through an input face");
 
         transport.setFaceMode(Direction.SOUTH, FluidTransportBlockEntity.FaceMode.DISABLED);
-        transport.setRedstoneCondition(FluidTransportBlockEntity.RedstoneCondition.UNPOWERED);
         CompoundTag beforeTransfer = transport.saveWithFullMetadata(helper.getLevel().registryAccess());
         FluidTransportBlockEntity transferring = new FluidTransportBlockEntity(
                 transport.getBlockPos(), transport.getBlockState());
@@ -224,7 +198,7 @@ public final class FluidTransportGameTests {
                 transferring.getBlockState(), transferring);
         require(receiver.amount() == 125 && transferring.pending().getFluidAmount() == 375
                         && transferring.tank().isEmpty(),
-                "Reduced acceptance did not preserve the rejected matching fluid: receiver=" + receiver.amount()
+                "Reduced acceptance did not preserve the rejected fluid: receiver=" + receiver.amount()
                         + ", pending=" + transferring.pending().getFluidAmount()
                         + ", tank=" + transferring.tank().getFluidAmount());
         transferring.setFaceMode(Direction.NORTH, FluidTransportBlockEntity.FaceMode.BOTH);
@@ -234,20 +208,19 @@ public final class FluidTransportGameTests {
         loaded.loadWithComponents(saved, helper.getLevel().registryAccess());
         loaded.setLevel(helper.getLevel());
         require(loaded.faceMode(Direction.NORTH) == FluidTransportBlockEntity.FaceMode.BOTH
-                        && loaded.faceMode(Direction.SOUTH) == FluidTransportBlockEntity.FaceMode.DISABLED
-                        && loaded.redstoneCondition() == FluidTransportBlockEntity.RedstoneCondition.UNPOWERED,
-                "Face and redstone settings did not survive restart");
-        require(loaded.pending().getFluidAmount() == 375
-                        && loaded.filterSettings().fluid().orElseThrow().equals(
-                                BuiltInRegistries.FLUID.getKey(Fluids.WATER)),
-                "Pending fluid or the Data Component filter did not survive restart");
-        source.fluid = new FluidStack(Fluids.LAVA, 500);
+                        && loaded.faceMode(Direction.SOUTH) == FluidTransportBlockEntity.FaceMode.DISABLED,
+                "Face settings did not survive restart");
+        require(loaded.pending().getFluidAmount() == 375, "Pending fluid did not survive restart");
+        TEST_TANKS.remove(sourcePosition);
+        helper.getLevel().invalidateCapabilities(sourcePosition);
         receiver.executeLimit = Integer.MAX_VALUE;
         FluidTransportBlockEntity.serverTick(helper.getLevel(), loaded.getBlockPos(), loaded.getBlockState(), loaded);
         require(loaded.pending().isEmpty() && receiver.amount() == 500
                         && loaded.tank().getFluidAmount() + loaded.pending().getFluidAmount()
                                 + receiver.amount() == 500,
-                "Restored pending fluid was not resent without loss or duplication");
+                "Restored pending fluid was not resent without loss or duplication: pending="
+                        + loaded.pending().getFluidAmount() + ", receiver=" + receiver.amount()
+                        + ", tank=" + loaded.tank().getFluidAmount() + ", source=" + source.amount());
 
         FluidTransportBlockEntity noRoundTrip = placed(helper, specification, new BlockPos(6, 2, 2));
         noRoundTrip.setFaceMode(Direction.EAST, FluidTransportBlockEntity.FaceMode.BOTH);
@@ -283,16 +256,17 @@ public final class FluidTransportGameTests {
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void capsulesStayRemovedAndAllDirectFluidMachinesAreRegistered(GameTestHelper helper) {
-        require(FluidRegistration.MACHINES.size() == 11,
-                "The ten translators and one transfer machine are not all registered");
+        require(FluidRegistration.MACHINES.size() == 10,
+                "The ten fluid translators are not all registered");
         BuiltInRegistries.ITEM.keySet().stream()
                 .filter(id -> id.getNamespace().equals(ClayiumMod.MOD_ID))
                 .forEach(id -> require(!id.getPath().contains("capsule"), "Removed item is registered: " + id));
         BuiltInRegistries.BLOCK.keySet().stream()
                 .filter(id -> id.getNamespace().equals(ClayiumMod.MOD_ID))
                 .forEach(id -> require(!id.getPath().contains("capsule"), "Removed block is registered: " + id));
-        require(BuiltInRegistries.ITEM.containsKey(ClayiumMod.id("fluid_filter")),
-                "The direct-fluid filter is missing");
+        require(!BuiltInRegistries.ITEM.containsKey(ClayiumMod.id("fluid_filter"))
+                        && !BuiltInRegistries.BLOCK.containsKey(ClayiumMod.id("fluid_transfer_machine_tier_5")),
+                "The removed fluid filter or fluid transfer machine is registered");
         require(FluidTransportSpecification.VALUES.stream().allMatch(specification ->
                         BuiltInRegistries.BLOCK.containsKey(ClayiumMod.id(specification.id()))),
                 "A direct-fluid machine registry ID is missing");

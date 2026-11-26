@@ -1,25 +1,47 @@
 package net.claustra01.clayium.client.screen.logistics;
 
+import net.claustra01.clayium.client.screen.legacy.LegacyButton;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
-import net.claustra01.clayium.logistics.filter.FilterControlPayload;
 import net.claustra01.clayium.logistics.filter.FilterMenu;
+import net.claustra01.clayium.logistics.filter.ItemFilterSettings;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.network.PacketDistributor;
 
+/** Original GuiTemp over ContainerItemFilterWhiteList, plus the whitelist/blacklist toggle. */
 public final class FilterScreen extends AbstractContainerScreen<FilterMenu> {
-    private Button mode;
-    private Button type;
+    private LegacyButton mode;
 
     public FilterScreen(FilterMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 200;
+        imageHeight = FilterMenu.MACHINE_HEIGHT + 94;
+        titleLabelX = 6;
+        titleLabelY = 6;
         inventoryLabelX = 8;
-        inventoryLabelY = 108;
+        inventoryLabelY = FilterMenu.MACHINE_HEIGHT;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        mode = addRenderableWidget(new LegacyButton(leftPos + 136, topPos + 28, 36, 14, modeText(), () -> {
+            if (minecraft != null && minecraft.gameMode != null) {
+                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, FilterMenu.BUTTON_TOGGLE_MODE);
+            }
+        }));
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        mode.setMessage(modeText());
+    }
+
+    private Component modeText() {
+        return Component.translatable(menu.modeSelected() == ItemFilterSettings.Mode.WHITELIST
+                ? "gui.clayium.item_filter.whitelist" : "gui.clayium.item_filter.blacklist");
     }
 
     @Override
@@ -29,52 +51,19 @@ public final class FilterScreen extends AbstractContainerScreen<FilterMenu> {
     }
 
     @Override
-    protected void init() {
-        super.init();
-        mode = addRenderableWidget(Button.builder(modeText(), button -> send(0))
-                .bounds(leftPos + 8, topPos + 30, 48, 18).build());
-        type = addRenderableWidget(Button.builder(typeText(), button -> send(1))
-                .bounds(leftPos + 58, topPos + 30, 50, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("Tag ▶"), button -> send(2))
-                .bounds(leftPos + 110, topPos + 30, 56, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("+"), button -> send(3))
-                .bounds(leftPos + 32, topPos + 77, 20, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("−"), button -> send(4))
-                .bounds(leftPos + 54, topPos + 77, 20, 18).build());
-    }
-
-    @Override
-    protected void containerTick() {
-        super.containerTick();
-        mode.setMessage(modeText());
-        type.setMessage(typeText());
-    }
-
-    private Component modeText() {
-        return Component.translatable("gui.clayium.buffer.mode." + menu.modeSelected().getSerializedName());
-    }
-
-    private Component typeText() {
-        return Component.translatable("gui.clayium.buffer.rule." + menu.typeSelected().getSerializedName());
-    }
-
-    private void send(int action) {
-        PacketDistributor.sendToServer(new FilterControlPayload(action));
-    }
-
-    @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 110,
-                0, 0, 176, 90, 256, 256);
-        LegacyGuiGraphics.slot(graphics, leftPos + 8, topPos + 77);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + FilterMenu.MACHINE_HEIGHT,
+                0, 0, 176, 94, 256, 256);
+        for (int index = 0; index < ItemFilterSettings.SIZE; index++) {
+            LegacyGuiGraphics.slot(graphics, leftPos + menu.slots.get(index).x, topPos + menu.slots.get(index).y);
+        }
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, 8, 8, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.buffer.conditions", menu.ruleCount()),
-                8, 56, 0x404040, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+        graphics.drawString(font, title, titleLabelX, titleLabelY, LegacyGuiGraphics.TEXT_COLOR, false);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
+                LegacyGuiGraphics.TEXT_COLOR, false);
     }
 }

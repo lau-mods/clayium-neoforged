@@ -8,19 +8,16 @@ import java.util.Map;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.machine.iface.InterfaceBlock;
 import net.claustra01.clayium.machine.iface.InterfaceBlockEntity;
-import net.claustra01.clayium.machine.iface.InterfaceMenu;
 import net.claustra01.clayium.machine.iface.InterfaceType;
 import net.claustra01.clayium.machine.iface.SynchronizedTarget;
 import net.claustra01.clayium.tool.Synchronizer;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -60,12 +57,6 @@ public final class InterfaceRegistration {
                             InterfaceBlockEntity::new,
                             BLOCKS.stream().map(DeferredBlock::get)
                                     .toArray(net.minecraft.world.level.block.Block[]::new)).build(null));
-
-    public static final DeferredHolder<MenuType<?>, MenuType<InterfaceMenu>> MENU =
-            ClayiumRegistries.MENU_TYPES.register(
-                    "interface",
-                    () -> IMenuTypeExtension.create((containerId, inventory, data) ->
-                            new InterfaceMenu(containerId, inventory, data.readBlockPos())));
 
     private static void register(
             Map<String, InterfaceDefinition> interfaces,

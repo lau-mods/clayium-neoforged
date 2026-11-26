@@ -9,7 +9,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
-import net.claustra01.clayium.multiblock.careactor.CaReactorCoreBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -21,7 +20,7 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public ClayMachineMenu(int containerId, Inventory playerInventory, BlockPos machinePos) {
-        this(containerId, playerInventory, machineAt(playerInventory, machinePos), new SimpleContainerData(22));
+        this(containerId, playerInventory, machineAt(playerInventory, machinePos), new SimpleContainerData(ClayMachineBlockEntity.DATA_COUNT));
     }
 
     public ClayMachineMenu(
@@ -116,9 +115,6 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
     }
 
     public int machineAreaHeight() {
-        if (machine instanceof CaReactorCoreBlockEntity) {
-            return 102;
-        }
         if (isChemicalMetalSeparator(machine)) {
             return 96;
         }
@@ -130,6 +126,11 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
 
     public static boolean isCentrifuge(ClayMachineBlockEntity machine) {
         return hasMethod(machine, "centrifuge");
+    }
+
+    /** Original TileCAMachines: CA Condenser and CA Injector. */
+    public static boolean isCaMachine(ClayMachineBlockEntity machine) {
+        return hasMethod(machine, "ca_condenser") || hasMethod(machine, "ca_injector");
     }
 
     public static boolean isChemicalMetalSeparator(ClayMachineBlockEntity machine) {
@@ -218,6 +219,23 @@ public final class ClayMachineMenu extends AbstractContainerMenu {
 
     public long requiredEnergy() {
         return readLong(14);
+    }
+
+    public long storedEnergy() {
+        return readLong(22);
+    }
+
+    public double resonance() {
+        return readFloat(26);
+    }
+
+    public double overclockFactor() {
+        return readFloat(28);
+    }
+
+    private double readFloat(int first) {
+        int bits = (data.get(first) & 0xFFFF) | (data.get(first + 1) & 0xFFFF) << 16;
+        return Float.intBitsToFloat(bits);
     }
 
     public boolean reactorFormed() {

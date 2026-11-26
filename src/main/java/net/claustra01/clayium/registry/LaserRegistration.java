@@ -54,6 +54,12 @@ public final class LaserRegistration {
             () -> new FoundationBlockItem(LASER_REFLECTOR.get(),
                     new Item.Properties().component(FoundationDataComponentRegistration.TIER.get(), 7)));
 
+    public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>,
+            net.minecraft.world.inventory.MenuType<net.claustra01.clayium.laser.ClayEnergyLaserMenu>>
+            LASER_MENU = ClayiumRegistries.MENU_TYPES.register(
+                    "clay_energy_laser",
+                    () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create((id, inventory, data) ->
+                            new net.claustra01.clayium.laser.ClayEnergyLaserMenu(id, inventory, data.readBlockPos())));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayEnergyLaserBlockEntity>>
             LASER_BLOCK_ENTITY = ClayiumRegistries.BLOCK_ENTITY_TYPES.register(
                     "clay_energy_laser",

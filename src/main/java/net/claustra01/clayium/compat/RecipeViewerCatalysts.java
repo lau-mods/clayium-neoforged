@@ -24,11 +24,6 @@ public final class RecipeViewerCatalysts {
                     .filter(entry -> entry.getKey().recipeMethod() == method)
                     .map(entry -> new ItemStack(entry.getValue().get())).toList();
         }
-        if (method == ClayiumRecipeMethod.FLUID_TRANSFER_MACHINE) {
-            return FluidRegistration.MACHINES.values().stream()
-                    .filter(definition -> definition.specification().id().startsWith("fluid_transfer_machine"))
-                    .map(definition -> new ItemStack(definition.item().get())).toList();
-        }
         if (method == ClayiumRecipeMethod.CA_REACTOR) {
             return CaReactorRegistration.CORES.values().stream()
                     .sorted(Comparator.comparingInt(CaReactorRegistration.CoreDefinition::tier))

@@ -13,7 +13,6 @@ import net.claustra01.clayium.laser.ClayEnergyLaserBlockEntity;
 import net.claustra01.clayium.energy.ClayEnergy;
 import net.claustra01.clayium.logistics.filter.FilterCopyValidator;
 import net.claustra01.clayium.logistics.filter.FilterDuplicatorItem;
-import net.claustra01.clayium.logistics.filter.ItemFilterRule;
 import net.claustra01.clayium.logistics.filter.ItemFilterSettings;
 import net.claustra01.clayium.machine.crucible.QuartzCrucibleBlockEntity;
 import net.claustra01.clayium.registry.AreaMachineRegistration;
@@ -79,19 +78,12 @@ public final class OriginalBehaviorGameTests {
         miner.inventory().setStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT, redstoneFilter.copy());
         miner.inventory().setStackInSlot(AreaMachineBlockEntity.FORTUNE_FILTER_SLOT, redstoneFilter.copy());
         miner.inventory().setStackInSlot(AreaMachineBlockEntity.SILK_TOUCH_FILTER_SLOT, redstoneFilter.copy());
-        ItemStack originalPick = new ItemStack(Items.DIAMOND_PICKAXE);
-        originalPick.enchant(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                .getOrThrow(Enchantments.EFFICIENCY), 2);
-        miner.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT, originalPick.copy());
         BlockPos ore = new BlockPos(3, 2, 2);
         helper.setBlock(ore, Blocks.REDSTONE_ORE);
         miner.configureArea(new AreaBounds(helper.absolutePos(ore), helper.absolutePos(ore)));
         require(miner.runOperationsNow(1) == 1 && outputCount(miner, Items.REDSTONE_ORE) == 1
                         && outputCount(miner, Items.REDSTONE) == 0,
                 "Silk Touch did not override Fortune for the independently matching filter");
-        require(originalPick.get(DataComponents.ENCHANTMENTS).equals(miner.inventory()
-                .getStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT).get(DataComponents.ENCHANTMENTS)),
-                "A filter enchantment was persisted on the real mining tool");
         miner.inventory().setStackInSlot(AreaMachineBlockEntity.SILK_TOUCH_FILTER_SLOT, ItemStack.EMPTY);
         BlockPos fortuneOre = new BlockPos(5, 2, 2);
         helper.setBlock(fortuneOre, Blocks.REDSTONE_ORE);
@@ -124,9 +116,8 @@ public final class OriginalBehaviorGameTests {
         AreaMachineBlockEntity activator = placeMachine(helper, new BlockPos(2, 2, 6), AreaMachineType.ACTIVATOR);
         BlockPos entityCell = new BlockPos(3, 2, 6);
         activator.configureArea(new AreaBounds(helper.absolutePos(entityCell), helper.absolutePos(entityCell)));
-        activator.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT,
-                new ItemStack(Items.DIAMOND_HELMET));
-        activator.applyActivatorControl(0, helper.makeMockPlayer(GameType.CREATIVE));
+        activator.inventory().setStackInSlot(0, new ItemStack(Items.DIAMOND_HELMET));
+        activator.applyControl(net.claustra01.clayium.world.area.AreaGuiHost.BUTTON_TARGET);
         ArmorStand stand = new ArmorStand(helper.getLevel(),
                 helper.absolutePos(entityCell).getX() + 0.5D, helper.absolutePos(entityCell).getY(),
                 helper.absolutePos(entityCell).getZ() + 0.5D);
@@ -134,12 +125,11 @@ public final class OriginalBehaviorGameTests {
         require(activator.runOperationsNow(1) == 1 && stand.getItemBySlot(
                         net.minecraft.world.entity.EquipmentSlot.HEAD).is(Items.DIAMOND_HELMET),
                 "Entity interaction was not delegated by the area activator");
-        require(activator.inventory().getStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT).isEmpty(),
+        require(activator.inventory().getStackInSlot(0).isEmpty(),
                 "The activator did not consume the helmet equipped on the entity");
         BlockPos deniedCell = new BlockPos(4, 2, 6);
         activator.configureArea(new AreaBounds(helper.absolutePos(deniedCell), helper.absolutePos(deniedCell)));
-        activator.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT,
-                new ItemStack(Items.DIAMOND_HELMET));
+        activator.inventory().setStackInSlot(0, new ItemStack(Items.DIAMOND_HELMET));
         ArmorStand deniedStand = new ArmorStand(helper.getLevel(),
                 helper.absolutePos(deniedCell).getX() + 0.5D, helper.absolutePos(deniedCell).getY(),
                 helper.absolutePos(deniedCell).getZ() + 0.5D);
@@ -151,16 +141,26 @@ public final class OriginalBehaviorGameTests {
         try {
             activator.runOperationsNow(1);
             require(deniedStand.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).isEmpty()
-                            && activator.inventory().getStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT)
-                                    .is(Items.DIAMOND_HELMET),
+                            && activator.inventory().getStackInSlot(0).is(Items.DIAMOND_HELMET),
                     "The activator bypassed EntityInteractSpecific cancellation");
         } finally {
             NeoForge.EVENT_BUS.unregister(denyEntity);
         }
         var player = helper.makeMockPlayer(GameType.CREATIVE);
-        activator.applyActivatorControl(1, player);
-        activator.applyActivatorControl(2, player);
-        activator.applyActivatorControl(3, player);
+        activator.applyControl(net.claustra01.clayium.world.area.AreaGuiHost.BUTTON_RAY_TRACE);
+        activator.applyControl(net.claustra01.clayium.world.area.AreaGuiHost.BUTTON_SNEAK);
+        // Original itemDirectionMemory: remember a ray trace on another block, then apply it.
+        ItemStack card = WorkbenchRegistration.DIRECTION_MEMORY_CARD.toStack();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, card);
+        BlockPos rememberedBlock = new BlockPos(6, 2, 6);
+        helper.setBlock(rememberedBlock, Blocks.STONE);
+        useDirectionCard(player, helper.absolutePos(rememberedBlock), Direction.UP, "remember");
+        var remembered = card.get(LogisticsRegistration.RAY_TRACE_MEMORY.get());
+        require(remembered != null,
+                "The direction memory card did not remember a ray trace");
+        useDirectionCard(player, activator.getBlockPos(), Direction.NORTH, "apply");
+        require(remembered.equals(activator.rayTraceMemory()),
+                "The direction memory card did not replace the activator ray trace through item interaction");
         CompoundTag saved = activator.saveWithFullMetadata(helper.getLevel().registryAccess());
         AreaMachineBlockEntity loaded = new AreaMachineBlockEntity(activator.getBlockPos(), activator.getBlockState());
         loaded.loadWithComponents(saved, helper.getLevel().registryAccess());
@@ -331,9 +331,7 @@ public final class OriginalBehaviorGameTests {
                 "A heated crucible consumed string more than once");
 
         ItemStack source = LogisticsRegistration.ITEM_FILTER.toStack();
-        ItemFilterSettings settings = new ItemFilterSettings(ItemFilterSettings.Mode.WHITELIST,
-                List.of(ItemFilterRule.fromExample(ItemFilterRule.MatchType.INTERNAL_ID,
-                        new ItemStack(Items.DIAMOND))));
+        ItemFilterSettings settings = ItemFilterSettings.EMPTY.withItem(0, new ItemStack(Items.DIAMOND));
         source.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), settings);
         ItemStack duplicator = LogisticsRegistration.FILTER_DUPLICATOR.toStack();
         ItemStack destination = LogisticsRegistration.ITEM_FILTER.toStack();
@@ -364,43 +362,36 @@ public final class OriginalBehaviorGameTests {
         require(!operatedDuplicator.getOrDefault(LogisticsRegistration.FILTER_COPY.get(), false),
                 "Sneaking did not clear the duplicator copy state");
 
-        ItemFilterSettings hundred = new ItemFilterSettings(ItemFilterSettings.Mode.WHITELIST,
-                java.util.Collections.nCopies(100,
-                        ItemFilterRule.fromExample(ItemFilterRule.MatchType.FUZZY, new ItemStack(Items.STONE))));
-        require(hundred.withRule(ItemFilterRule.fromExample(
-                        ItemFilterRule.MatchType.FUZZY, new ItemStack(Items.DIRT))).rules().size() == 100,
-                "The original 100-rule copy limit was exceeded");
-        ItemFilterSettings ninetyNine = new ItemFilterSettings(ItemFilterSettings.Mode.WHITELIST,
-                hundred.rules().subList(0, 99));
-        ItemStack nestedOne = LogisticsRegistration.ITEM_FILTER.toStack();
-        nestedOne.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), new ItemFilterSettings(
-                ItemFilterSettings.Mode.WHITELIST, List.of(ItemFilterRule.fromExample(
-                        ItemFilterRule.MatchType.FUZZY, new ItemStack(Items.DIRT)))));
-        require(ninetyNine.withRule(new ItemFilterRule(ItemFilterRule.MatchType.NESTED, "", nestedOne))
-                .rules().size() == 99, "The nested rule was not counted toward the 100-rule limit");
-        ItemStack oversized = LogisticsRegistration.ITEM_FILTER.toStack();
-        java.util.ArrayList<ItemFilterRule> oversizedRules = new java.util.ArrayList<>(ninetyNine.rules());
-        oversizedRules.add(new ItemFilterRule(ItemFilterRule.MatchType.NESTED, "", nestedOne));
-        oversized.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(),
-                new ItemFilterSettings(ItemFilterSettings.Mode.WHITELIST, oversizedRules));
-        require(!FilterCopyValidator.copy(oversized, LogisticsRegistration.FILTER_DUPLICATOR.toStack()),
-                "The duplicator accepted more than 100 total nested rules");
-        ItemStack nestedTwo = LogisticsRegistration.ITEM_FILTER.toStack();
-        nestedTwo.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), new ItemFilterSettings(
-                ItemFilterSettings.Mode.WHITELIST, List.of(new ItemFilterRule(
-                        ItemFilterRule.MatchType.NESTED, "", nestedOne))));
-        require(settings.withRule(new ItemFilterRule(ItemFilterRule.MatchType.NESTED, "", nestedTwo))
-                .rules().size() == 2, "A valid two-level nested filter was rejected as a cycle");
-        ItemStack self = LogisticsRegistration.ITEM_FILTER.toStack();
-        self.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), settings);
-        ItemFilterRule cycle = new ItemFilterRule(ItemFilterRule.MatchType.NESTED, "", self);
-        require(settings.withRule(cycle).rules().size() == settings.rules().size(),
-                "A direct nested filter cycle was accepted");
+        // IItemWithFilterSize: 100 remembered entries in total, nested entries included.
+        ItemStack nested = LogisticsRegistration.ITEM_FILTER.toStack();
+        nested.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(),
+                ItemFilterSettings.EMPTY.withItem(0, new ItemStack(Items.DIRT)));
+        for (int depth = 0; depth < 20; depth++) {
+            ItemStack outer = LogisticsRegistration.ITEM_FILTER.toStack();
+            ItemFilterSettings outerSettings = ItemFilterSettings.EMPTY;
+            for (int slot = 0; slot < ItemFilterSettings.SIZE; slot++) {
+                outerSettings = outerSettings.withItem(slot, nested);
+            }
+            outer.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), outerSettings);
+            nested = outer;
+        }
+        require(!FilterCopyValidator.copy(nested, LogisticsRegistration.FILTER_DUPLICATOR.toStack()),
+                "The duplicator accepted more than the original filter-size limit");
+        require(!net.claustra01.clayium.logistics.filter.ItemFilter.accepts(nested, new ItemStack(Items.DIRT)),
+                "An oversized nested filter was evaluated instead of being rejected");
+        ItemStack editable = LogisticsRegistration.ITEM_FILTER.toStack();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, editable);
+        var filterMenu = new net.claustra01.clayium.logistics.filter.FilterMenu(0, player.getInventory());
+        filterMenu.setCarried(nested);
+        filterMenu.clicked(0, 0, net.minecraft.world.inventory.ClickType.PICKUP, player);
+        require(editable.getOrDefault(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY)
+                        .item(0).isEmpty(),
+                "The filter GUI accepted more than the original filter-size limit");
 
         CompoundTag encoded = (CompoundTag)duplicator.save(helper.getLevel().registryAccess());
         ItemStack loaded = ItemStack.parse(helper.getLevel().registryAccess(), encoded).orElseThrow();
         require(loaded.getOrDefault(LogisticsRegistration.FILTER_COPY.get(), false)
-                        && loaded.get(LogisticsRegistration.ITEM_FILTER_SETTINGS.get()).rules().size() == 1,
+                        && loaded.get(LogisticsRegistration.ITEM_FILTER_SETTINGS.get()).entryCount() == 1,
                 "Filter copy state did not survive item-stack NBT");
         helper.succeed();
     }
@@ -449,9 +440,7 @@ public final class OriginalBehaviorGameTests {
 
     private static ItemStack filterFor(ItemStack example) {
         ItemStack filter = LogisticsRegistration.ITEM_FILTER.toStack();
-        filter.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), new ItemFilterSettings(
-                ItemFilterSettings.Mode.WHITELIST,
-                List.of(ItemFilterRule.fromExample(ItemFilterRule.MatchType.FUZZY, example))));
+        filter.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY.withItem(0, example));
         return filter;
     }
 
@@ -465,8 +454,7 @@ public final class OriginalBehaviorGameTests {
 
     private static int outputCount(AreaMachineBlockEntity machine, net.minecraft.world.item.Item item) {
         int count = 0;
-        for (int slot = AreaMachineBlockEntity.OUTPUT_START;
-                slot < AreaMachineBlockEntity.OUTPUT_START + AreaMachineBlockEntity.OUTPUT_SLOTS; slot++) {
+        for (int slot = 0; slot < machine.outputSlots(); slot++) {
             ItemStack stack = machine.inventory().getStackInSlot(slot);
             if (stack.is(item)) count += stack.getCount();
         }
@@ -480,6 +468,16 @@ public final class OriginalBehaviorGameTests {
             if (energy >= minimum && energy <= maximum) return beam;
         }
         throw new GameTestAssertException("No laser beam matched the sapling stage threshold");
+    }
+
+    private static void useDirectionCard(
+            net.minecraft.world.entity.player.Player player, BlockPos position, Direction side, String action) {
+        var hit = new net.minecraft.world.phys.BlockHitResult(
+                net.minecraft.world.phys.Vec3.atCenterOf(position), side, position, false);
+        var context = new net.minecraft.world.item.context.UseOnContext(
+                player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        require(player.getMainHandItem().onItemUseFirst(context).consumesAction(),
+                "The direction memory card did not consume its " + action + " interaction");
     }
 
     private static void require(boolean condition, String message) {

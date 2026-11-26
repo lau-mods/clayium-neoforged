@@ -8,6 +8,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public record RayTraceMemory(Vec3 relativeEye, Vec3 look, Direction hitFace) {
+    public static final com.mojang.serialization.Codec<RayTraceMemory> CODEC =
+            com.mojang.serialization.codecs.RecordCodecBuilder.create(instance -> instance.group(
+                    Vec3.CODEC.fieldOf("eye").forGetter(RayTraceMemory::relativeEye),
+                    Vec3.CODEC.fieldOf("look").forGetter(RayTraceMemory::look),
+                    Direction.CODEC.fieldOf("face").forGetter(RayTraceMemory::hitFace))
+                    .apply(instance, RayTraceMemory::new));
+
     public static RayTraceMemory lookingFrom(Player player, BlockPos machinePosition, Direction hitFace) {
         return new RayTraceMemory(
                 player.getEyePosition().subtract(Vec3.atLowerCornerOf(machinePosition)),

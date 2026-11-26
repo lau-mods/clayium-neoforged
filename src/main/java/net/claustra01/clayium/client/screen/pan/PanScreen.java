@@ -43,13 +43,13 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
         imageHeight = switch (menu.kind()) {
             case CORE -> 238;
             case ADAPTER -> 190;
-            case DUPLICATOR -> 199;
+            case DUPLICATOR -> 166;
             case CABLE -> 185;
         };
         inventoryLabelY = switch (menu.kind()) {
             case CORE -> 145;
             case ADAPTER -> 97;
-            case DUPLICATOR -> 108;
+            case DUPLICATOR -> 72;
             case CABLE -> 94;
         };
     }
@@ -147,16 +147,16 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
         int inventoryY = switch (menu.kind()) {
             case CORE -> 144;
             case ADAPTER -> 96;
-            case DUPLICATOR -> 107;
+            case DUPLICATOR -> 72;
             case CABLE -> 93;
         };
         graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + inventoryY,
                 0, 0, 176, 90, 256, 256);
         if (menu.kind() == PanBlock.Kind.DUPLICATOR) {
-            for (int[] slot : new int[][] {{35, 35}, {35, 57}, {125, 35}, {35, 79}}) {
-                LegacyGuiGraphics.slot(graphics, leftPos + slot[0], topPos + slot[1]);
-            }
-            LegacyGuiGraphics.progress(graphics, leftPos + 84, topPos + 36,
+            LegacyGuiGraphics.slot(graphics, leftPos + 32, topPos + 35, LegacyGuiGraphics.SlotTexture.IMPORT_1);
+            LegacyGuiGraphics.slot(graphics, leftPos + 50, topPos + 35, LegacyGuiGraphics.SlotTexture.IMPORT_2);
+            LegacyGuiGraphics.largeSlot(graphics, leftPos + 116, topPos + 35);
+            LegacyGuiGraphics.progress(graphics, leftPos + 76, topPos + 35,
                     menu.progress(), menu.requiredProgress());
         } else if (menu.kind() == PanBlock.Kind.CORE) {
             graphics.fill(leftPos + TABLE_X - 1, topPos + TABLE_Y - 1,
@@ -324,7 +324,8 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, 7, 6, LegacyGuiGraphics.TEXT_COLOR, false);
+        graphics.drawString(font, title, menu.kind() == PanBlock.Kind.DUPLICATOR ? 6 : 7, 6,
+                LegacyGuiGraphics.TEXT_COLOR, false);
         if (menu.kind() == PanBlock.Kind.CORE) {
             drawFitted(graphics, Component.translatable("gui.clayium.pan.energy", format(menu.requiredEnergy())),
                     4, 132, 64, LegacyGuiGraphics.TEXT_COLOR);
@@ -337,15 +338,10 @@ public final class PanScreen extends AbstractContainerScreen<PanMenu> {
             drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
                     menu.nodes(), menu.adapters()), 7, 64, 120, 0x405060);
         } else {
-            drawFitted(graphics, Component.translatable("gui.clayium.pan.network",
-                    menu.nodes(), menu.adapters()), 70, 18, 99, 0x405060);
-            drawFitted(graphics, Component.translatable(menu.sampleReachable()
-                    ? "gui.clayium.pan.reachable" : "gui.clayium.pan.unreachable"),
-                    70, 56, 99, LegacyGuiGraphics.TEXT_COLOR);
-            drawFitted(graphics, Component.translatable("gui.clayium.pan.energy", format(menu.requiredEnergy())),
-                    70, 68, 99, LegacyGuiGraphics.TEXT_COLOR);
-            drawFitted(graphics, Component.translatable("gui.clayium.pan.progress",
-                    menu.progress(), menu.requiredProgress()), 70, 80, 99, LegacyGuiGraphics.TEXT_COLOR);
+            // GuiClayEnergyTemp footer.
+            graphics.drawString(font, Component.translatable("gui.clayium.machine.energy",
+                    net.claustra01.clayium.energy.ClayEnergy.ofInternal(menu.storedEnergy()).formatGui()),
+                    4, 72 - 12, LegacyGuiGraphics.TEXT_COLOR, false);
         }
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
                 LegacyGuiGraphics.TEXT_COLOR, false);

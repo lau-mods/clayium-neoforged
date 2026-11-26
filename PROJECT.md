@@ -153,7 +153,7 @@ Expected Result: 同系統の旧木材と同じ用途で受理される。竹板
 
 #### Description
 
-依存Feature: F-001、F-002。機械レシピに`RecipeType`、`RecipeSerializer`、Codecと1.21.1のネットワーク用StreamCodecを設ける。データ形式はレシピID、加工方法、必要Tier、アイテム／FluidStack入出力、CE消費、処理tick、環境条件、重み付き出力などを明示する。原作`CRecipes`のレシピID（BendingMachine、WireDrawingMachine、PipeDrawingMachine、CuttingMachine、Lathe、MillingMachine、Condenser、Grinder、Decomposer、ECCondenser、Assembler、Inscriber、Centrifuge、Smelter、ChemicalReactor、AlloySmelter、BlastFurnace、ElectrolysisReactor、Reactor、MatterTransformer、CACondenser、CAInjector、CAReactor、ECDecomposer、FluidTransferMachine等）を検索可能にする。すべてのJSON、タグ、LootTable、Model、langはrunDataのProviderで生成・コミットする。原作の製造レシピ数値はhotfix2に従い、1.12.2版の組立機CE削減は採用しない。条件付きレシピとデータパック優先順位、リロード時のキャッシュ更新を実装する。
+依存Feature: F-001、F-002。機械レシピに`RecipeType`、`RecipeSerializer`、Codecと1.21.1のネットワーク用StreamCodecを設ける。データ形式はレシピID、加工方法、必要Tier、アイテム／FluidStack入出力、CE消費、処理tick、環境条件、重み付き出力などを明示する。原作`CRecipes`のレシピID（BendingMachine、WireDrawingMachine、PipeDrawingMachine、CuttingMachine、Lathe、MillingMachine、Condenser、Grinder、Decomposer、ECCondenser、Assembler、Inscriber、Centrifuge、Smelter、ChemicalReactor、AlloySmelter、BlastFurnace、ElectrolysisReactor、Reactor、MatterTransformer、CACondenser、CAInjector、CAReactor、ECDecomposer等）を検索可能にする。登録対象外のFluidTransferMachine用RecipeTypeは作らない。すべてのJSON、タグ、LootTable、Model、langはrunDataのProviderで生成・コミットする。原作の製造レシピ数値はhotfix2に従い、1.12.2版の組立機CE削減は採用しない。条件付きレシピとデータパック優先順位、リロード時のキャッシュ更新を実装する。
 
 #### Acceptance Criteria
 
@@ -499,7 +499,7 @@ Expected Result: 原作の段階条件を満たしたときだけシリコン製
 
 #### Description
 
-依存Feature: F-007。通常`Buffer` Tier 4～13の10機種を移植する。すべての外部アイテム搬送はNeoForge`Capabilities.ItemHandler.BLOCK`／`IItemHandler`経由とする。各面の搬入・搬出・停止、数量制限、ルート、赤石条件、原作Tier別の転送周期と速度を再現する。旧ブラックリスト・ホワイトリストを**1.12.2移植版のアイテムフィルターUIへ統合**する。フィルターにはホワイト／ブラック、ファジー一致、タグ（旧OreDictionaryに代わる）、表示名、内部ID、Mod ID、耐久値／データコンポーネント等を備える。設定複写と入れ子フィルターも維持する。
+依存Feature: F-007。通常`Buffer` Tier 4～13の10機種を移植する。すべての外部アイテム搬送はNeoForge`Capabilities.ItemHandler.BLOCK`／`IItemHandler`経由とする。各面の搬入・搬出・同時入出力・停止、pipe化、原作Tier別の転送周期と速度を再現する。バッファのGUIは原作`ContainerNormalInventory`と同じTier別の在庫寸法（2×1、3×2、4×3、5×4、9×4、Tier 9以降9×6）を使い、面設定は`clay_io_configurator`、pipe化は`clay_piping_configurator`、設定複写は`direction_memory_card`の実ブロック操作で行う。旧ブラックリスト・ホワイトリストは5×2の記憶枠を持つ単体フィルターGUIへ統合する。入れ子は深度16・合計100件までとし、循環と上限超過をGUI編集・複写・照合の全経路で拒否する。
 
 #### Acceptance Criteria
 
@@ -507,25 +507,25 @@ Expected Result: 原作の段階条件を満たしたときだけシリコン製
 
 Preconditions: バッファ10機種を、バニラチェストと他Mod互換の`IItemHandler`に接続する。
 
-Action: 面設定、搬送数・方向、赤石制御を変えて100tick転送する。
+Action: 設定工具で面設定・pipe化・搬送方向を変えて100tick転送する。
 
 Expected Result: 原作Tierの周期と転送上限で搬送され、条件を満たさない方向へ送出しない。転送総量でアイテムの複製・消失が生じない。
 
 ##### AC-F019-002: B/W統合と設定複写
 
-Preconditions: 受入許可と禁止の条件、タグ・ID・名前・Mod ID・耐久値フィルターを設定する。
+Preconditions: 記憶枠に受入許可・禁止対象と入れ子フィルターを設定する。
 
-Action: アイテムを転送し、GUIでモードを切替え、設定複写アイテムで他バッファへ転記する。
+Action: アイテムを転送し、単体フィルターGUIでモードを切替え、設定複写アイテムで他のフィルターおよびバッファへ転記する。深度16・合計100件の境界と循環も試す。
 
-Expected Result: ブラック／ホワイトが同じフィルターGUIで切替えられ、各条件で一致したアイテムだけ転送される。保存・再起動・複写後も条件が保持される。
+Expected Result: ブラック／ホワイトが同じフィルターGUIで切替えられ、記憶した品目だけがモードに従って判定される。保存・再起動・複写後も設定が保持され、過大・循環設定は受理されない。
 
 ##### AC-F019-003: 物流GUIの外観
 
-Preconditions: バッファの側面設定・フィルターを複数条件で表示する。
+Preconditions: Tier別バッファと単体フィルターGUIを表示する。
 
 Action: GUIと側面表示を撮影する。
 
-Expected Result: 原作の画面構成を基本に1.12.2版の統合操作を備え、文字や切替表示に崩れがない。
+Expected Result: バッファはTier別の原作在庫寸法、フィルターは5×2の記憶枠とB/W切替を表示し、文字・スロット・切替表示に崩れがない。削除済みのバッファ内蔵設定パネルを要求しない。
 
 ### F-020: 複線バッファと分配機
 
@@ -579,7 +579,7 @@ Expected Result: 57種の正確な容量・ページ数・素材別外観で動�
 
 #### Description
 
-依存Feature: F-007、F-019。原作`FluidTranslator` Tier 4～13の10機種と`FluidTransferMachine` Tier 5の1機種を、直接流体輸送装置として実装する。**粘土液体カプセル（1000/125/25/5/1mB）、変換レシピ、設定、流体ID表を全て廃止する。** 流体バッファは流体を直接保存・入出力し、転移装置は`Capabilities.FluidHandler.BLOCK`／`IFluidHandler`を介して他Modタンク・パイプへ転送する。1mB単位、流体フィルター、面入出力、赤石条件を備える。初期設定は上面・水平4面が入力、下面が出力とし、面ごとに入力・出力・両方・無効へ変更できる。使用する単一流体タンクと速度の全Tier値はGlobal Requirementsに示す。転送はSIMULATE→実行を基本に、実排出後に相手が拒否した差分を永続化された保留領域で回収し、再送する。保留容量を確保できない転送は開始せず、同tickの往復転送を防ぐ。
+依存Feature: F-007、F-019。原作`FluidTranslator` Tier 4～13の10機種を直接流体輸送装置として実装し、`FluidTransferMachine` Tier 5は登録対象外とする。**粘土液体カプセル（1000/125/25/5/1mB）、変換レシピ、設定、流体ID表、流体フィルター、赤石条件を全て廃止する。** 各Translatorは単一タンクへ流体を直接保存し、`Capabilities.FluidHandler.BLOCK`／`IFluidHandler`を介して他Modタンク・パイプへ1mB単位で転送する。面ごとに入力・出力・両方・無効を設定工具で変更できる。タンク容量と全方向合計の毎tick転送上限はGlobal Requirementsに示す。転送はSIMULATE→実行を基本に、実排出後に相手が拒否した差分を永続化された保留領域で回収し、再送する。保留容量を確保できない転送は開始せず、同tickの往復転送を防ぐ。
 
 #### Acceptance Criteria
 
@@ -591,21 +591,21 @@ Action: 面設定とTier別速度を変えて流体を転送し、初期量・�
 
 Expected Result: カプセルを一切経由せず流体が移送される。タンクと1tick転送量が指定表に一致し、流体種類・容量が保存され、送受側と保留領域を合算して量が保存される。
 
-##### AC-F022-002: 流体フィルターとリスタート
+##### AC-F022-002: 面設定とリスタート
 
-Preconditions: 複数種の流体を扱う外部機械と、流体フィルターを設定したバッファを接続する。
+Preconditions: 外部流体機械と、設定工具で面I/Oを設定したTranslatorを接続する。
 
-Action: 条件一致・不一致を切り替え、途中保存・チャンクロード・再起動を行う。
+Action: 入力・出力・両方・無効を切り替え、途中保存・チャンクロード・再起動を行う。
 
-Expected Result: 一致した流体だけが規定方向へ流れ、未処理保留量と面設定が再起動で復元される。外部装置の受入が減った場合も、液体が複製・消失しない。
+Expected Result: 有効な面だけを規定方向へ流れ、未処理保留量と面設定が再起動で復元される。外部装置の受入が減った場合も、液体が複製・消失しない。
 
 ##### AC-F022-003: 廃止品と流体GUI
 
-Preconditions: 全登録ID・レシピ・クリエイティブタブを列挙し、液体バッファのGUIを開く。
+Preconditions: 全登録ID・レシピ・クリエイティブタブを列挙し、TranslatorのGUIを開く。
 
-Action: カプセル系の有無と液体量の表示、側面設定UIを検査・撮影する。
+Action: カプセル・FluidTransferMachine・流体フィルターの有無と、直接タンクの液体量表示を検査・撮影する。
 
-Expected Result: 5容量のカプセルは登録されず、カプセルを要求するレシピも存在しない。液体量をmBで直接示し、原作の視認性を維持する。
+Expected Result: 5容量のカプセル、FluidTransferMachine、流体フィルターは登録されず、それらを要求するレシピも存在しない。GUIは直接タンクの液体量をmBで示し、面設定専用UIを要求しない。
 
 ### F-023: CE→FE変換器と外部エネルギー接続
 
@@ -635,7 +635,7 @@ Expected Result: 全10機種の値が表に一致し、組立レシピが初期�
 
 #### Description
 
-依存Feature: F-019、F-007。`ClayInterface` Tier 5～13の9機種、`RedstoneInterface` Tier 5～13の9機種、`ClayLaserInterface` Tier 7～13の7機種を実装する。インターフェースはブロック座標・次元・対象機械との同期情報を持ち、シンクロナイザーで接続先を指定する。アイテム入出力、外部制御状態、レーザー入射、マルチブロックとの接続を原作相当に実装する。**1.12.2移植版に準じて同期対象の情報をGUI上に常時描画する。** サーバーは同期先の存在、権限、有効な次元とチャンクを検証する。
+依存Feature: F-019、F-007。`ClayInterface` Tier 5～13の9機種、`RedstoneInterface` Tier 5～13の9機種、`ClayLaserInterface` Tier 7～13の7機種を実装する。インターフェースはブロック座標・次元・対象機械との同期情報を持ち、シンクロナイザーで接続先を指定する。アイテム入出力、外部制御状態、レーザー入射、マルチブロックとの接続を原作相当に実装する。専用Menu/GUIは持たず、未接続・接続・切断状態はサーバー権威のブロック状態と外観へ同期する。サーバーは同期先の存在、権限、有効な次元とチャンクを検証する。
 
 #### Acceptance Criteria
 
@@ -647,13 +647,13 @@ Action: 接続先を記録し、アイテム送受信・赤石制御・接続先
 
 Expected Result: 25機種が正しいTierで登録され、接続先にのみ所定の機能を実行する。消滅した対象や未ロードチャンクへ不正アクセスせず、同期情報が保存される。
 
-##### AC-F024-002: 常時同期先表示
+##### AC-F024-002: 同期状態の外観
 
-Preconditions: 接続済み、未接続、切断済みのインターフェースのGUIを開く。
+Preconditions: 接続済み、未接続、切断済みのインターフェースを設置する。
 
 Action: それぞれをスクリーンショット撮影する。
 
-Expected Result: 原作のGUI画像を用いながら同期先情報を常に表示し、非表示や文字切れがない。
+Expected Result: 3状態がサーバーの同期結果と一致するブロック外観で識別でき、存在しない専用GUIを開こうとしない。
 
 ### F-025: 自動クラフト装置
 
@@ -773,7 +773,7 @@ Preconditions: チャンク境界にチャンクローダーを設置し、周�
 
 Action: チケットを取得してtickを進め、中心と隣接8チャンクの稼働を観測する。
 
-Expected Result: 対象は正確に3×3=9チャンクであり、周囲の追加チャンクはロードしない。サーバー制約でチケットが拒否された場合は稼働不可を表示する。
+Expected Result: 対象は正確に3×3=9チャンクであり、周囲の追加チャンクはロードしない。サーバー制約でチケットが拒否された場合は保存状態とブロック外観へ稼働不可を反映し、専用GUIを要求しない。
 
 ##### AC-F029-002: チケット解放と復元
 
@@ -1131,7 +1131,6 @@ Expected Result: データパックの実際のレシピと同じ内容を表示
 | `decomposer` | 2, 3, 4 |
 | `distributor` | 7, 8, 9 |
 | `electrolysis_reactor` | 6, 7, 8, 9 |
-| `fluid_transfer_machine` | 5 |
 | `fluid_translator` | 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 |
 | `grinder` | 2, 3, 4, 5, 6, 10 |
 | `multitrack_buffer` | 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 |
@@ -1292,7 +1291,7 @@ Expected Result: 有効投入だけが一度消費され、両方式が使用で
 
 依存Feature: F-001、F-007～F-008、F-019～F-029、F-033～F-040、F-043～F-045。原作のGUIは単なるテクスチャファイルではなく、`GuiTemp`のタイル状背景、`GuiClayEnergyTemp`、`GuiClayMachines`のスロット・進捗バー、機械名、各種ボタン、付加表示の組合せで成立している。**PNGが0.1.0に全点含まれていても、配置・表示状態が同等とは限らない。** 0.1.0は`ClayMachineScreen`や新Screen群で描画を再構成しており、原作の画面に対する視覚的・操作的な同等性は未保証である。原作`mods.clayium.gui.client.*`の全20画面クラス、画面用の原作PNG19種、`GuiTemp`の座標、状態別表示、ボタン、スクロール、ツールチップを参照し、**Clayiumの全GUI**を対象に比較・修正する。
 
-対象には粘土工作台・作業板、すべての加工機とCE表示、水車、ソーラー製造機、金属分離、反応炉とCA/PAN、各種アイテム/液体バッファ・インターフェース・複線搬送・フィルター編集、範囲採掘と設定画面、自動クラフトと自動取引、貯蔵容器・57金属チェストの多ページUI、ガジェットホルダー、オートイート設定、FE変換器を含める。旧`GuiPANCore`の変換可能アイテムの**一覧・必要CE・ソート/逆順・スライダー・詳細表示・禁止指定**は、0.1.0の`PanScreen`の基本的な数値ラベルだけで代替しない。`GuiAutoTrader`の取引ページと選択状態、`GuiMultipageContainer`のページ操作、`GuiAreaMiner`の採掘モード表示も個別に照合する。
+対象には粘土工作台・作業板、すべての加工機とCE表示、水車、ソーラー製造機、金属分離、反応炉とCA/PAN、Tier別アイテム/液体バッファ・複線搬送・単体フィルター編集、範囲採掘と設定画面、自動クラフトと自動取引、貯蔵容器・57金属チェストの多ページUI、ガジェットホルダー、オートイート設定、FE変換器を含める。専用Menu/GUIを持たないインターフェースとチャンクローダーは、接続・稼働状態のブロック外観を比較対象とし、架空の画面を要求しない。旧`GuiPANCore`の変換可能アイテムの**一覧・必要CE・ソート/逆順・スライダー・詳細表示・禁止指定**は、0.1.0の`PanScreen`の基本的な数値ラベルだけで代替しない。`GuiAutoTrader`の取引ページと選択状態、`GuiMultipageContainer`のページ操作、`GuiAreaMiner`の採掘モード表示も個別に照合する。
 
 ユーザーが許可したレシピ・流体・B/W・FEの新仕様に由来する部品の変更は認める。ただし、原作の**画面構成・色・余白・スロット位置関係・バー形状・表示単位・クリック領域・状態の伝達方法**を可能な限り維持する。新しいボタン・数値欄は機能的に必要な範囲に限定して原作の視覚体系に組み込む。原作PNGを再描画せず`GuiGraphics`で参照する。現行文字フォント、GUIスケール、アクセシビリティの差による厳密なピクセル一致は要求しないが、原作と識別できないほど異なる独自デザインへの置換は未達成とする。
 
@@ -1306,7 +1305,7 @@ Preconditions: 原作20 GUIクラス、原作GUI PNG、0.1.0のScreen登録と�
 
 Action: 画面ごとの背景、ウィンドウサイズ、スロット座標、CE/進捗表示、ボタン、装置専用部品を表にして、原作基準と新スクリーンを同一GUIスケール相当で画像比較する。
 
-Expected Result: 原作画面に対応する全種類が移植版で開け、画像の誤配置・意図しない大幅な再設計・欠けたスロット・ボタン・数値欄がない。許可済み仕様変更による差は一覧化される。
+Expected Result: 現行仕様でMenuを持つ全種類が移植版で開け、画像の誤配置・意図しない大幅な再設計・欠けたスロット・ボタン・数値欄がない。GUIを廃止した装置はブロック状態を撮影し、許可済み仕様変更による差と原作GUIの対応関係を `tests/e2e/gui-parity.json` に一覧化する。
 
 ##### AC-F046-002: PAN・多ページ容器・取引と設定画面
 
@@ -1488,7 +1487,7 @@ Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件で�
 
 ### GR-01: 正本・原作JAR・アセット取得手順
 
-本`PROJECT.md`が製品仕様の正本である。本文が明示的に変更した箇所以外は**原作Minecraft 1.7.10版 Clayium 0.4.6.36 hotfix2**の数値・アイテム・レシピ・振る舞いを優先する。外部情報は参考資料として使用できるが、競合する数値・機能を黙って採用してはならない。1.12.2移植版の扱いは、統合B/Wフィルター、インターフェース同期先の常時表示、広いTier表示、ソーラーCE/t表示の改善、およびGUIの利便性だけを明示的に取り込む。それ以外のゲームバランスはhotfix2を優先する。
+本`PROJECT.md`が製品仕様の正本である。本文が明示的に変更した箇所以外は**原作Minecraft 1.7.10版 Clayium 0.4.6.36 hotfix2**の数値・アイテム・レシピ・振る舞いを優先する。外部情報は参考資料として使用できるが、競合する数値・機能を黙って採用してはならない。1.12.2移植版の扱いは、統合B/Wフィルター、広いTier表示、ソーラーCE/t表示の改善、およびGUIの利便性だけを明示的に取り込む。インターフェースは専用GUIを持たず接続状態をブロック外観へ同期する。それ以外のゲームバランスはhotfix2を優先する。
 
 **必須の原本:**
 
@@ -1515,7 +1514,7 @@ Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件で�
 
 ### GR-02: 全機能の網羅性と原作機械33系列168機種
 
-次の**33系列、168機種**は原作`CBlocks`から確認済みである。品種数とTierを改めてJARから機械的に照合する。液体輸送2系列はカプセル方式を廃止して**同数の機種を直接流体方式へ置換**する。以下の系列以外にも、水車、ストレージ、金属チェスト、レーザー反射器、CA筐体、ガジェットなどの非系列登録ブロック・アイテムが存在するため、168を全登録ブロック総数と誤認しない。
+次の**33系列、168機種**は原作`CBlocks`から確認済みの台帳である。品種数とTierをJARから機械的に照合する一方、現行実装ではカプセル方式を廃止し、`FluidTransferMachine` Tier 5を登録対象外とする。したがって実登録は**32系列、167機種**で、直接流体輸送は10種の`FluidTranslator`が担当する。以下の系列以外にも、水車、ストレージ、金属チェスト、レーザー反射器、CA筐体、ガジェットなどの非系列登録ブロック・アイテムが存在するため、168を全登録ブロック総数と誤認しない。
 
 | 系列 | 登録Tier | 機種数 |
 |---|---|---:|
@@ -1551,8 +1550,8 @@ Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件で�
 | PANAdapter | 10,11,12,13 | 4 |
 | PANDuplicator | 4,5,6,7,8,9,10,11,12,13 | 10 |
 | FluidTranslator | 4,5,6,7,8,9,10,11,12,13 | 10 |
-| FluidTransferMachine | 5 | 1 |
-| **合計** | **33系列** | **168** |
+| FluidTransferMachine（現行登録対象外） | 5 | 1 |
+| **原作台帳合計** | **33系列** | **168** |
 
 ### GR-03: Tier 0～13の進行と解禁内容
 

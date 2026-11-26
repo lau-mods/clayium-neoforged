@@ -120,8 +120,6 @@ public final class EquipmentProgressionRecipes {
                 .unlockedBy("has_item_filter", InventoryChangeTrigger.TriggerInstance
                         .hasItems(LogisticsRegistration.ITEM_FILTER.get()))
                 .save(output, ClayiumMod.id("progression/equipment/item_filter_duplicator"));
-        machine(output, "fluid_filter", FluidRegistration.FLUID_FILTER.get(),
-                4, 8, 20, LogisticsRegistration.ITEM_FILTER.get(), 1, Items.BUCKET, 1);
         machine(output, "synchronizer", InterfaceRegistration.SYNCHRONIZER.get(),
                 6, ClayiumRecipeEnergy.e(1.0D, 6), 20,
                 ProgressionRecipeSupport.material("az91_d_alloy_plate"), 3,

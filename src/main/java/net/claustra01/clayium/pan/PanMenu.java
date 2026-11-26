@@ -37,7 +37,7 @@ public final class PanMenu extends AbstractContainerMenu {
     private int adapterPage;
 
     public PanMenu(int containerId, Inventory inventory, BlockPos position) {
-        this(containerId, inventory, panAt(inventory, position), new SimpleContainerData(12));
+        this(containerId, inventory, panAt(inventory, position), new SimpleContainerData(16));
     }
 
     public PanMenu(int containerId, Inventory inventory, PanBlockEntity pan, ContainerData data) {
@@ -47,10 +47,11 @@ public final class PanMenu extends AbstractContainerMenu {
         this.data = data;
         viewer = inventory.player instanceof ServerPlayer serverPlayer ? serverPlayer : null;
         if (pan.kind() == PanBlock.Kind.DUPLICATOR) {
-            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.SAMPLE_SLOT, 35, 35));
-            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.ANTIMATTER_SLOT, 35, 57));
-            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.OUTPUT_SLOT, 125, 35));
-            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.FUEL_SLOT, 35, 79));
+            // Original PANDuplicator extends ClayAssembler: ContainerClayAssembler layout.
+            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.SAMPLE_SLOT, 32, 35));
+            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.ANTIMATTER_SLOT, 50, 35));
+            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.OUTPUT_SLOT, 116, 35));
+            addSlot(new SlotItemHandler(pan.inventory(), PanBlockEntity.FUEL_SLOT, -12, 72 - 16));
         } else if (pan.kind() == PanBlock.Kind.ADAPTER) {
             IItemHandler patterns = new AdapterPageHandler(pan.adapterPatterns());
             IItemHandler results = new AdapterPageHandler(pan.adapterResults());
@@ -74,7 +75,7 @@ public final class PanMenu extends AbstractContainerMenu {
         int playerInventoryY = switch (pan.kind()) {
             case CORE -> 156;
             case ADAPTER -> 108;
-            case DUPLICATOR -> 119;
+            case DUPLICATOR -> 84;
             case CABLE -> 105;
         };
         for (int row = 0; row < 3; row++) {
@@ -174,6 +175,10 @@ public final class PanMenu extends AbstractContainerMenu {
 
     public long requiredProgress() {
         return read(2, 2);
+    }
+
+    public long storedEnergy() {
+        return read(12, 4);
     }
 
     public long requiredEnergy() {

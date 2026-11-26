@@ -160,7 +160,7 @@ public final class CaReactorCoreBlockEntity extends ClayMachineBlockEntity imple
                 scaled.requiredProgress(),
                 ClayEnergy.ofInternal(scaled.energyPerProgress()),
                 ClayEnergy.ofInternal(total),
-                formula.timeMultiplier(),
+                Math.pow(9.0D, formula.compressionRank()) / formula.efficiency(),
                 formula.energyMultiplier(),
                 1.0D);
     }
@@ -173,22 +173,11 @@ public final class CaReactorCoreBlockEntity extends ClayMachineBlockEntity imple
         }
         List<ItemStack> outputs = new ArrayList<>();
         for (ItemStack base : recipe.itemOutputs()) {
-            boolean compress = base.is(MaterialRegistration.MATERIAL_ITEMS.get("pure_antimatter").get());
-            long count = formula.outputCount(base.getCount(), compress);
-            if (count <= 0L) {
-                return List.of();
-            }
-            ItemStack item = compress
+            // TileCAReactor.getResultPureAntimatter: one item compressed by the structure rank.
+            outputs.add(base.is(MaterialRegistration.MATERIAL_ITEMS.get("pure_antimatter").get())
                     ? new ItemStack(MaterialRegistration.MATERIAL_ITEMS.get(
-                            PURE_ANTIMATTER_OUTPUTS[formula.compressionRank()]).get()) : base.copy();
-            while (count > 0L) {
-                int stackCount = (int)Math.min(count, item.getMaxStackSize());
-                outputs.add(item.copyWithCount(stackCount));
-                count -= stackCount;
-                if (outputs.size() > outputSlots()) {
-                    return outputs;
-                }
-            }
+                            PURE_ANTIMATTER_OUTPUTS[formula.compressionRank()]).get(), base.getCount())
+                    : base.copy());
         }
         return outputs;
     }

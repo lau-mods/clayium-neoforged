@@ -28,6 +28,49 @@ public final class BufferConfigurationToolItem extends FoundationItem {
         return true;
     }
 
+    /**
+     * Original itemDirectionMemory.onItemUseFirst: apply a remembered ray trace to an activator,
+     * otherwise remember the player's eye and look relative to the clicked block.
+     */
+    @Override
+    public net.minecraft.world.InteractionResult onItemUseFirst(
+            ItemStack stack, net.minecraft.world.item.context.UseOnContext context) {
+        return useOn(context);
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
+        var level = context.getLevel();
+        var player = context.getPlayer();
+        if (player == null) {
+            return net.minecraft.world.InteractionResult.PASS;
+        }
+        if (level.getBlockEntity(context.getClickedPos()) instanceof BufferBlockEntity buffer) {
+            if (!level.isClientSide) {
+                if (player.isShiftKeyDown()) {
+                    copyFrom(context.getItemInHand(), buffer);
+                } else {
+                    pasteTo(context.getItemInHand(), buffer);
+                }
+            }
+            return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        if (!level.isClientSide) {
+            ItemStack card = context.getItemInHand();
+            var memory = card.get(LogisticsRegistration.RAY_TRACE_MEMORY.get());
+            if (memory != null && level.getBlockEntity(context.getClickedPos())
+                    instanceof net.claustra01.clayium.world.area.AreaMachineBlockEntity machine
+                    && machine.isActivator()) {
+                machine.setRayTraceMemory(memory);
+            } else {
+                card.set(LogisticsRegistration.RAY_TRACE_MEMORY.get(),
+                        net.claustra01.clayium.world.area.RayTraceMemory.lookingFrom(
+                                player, context.getClickedPos(), context.getClickedFace()));
+            }
+        }
+        return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
     @Override
     public void appendHoverText(
             ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {

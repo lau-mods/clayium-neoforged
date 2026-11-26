@@ -23,11 +23,6 @@ public enum CaReactorSeries implements MachineSeries {
     }
 
     @Override
-    public int outputSlots() {
-        return 64;
-    }
-
-    @Override
     public String frontTexture() {
         return "careactorcore";
     }

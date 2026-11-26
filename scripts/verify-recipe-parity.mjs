@@ -247,7 +247,7 @@ for (const row of rows) {
     compared++;
   }
 }
-if (rows.length !== 674 || compared !== 884 || explicitChanges !== 19) {
+if (rows.length !== 672 || compared !== 884 || explicitChanges !== 17) {
   fail(`Unexpected recipe inventory: rows=${rows.length}, compared=${compared}, explicit=${explicitChanges}`);
 }
 const evidenceHash = crypto.createHash('sha256').update(evidence.sort().join('\n')).digest('hex');

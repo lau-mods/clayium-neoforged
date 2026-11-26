@@ -28,11 +28,15 @@ public final class AutoCrafterScreen extends AbstractContainerScreen<AutoCrafter
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
         graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 84, 0, 0, 176, 94);
-        slots(graphics, 4, 17, 3, 3);
+        // ContainerAutoCrafter: SlotMemory pattern (filter texture), materials, results.
+        for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < 3; column++) {
+                LegacyGuiGraphics.slot(graphics, leftPos + 5 + column * 18, topPos + 18 + row * 18,
+                        LegacyGuiGraphics.SlotTexture.FILTER);
+            }
+        }
         slots(graphics, 61, 17, 3, 3);
         slots(graphics, 134, 17, 2, 3);
-        slot(graphics, 116, 35);
-        slot(graphics, 116, 59);
     }
 
     private void slots(GuiGraphics graphics, int x, int y, int columns, int rows) {
@@ -49,14 +53,9 @@ public final class AutoCrafterScreen extends AbstractContainerScreen<AutoCrafter
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        String titleText = title.getString();
-        if (font.width(titleText) > imageWidth - 14) {
-            titleText = font.plainSubstrByWidth(titleText, imageWidth - 14) + "…";
-        }
-        graphics.drawString(font, titleText, 7, 7, 0x404040, false);
-        graphics.drawString(font, Component.translatable(
-                "gui.clayium.auto_crafter.stored_ce",
-                ClayEnergy.ofInternal(menu.storedEnergy()).formatValue()), 4, 72, 0x404040, false);
+        graphics.drawString(font, title, 6, 6, 0x404040, false);
+        graphics.drawString(font, Component.translatable("gui.clayium.machine.energy",
+                ClayEnergy.ofInternal(menu.storedEnergy()).formatGui()), 4, 84 - 12, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 }

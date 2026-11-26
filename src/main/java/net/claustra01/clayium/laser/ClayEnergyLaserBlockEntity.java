@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public final class ClayEnergyLaserBlockEntity extends BlockEntity implements LaserVisual {
+public final class ClayEnergyLaserBlockEntity extends BlockEntity implements LaserVisual, net.minecraft.world.MenuProvider {
     private final ClayEnergyStorage energy = new ClayEnergyStorage();
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
@@ -80,6 +80,21 @@ public final class ClayEnergyLaserBlockEntity extends BlockEntity implements Las
 
     public LaserSpecification specification() {
         return ((ClayEnergyLaserBlock)getBlockState().getBlock()).specification();
+    }
+
+    public ItemStackHandler fuelInventory() {
+        return fuel;
+    }
+
+    @Override
+    public net.minecraft.network.chat.Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public net.minecraft.world.inventory.AbstractContainerMenu createMenu(
+            int id, net.minecraft.world.entity.player.Inventory inventory, net.minecraft.world.entity.player.Player player) {
+        return new ClayEnergyLaserMenu(id, inventory, this);
     }
 
     public ClayEnergyStorage energyStorage() {

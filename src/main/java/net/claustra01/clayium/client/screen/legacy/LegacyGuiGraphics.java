@@ -52,6 +52,39 @@ public final class LegacyGuiGraphics {
         graphics.blit(SLOT, x - 1, y - 1, 0, 0, 18, 18, 256, 256);
     }
 
+    /** Original RectangleTexture 18x18 variant drawn around the item position (x, y). */
+    public static void slot(GuiGraphics graphics, int x, int y, SlotTexture texture) {
+        graphics.blit(SLOT, x - 1, y - 1, texture.u, texture.v, 18, 18, 256, 256);
+    }
+
+    /** Original RectangleTexture.LargeSlotTexture (26x26) around the item position (x, y). */
+    public static void largeSlot(GuiGraphics graphics, int x, int y) {
+        graphics.blit(SLOT, x - 5, y - 5, 0, 32, 26, 26, 256, 256);
+    }
+
+    /** Original RectangleTexture.SmallSlotMultitrack(Filter)Textures[track]. */
+    public static void multitrackSlot(GuiGraphics graphics, int x, int y, int track, boolean filter) {
+        graphics.blit(SLOT, x - 1, y - 1, 32 + track * 32, filter ? 128 : 96, 18, 18, 256, 256);
+    }
+
+    public enum SlotTexture {
+        SMALL(0, 0),
+        IMPORT_1(32, 0),
+        IMPORT_2(32, 32),
+        EXPORT_1(64, 0),
+        EXPORT_2(64, 32),
+        ENERGETIC_CLAY(96, 0),
+        FILTER(96, 32);
+
+        private final int u;
+        private final int v;
+
+        SlotTexture(int u, int v) {
+            this.u = u;
+            this.v = v;
+        }
+    }
+
     public static void progress(GuiGraphics graphics, int x, int y, long value, long maximum) {
         graphics.blit(PROGRESS, x, y, 0, 0, 24, 17, 256, 256);
         if (value > 0L && maximum > 0L) {

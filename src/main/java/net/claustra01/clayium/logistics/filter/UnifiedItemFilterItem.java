@@ -45,9 +45,10 @@ public final class UnifiedItemFilterItem extends Item {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            // Original ContainerTemp title: the held filter's display name.
             serverPlayer.openMenu(new SimpleMenuProvider(
                     (id, inventory, owner) -> new FilterMenu(id, inventory),
-                    Component.translatable("item.clayium.white_list_item_filter")));
+                    player.getItemInHand(hand).getHoverName()));
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
     }
@@ -56,9 +57,24 @@ public final class UnifiedItemFilterItem extends Item {
     public void appendHoverText(
             ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         ItemFilterSettings settings = stack.getOrDefault(
-                LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.ALLOW_ALL);
+                LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY);
         tooltip.add(Component.translatable(
-                "tooltip.clayium.item_filter.mode." + settings.mode().name().toLowerCase()));
-        tooltip.add(Component.translatable("tooltip.clayium.item_filter.rules", settings.rules().size()));
+                "tooltip.clayium.item_filter.mode." + settings.mode().name().toLowerCase(java.util.Locale.ROOT)));
+        addEntries(settings, tooltip, 0);
+    }
+
+    /** Original ItemFilterWhitelist.addTooltip: one line per remembered stack, nested filters indented. */
+    public static void addEntries(ItemFilterSettings settings, List<Component> tooltip, int indent) {
+        for (ItemStack remembered : settings.items()) {
+            if (remembered.isEmpty() || tooltip.size() >= 100) {
+                continue;
+            }
+            tooltip.add(Component.literal(" ".repeat(indent)).append(remembered.getHoverName()));
+            ItemFilterSettings nested = remembered.is(LogisticsRegistration.ITEM_FILTER.get())
+                    ? remembered.get(LogisticsRegistration.ITEM_FILTER_SETTINGS.get()) : null;
+            if (nested != null && indent < ItemFilter.MAX_NESTING) {
+                addEntries(nested, tooltip, indent + 1);
+            }
+        }
     }
 }

@@ -11,7 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 
 public final class GadgetHolderMenu extends AbstractContainerMenu {
-    private static final int GADGET_COLUMNS = 8;
+    private static final int GADGET_COLUMNS = 5;
+    public static final int MACHINE_HEIGHT = 54;
     private final Inventory playerInventory;
     private final int holderSlot;
     private final SimpleContainer gadgets = new SimpleContainer(GadgetHolderItem.SLOT_COUNT);
@@ -28,8 +29,8 @@ public final class GadgetHolderMenu extends AbstractContainerMenu {
         holder.getOrDefault(GadgetRegistration.GADGETS.get(), ItemContainerContents.EMPTY).copyInto(gadgets.getItems());
         gadgets.addListener(this::slotsChanged);
         for (int index = 0; index < GadgetHolderItem.SLOT_COUNT; index++) {
-            int x = 17 + index % GADGET_COLUMNS * 18;
-            int y = 29 + index / GADGET_COLUMNS * 18;
+            int x = index % GADGET_COLUMNS * 18 + (176 - 18 * GADGET_COLUMNS) / 2;
+            int y = index / GADGET_COLUMNS * 18 + 18;
             addSlot(new Slot(gadgets, index, x, y) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
@@ -47,11 +48,11 @@ public final class GadgetHolderMenu extends AbstractContainerMenu {
         }
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addPlayerSlot(playerInventory, column + row * 9 + 9, 8 + column * 18, 91 + row * 18);
+                addPlayerSlot(playerInventory, column + row * 9 + 9, 8 + column * 18, MACHINE_HEIGHT + 12 + row * 18);
             }
         }
         for (int column = 0; column < 9; column++) {
-            addPlayerSlot(playerInventory, column, 8 + column * 18, 149);
+            addPlayerSlot(playerInventory, column, 8 + column * 18, MACHINE_HEIGHT + 70);
         }
     }
 

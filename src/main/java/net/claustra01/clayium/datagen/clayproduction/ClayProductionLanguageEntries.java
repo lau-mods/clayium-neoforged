@@ -33,8 +33,6 @@ public final class ClayProductionLanguageEntries {
         boolean japanese = locale.equals("ja_jp");
         add.accept("gui.clayium.clay_production.stage", japanese ? "段階: %1$s" : "Stage: %1$s");
         add.accept("gui.clayium.clay_production.remaining", japanese ? "残り: %1$s t" : "Left: %1$s t");
-        add.accept("gui.clayium.clay_production.ce_per_tick", "CE/t: %1$s");
-        add.accept("gui.clayium.clay_production.stored_ce", japanese ? "蓄積CE: %1$s" : "Stored CE: %1$s");
         add.accept("gui.clayium.clay_production.state.idle", japanese ? "待機中" : "Idle");
         add.accept("gui.clayium.clay_production.state.running", japanese ? "処理中" : "Processing");
         add.accept("gui.clayium.clay_production.state.output_full", japanese ? "出力満杯" : "Output full");

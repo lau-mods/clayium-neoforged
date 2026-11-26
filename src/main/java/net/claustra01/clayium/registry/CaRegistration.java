@@ -82,6 +82,13 @@ public final class CaRegistration {
         ITEMS = List.copyOf(items);
     }
 
+    public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>,
+            net.minecraft.world.inventory.MenuType<net.claustra01.clayium.logistics.NormalInventoryMenu>>
+            COLLECTOR_MENU = ClayiumRegistries.MENU_TYPES.register(
+                    "ca_resonating_collector",
+                    () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create((id, inventory, data) ->
+                            new net.claustra01.clayium.logistics.NormalInventoryMenu(
+                                    CaRegistration.COLLECTOR_MENU.get(), id, inventory, data.readBlockPos())));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CaCollectorBlockEntity>> COLLECTOR_BLOCK_ENTITY =
             ClayiumRegistries.BLOCK_ENTITY_TYPES.register(
                     "ca_resonating_collector",

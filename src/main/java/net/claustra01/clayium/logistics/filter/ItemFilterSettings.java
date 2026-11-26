@@ -2,43 +2,75 @@ package net.claustra01.clayium.logistics.filter;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.ItemStack;
 
-public record ItemFilterSettings(Mode mode, List<ItemFilterRule> rules) {
-    public static final ItemFilterSettings ALLOW_ALL = new ItemFilterSettings(Mode.BLACKLIST, List.of());
+/**
+ * Original ItemFilterWhitelist / ItemFilterBlacklist: ten remembered stacks (5x2, GUI 20) and a
+ * whitelist/blacklist mode that replaces the two separate original items.
+ */
+public record ItemFilterSettings(Mode mode, List<ItemStack> items) {
+    public static final int SIZE = 10;
+    public static final ItemFilterSettings EMPTY = new ItemFilterSettings(Mode.WHITELIST, List.of());
     public static final Codec<ItemFilterSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Mode.CODEC
-                    .optionalFieldOf("mode", Mode.BLACKLIST).forGetter(ItemFilterSettings::mode),
-            ItemFilterRule.CODEC.listOf(0, 100)
-                    .optionalFieldOf("rules", List.of()).forGetter(ItemFilterSettings::rules))
+            Mode.CODEC.optionalFieldOf("mode", Mode.WHITELIST).forGetter(ItemFilterSettings::mode),
+            ItemStack.OPTIONAL_CODEC.listOf(0, SIZE).optionalFieldOf("items", List.of())
+                    .forGetter(ItemFilterSettings::items))
             .apply(instance, ItemFilterSettings::new));
 
     public ItemFilterSettings {
-        rules = List.copyOf(rules);
+        List<ItemStack> normalized = new ArrayList<>(SIZE);
+        for (int index = 0; index < SIZE; index++) {
+            ItemStack stack = index < items.size() ? items.get(index) : ItemStack.EMPTY;
+            normalized.add(stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1));
+        }
+        items = List.copyOf(normalized);
     }
 
-    public boolean accepts(ItemStack stack) {
-        boolean matched = rules.stream().anyMatch(rule -> ItemFilter.matches(rule, stack, 0));
-        return mode == Mode.WHITELIST ? matched : !matched;
+    public ItemStack item(int index) {
+        return items.get(index);
+    }
+
+    public boolean accepts(ItemStack candidate) {
+        return ItemFilter.accepts(this, candidate);
     }
 
     public ItemFilterSettings withMode(Mode newMode) {
-        return new ItemFilterSettings(newMode, rules);
+        return new ItemFilterSettings(newMode, items);
     }
 
-    public ItemFilterSettings withRule(ItemFilterRule rule) {
-        if (rules.size() >= 100 || !FilterCopyValidator.canAdd(this, rule)) {
-            return this;
-        }
-        java.util.ArrayList<ItemFilterRule> changed = new java.util.ArrayList<>(rules);
-        changed.add(rule);
+    public ItemFilterSettings withItem(int index, ItemStack stack) {
+        List<ItemStack> changed = new ArrayList<>(items);
+        changed.set(index, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1));
         return new ItemFilterSettings(mode, changed);
     }
 
-    public ItemFilterSettings withoutLastRule() {
-        return rules.isEmpty() ? this : new ItemFilterSettings(mode, rules.subList(0, rules.size() - 1));
+    public int entryCount() {
+        return (int)items.stream().filter(stack -> !stack.isEmpty()).count();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ItemFilterSettings settings) || mode != settings.mode) {
+            return false;
+        }
+        for (int index = 0; index < SIZE; index++) {
+            if (!ItemStack.matches(items.get(index), settings.items.get(index))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = mode.hashCode();
+        for (ItemStack stack : items) {
+            hash = hash * 31 + ItemStack.hashItemAndComponents(stack);
+        }
+        return hash;
     }
 
     public enum Mode implements StringRepresentable {

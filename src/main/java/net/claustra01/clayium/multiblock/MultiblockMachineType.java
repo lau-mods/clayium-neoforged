@@ -59,6 +59,12 @@ public enum MultiblockMachineType implements MachineSeries {
         return inputSlots;
     }
 
+    /** Original GUI 7/8 use ContainerClayChemicalReactor: two inputs and two outputs. */
+    @Override
+    public int outputSlots() {
+        return 2;
+    }
+
     @Override
     public String frontTexture() {
         return frontTexture;

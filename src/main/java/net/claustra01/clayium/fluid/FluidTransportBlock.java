@@ -104,13 +104,4 @@ public final class FluidTransportBlock extends BaseEntityBlock {
         return level.isClientSide ? null : createTickerHelper(
                 blockEntityType, FluidRegistration.BLOCK_ENTITY.get(), FluidTransportBlockEntity::serverTick);
     }
-
-    @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock())
-                && level.getBlockEntity(pos) instanceof FluidTransportBlockEntity transport) {
-            Containers.dropContents(level, pos, transport.dropInventory());
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
-    }
 }

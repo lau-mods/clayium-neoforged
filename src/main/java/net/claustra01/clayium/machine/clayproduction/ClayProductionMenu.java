@@ -28,14 +28,24 @@ public final class ClayProductionMenu extends AbstractContainerMenu {
         this.machine = machine;
         machinePos = machine.getBlockPos();
         this.data = data;
-        addSlot(new SlotItemHandler(machine.inventory(), ClayProductionBlockEntity.INPUT_SLOT, 44, 46));
-        addSlot(new SlotItemHandler(machine.inventory(), ClayProductionBlockEntity.OUTPUT_SLOT, 116, 46));
-        addSlot(new LockedSlot(machine, ClayProductionBlockEntity.RESERVED_SLOT));
-        if (machine.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER) {
-            addSlot(new SlotItemHandler(machine.inventory(), ClayProductionBlockEntity.FUEL_SLOT, 44, 68));
-        }
         if (machine.type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER) {
-            addSlot(new SlotItemHandler(machine.inventory(), ClayProductionBlockEntity.LIMIT_SLOT, 66, 68));
+            // ContainerAutoClayCondenser: 5x4 grid centred at y=18, SlotMemory limit at 108 + grid x.
+            for (int row = 0; row < AUTO_ROWS; row++) {
+                for (int column = 0; column < AUTO_COLUMNS; column++) {
+                    addSlot(new SlotItemHandler(machine.inventory(),
+                            ClayProductionBlockEntity.AUTO_GRID_START + column + row * AUTO_COLUMNS,
+                            column * 18 + AUTO_GRID_X, row * 18 + 18));
+                }
+            }
+            addSlot(new LimitSlot(machine, 108 + AUTO_GRID_X, 18));
+        } else {
+            // ContainerClayMachines: large input (44,35) and output (116,35).
+            addSlot(new SlotItemHandler(machine.inventory(), ClayProductionBlockEntity.INPUT_SLOT, 44, 35));
+            addSlot(new SlotItemHandler(machine.inventory(), ClayProductionBlockEntity.OUTPUT_SLOT, 116, 35));
+            if (machine.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER) {
+                addSlot(new SlotItemHandler(machine.inventory(), ClayProductionBlockEntity.FUEL_SLOT,
+                        -12, machineHeight() - 16));
+            }
         }
         machineSlotCount = slots.size();
         addPlayerInventory(inventory);
@@ -50,11 +60,11 @@ public final class ClayProductionMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory inventory) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 100 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, machineHeight() + 12 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 158));
+            addSlot(new Slot(inventory, column, 8 + column * 18, machineHeight() + 70));
         }
     }
 
@@ -71,22 +81,15 @@ public final class ClayProductionMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else {
+            int end = automatic() ? AUTO_ROWS * AUTO_COLUMNS : machineSlotCount;
             boolean moved = false;
-            boolean specialSlotFirst = machine.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER;
-            if (machine.type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER) {
-                specialSlotFirst = !machine.inventory()
-                        .getStackInSlot(ClayProductionBlockEntity.INPUT_SLOT).isEmpty();
+            if (machine.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER
+                    && slots.get(2).mayPlace(moving)) {
+                moved = moveItemStackTo(moving, 2, 3, false);
             }
-            int[] targets = specialSlotFirst ? new int[] {3, 0} : new int[] {0, 3};
-            for (int target : targets) {
-                if (target >= machineSlotCount) {
-                    continue;
-                }
+            for (int target = 0; target < end && !moved; target++) {
                 if (slots.get(target).mayPlace(moving)) {
                     moved = moveItemStackTo(moving, target, target + 1, false);
-                    if (moved) {
-                        break;
-                    }
                 }
             }
             if (!moved) {
@@ -120,20 +123,36 @@ public final class ClayProductionMenu extends AbstractContainerMenu {
         return readLong(8);
     }
 
-    public long cePerTick() {
+    /** Original tile.clayEnergy shown by GuiClayEnergyTemp. */
+    public long displayedEnergy() {
         return readLong(12);
+    }
+
+    public boolean automatic() {
+        return machine.type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER;
+    }
+
+    public int machineHeight() {
+        return automatic() ? AUTO_ROWS * 18 + 32 : 72;
+    }
+
+    @Override
+    public void clicked(int slotId, int button, net.minecraft.world.inventory.ClickType clickType, Player player) {
+        if (automatic() && slotId == AUTO_ROWS * AUTO_COLUMNS) {
+            if (clickType == net.minecraft.world.inventory.ClickType.PICKUP
+                    || clickType == net.minecraft.world.inventory.ClickType.QUICK_MOVE) {
+                ItemStack carried = getCarried();
+                machine.inventory().setStackInSlot(ClayProductionBlockEntity.LIMIT_SLOT,
+                        carried.isEmpty() ? ItemStack.EMPTY : carried.copyWithCount(1));
+                broadcastChanges();
+            }
+            return;
+        }
+        super.clicked(slotId, button, clickType, player);
     }
 
     public ClayProductionBlockEntity.State state() {
         return ClayProductionBlockEntity.State.values()[data.get(16)];
-    }
-
-    public boolean hasFuelSlot() {
-        return machine.type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER;
-    }
-
-    public boolean hasLimitSlot() {
-        return machine.type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER;
     }
 
     public int tier() {
@@ -156,9 +175,13 @@ public final class ClayProductionMenu extends AbstractContainerMenu {
         return value;
     }
 
-    private static final class LockedSlot extends SlotItemHandler {
-        private LockedSlot(ClayProductionBlockEntity machine, int slot) {
-            super(machine.inventory(), slot, -1000, -1000);
+    public static final int AUTO_COLUMNS = 5;
+    public static final int AUTO_ROWS = 4;
+    public static final int AUTO_GRID_X = (176 - 18 * AUTO_COLUMNS) / 2;
+
+    private static final class LimitSlot extends SlotItemHandler {
+        private LimitSlot(ClayProductionBlockEntity machine, int x, int y) {
+            super(machine.inventory(), ClayProductionBlockEntity.LIMIT_SLOT, x, y);
         }
 
         @Override

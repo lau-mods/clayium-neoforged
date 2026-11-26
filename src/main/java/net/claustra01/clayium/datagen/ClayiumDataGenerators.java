@@ -10,7 +10,6 @@ import net.claustra01.clayium.datagen.autocrafter.AutoCrafterBlockLoot;
 import net.claustra01.clayium.datagen.autocrafter.AutoCrafterBlockStateProvider;
 import net.claustra01.clayium.datagen.fluid.FluidBlockLoot;
 import net.claustra01.clayium.datagen.fluid.FluidBlockStateProvider;
-import net.claustra01.clayium.datagen.fluid.FluidItemModelProvider;
 import net.claustra01.clayium.datagen.environment.EnvironmentBlockLoot;
 import net.claustra01.clayium.datagen.environment.EnvironmentBlockStateProvider;
 import net.claustra01.clayium.datagen.energyconverter.EnergyConverterBlockLoot;
@@ -115,7 +114,6 @@ public final class ClayiumDataGenerators {
         generator.addProvider(event.includeClient(), new LogisticsItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new StorageItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new InterfaceItemModelProvider(output, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new FluidItemModelProvider(output, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "en_us"));
         generator.addProvider(event.includeClient(), new MaterialLanguageProvider(output, "ja_jp"));
 

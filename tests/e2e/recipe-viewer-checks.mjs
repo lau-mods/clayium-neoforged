@@ -131,7 +131,8 @@ export async function verifyViewer(viewer) {
     for (const [block,name] of [['grinder_tier_6','grinder'],['chemical_metal_separator','metal-separator']]) {
       const gui = show(block,'ClayMachineScreen');
       move(0,0); capture('AC-F047-001',name + '-gui');
-      openPage(gui.guiLeft + 88,gui.guiTop + 43);
+      const progress = name === 'metal-separator' ? [67,52] : [88,43];
+      openPage(gui.guiLeft + progress[0],gui.guiTop + progress[1]);
       capture('AC-F047-002',name + '-category-via-machine');
       invLookup(name === 'grinder' ? 'clayium:clay_steel_dust' : 'clayium:impure_aluminium_dust','r');
       const [left,top] = locateRecipe(name,name + '-original-nei-layout');

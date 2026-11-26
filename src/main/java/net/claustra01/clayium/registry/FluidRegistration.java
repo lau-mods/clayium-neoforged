@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.claustra01.clayium.fluid.FluidFilterSettings;
 import net.claustra01.clayium.fluid.FluidTransportBlock;
 import net.claustra01.clayium.fluid.FluidTransportBlockEntity;
 import net.claustra01.clayium.fluid.FluidTransportMenu;
@@ -24,17 +23,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 public final class FluidRegistration {
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FluidFilterSettings>> FLUID_FILTER_SETTINGS =
-            ClayiumRegistries.DATA_COMPONENT_TYPES.registerComponentType(
-                    "fluid_filter",
-                    builder -> builder.persistent(FluidFilterSettings.CODEC)
-                            .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(FluidFilterSettings.CODEC)));
-
-    public static final DeferredItem<Item> FLUID_FILTER = ClayiumRegistries.ITEMS.register(
-            "fluid_filter",
-            () -> new Item(new Item.Properties().stacksTo(1)
-                    .component(FLUID_FILTER_SETTINGS.get(), FluidFilterSettings.ALLOW_ALL)));
-
     public static final Map<String, Definition> MACHINES;
     public static final List<DeferredBlock<FluidTransportBlock>> BLOCKS;
     public static final List<DeferredItem<FoundationBlockItem>> ITEMS;

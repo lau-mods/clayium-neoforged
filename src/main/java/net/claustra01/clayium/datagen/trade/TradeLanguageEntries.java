@@ -9,8 +9,6 @@ public final class TradeLanguageEntries {
         add.accept("block.clayium.auto_trader", japanese ? "自動取引装置" : "Auto Trader");
         add.accept("gui.clayium.auto_trader.offers", japanese ? "取引一覧" : "Trades");
         add.accept("gui.clayium.auto_trader.uses", japanese ? "%1$s / %2$s 回" : "%1$s / %2$s uses");
-        add.accept("gui.clayium.auto_trader.energy", japanese ? "取引CE: %1$s" : "Trade cost: %1$s");
-        add.accept("gui.clayium.auto_trader.stored", japanese ? "蓄積: %1$s" : "Stored: %1$s");
         for (AutoTraderBlockEntity.State state : AutoTraderBlockEntity.State.values()) {
             String english = switch (state) {
                 case READY -> "Ready";

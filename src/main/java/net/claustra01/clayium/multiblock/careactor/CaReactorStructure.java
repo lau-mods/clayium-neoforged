@@ -62,7 +62,8 @@ public record CaReactorStructure(
         EnumSet<InterfaceType> interfaces = EnumSet.noneOf(InterfaceType.class);
         long totalRank = 0L;
         int coreFaces = 0;
-        int maximumRank = coreTier - 3;
+        // TileCAReactor.initParamsByTier: highest hull metadata accepted by each core tier.
+        int maximumRank = coreTier == 10 ? 1 : coreTier == 11 ? 5 : 9;
         for (BlockPos coilPos : coils) {
             BlockState coilState = level.getBlockState(coilPos);
             if (!(coilState.getBlock() instanceof CaReactorCoilBlock coil) || coil.tier() != coreTier) {
@@ -78,11 +79,11 @@ public record CaReactorStructure(
                 }
                 observed.add(neighbor.immutable());
                 if (state.getBlock() instanceof CaReactorHullBlock hull) {
-                    if (hull.rank() > maximumRank) {
+                    if (hull.rank() - 1 > maximumRank) {
                         return invalid(observed, "a hull rank exceeded the core limit at " + neighbor);
                     }
                     if (hulls.add(neighbor.immutable())) {
-                        totalRank += hull.rank();
+                        totalRank += hull.rank() - 1;
                     }
                 } else if (state.getBlock() instanceof InterfaceBlock reactorInterface) {
                     if (reactorInterface.tier() < coreTier) {

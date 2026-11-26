@@ -39,7 +39,7 @@ public final class EnergyConverterScreen extends AbstractContainerScreen<EnergyC
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 7, 6, LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, Component.translatable("gui.clayium.converter.stored_ce",
-                        ClayEnergy.ofInternal(menu.storedCe()).formatValue()),
+                        ClayEnergy.ofInternal(menu.storedCe()).formatGui()),
                 62, 31, LegacyGuiGraphics.TEXT_COLOR, false);
         graphics.drawString(font, Component.translatable("gui.clayium.converter.stored_fe",
                         formatFe(menu.storedFe()), formatFe(menu.capacity())),

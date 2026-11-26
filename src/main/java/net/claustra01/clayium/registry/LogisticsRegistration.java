@@ -39,6 +39,12 @@ public final class LogisticsRegistration {
                     "buffer_configuration",
                     builder -> builder.persistent(BufferConfiguration.CODEC)
                             .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(BufferConfiguration.CODEC)));
+    /** Original itemDirectionMemory "RayTraceMemory" tag. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.claustra01.clayium.world.area.RayTraceMemory>> RAY_TRACE_MEMORY =
+            ClayiumRegistries.DATA_COMPONENT_TYPES.registerComponentType(
+                    "ray_trace_memory",
+                    builder -> builder.persistent(net.claustra01.clayium.world.area.RayTraceMemory.CODEC)
+                            .networkSynchronized(ByteBufCodecs.fromCodec(net.claustra01.clayium.world.area.RayTraceMemory.CODEC)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> FILTER_COPY =
             ClayiumRegistries.DATA_COMPONENT_TYPES.registerComponentType(
                     "filter_copy",
@@ -80,12 +86,12 @@ public final class LogisticsRegistration {
     public static final DeferredItem<UnifiedItemFilterItem> ITEM_FILTER = ClayiumRegistries.ITEMS.register(
             "white_list_item_filter",
             () -> new UnifiedItemFilterItem(new Item.Properties().stacksTo(1)
-                    .component(ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.ALLOW_ALL)));
+                    .component(ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY)));
     public static final DeferredItem<FilterDuplicatorItem> FILTER_DUPLICATOR = ClayiumRegistries.ITEMS.register(
             "item_filter_duplicator",
             () -> new FilterDuplicatorItem(new Item.Properties().stacksTo(1)
                     .component(FoundationDataComponentRegistration.TIER.get(), 7)
-                    .component(ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.ALLOW_ALL)
+                    .component(ITEM_FILTER_SETTINGS.get(), ItemFilterSettings.EMPTY)
                     .component(FILTER_COPY.get(), false)));
     public static final List<DeferredItem<? extends Item>> ITEMS = List.of(ITEM_FILTER, FILTER_DUPLICATOR);
 

@@ -35,24 +35,9 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class FluidTransportBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
+    public static final int DATA_COUNT = 16;
     private final FluidTank tank;
     private final FluidTank pending;
-    private final ItemStackHandler filterInventory = new ItemStackHandler(1) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChangedAndSync();
-        }
-
-        @Override
-        public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.is(FluidRegistration.FLUID_FILTER.get());
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return 1;
-        }
-    };
     private final int[] insertionRoutes = {-1, 0, 0, 0, 0, 0};
     private final int[] extractionRoutes = {0, -1, -1, -1, -1, -1};
     private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
@@ -62,7 +47,6 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
     private final ContainerData menuData = new TransportContainerData();
 
     private EnumMap<Direction, BlockCapabilityCache<IFluidHandler, Direction>> neighborCaches;
-    private RedstoneCondition redstoneCondition = RedstoneCondition.IGNORE;
     private int nextOutputDirection;
     private int nextInputDirection;
     private long transferTick = Long.MIN_VALUE;
@@ -103,8 +87,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
     }
 
     private void tickServer() {
-        if (!(level instanceof ServerLevel serverLevel)
-                || !redstoneCondition.allows(serverLevel.hasNeighborSignal(worldPosition))) {
+        if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
         ensureCaches(serverLevel);
@@ -253,42 +236,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
     }
 
     private boolean accepts(FluidStack fluid) {
-        return filterSettings().accepts(fluid);
-    }
-
-    public FluidFilterSettings filterSettings() {
-        return filterInventory.getStackInSlot(0).getOrDefault(
-                FluidRegistration.FLUID_FILTER_SETTINGS.get(), FluidFilterSettings.ALLOW_ALL);
-    }
-
-    public void toggleFilterMode() {
-        ItemStack filter = filterInventory.getStackInSlot(0);
-        if (filter.isEmpty()) {
-            return;
-        }
-        filter.set(FluidRegistration.FLUID_FILTER_SETTINGS.get(), filterSettings().toggled());
-        setChangedAndSync();
-    }
-
-    public void filterCurrentFluid() {
-        if (tank.isEmpty() || filterInventory.getStackInSlot(0).isEmpty()) {
-            return;
-        }
-        ItemStack filter = filterInventory.getStackInSlot(0);
-        filter.set(FluidRegistration.FLUID_FILTER_SETTINGS.get(), new FluidFilterSettings(
-                java.util.Optional.of(tank.getFluid().getFluid().builtInRegistryHolder().key().location()),
-                filterSettings().blacklist()));
-        setChangedAndSync();
-    }
-
-    public void clearFilterFluid() {
-        if (filterInventory.getStackInSlot(0).isEmpty()) {
-            return;
-        }
-        ItemStack filter = filterInventory.getStackInSlot(0);
-        filter.set(FluidRegistration.FLUID_FILTER_SETTINGS.get(), new FluidFilterSettings(
-                java.util.Optional.empty(), filterSettings().blacklist()));
-        setChangedAndSync();
+        return true;
     }
 
     public FluidTank tank() {
@@ -297,10 +245,6 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
     public FluidTank pending() {
         return pending;
-    }
-
-    public ItemStackHandler filterInventory() {
-        return filterInventory;
     }
 
     public IFluidHandler fluidHandler(@Nullable Direction direction) {
@@ -332,13 +276,10 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
     }
     @Override public IoTransportKind ioTransportKind() { return IoTransportKind.FLUID; }
     @Override public boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
-        return isPassiveEndpoint() && kind == IoTransportKind.FLUID;
+        return kind == IoTransportKind.FLUID;
     }
     @Override public boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
-        return isPassiveEndpoint() && kind == IoTransportKind.FLUID;
-    }
-    private boolean isPassiveEndpoint() {
-        return !specification().equals(FluidTransportSpecification.TRANSFER_MACHINE);
+        return kind == IoTransportKind.FLUID;
     }
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
@@ -347,22 +288,6 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
         ioNeighborsChanged();
-    }
-
-    public RedstoneCondition redstoneCondition() {
-        return redstoneCondition;
-    }
-
-    public void setRedstoneCondition(RedstoneCondition condition) {
-        redstoneCondition = condition;
-        setChangedAndSync();
-    }
-
-    public Container dropInventory() {
-        SimpleContainer dropped = new SimpleContainer(1);
-        dropped.setItem(0, filterInventory.getStackInSlot(0).copy());
-        filterInventory.setStackInSlot(0, ItemStack.EMPTY);
-        return dropped;
     }
 
     @Override
@@ -381,9 +306,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         super.saveAdditional(tag, registries);
         tag.put("tank", tank.writeToNBT(registries, new CompoundTag()));
         tag.put("pending", pending.writeToNBT(registries, new CompoundTag()));
-        tag.put("filter", filterInventory.serializeNBT(registries));
         saveIoState(tag, registries);
-        tag.putString("redstone_condition", redstoneCondition.name());
         tag.putInt("next_output_direction", nextOutputDirection);
         tag.putInt("next_input_direction", nextInputDirection);
     }
@@ -393,15 +316,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         super.loadAdditional(tag, registries);
         tank.readFromNBT(registries, tag.getCompound("tank"));
         pending.readFromNBT(registries, tag.getCompound("pending"));
-        if (tag.contains("filter")) {
-            filterInventory.deserializeNBT(registries, tag.getCompound("filter"));
-        }
         loadIoState(tag, registries);
-        try {
-            redstoneCondition = RedstoneCondition.valueOf(tag.getString("redstone_condition"));
-        } catch (IllegalArgumentException ignored) {
-            redstoneCondition = RedstoneCondition.IGNORE;
-        }
         nextOutputDirection = Math.floorMod(tag.getInt("next_output_direction"), Direction.values().length);
         nextInputDirection = Math.floorMod(tag.getInt("next_input_direction"), Direction.values().length);
     }
@@ -438,20 +353,6 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
     }
 
-    public enum RedstoneCondition {
-        IGNORE,
-        POWERED,
-        UNPOWERED;
-
-        public boolean allows(boolean powered) {
-            return this == IGNORE || this == POWERED && powered || this == UNPOWERED && !powered;
-        }
-
-        public RedstoneCondition next() {
-            return values()[(ordinal() + 1) % values().length];
-        }
-    }
-
     private final class SidedFluidHandler implements IFluidHandler {
         @Nullable
         private final Direction direction;
@@ -462,8 +363,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public int getTanks() {
-            return isPassiveEndpoint() || direction == null
-                    || insertionRoute(direction) >= 0 || extractionRoute(direction) >= 0 ? 1 : 0;
+            return 1;
         }
 
         @Override
@@ -478,14 +378,12 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public boolean isFluidValid(int tankIndex, FluidStack stack) {
-            return (isPassiveEndpoint() || direction == null || insertionRoute(direction) >= 0)
-                    && accepts(stack);
+            return canFill() && accepts(stack);
         }
 
         @Override
         public int fill(FluidStack resource, FluidAction action) {
-            if ((!isPassiveEndpoint() && direction != null && insertionRoute(direction) < 0)
-                    || !accepts(resource)) {
+            if (!canFill() || !accepts(resource)) {
                 return 0;
             }
             int filled = tank.fill(resource.copyWithAmount(Math.min(resource.getAmount(), remainingTransfer())), action);
@@ -500,8 +398,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
-            if (!isPassiveEndpoint() && direction != null && extractionRoute(direction) < 0
-                    || !accepts(resource)) {
+            if (!canDrain() || !accepts(resource)) {
                 return FluidStack.EMPTY;
             }
             FluidStack drained = tank.drain(resource.copyWithAmount(Math.min(resource.getAmount(), remainingTransfer())), action);
@@ -511,13 +408,20 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
-            if (!isPassiveEndpoint() && direction != null && extractionRoute(direction) < 0
-                    || !accepts(tank.getFluid())) {
+            if (!canDrain() || !accepts(tank.getFluid())) {
                 return FluidStack.EMPTY;
             }
             FluidStack drained = tank.drain(Math.min(maxDrain, remainingTransfer()), action);
             markExternal(action, drained);
             return drained;
+        }
+
+        private boolean canFill() {
+            return direction == null || insertionRoute(direction) >= 0;
+        }
+
+        private boolean canDrain() {
+            return direction == null || extractionRoute(direction) >= 0;
         }
 
         private void markExternal(FluidAction action, FluidStack moved) {
@@ -541,13 +445,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
                 case 4, 5 -> (tank.getCapacity() >>> ((index - 4) * 16)) & 0xFFFF;
                 case 6, 7 -> (pending.getFluidAmount() >>> ((index - 6) * 16)) & 0xFFFF;
                 case 8, 9 -> (specification().transferPerTick() >>> ((index - 8) * 16)) & 0xFFFF;
-                case 10 -> redstoneCondition.ordinal();
-                case 11, 12, 13, 14, 15, 16 -> faceMode(Direction.values()[index - 11]).ordinal();
-                case 17 -> filterSettings().blacklist() ? 1 : 0;
-                case 18 -> filterSettings().fluid().map(location -> {
-                    Fluid fluid = net.minecraft.core.registries.BuiltInRegistries.FLUID.get(location);
-                    return fluid == null ? 0 : net.minecraft.core.registries.BuiltInRegistries.FLUID.getId(fluid) + 1;
-                }).orElse(0);
+                case 10, 11, 12, 13, 14, 15 -> faceMode(Direction.values()[index - 10]).ordinal();
                 default -> 0;
             };
         }
@@ -558,7 +456,7 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public int getCount() {
-            return 19;
+            return DATA_COUNT;
         }
     }
 }

@@ -77,6 +77,17 @@ public final class CobblestoneGeneratorBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(
+            BlockState state, net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos,
+            net.minecraft.world.entity.player.Player player, net.minecraft.world.phys.BlockHitResult hitResult) {
+        if (!level.isClientSide && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                && level.getBlockEntity(pos) instanceof CobblestoneGeneratorBlockEntity blockEntity) {
+            serverPlayer.openMenu(blockEntity, pos);
+        }
+        return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CobblestoneGeneratorBlockEntity(pos, state);
     }

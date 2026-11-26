@@ -6,9 +6,6 @@ import net.claustra01.clayium.registry.ChunkLoaderRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -21,14 +18,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public final class ChunkLoaderBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<ChunkLoaderBlockEntity.TicketStatus> STATUS =
+            EnumProperty.create("status", ChunkLoaderBlockEntity.TicketStatus.class);
 
     public ChunkLoaderBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(STATUS, ChunkLoaderBlockEntity.TicketStatus.WAITING));
     }
 
     @Override
@@ -54,17 +55,7 @@ public final class ChunkLoaderBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(
             StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(FACING);
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(
-            BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer
-                && level.getBlockEntity(pos) instanceof ChunkLoaderBlockEntity chunkLoader) {
-            serverPlayer.openMenu(chunkLoader, pos);
-        }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        builder.add(FACING, STATUS);
     }
 
     @Override
@@ -85,7 +76,7 @@ public final class ChunkLoaderBlock extends BaseEntityBlock {
         if (!state.is(newState.getBlock())
                 && level instanceof ServerLevel
                 && level.getBlockEntity(pos) instanceof ChunkLoaderBlockEntity chunkLoader) {
-            chunkLoader.releaseTickets();
+            chunkLoader.releaseTicketsForRemoval();
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }

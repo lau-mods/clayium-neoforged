@@ -3,7 +3,6 @@ package net.claustra01.clayium;
 import net.claustra01.clayium.datagen.ClayiumDataGenerators;
 import net.claustra01.clayium.energy.fe.EnergyConverterCapabilities;
 import net.claustra01.clayium.fluid.FluidCapabilities;
-import net.claustra01.clayium.fluid.FluidTransportControlPayload;
 import net.claustra01.clayium.machine.MachineCapabilities;
 import net.claustra01.clayium.machine.autocrafter.AutoCrafterCapabilities;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionCapabilities;
@@ -15,15 +14,12 @@ import net.claustra01.clayium.machine.trade.TradeSnapshotPayload;
 import net.claustra01.clayium.multiblock.MultiblockCapabilities;
 import net.claustra01.clayium.multiblock.careactor.CaReactorCapabilities;
 import net.claustra01.clayium.machine.miner.MinerCapabilities;
-import net.claustra01.clayium.network.MachineFaceModePayload;
 import net.claustra01.clayium.pan.PanScreenPayloads;
-import net.claustra01.clayium.logistics.BufferControlPayload;
 import net.claustra01.clayium.logistics.LogisticsCapabilities;
 import net.claustra01.clayium.registry.ClayiumRegistries;
 import net.claustra01.clayium.storage.StorageCapabilities;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderTicketService;
 import net.claustra01.clayium.world.area.AreaCapabilities;
-import net.claustra01.clayium.world.area.AreaMachineControlPayload;
 import net.claustra01.clayium.world.claytree.ClayTreeCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -72,15 +68,8 @@ public final class ClayiumMod {
             modEventBus.addListener(
                     net.claustra01.clayium.gametest.compat.StandardCompatibilityGameTests::registerTestCapabilities);
         }
-        modEventBus.addListener(MachineFaceModePayload::register);
-        modEventBus.addListener(BufferControlPayload::register);
-        modEventBus.addListener(FluidTransportControlPayload::register);
-        modEventBus.addListener(net.claustra01.clayium.logistics.multitrack.MultitrackControlPayload::register);
-        modEventBus.addListener(net.claustra01.clayium.logistics.distributor.DistributorControlPayload::register);
-        modEventBus.addListener(net.claustra01.clayium.logistics.filter.FilterControlPayload::register);
         modEventBus.addListener(TradeSelectPayload::register);
         modEventBus.addListener(TradeSnapshotPayload::register);
-        modEventBus.addListener(AreaMachineControlPayload::register);
         modEventBus.addListener(PanScreenPayloads::register);
     }
 

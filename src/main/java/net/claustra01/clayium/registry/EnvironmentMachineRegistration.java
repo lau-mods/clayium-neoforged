@@ -77,6 +77,14 @@ public final class EnvironmentMachineRegistration {
         SALT_EXTRACTOR_ITEMS = List.copyOf(items);
     }
 
+    public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>,
+            net.minecraft.world.inventory.MenuType<net.claustra01.clayium.logistics.NormalInventoryMenu>>
+            COBBLESTONE_GENERATOR_MENU = ClayiumRegistries.MENU_TYPES.register(
+                    "cobblestone_generator",
+                    () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create((id, inventory, data) ->
+                            new net.claustra01.clayium.logistics.NormalInventoryMenu(
+                                    EnvironmentMachineRegistration.COBBLESTONE_GENERATOR_MENU.get(),
+                                    id, inventory, data.readBlockPos())));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CobblestoneGeneratorBlockEntity>>
             COBBLESTONE_GENERATOR_BLOCK_ENTITY = ClayiumRegistries.BLOCK_ENTITY_TYPES.register(
                     "cobblestone_generator",

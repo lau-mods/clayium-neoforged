@@ -298,6 +298,12 @@ const machineFamilies = [...machineFamilySource.matchAll(
   stem: match[2],
   tiers: match[3].split(',').map((tier) => Number(tier.trim())),
 }));
+const excludedMachineDefinition = machineFamilySource.match(
+  /EXCLUDED_MACHINES\s*=\s*java\.util\.Map\.of\(([\s\S]*?)\);/,
+)?.[1] ?? '';
+const excludedMachineIds = new Set(
+  [...excludedMachineDefinition.matchAll(/"([a-z0-9_]+_tier_[0-9]+)"/g)].map((match) => match[1]),
+);
 const tierPrefixes = new Map([
   ['Clay', 1], ['DenseClay', 2], ['Simple', 3], ['Basic', 4], ['Advanced', 5],
   ['Precision', 6], ['ClaySteel', 7], ['Clayium', 8], ['Ultimate', 9],
@@ -340,8 +346,11 @@ for (const line of read('src/main/resources/data/clayium/original_varieties.tsv'
     && legacyId.startsWith('item.itemFilter')
     && !legacyId.startsWith('item.itemFilterDuplicator')
     && legacyId !== 'item.itemFilterWhitelist.name';
-  const explicitlyChangedVariety = removedCapsule || unifiedFilter;
+  const vanillaCopperIngot = namedId === 'copper_ingot'
+    && (legacyId === 'CMaterials:COPPER:INGOT' || legacyId === 'item.itemIngots.Copper.name');
   const portTarget = registeredVarietyTarget(kind, legacyId, namedId);
+  const excludedMachine = kind === 'block' && excludedMachineIds.has(portTarget);
+  const explicitlyChangedVariety = removedCapsule || unifiedFilter || excludedMachine || vanillaCopperIngot;
   add(
     `variety:${legacyId}`, 'registered_variety',
     `hotfix2:assets/clayium/lang/{en_US,ja_JP}.lang:${legacyId};CBlocks/CItems/CMaterials`,
@@ -349,18 +358,30 @@ for (const line of read('src/main/resources/data/clayium/original_varieties.tsv'
       ? `removed:${namedId};replacement=direct NeoForge fluid capabilities`
       : unifiedFilter
         ? 'item:white_list_item_filter;mode/copy state=clayium:item_filter data component'
+      : excludedMachine
+        ? `removed:${portTarget};replacement=direct NeoForge fluid capabilities`
+      : vanillaCopperIngot
+        ? `${kind}:minecraft:copper_ingot`
       : `${kind}:${portTarget}`,
     `legacy=${legacyId};named=${portTarget};kind=${kind}`,
     removedCapsule
       ? 'capsulesStayRemovedAndAllDirectFluidMachinesAreRegistered'
       : unifiedFilter
-        ? 'unifiedFilterMatchesModesTagsIdsNamesModsDamageComponentsAndNesting;crucibleAndFilterCopiesConsumeValidateAndPersistExactly'
+        ? 'itemFilterMatchesRememberedItemsModesAndNesting;crucibleAndFilterCopiesConsumeValidateAndPersistExactly'
+      : excludedMachine
+        ? 'capsulesStayRemovedAndAllDirectFluidMachinesAreRegistered;allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePaths'
+      : vanillaCopperIngot
+        ? 'originalMaterialShapeLedgerIsExact'
       : 'namedRegistriesUseClayiumNamespace;originalRegistryCatalogTracksAllMachineVariants',
     explicitlyChangedVariety ? '明示的に変更済み' : '同等',
     removedCapsule
       ? 'PROJECT.md F-049 replaces the five legacy capsule items with direct NeoForge fluid capabilities.'
       : unifiedFilter
         ? 'PROJECT.md F-019 consolidates the legacy filter modes and copy state into one data-component-backed filter item.'
+      : excludedMachine
+        ? 'The original capsule-filling machine is excluded together with the capsule transport path.'
+      : vanillaCopperIngot
+        ? 'The original copper-ingot varieties intentionally use minecraft:copper_ingot on 1.21.1.'
       : 'A metadata or material variant has one namespaced registry target.',
     'src/main/resources/data/clayium/original_varieties.tsv',
   );
@@ -399,7 +420,7 @@ add(
   'hotfix2:mods/clayium/util/crafting/CRecipes.class#registerMaterialRecipes:WeightedList.add;original-call-0522..0540',
   'src/generated/resources/data/clayium/recipe/chemical_metal_separator/industrial_clay.json',
   `outputs=${separatorComparison.expectedOutputs};total_weight=${separatorComparison.totalWeight};chance=1.0`,
-  'scripts/map-original-recipe-semantics.mjs;chemicalSeparatorUsesOriginalWeightsAndNeverConsumesWhenBlocked',
+  'scripts/map-original-recipe-semantics.mjs;metalSeparatorPreservesWeightsTimeEnergyAndFullOutput',
   '同等',
   'Nineteen material identities, stack counts, chances, and weights are independently extracted from original bytecode/decompiled calls and compared with the port JSON.',
   '.tmp/original_recipe_semantics.tsv',
@@ -419,7 +440,7 @@ add(
   'hotfix2:mods/clayium/util/crafting/CRecipes.class#registerMaterialRecipes:source-line-1256;ClayRFGenerator.getConfigMap()',
   'clayium:energy_converter/{ce_rf_converter,advanced_ce_rf_converter,precision_ce_rf_converter,clay_steel_ce_rf_converter,clayium_ce_rf_converter,ultimate_ce_rf_converter,antimatter_ce_rf_converter,pure_antimatter_ce_rf_converter,oec_ce_rf_converter,opa_ce_rf_converter}',
   'original output set and order depend on user configuration; port has ten initially enabled Tier 4-13 CE-to-FE routes that datapacks may disable',
-  'scripts/extract-original-recipe-semantics.mjs;energyConvertersExposeExactTierRatesAndFeCapabilities;reloadedViewerDataMatchesMachineAcceptanceAndExecution',
+  'scripts/extract-original-recipe-semantics.mjs;allConverterTiersPreserveRatesRecipesRedstoneAndStoredFe;reloadedViewerDataMatchesMachineAcceptanceAndExecution',
   '明示的に変更済み',
   'PROJECT.md F-037 replaces the original user-configured RF generator list with ten initially enabled Tier 4-13 CE-to-FE converter routes that datapacks may disable.',
   '.tmp/original_recipe_semantics.tsv',
@@ -527,13 +548,19 @@ const familyPattern = /family\("([^"]+)",\s*"([^"]+)",\s*([0-9, ]+)\)/g;
 for (const match of catalog.matchAll(familyPattern)) {
   const [, legacyName, stem, tierText] = match;
   const tiers = tierText.split(',').map((value) => Number(value.trim()));
+  const excludedVariants = tiers
+    .map((tier) => `${stem}_tier_${tier}`)
+    .filter((id) => excludedMachineIds.has(id));
   add(
     `machine_family:${legacyName}`, 'machine_family',
     `hotfix2:mods/clayium/block/CBlocks.class:${legacyName};mods/clayium/util/UtilTier.class`,
     `OriginalRegistryCatalog:${stem};tiers=${tiers.join(',')}`,
     `variant_count=${tiers.length};tiers=${tiers.join(',')}`,
     'originalRegistryCatalogTracksAllMachineVariants;allOneHundredTwentyThreeCandidateMachinesHaveClassifiedRuntimePaths',
-    '同等', 'The original sparse tier set is enumerated without filling intentional gaps.',
+    excludedVariants.length ? '明示的に変更済み' : '同等',
+    excludedVariants.length
+      ? `The original sparse tier set is enumerated, with ${excludedVariants.join(',')} intentionally excluded because capsule transport was removed.`
+      : 'The original sparse tier set is enumerated without filling intentional gaps.',
     'src/main/java/net/claustra01/clayium/registry/OriginalRegistryCatalog.java',
   );
 }
@@ -559,7 +586,7 @@ add(
   'hotfix2:mods/clayium/core/ClayiumCore.class;mods/clayium/util/UtilTier.class',
   'src/main/java/net/claustra01/clayium/ClayiumConfig.java;energy/TierManager.java',
   'ProgressionRate;HardcoreAluminium;HardcoreOsmium;EnableInjectorRecipeOfInterface;ClaySteelPickaxeRange;InvertClayLaserRSCondition;CAReactorGlittering;LaserQuality;tier manufacturing/transport/storage tables',
-  'originalDefaultsAndRemovedOptionsAreExact;tierAndRenderOverridesAffectRuntimeLookups;progressionRateAffectsOnlyOriginalCallSites;optionalRecipeSwitchesDriveConditions;machineTransportSettingsDriveAutomaticTransfers', '同等',
+  'originalDefaultsAndRemovedOptionsAreExact;tierOverridesAffectRuntimeLookups;progressionRateAffectsOnlyOriginalCallSites;optionalRecipeSwitchesDriveConditions;machineTransportSettingsDriveAutomaticTransfers', '同等',
   'The original defaults, tier balance tables, transport behavior, LaserQuality, domain-specific ProgressionRate rules, and three recipe conditions are implemented and exercised.',
   'PROJECT.md#F-049',
 );

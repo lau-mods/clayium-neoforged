@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.laser.LaserBeam;
-import net.claustra01.clayium.logistics.filter.ItemFilterRule;
 import net.claustra01.clayium.logistics.filter.ItemFilterSettings;
 import net.claustra01.clayium.registry.AreaMachineRegistration;
 import net.claustra01.clayium.registry.LogisticsRegistration;
@@ -148,35 +147,36 @@ public final class AreaMachineGameTests {
         operator.setPos(miner.getBlockPos().getX() + 0.5D, miner.getBlockPos().getY() + 0.5D,
                 miner.getBlockPos().getZ() + 0.5D);
         AreaMachineMenu menu = (AreaMachineMenu)miner.createMenu(1, operator.getInventory(), operator);
-        ItemStack menuFilter = new ItemStack(LogisticsRegistration.ITEM_FILTER.get());
-        operator.getInventory().setItem(0, menuFilter);
-        ItemStack transferred = menu.quickMoveStack(operator, 41);
-        require(menu.stillValid(operator) && menu.slots.size() == 50
-                        && !transferred.isEmpty()
-                        && miner.inventory().getStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT)
-                                .is(LogisticsRegistration.ITEM_FILTER.get())
-                        && !miner.inventory().isItemValid(AreaMachineBlockEntity.OPERATION_SLOT,
-                                new ItemStack(LogisticsRegistration.ITEM_FILTER.get())),
-                "The area menu did not expose and route its operation, filter, fuel and output slots");
+        // ContainerAreaMiner default branch: 3x3 grid, harvest SlotMemory, energy slot outside the window.
+        require(menu.stillValid(operator) && menu.slots.size() == 9 + 1 + 1 + 36
+                        && menu.slots.get(0).x == 61 && menu.slots.get(0).y == 18
+                        && menu.slots.get(9).x == 119 && menu.slots.get(9).y == 18,
+                "The area menu does not keep the original grid and harvest filter layout");
+        menu.setCarried(new ItemStack(LogisticsRegistration.ITEM_FILTER.get()));
+        menu.clicked(9, 0, net.minecraft.world.inventory.ClickType.PICKUP, operator);
+        require(!menu.getCarried().isEmpty() && miner.inventory().getStackInSlot(
+                        AreaMachineBlockEntity.HARVEST_FILTER_SLOT).is(LogisticsRegistration.ITEM_FILTER.get()),
+                "The harvest SlotMemory did not keep a non-consumed copy");
+        menu.setCarried(ItemStack.EMPTY);
+        require(menu.clickMenuButton(operator, net.claustra01.clayium.world.area.AreaGuiHost.BUTTON_STOP)
+                        && miner.runMode() == AreaMachineBlockEntity.RunMode.STOPPED
+                        && menu.clickMenuButton(operator, net.claustra01.clayium.world.area.AreaGuiHost.BUTTON_BOX)
+                        && miner.boxState() == 1,
+                "The start/stop/loop/box buttons did not reach the machine");
         miner.inventory().setStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT, ItemStack.EMPTY);
-        Holder<Enchantment> silkTouch = helper.getLevel().registryAccess()
-                .lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH);
-        ItemStack silkTool = new ItemStack(Items.DIAMOND_PICKAXE);
-        silkTool.enchant(silkTouch, 1);
-        miner.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT, silkTool);
+        miner.inventory().setStackInSlot(AreaMachineBlockEntity.SILK_TOUCH_FILTER_SLOT,
+                whitelist(WorldgenRegistration.CLAY_ORE.get().asItem()));
         miner.configureArea(absoluteArea(helper, orePosition, orePosition));
         helper.setBlock(orePosition, WorldgenRegistration.CLAY_ORE.get());
         require(miner.runOperationsNow(1) == 1
                         && outputCount(miner, WorldgenRegistration.CLAY_ORE.get().asItem()) == 1,
-                "The area miner did not retain M27 Silk Touch loot behavior");
+                "The silk touch filter did not keep clay ore");
+        miner.inventory().setStackInSlot(AreaMachineBlockEntity.SILK_TOUCH_FILTER_SLOT, ItemStack.EMPTY);
 
         BlockPos filteredTarget = new BlockPos(4, 2, 2);
         helper.setBlock(filteredTarget, Blocks.STONE);
         miner.configureArea(absoluteArea(helper, filteredTarget, filteredTarget));
-        ItemStack filter = new ItemStack(LogisticsRegistration.ITEM_FILTER.get());
-        filter.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(), new ItemFilterSettings(
-                ItemFilterSettings.Mode.WHITELIST,
-                List.of(ItemFilterRule.fromExample(ItemFilterRule.MatchType.FUZZY, new ItemStack(Items.DIAMOND)))));
+        ItemStack filter = whitelist(Items.DIAMOND);
         miner.inventory().setStackInSlot(AreaMachineBlockEntity.HARVEST_FILTER_SLOT, filter);
         require(miner.runOperationsNow(1) == 0 && helper.getBlockState(filteredTarget).is(Blocks.STONE),
                 "The M10 item filter did not exclude a block from area mining");
@@ -201,13 +201,13 @@ public final class AreaMachineGameTests {
         BlockPos replaceSecond = new BlockPos(4, 2, 8);
         AreaMachineBlockEntity replacer = placeMachine(helper, replacerPosition, AreaMachineType.REPLACER);
         replacer.configureArea(absoluteArea(helper, replaceFirst, replaceSecond));
-        replacer.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT, new ItemStack(Items.DIRT, 2));
+        replacer.inventory().setStackInSlot(AreaMachineBlockEntity.REPLACEMENT_START, new ItemStack(Items.DIRT, 2));
         helper.setBlock(replaceFirst, Blocks.STONE);
         helper.setBlock(replaceSecond, Blocks.STONE);
         require(replacer.runOperationsNow(2) == 2
                         && helper.getBlockState(replaceFirst).is(Blocks.DIRT)
                         && helper.getBlockState(replaceSecond).is(Blocks.DIRT)
-                        && replacer.inventory().getStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT).isEmpty(),
+                        && replacer.inventory().getStackInSlot(AreaMachineBlockEntity.REPLACEMENT_START).isEmpty(),
                 "Area replacement did not consume one replacement item per changed block");
         helper.setBlock(replaceFirst, Blocks.STONE);
         helper.setBlock(replaceSecond, Blocks.STONE);
@@ -217,35 +217,33 @@ public final class AreaMachineGameTests {
                 "An empty replacement slot advanced the cursor");
         helper.setBlock(replaceFirst, Blocks.DIRT);
         helper.setBlock(replaceSecond, Blocks.DIRT);
-        replacer.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT,
+        replacer.inventory().setStackInSlot(AreaMachineBlockEntity.REPLACEMENT_START,
                 new ItemStack(Items.STONE, 2));
-        for (int slot = AreaMachineBlockEntity.OUTPUT_START;
-                slot < AreaMachineBlockEntity.OUTPUT_START + AreaMachineBlockEntity.OUTPUT_SLOTS; slot++) {
+        for (int slot = 0; slot < replacer.outputSlots(); slot++) {
             replacer.inventory().setStackInSlot(slot, new ItemStack(Items.DIRT, 64));
         }
         require(replacer.runOperationsNow(2) == 0 && replacer.cursor() == 0
                         && replacer.status() == AreaMachineBlockEntity.OperationStatus.OUTPUT_FULL,
                 "A full output advanced past an unprocessed replacement target");
-        replacer.inventory().setStackInSlot(AreaMachineBlockEntity.OUTPUT_START, ItemStack.EMPTY);
+        replacer.inventory().setStackInSlot(0, ItemStack.EMPTY);
         require(replacer.runOperationsNow(2) == 2
-                        && replacer.inventory().getStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT).isEmpty(),
+                        && replacer.inventory().getStackInSlot(AreaMachineBlockEntity.REPLACEMENT_START).isEmpty(),
                 "Replacement did not resume at the blocked coordinate");
 
         BlockPos activatorPosition = new BlockPos(7, 2, 2);
         BlockPos activatedPosition = new BlockPos(8, 2, 2);
         AreaMachineBlockEntity activator = placeMachine(helper, activatorPosition, AreaMachineType.ACTIVATOR);
         activator.configureArea(absoluteArea(helper, activatedPosition, activatedPosition));
-        activator.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT, new ItemStack(Items.IRON_AXE));
+        activator.inventory().setStackInSlot(0, new ItemStack(Items.IRON_AXE));
         helper.setBlock(activatedPosition, Blocks.OAK_LOG);
         require(activator.runOperationsNow(1) == 1
                         && helper.getBlockState(activatedPosition).is(Blocks.STRIPPED_OAK_LOG)
-                        && activator.inventory().getStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT).getDamageValue() == 1,
+                        && activator.inventory().getStackInSlot(0).getDamageValue() == 1,
                 "Area activation did not match one server-side player use");
 
         BlockPos protectedPosition = new BlockPos(8, 2, 5);
         AreaMachineBlockEntity advanced = placeMachine(helper, new BlockPos(7, 2, 5), AreaMachineType.ADVANCED_MINER);
         advanced.configureArea(absoluteArea(helper, protectedPosition, protectedPosition));
-        advanced.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT, new ItemStack(Items.DIAMOND_PICKAXE));
         helper.setBlock(protectedPosition, Blocks.STONE);
         BlockPos protectedAbsolute = helper.absolutePos(protectedPosition);
         Consumer<BlockEvent.BreakEvent> protect = event -> {
@@ -265,7 +263,7 @@ public final class AreaMachineGameTests {
 
         BlockPos deniedReplacement = new BlockPos(4, 2, 8);
         replacer.configureArea(absoluteArea(helper, deniedReplacement, deniedReplacement));
-        replacer.inventory().setStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT, new ItemStack(Items.DIRT));
+        replacer.inventory().setStackInSlot(AreaMachineBlockEntity.REPLACEMENT_START, new ItemStack(Items.DIRT));
         helper.setBlock(deniedReplacement, Blocks.STONE);
         Consumer<BlockEvent.EntityPlaceEvent> denyPlacement = event -> {
             if (event.getPos().equals(helper.absolutePos(deniedReplacement))) {
@@ -276,7 +274,7 @@ public final class AreaMachineGameTests {
         try {
             require(replacer.runOperationsNow(1) == 0
                             && helper.getBlockState(deniedReplacement).is(Blocks.STONE)
-                            && replacer.inventory().getStackInSlot(AreaMachineBlockEntity.OPERATION_SLOT).getCount() == 1
+                            && replacer.inventory().getStackInSlot(AreaMachineBlockEntity.REPLACEMENT_START).getCount() == 1
                             && replacer.status() == AreaMachineBlockEntity.OperationStatus.PROTECTED,
                     "Cancelled placement changed the original block or replacement count");
         } finally {
@@ -350,15 +348,20 @@ public final class AreaMachineGameTests {
         return machine;
     }
 
+    private static ItemStack whitelist(Item item) {
+        ItemStack filter = new ItemStack(LogisticsRegistration.ITEM_FILTER.get());
+        filter.set(LogisticsRegistration.ITEM_FILTER_SETTINGS.get(),
+                ItemFilterSettings.EMPTY.withItem(0, new ItemStack(item)));
+        return filter;
+    }
+
     private static AreaBounds absoluteArea(GameTestHelper helper, BlockPos first, BlockPos second) {
         return new AreaBounds(helper.absolutePos(first), helper.absolutePos(second));
     }
 
     private static int outputCount(AreaMachineBlockEntity machine, Item item) {
         int count = 0;
-        for (int slot = AreaMachineBlockEntity.OUTPUT_START;
-                slot < AreaMachineBlockEntity.OUTPUT_START + AreaMachineBlockEntity.OUTPUT_SLOTS;
-                slot++) {
+        for (int slot = 0; slot < machine.outputSlots(); slot++) {
             ItemStack stack = machine.inventory().getStackInSlot(slot);
             if (stack.is(item)) {
                 count += stack.getCount();

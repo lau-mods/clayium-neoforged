@@ -63,14 +63,8 @@ public final class TransportProgressionRecipes {
         for (var definition : FluidRegistration.MACHINES.values()) {
             int tier = definition.specification().tier();
             String id = definition.specification().id();
-            if (id.startsWith("fluid_transfer_machine")) {
-                machine(output, "fluid/" + id, definition.block().get(),
-                        4, tier, 40, 1, item("fluid_translator_tier_5"), 2,
-                        AssemblyMachineRegistration.MACHINE_HULLS.get(5).get(), 1);
-            } else {
-                machine(output, "fluid/" + id, definition.block().get(),
-                        4, tier, 40, 1, item("buffer_tier_" + tier), 1, Items.BUCKET, 4);
-            }
+            machine(output, "fluid/" + id, definition.block().get(),
+                    4, tier, 40, 1, item("buffer_tier_" + tier), 1, Items.BUCKET, 4);
         }
     }
 

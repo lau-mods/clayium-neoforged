@@ -3,14 +3,11 @@ package net.claustra01.clayium.registry;
 import net.claustra01.clayium.item.FoundationBlockItem;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderBlock;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderBlockEntity;
-import net.claustra01.clayium.world.chunkloading.ChunkLoaderMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -35,12 +32,6 @@ public final class ChunkLoaderRegistration {
             ClayiumRegistries.BLOCK_ENTITY_TYPES.register(
                     "chunk_loader",
                     () -> BlockEntityType.Builder.of(ChunkLoaderBlockEntity::new, CHUNK_LOADER.get()).build(null));
-
-    public static final DeferredHolder<MenuType<?>, MenuType<ChunkLoaderMenu>> MENU =
-            ClayiumRegistries.MENU_TYPES.register(
-                    "chunk_loader",
-                    () -> IMenuTypeExtension.create((containerId, inventory, data) ->
-                            new ChunkLoaderMenu(containerId, inventory, data.readBlockPos())));
 
     private ChunkLoaderRegistration() {
     }

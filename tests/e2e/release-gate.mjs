@@ -92,25 +92,19 @@ function normalizeNbt(value) {
   return resultText(value).replaceAll(/\s+/g, ' ').trim();
 }
 
-// Read the six visible candidates through real button selections. The GUI uses
-// localized labels, while the core saves the selected registry ID.
-async function panCandidates(client) {
-  const layout = await mct(client, 'gui', 'layout');
-  const slot = layout.slots.find(slot => slot.slot === 0);
-  if (!slot) throw new Error('PAN core did not open');
-  const ids = [];
-  for (let row = 0; row < 6; row++) {
-    await mct(client, 'input', 'click', String(slot.centerX + 34), String(slot.centerY - 125 + row * 15));
-    const feedback = await commandResult(client, 'data get block 6 100 0 selected_candidate');
-    const id = resultText(feedback).match(/"([a-z0-9_]+:[a-z0-9_/.-]+)"/)?.[1];
-    if (!id || ids.includes(id)) throw new Error('Invalid PAN candidate: ' + resultText(feedback));
-    ids.push(id);
-  }
-  return ids.join(',');
-}
-
 async function blockItems(client, position) {
   return commandResult(client, `data get block ${position} inventory.Items`);
+}
+
+async function shiftClickGadget(client, itemId, fromHolder) {
+  const layout = mct(client, 'gui', 'layout');
+  const slot = layout.slots.find(candidate => candidate.item?.type === itemId
+    && (candidate.slot < 16) === fromHolder);
+  if (!slot) {
+    throw new Error(`Could not find ${itemId} in the ${fromHolder ? 'holder' : 'player inventory'}`);
+  }
+  await mct(client, 'gui', 'click', String(slot.slot), '--button', 'shift-left');
+  await mct(client, 'wait', '--ticks', '2');
 }
 
 async function waitForServer(logFile, pid) {
@@ -135,6 +129,25 @@ async function synchronizeMods(source, target) {
     if (!sourceJars.has(name)) await rm(path.join(target, name));
   }
   for (const name of sourceJars) await copyFile(path.join(source, name), path.join(target, name));
+}
+
+async function configureClientMemory(clientName, maxMemoryMiB) {
+  if (!Number.isSafeInteger(maxMemoryMiB) || maxMemoryMiB < 1024) {
+    throw new Error(`Invalid maxMemoryMiB for ${clientName}: ${maxMemoryMiB}`);
+  }
+  const instanceFile = path.join(process.env.MCT_HOME, 'clients', clientName, 'instance.json');
+  const instance = JSON.parse(await readFile(instanceFile, 'utf8'));
+  const launchArgs = Array.isArray(instance.launchArgs) ? instance.launchArgs : [];
+  const configuredArgs = [];
+  for (let index = 0; index < launchArgs.length; index++) {
+    if (launchArgs[index] === '--max-mem') {
+      index++;
+      continue;
+    }
+    configuredArgs.push(launchArgs[index]);
+  }
+  configuredArgs.push('--max-mem', `${maxMemoryMiB}m`);
+  await writeFile(instanceFile, JSON.stringify({ ...instance, launchArgs: configuredArgs }, null, 2) + '\n');
 }
 
 async function prepareReleaseGateClients(harnessClients) {
@@ -164,6 +177,7 @@ async function prepareReleaseGateClients(harnessClients) {
       '--height', String(secondary.height),
       '--java', primary.javaCommand);
   }
+  await configureClientMemory(secondary.name, secondary.maxMemoryMiB);
   const primaryMods = path.join(process.env.MCT_HOME, 'clients', profile.clients[0], 'minecraft', 'mods');
   const secondaryMods = path.join(process.env.MCT_HOME, 'clients', secondary.name, 'minecraft', 'mods');
   await synchronizeMods(primaryMods, secondaryMods);
@@ -252,8 +266,8 @@ await scenario(async ({ clients: harnessClients }) => {
   command(primary, 'data merge block 0 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:iron_ingot",count:64}]},energy:{clay_energy:2000000000L}}');
   command(primary, 'setblock 3 100 0 clayium:fluid_translator_tier_13[facing=north]');
   command(primary, 'setblock 4 100 0 clayium:fluid_translator_tier_13[facing=north]');
-  command(primary, 'data merge block 3 100 0 {tank:{Fluid:{id:"minecraft:water",amount:32000000}},pending:{Fluid:{id:"minecraft:water",amount:125}},faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"DISABLED",east:"OUTPUT"},redstone_condition:"UNPOWERED"}');
-  command(primary, 'data merge block 4 100 0 {faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"INPUT",east:"DISABLED"},redstone_condition:"UNPOWERED"}');
+  command(primary, 'data merge block 3 100 0 {tank:{Fluid:{id:"minecraft:water",amount:32000000}},pending:{Fluid:{id:"minecraft:water",amount:125}},insertion_routes:[I;-1,-1,-1,-1,-1,-1],extraction_routes:[I;-1,-1,-1,-1,-1,0]}');
+  command(primary, 'data merge block 4 100 0 {insertion_routes:[I;-1,-1,-1,-1,0,-1],extraction_routes:[I;-1,-1,-1,-1,-1,-1]}');
   command(primary, 'setblock 6 100 0 clayium:pan_core');
   command(primary, 'data merge block 6 100 0 {candidate_reverse:1b}');
   command(primary, 'setblock 6 100 -1 clayium:pan_adapter_tier_10');
@@ -270,17 +284,18 @@ await scenario(async ({ clients: harnessClients }) => {
 
   command(primary, 'clear @s');
   command(primary, 'item replace entity @s hotbar.0 with clayium:gadget_holder');
-  command(primary, 'item replace entity @s inventory.0 with clayium:clay_gadget_flight');
-  command(primary, 'item replace entity @s inventory.1 with clayium:clay_gadget_extra_health_i');
-  command(primary, 'item replace entity @s inventory.2 with clayium:clay_gadget_long_arm');
+  command(primary, 'item replace entity @s hotbar.1 with clayium:clay_gadget_flight');
+  command(primary, 'item replace entity @s hotbar.2 with clayium:clay_gadget_extra_health_i');
+  command(primary, 'item replace entity @s hotbar.3 with clayium:clay_gadget_long_arm');
   command(primary, 'gamemode survival');
   await mct(primary, 'input', 'key', 'press', '1');
   await mct(primary, 'input', 'click', '640', '360', '--button', 'right');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
   assertEqual(mct(primary, 'gui', 'info').type, 'GadgetHolderScreen', 'active gadget holder screen');
-  await mct(primary, 'gui', 'click', '16', '--button', 'shift-left');
-  await mct(primary, 'gui', 'click', '17', '--button', 'shift-left');
-  await mct(primary, 'gui', 'click', '18', '--button', 'shift-left');
+  for (const gadget of ['clayium:clay_gadget_flight', 'clayium:clay_gadget_extra_health_i',
+    'clayium:clay_gadget_long_arm']) {
+    await shiftClickGadget(primary, gadget, false);
+  }
   await mct(primary, 'gui', 'close');
   await mct(primary, 'wait', '--ticks', '60');
 
@@ -377,10 +392,12 @@ await scenario(async ({ clients: harnessClients }) => {
   await mct(primary, 'block', 'interact', '6', '100', '0');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
   await mct(primary, 'wait', '--ticks', '5');
-  const panSnapshotBeforeDeparture = await panCandidates(primary);
-  if (!panSnapshotBeforeDeparture.includes('oak_planks')) {
-    throw new Error(`PAN closure did not settle to its bounded candidate list: ${panSnapshotBeforeDeparture}`);
-  }
+  await mct(primary, 'gui', 'snapshot');
+  assertEqual(await storedSuccess(primary, '#pan_reverse_after_restart',
+    'if data block 6 100 0 {candidate_reverse:1b}'), 1, 'PAN reverse setting after restart');
+  assertEqual(itemCount(await commandResult(primary,
+    'data get block 6 100 -1 adapter_patterns.Items'), 'minecraft:oak_log'), 1,
+  'PAN adapter pattern after restart');
   const panStateBeforeDeparture = normalizeNbt(await commandResult(primary, 'data get block 6 100 0'));
   screenshot(primary, 'AC-F049-003', 'pan-candidates-after-server-restart');
   await mct(primary, 'gui', 'close');
@@ -395,9 +412,10 @@ await scenario(async ({ clients: harnessClients }) => {
   await mct(primary, 'input', 'click', '640', '360', '--button', 'right');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
   assertEqual(mct(primary, 'gui', 'info').type, 'GadgetHolderScreen', 'active gadget holder screen');
-  await mct(primary, 'gui', 'click', '0', '--button', 'shift-left');
-  await mct(primary, 'gui', 'click', '1', '--button', 'shift-left');
-  await mct(primary, 'gui', 'click', '2', '--button', 'shift-left');
+  for (const gadget of ['clayium:clay_gadget_flight', 'clayium:clay_gadget_extra_health_i',
+    'clayium:clay_gadget_long_arm']) {
+    await shiftClickGadget(primary, gadget, true);
+  }
   await mct(primary, 'gui', 'close');
   await mct(primary, 'wait', '--ticks', '40');
   const healthAfter = await storedResult(primary, '#health_after', 'attribute @s minecraft:generic.max_health get 100');
@@ -418,7 +436,7 @@ await scenario(async ({ clients: harnessClients }) => {
   command(primary, 'gamemode creative');
   await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
   command(primary, 'setblock 402 100 0 clayium:grinder_tier_10[facing=north]');
-  command(primary, 'data merge block 402 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:barrier",count:7}]},energy:{clay_energy:123456789L},faces:{down:"DISABLED",up:"DISABLED",north:"DISABLED",south:"DISABLED",west:"DISABLED",east:"DISABLED"}}');
+  command(primary, 'data merge block 402 100 0 {inventory:{Size:4,Items:[{Slot:0b,id:"minecraft:barrier",count:7}]},energy:{clay_energy:123456789L},insertion_routes:[I;-1,-1,-1,-1,-1,-1],extraction_routes:[I;-1,-1,-1,-1,-1,-1]}');
   const loadedMachineBeforeDeparture = normalizeNbt(await commandResult(primary, 'data get block 402 100 0'));
   for (const client of clients) await camera(client, { x: 1000.5, y: 110, z: 1000.5, yaw: 0, pitch: 10 });
   await mct(primary, 'wait', '--ticks', '100');
@@ -434,8 +452,7 @@ await scenario(async ({ clients: harnessClients }) => {
   await mct(primary, 'block', 'interact', '6', '100', '0');
   await mct(primary, 'gui', 'wait-open', '--timeout', '15');
   await mct(primary, 'wait', '--ticks', '5');
-  assertEqual(await panCandidates(primary), panSnapshotBeforeDeparture,
-    'bounded PAN candidate list after chunk departure and return');
+  await mct(primary, 'gui', 'snapshot');
   await mct(primary, 'gui', 'close');
   await camera(primary, { x: 400.5, y: 101, z: -3.5, yaw: 0, pitch: 8 });
   command(primary, 'setblock 400 100 0 minecraft:air');

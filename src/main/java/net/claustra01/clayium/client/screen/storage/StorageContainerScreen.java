@@ -26,17 +26,20 @@ public final class StorageContainerScreen extends AbstractContainerScreen<Storag
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 43, topPos + 34, 0, 0, 18, 18);
-        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 115, topPos + 34, 0, 0, 18, 18);
-        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 141, topPos + 17, 0, 0, 18, 18);
+        // ContainerStorageContainer: LargeSlotTexture at (44,35)/(116,35), SlotMemory at (142,18).
+        LegacyGuiGraphics.largeSlot(graphics, leftPos + 44, topPos + 35);
+        LegacyGuiGraphics.largeSlot(graphics, leftPos + 116, topPos + 35);
+        LegacyGuiGraphics.slot(graphics, leftPos + 142, topPos + 18);
         graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 72, 0, 0, 176, 94);
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
-        Component amount = Component.literal(menu.amount() + " / " + menu.capacity());
-        graphics.drawString(font, amount, (imageWidth - font.width(amount)) / 2, 58, 0x404040, false);
+        graphics.drawString(font, title, 6, 6, 0x404040, false);
+        // GuiStorageContainer: "size / max" with " / " anchored at machineGuiSizeX/2 - 8.
+        String size = Long.toString(menu.amount());
+        graphics.drawString(font, size + " / " + menu.capacity(),
+                imageWidth / 2 - 8 - font.width(size), 72 - 12, 0x404040, false);
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 }

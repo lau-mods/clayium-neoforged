@@ -76,8 +76,13 @@ public final class MachineLanguageEntries {
         add.accept("gui.clayium.machine.state.output_full", locale.equals("ja_jp") ? "出力満杯" : "Output full");
         add.accept("gui.clayium.machine.state.waiting_for_energy", locale.equals("ja_jp") ? "CE不足" : "Waiting for CE");
         add.accept("gui.clayium.machine.state.recipe_changed", locale.equals("ja_jp") ? "レシピ更新待ち" : "Recipe changed");
-        add.accept("gui.clayium.machine.faces", locale.equals("ja_jp") ? "面の入出力設定" : "Configure input and output faces");
-        add.accept("gui.clayium.machine.required_energy", locale.equals("ja_jp") ? "消費 %s" : "Use %s");
+        // Original gui.Common.* entries.
+        add.accept("gui.clayium.machine.energy", "%sCE");
+        add.accept("gui.clayium.machine.tier", "Tier %s");
+        add.accept("gui.clayium.machine.resonance", locale.equals("ja_jp") ? "共鳴率 %s" : "Resonance %s");
+        add.accept("gui.clayium.machine.overclock",
+                locale.equals("ja_jp") ? "オーバークロック x%s" : "Overclock x%s");
+        add.accept("gui.clayium.machine.laser", locale.equals("ja_jp") ? "レーザー %s" : "Laser : %s");
         add.accept("gui.clayium.machine.inventory", locale.equals("ja_jp") ? "持ち物" : "Inventory");
         add.accept("gui.clayium.machine.empty", locale.equals("ja_jp") ? "空" : "Empty");
     }

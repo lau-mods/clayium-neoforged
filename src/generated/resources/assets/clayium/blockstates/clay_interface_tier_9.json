@@ -1,63 +1,123 @@
 {
   "variants": {
-    "facing=east,linked=false,pipe=false": {
+    "disconnected=false,facing=east,linked=false,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9",
       "y": 90
     },
-    "facing=east,linked=false,pipe=true": {
+    "disconnected=false,facing=east,linked=false,pipe=true": {
       "model": "clayium:block/clay_interface_tier_9",
       "y": 90
     },
-    "facing=east,linked=true,pipe=false": {
+    "disconnected=false,facing=east,linked=true,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9_linked",
       "y": 90
     },
-    "facing=east,linked=true,pipe=true": {
+    "disconnected=false,facing=east,linked=true,pipe=true": {
       "model": "clayium:block/clay_interface_tier_9_linked",
       "y": 90
     },
-    "facing=north,linked=false,pipe=false": {
+    "disconnected=false,facing=north,linked=false,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9"
     },
-    "facing=north,linked=false,pipe=true": {
+    "disconnected=false,facing=north,linked=false,pipe=true": {
       "model": "clayium:block/clay_interface_tier_9"
     },
-    "facing=north,linked=true,pipe=false": {
+    "disconnected=false,facing=north,linked=true,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9_linked"
     },
-    "facing=north,linked=true,pipe=true": {
+    "disconnected=false,facing=north,linked=true,pipe=true": {
       "model": "clayium:block/clay_interface_tier_9_linked"
     },
-    "facing=south,linked=false,pipe=false": {
+    "disconnected=false,facing=south,linked=false,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9",
       "y": 180
     },
-    "facing=south,linked=false,pipe=true": {
+    "disconnected=false,facing=south,linked=false,pipe=true": {
       "model": "clayium:block/clay_interface_tier_9",
       "y": 180
     },
-    "facing=south,linked=true,pipe=false": {
+    "disconnected=false,facing=south,linked=true,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9_linked",
       "y": 180
     },
-    "facing=south,linked=true,pipe=true": {
+    "disconnected=false,facing=south,linked=true,pipe=true": {
       "model": "clayium:block/clay_interface_tier_9_linked",
       "y": 180
     },
-    "facing=west,linked=false,pipe=false": {
-      "model": "clayium:block/clay_interface_tier_9",
-      "y": 270
-    },
-    "facing=west,linked=false,pipe=true": {
+    "disconnected=false,facing=west,linked=false,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9",
       "y": 270
     },
-    "facing=west,linked=true,pipe=false": {
+    "disconnected=false,facing=west,linked=false,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9",
+      "y": 270
+    },
+    "disconnected=false,facing=west,linked=true,pipe=false": {
       "model": "clayium:block/clay_interface_tier_9_linked",
       "y": 270
     },
-    "facing=west,linked=true,pipe=true": {
+    "disconnected=false,facing=west,linked=true,pipe=true": {
       "model": "clayium:block/clay_interface_tier_9_linked",
+      "y": 270
+    },
+    "disconnected=true,facing=east,linked=false,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9",
+      "y": 90
+    },
+    "disconnected=true,facing=east,linked=false,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9",
+      "y": 90
+    },
+    "disconnected=true,facing=east,linked=true,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected",
+      "y": 90
+    },
+    "disconnected=true,facing=east,linked=true,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected",
+      "y": 90
+    },
+    "disconnected=true,facing=north,linked=false,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9"
+    },
+    "disconnected=true,facing=north,linked=false,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9"
+    },
+    "disconnected=true,facing=north,linked=true,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected"
+    },
+    "disconnected=true,facing=north,linked=true,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected"
+    },
+    "disconnected=true,facing=south,linked=false,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9",
+      "y": 180
+    },
+    "disconnected=true,facing=south,linked=false,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9",
+      "y": 180
+    },
+    "disconnected=true,facing=south,linked=true,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected",
+      "y": 180
+    },
+    "disconnected=true,facing=south,linked=true,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected",
+      "y": 180
+    },
+    "disconnected=true,facing=west,linked=false,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9",
+      "y": 270
+    },
+    "disconnected=true,facing=west,linked=false,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9",
+      "y": 270
+    },
+    "disconnected=true,facing=west,linked=true,pipe=false": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected",
+      "y": 270
+    },
+    "disconnected=true,facing=west,linked=true,pipe=true": {
+      "model": "clayium:block/clay_interface_tier_9_disconnected",
       "y": 270
     }
   }

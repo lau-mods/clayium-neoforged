@@ -73,6 +73,17 @@ public final class BasicOperationBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(
+            BlockState state, Level level, BlockPos pos, Player player,
+            net.minecraft.world.phys.BlockHitResult hitResult) {
+        if (!level.isClientSide && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                && level.getBlockEntity(pos) instanceof BasicOperationBlockEntity operation) {
+            serverPlayer.openMenu(operation, pos);
+        }
+        return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BasicOperationBlockEntity(pos, state);
     }

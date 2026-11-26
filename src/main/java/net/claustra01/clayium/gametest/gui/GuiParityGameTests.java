@@ -18,7 +18,6 @@ import net.claustra01.clayium.logistics.distributor.DistributorMenu;
 import net.claustra01.clayium.fluid.FluidTransportBlockEntity;
 import net.claustra01.clayium.fluid.FluidTransportMenu;
 import net.claustra01.clayium.machine.iface.InterfaceBlockEntity;
-import net.claustra01.clayium.machine.iface.InterfaceMenu;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionBlockEntity;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionMenu;
 import net.claustra01.clayium.machine.clayproduction.ClayProductionType;
@@ -151,11 +150,11 @@ public final class GuiParityGameTests {
         PanBlockEntity duplicator = helper.getBlockEntity(duplicatorPos);
         PanMenu duplicatorMenu = new PanMenu(2, player.getInventory(), duplicator,
                 new net.minecraft.world.inventory.SimpleContainerData(12));
-        slot(duplicatorMenu.slots.get(0), 35, 35, "PAN sample");
-        slot(duplicatorMenu.slots.get(1), 35, 57, "PAN antimatter");
-        slot(duplicatorMenu.slots.get(2), 125, 35, "PAN output");
-        slot(duplicatorMenu.slots.get(3), 35, 79, "PAN fuel");
-        slot(duplicatorMenu.slots.get(4), 8, 119, "PAN player inventory");
+        slot(duplicatorMenu.slots.get(0), 32, 35, "PAN sample (ContainerClayAssembler import 1)");
+        slot(duplicatorMenu.slots.get(1), 50, 35, "PAN antimatter (ContainerClayAssembler import 2)");
+        slot(duplicatorMenu.slots.get(2), 116, 35, "PAN output");
+        slot(duplicatorMenu.slots.get(3), -12, 56, "PAN fuel outside the window");
+        slot(duplicatorMenu.slots.get(4), 8, 84, "PAN player inventory");
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
         require(!duplicatorMenu.quickMoveStack(player, 4).isEmpty()
                         && duplicator.inventory().getStackInSlot(PanBlockEntity.SAMPLE_SLOT).is(Items.COBBLESTONE)
@@ -169,18 +168,17 @@ public final class GuiParityGameTests {
         slot(traderMenu.slots.get(0), 36, 53, "trade input A");
         slot(traderMenu.slots.get(1), 62, 53, "trade input B");
         slot(traderMenu.slots.get(2), 120, 53, "trade output");
-        slot(traderMenu.slots.get(3), 8, 53, "trade fuel");
+        slot(traderMenu.slots.get(3), -12, 72, "trade fuel outside the window");
         slot(traderMenu.slots.get(4), 8, 100, "trade player inventory");
 
         BlockPos areaPos = new BlockPos(8, 2, 2);
         helper.setBlock(areaPos, AreaMachineRegistration.MACHINES.get(AreaMachineType.ACTIVATOR).block().get());
         AreaMachineBlockEntity area = helper.getBlockEntity(areaPos);
         AreaMachineMenu areaMenu = new AreaMachineMenu(4, player.getInventory(), area);
-        slot(areaMenu.slots.get(0), 8, 35, "area operation");
-        slot(areaMenu.slots.get(1), 8, 58, "area harvest filter");
-        slot(areaMenu.slots.get(2), 26, 58, "area fortune filter");
-        slot(areaMenu.slots.get(3), 44, 58, "area silk filter");
-        slot(areaMenu.slots.get(AreaMachineBlockEntity.FUEL_SLOT + 1), 8, 133, "area player inventory");
+        slot(areaMenu.slots.get(0), 61, 18, "area first grid slot (ContainerAreaActivator)");
+        slot(areaMenu.slots.get(9), 119, 18, "area harvest filter");
+        slot(areaMenu.slots.get(10), -12, 74, "area fuel outside the window");
+        slot(areaMenu.slots.get(11), 8, 102, "area player inventory");
 
         MetalChestType europium = MetalChestType.ALL.stream()
                 .filter(type -> type.materialId().equals("europium")).findFirst().orElseThrow();
@@ -253,11 +251,11 @@ public final class GuiParityGameTests {
                 "Crafting board shift transfer missed its 3x3 pattern");
         player.getInventory().setItem(0, new ItemStack(GadgetRegistration.GADGET_HOLDER.get()));
         GadgetHolderMenu gadgetMenu = new GadgetHolderMenu(10, player.getInventory(), 0);
-        slot(gadgetMenu.slots.get(0), 17, 29, "gadget holder first slot");
-        slot(gadgetMenu.slots.get(16), 8, 91, "gadget holder player inventory");
+        slot(gadgetMenu.slots.get(0), 43, 18, "gadget holder first slot (ContainerInItemStack 5x2)");
+        slot(gadgetMenu.slots.get(10), 8, 66, "gadget holder player inventory");
         player.getInventory().setItem(9,
                 new ItemStack(GadgetRegistration.GADGETS_BY_TYPE.get(GadgetType.FLIGHT).get()));
-        require(!gadgetMenu.quickMoveStack(player, 16).isEmpty()
+        require(!gadgetMenu.quickMoveStack(player, 10).isEmpty()
                         && gadgetMenu.slots.get(0).getItem().is(
                                 GadgetRegistration.GADGETS_BY_TYPE.get(GadgetType.FLIGHT).get())
                         && player.getInventory().getItem(9).isEmpty(),
@@ -268,7 +266,7 @@ public final class GuiParityGameTests {
         AutoCrafterMenu crafterMenu = new AutoCrafterMenu(11, player.getInventory(), crafter,
                 new net.minecraft.world.inventory.SimpleContainerData(7));
         slot(crafterMenu.slots.get(0), 5, 18, "auto crafter first pattern slot");
-        slot(crafterMenu.slots.get(9), 117, 36, "auto crafter result preview");
+        require(!crafterMenu.slots.get(9).isActive(), "The original auto crafter has no visible preview slot");
         int crafterPlayerSlot = crafterMenu.slots.size() - 36;
         slot(crafterMenu.slots.get(crafterPlayerSlot), 8, 96, "auto crafter player inventory");
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
@@ -289,6 +287,7 @@ public final class GuiParityGameTests {
         VoidContainerBlockEntity voidContainer = helper.getBlockEntity(voidPos);
         VoidContainerMenu voidMenu = new VoidContainerMenu(13, player.getInventory(), voidContainer);
         slot(voidMenu.slots.get(0), 80, 35, "void input");
+        slot(voidMenu.slots.get(1), 142, 18, "void filter memory");
         BlockPos corePos = new BlockPos(24, 2, 2);
         helper.setBlock(corePos, PanRegistration.PAN_CORE.get());
         PanBlockEntity core = helper.getBlockEntity(corePos);
@@ -309,29 +308,27 @@ public final class GuiParityGameTests {
         slot(adapterMenu.slots.get(18), 8, 74, "PAN adapter first sub-item");
         slot(adapterMenu.slots.get(27), 8, 108, "PAN adapter player inventory");
         FilterMenu filterMenu = new FilterMenu(15, player.getInventory());
-        slot(filterMenu.slots.get(0), 8, 77, "filter example");
-        slot(filterMenu.slots.get(1), 8, 118, "filter player inventory");
+        slot(filterMenu.slots.get(0), 43, 18, "filter first memory slot");
+        slot(filterMenu.slots.get(10), 8, 66, "filter player inventory");
         BlockPos bufferPos = new BlockPos(26, 2, 2);
         helper.setBlock(bufferPos, LogisticsRegistration.BUFFERS.get(9).block().get());
         BufferBlockEntity buffer = helper.getBlockEntity(bufferPos);
-        BufferMenu bufferMenu = new BufferMenu(16, player.getInventory(), buffer,
-                new net.minecraft.world.inventory.SimpleContainerData(12));
-        slot(bufferMenu.slots.get(0), 29, 69, "buffer first storage slot");
-        slot(bufferMenu.slots.get(100), 7, 83, "buffer filter slot");
-        slot(bufferMenu.slots.get(102), 29, 141, "buffer player inventory");
+        BufferMenu bufferMenu = new BufferMenu(16, player.getInventory(), buffer);
+        slot(bufferMenu.slots.get(0), 8, 18, "buffer first storage slot");
+        slot(bufferMenu.slots.get(54), 8, 138, "buffer player inventory");
         player.getInventory().setItem(9, new ItemStack(Items.CLAY_BALL));
-        require(!bufferMenu.quickMoveStack(player, 102).isEmpty()
-                        && buffer.exampleInventory().getStackInSlot(0).is(Items.CLAY_BALL)
+        require(!bufferMenu.quickMoveStack(player, 54).isEmpty()
+                        && buffer.inventory().getStackInSlot(0).is(Items.CLAY_BALL)
                         && player.getInventory().getItem(9).isEmpty(),
-                "Buffer shift transfer did not reach its example slot");
+                "Buffer shift transfer did not reach its storage");
         BlockPos multitrackPos = new BlockPos(28, 2, 2);
         helper.setBlock(multitrackPos, MultitrackRegistration.MULTITRACK_BUFFERS.get(9).block().get());
         MultitrackBufferBlockEntity multitrack = helper.getBlockEntity(multitrackPos);
         MultitrackBufferMenu multitrackMenu = new MultitrackBufferMenu(17, player.getInventory(), multitrack);
-        slot(multitrackMenu.slots.get(0), 62, 61, "multitrack first item");
-        slot(multitrackMenu.slots.get(9), 126, 79, "multitrack filter");
-        int multitrackPlayerSlot = multitrack.trackCount()
-                * (MultitrackBufferBlockEntity.SLOTS_PER_TRACK + 1);
+        slot(multitrackMenu.slots.get(0), 5, 18, "multitrack first item");
+        slot(multitrackMenu.slots.get(54), 171, 18, "multitrack first track filter");
+        int multitrackPlayerSlot = multitrack.trackCount() * (multitrack.slotsPerTrack() + 1);
+        slot(multitrackMenu.slots.get(multitrackPlayerSlot), 16, 138, "multitrack player inventory");
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
         require(!multitrackMenu.quickMoveStack(player, multitrackPlayerSlot).isEmpty()
                         && multitrack.track(0).inventory().getStackInSlot(0).is(Items.COBBLESTONE)
@@ -340,9 +337,9 @@ public final class GuiParityGameTests {
         BlockPos distributorPos = new BlockPos(30, 2, 2);
         helper.setBlock(distributorPos, MultitrackRegistration.DISTRIBUTORS.get(7).block().get());
         DistributorBlockEntity distributor = helper.getBlockEntity(distributorPos);
-        DistributorMenu distributorMenu = new DistributorMenu(18, player.getInventory(), distributor,
-                new net.minecraft.world.inventory.SimpleContainerData(1));
-        slot(distributorMenu.slots.get(0), 62, 54, "distributor first slot");
+        DistributorMenu distributorMenu = new DistributorMenu(18, player.getInventory(), distributor);
+        slot(distributorMenu.slots.get(0), 52, 18, "distributor first colony slot");
+        slot(distributorMenu.slots.get(4), 90, 18, "distributor second colony slot");
         int distributorPlayerSlot = distributorMenu.slots.size() - 36;
         player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
         require(!distributorMenu.quickMoveStack(player, distributorPlayerSlot).isEmpty()
@@ -353,28 +350,17 @@ public final class GuiParityGameTests {
         helper.setBlock(fluidPos, FluidRegistration.MACHINES.get("fluid_translator_tier_8").block().get());
         FluidTransportBlockEntity fluid = helper.getBlockEntity(fluidPos);
         FluidTransportMenu fluidMenu = new FluidTransportMenu(19, player.getInventory(), fluid,
-                new net.minecraft.world.inventory.SimpleContainerData(19));
-        slot(fluidMenu.slots.get(0), 152, 54, "fluid filter");
-        slot(fluidMenu.slots.get(1), 8, 113, "fluid player inventory");
-        player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
-        require(fluidMenu.quickMoveStack(player, 1).isEmpty()
-                        && fluidMenu.slots.get(0).getItem().isEmpty()
-                        && player.getInventory().getItem(9).is(Items.COBBLESTONE),
-                "Fluid transport accepted a non-filter item through shift transfer");
-        BlockPos interfacePos = new BlockPos(34, 2, 2);
-        helper.setBlock(interfacePos, InterfaceRegistration.INTERFACES.get("clay_interface_tier_5").block().get());
-        InterfaceBlockEntity interfaceEntity = helper.getBlockEntity(interfacePos);
-        InterfaceMenu interfaceMenu = new InterfaceMenu(20, player.getInventory(), interfaceEntity,
-                new net.minecraft.world.inventory.SimpleContainerData(2));
-        require(interfaceMenu.slots.isEmpty(), "Interface status window has no inventory slots");
+                new net.minecraft.world.inventory.SimpleContainerData(FluidTransportBlockEntity.DATA_COUNT));
+        slot(fluidMenu.slots.get(0), 8, 84, "fluid player inventory");
+        require(fluidMenu.slots.size() == 36, "The fluid buffer GUI exposes extra slots");
         BlockPos productionPos = new BlockPos(36, 2, 2);
         helper.setBlock(productionPos, ClayProductionRegistration.BLOCKS.get(
                 ClayProductionType.ENERGETIC_CLAY_CONDENSER_MK_I).get());
         ClayProductionBlockEntity production = helper.getBlockEntity(productionPos);
         ClayProductionMenu productionMenu = new ClayProductionMenu(21, player.getInventory(), production,
                 new net.minecraft.world.inventory.SimpleContainerData(7));
-        slot(productionMenu.slots.get(0), 44, 46, "clay production input");
-        slot(productionMenu.slots.get(1), 116, 46, "clay production output");
+        slot(productionMenu.slots.get(0), 44, 35, "clay production input");
+        slot(productionMenu.slots.get(1), 116, 35, "clay production output");
         player.getInventory().setItem(9, new ItemStack(Items.CLAY));
         int productionPlayerSlot = productionMenu.slots.size() - 36;
         require(!productionMenu.quickMoveStack(player, productionPlayerSlot).isEmpty()

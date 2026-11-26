@@ -5,6 +5,7 @@ import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.registry.ChunkLoaderRegistration;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderBlockEntity;
 import net.claustra01.clayium.world.chunkloading.ChunkLoaderTicketService;
+import net.claustra01.clayium.world.chunkloading.ChunkLoaderBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -33,6 +34,9 @@ public final class ChunkLoaderGameTests {
             try {
                 require(chunkLoader.ticketStatus() == ChunkLoaderBlockEntity.TicketStatus.ACTIVE,
                         "Chunk loader did not become active");
+                require(helper.getBlockState(relative).getValue(ChunkLoaderBlock.STATUS)
+                                == ChunkLoaderBlockEntity.TicketStatus.ACTIVE,
+                        "Active ticket status was not published to the block appearance");
                 Set<Long> expected = ChunkLoaderTicketService.expectedChunks(owner);
                 require(expected.size() == 9, "The target area is not exactly nine chunks");
                 require(ChunkLoaderTicketService.heldChunks(helper.getLevel(), owner, true).equals(expected),
@@ -54,6 +58,9 @@ public final class ChunkLoaderGameTests {
             } finally {
                 helper.setBlock(relative, Blocks.AIR);
             }
+            require(helper.getBlockState(relative).isAir()
+                            && helper.getLevel().getBlockEntity(helper.absolutePos(relative)) == null,
+                    "Removing an active chunk loader restored a block without its block entity");
             helper.succeed();
         });
     }
@@ -71,9 +78,15 @@ public final class ChunkLoaderGameTests {
         CompoundTag unavailable = new CompoundTag();
         unavailable.putString("ticket_status", "unavailable");
         chunkLoader.loadWithComponents(unavailable, helper.getLevel().registryAccess());
+        require(chunkLoader.getBlockState().getValue(ChunkLoaderBlock.STATUS)
+                        == ChunkLoaderBlockEntity.TicketStatus.UNAVAILABLE,
+                "Unavailable ticket status was not published to the block appearance");
         ChunkLoaderBlockEntity.serverTick(helper.getLevel(), owner, chunkLoader.getBlockState(), chunkLoader);
         require(chunkLoader.ticketStatus() == ChunkLoaderBlockEntity.TicketStatus.ACTIVE,
                 "An unavailable loader did not retry on its next original-style tick");
+        require(chunkLoader.getBlockState().getValue(ChunkLoaderBlock.STATUS)
+                        == ChunkLoaderBlockEntity.TicketStatus.ACTIVE,
+                "Retried ticket status was not published to the block appearance");
 
         BlockPos orphan = owner.offset(160, 0, 160);
         ChunkPos orphanCenter = new ChunkPos(orphan);
@@ -106,6 +119,9 @@ public final class ChunkLoaderGameTests {
             chunkLoader.loadWithComponents(active, helper.getLevel().registryAccess());
             require(chunkLoader.ticketStatus() == ChunkLoaderBlockEntity.TicketStatus.WAITING,
                     "An active status was trusted across a reload");
+            require(chunkLoader.getBlockState().getValue(ChunkLoaderBlock.STATUS)
+                            == ChunkLoaderBlockEntity.TicketStatus.WAITING,
+                    "Reload validation did not publish its waiting state");
             ChunkLoaderBlockEntity.serverTick(helper.getLevel(), owner, chunkLoader.getBlockState(), chunkLoader);
             require(ChunkLoaderTicketService.heldChunks(helper.getLevel(), owner, true).equals(expected),
                     "A reloaded loader did not reacquire a missing ticket");
@@ -115,6 +131,9 @@ public final class ChunkLoaderGameTests {
         }
         require(ChunkLoaderTicketService.heldChunks(helper.getLevel(), owner, true).isEmpty(),
                 "Removing the chunk loader did not release its tickets");
+        require(helper.getBlockState(relative).isAir()
+                        && helper.getLevel().getBlockEntity(helper.absolutePos(relative)) == null,
+                "Removing the chunk loader restored a block without its block entity");
         helper.runAfterDelay(20, () -> {
             require(!helper.getLevel().shouldTickBlocksAt(orphanCenter.toLong()),
                     "An orphan chunk is still ticking after restart validation");

@@ -26,6 +26,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -40,8 +41,11 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
     public static final int RESERVED_SLOT = 2;
     public static final int FUEL_SLOT = 3;
     public static final int LIMIT_SLOT = 4;
+    /** Original TileAutoClayCondenser 5x4 inventory (slots 0-19). */
+    public static final int AUTO_GRID_START = 5;
+    public static final int AUTO_GRID_SLOTS = 20;
 
-    private final ItemStackHandler inventory = new ItemStackHandler(5) {
+    private final ItemStackHandler inventory = new ItemStackHandler(AUTO_GRID_START + AUTO_GRID_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -53,9 +57,9 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
                 case INPUT_SLOT -> validInput(stack);
                 case FUEL_SLOT -> type().kind() == ClayProductionType.Kind.ENERGETIC_CONDENSER
                         && ClayEnergyStorage.fuelValue(stack).internalValue() > 0L;
-                case LIMIT_SLOT -> type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER
+                case LIMIT_SLOT -> false;
+                default -> slot >= AUTO_GRID_START && type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER
                         && ClayProductionRules.productionLevel(stack).isPresent();
-                default -> false;
             };
         }
     };
@@ -181,61 +185,122 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         setChanged();
     }
 
+    /**
+     * Original TileAutoClayCondenser: compress the highest level below the limit that has nine
+     * items and room in the 20-slot grid, then re-sort the grid. Mk II (Tier 7) repeats within the tick.
+     */
     private void tickAutomaticCondenser() {
-        int maximum = inventory.getStackInSlot(LIMIT_SLOT).isEmpty()
-                ? 13 : ClayProductionRules.productionLevel(inventory.getStackInSlot(LIMIT_SLOT)).orElse(13);
-        boolean compressed = compressAutomaticStack(INPUT_SLOT, maximum);
-        if (!compressed) {
-            compressed = compressAutomaticStack(OUTPUT_SLOT, maximum);
-        }
-        if (compressed && type() == ClayProductionType.AUTOMATIC_CLAY_CONDENSER_MK_II) {
-            while (compressAutomaticStack(OUTPUT_SLOT, maximum)) {
+        boolean compressed = compressAutomaticOnce();
+        if (compressed && type().tier() >= 7) {
+            while (compressAutomaticOnce()) {
             }
         }
-        if (!compressed) {
-            ItemStack input = inventory.getStackInSlot(INPUT_SLOT);
-            int level = ClayProductionRules.productionLevel(input).orElse(-1);
-            ItemStack result = level >= 0 && level < maximum
-                    ? new ItemStack(ClayProductionRules.itemForLevel(level + 1)) : ItemStack.EMPTY;
-            State idleState = State.IDLE;
-            if (!result.isEmpty() && input.getCount() >= 9 && !canAcceptOutput(result)) {
-                idleState = State.OUTPUT_FULL;
-            } else if (level < 0 && !input.isEmpty()) {
-                idleState = State.INVALID_INPUT;
-            }
-            setIdle(idleState);
-        } else {
+        if (compressed) {
             progress = 1L;
             requiredProgress = 1L;
             energyPerTick = 0L;
             displayedCePerTick = 0L;
             state = State.RUNNING;
             setChanged();
+        } else {
+            setIdle(State.IDLE);
         }
     }
 
-    private boolean compressAutomaticStack(int sourceSlot, int maximum) {
-        ItemStack source = inventory.getStackInSlot(sourceSlot);
-        int level = ClayProductionRules.productionLevel(source).orElse(-1);
-        if (level < 0 || level >= maximum || source.getCount() < 9) {
+    private int[] automaticQuantities() {
+        int[] counts = new int[CompressionTierCount.LEVELS];
+        for (int slot = AUTO_GRID_START; slot < AUTO_GRID_START + AUTO_GRID_SLOTS; slot++) {
+            ItemStack stack = inventory.getStackInSlot(slot);
+            int level = ClayProductionRules.productionLevel(stack).orElse(-1);
+            if (level >= 0) {
+                counts[level] += stack.getCount();
+            }
+        }
+        return counts;
+    }
+
+    /** UtilTransfer.canProduceItemStack over the grid for one item of {@code level}. */
+    private boolean automaticRoomFor(int level) {
+        ItemStack item = new ItemStack(ClayProductionRules.itemForLevel(level));
+        for (int slot = AUTO_GRID_START; slot < AUTO_GRID_START + AUTO_GRID_SLOTS; slot++) {
+            ItemStack stack = inventory.getStackInSlot(slot);
+            if (stack.isEmpty() || ItemStack.isSameItemSameComponents(stack, item)
+                    && stack.getCount() < stack.getMaxStackSize()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int automaticLimitLevel() {
+        return ClayProductionRules.productionLevel(inventory.getStackInSlot(LIMIT_SLOT)).orElse(13);
+    }
+
+    private boolean compressAutomaticOnce() {
+        int[] counts = automaticQuantities();
+        int consumed = -1;
+        for (int level = Math.min(automaticLimitLevel(), counts.length) - 1; level >= 0; level--) {
+            if (counts[level] >= 9 && automaticRoomFor(level)) {
+                consumed = level;
+                break;
+            }
+        }
+        if (consumed < 0) {
             return false;
         }
-        if (sourceSlot == OUTPUT_SLOT && source.getCount() % 9 != 0) {
-            return false;
-        }
-        ItemStack result = new ItemStack(ClayProductionRules.itemForLevel(level + 1));
-        if (sourceSlot == INPUT_SLOT && !canAcceptOutput(result)) {
-            return false;
-        }
-        source.shrink(9);
-        if (sourceSlot == OUTPUT_SLOT) {
-            result.setCount(source.getCount() / 9 + 1);
-            inventory.setStackInSlot(OUTPUT_SLOT, result);
-        } else {
-            addOutput(result);
-        }
-        activeInputLevel = level;
+        counts[consumed] -= 9;
+        counts[consumed + 1] += 1;
+        activeInputLevel = consumed;
+        sortAutomatic(counts);
         return true;
+    }
+
+    /** TileAutoClayCondenser.sortInventory: ascending levels, full stacks first. */
+    private void sortAutomatic(int[] counts) {
+        int slot = AUTO_GRID_START;
+        for (int level = 0; level < counts.length; level++) {
+            int remaining = counts[level];
+            while (remaining > 0 && slot < AUTO_GRID_START + AUTO_GRID_SLOTS) {
+                Item item = ClayProductionRules.itemForLevel(level);
+                int size = Math.min(remaining, item.getDefaultMaxStackSize());
+                inventory.setStackInSlot(slot++, new ItemStack(item, size));
+                remaining -= size;
+            }
+        }
+        while (slot < AUTO_GRID_START + AUTO_GRID_SLOTS) {
+            inventory.setStackInSlot(slot++, ItemStack.EMPTY);
+        }
+    }
+
+    /**
+     * Original tile.clayEnergy shown by GuiClayEnergyTemp: stored CE for the energetic condenser,
+     * the grid's clay value for the auto condenser, and the clay value produced so far by the
+     * fabricators.
+     */
+    public long displayedEnergy() {
+        return switch (type().kind()) {
+            case ENERGETIC_CONDENSER -> energy.stored().internalValue();
+            case AUTOMATIC_CONDENSER -> {
+                int[] counts = automaticQuantities();
+                long value = 0L;
+                for (int level = 0; level < counts.length; level++) {
+                    value += (long)Math.pow(10.0D, level) * counts[level];
+                }
+                yield value;
+            }
+            case SOLAR_FABRICATOR -> requiredProgress <= 0L || activeInputLevel < 0 ? 0L
+                    : (long)(Math.pow(10.0D, activeInputLevel + 1) * progress / requiredProgress);
+            case CLAY_FABRICATOR -> {
+                ItemStack reserved = inventory.getStackInSlot(RESERVED_SLOT);
+                int level = ClayProductionRules.productionLevel(reserved).orElse(-1);
+                yield requiredProgress <= 0L || level < 0 ? 0L
+                        : (long)(Math.pow(10.0D, level) * reserved.getCount() * progress / requiredProgress);
+            }
+        };
+    }
+
+    private static final class CompressionTierCount {
+        static final int LEVELS = net.claustra01.clayium.material.CompressionTier.values().length + 1;
     }
 
     private void tickSolarFabricator(ServerLevel level) {
@@ -401,6 +466,10 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
         setChanged();
     }
 
+    private int limitLevelForExtraction() {
+        return ClayProductionRules.productionLevel(inventory.getStackInSlot(LIMIT_SLOT)).orElse(-1);
+    }
+
     public State state() {
         return state;
     }
@@ -422,9 +491,9 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
     }
 
     public Container dropInventory() {
-        SimpleContainer dropped = new SimpleContainer(5);
+        SimpleContainer dropped = new SimpleContainer(inventory.getSlots());
         for (int slot = 0; slot < inventory.getSlots(); slot++) {
-            if (slot == RESERVED_SLOT && type().kind() == ClayProductionType.Kind.CLAY_FABRICATOR) {
+            if (slot == LIMIT_SLOT || slot == RESERVED_SLOT && type().kind() == ClayProductionType.Kind.CLAY_FABRICATOR) {
                 inventory.setStackInSlot(slot, ItemStack.EMPTY);
                 continue;
             }
@@ -465,7 +534,9 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        inventory.deserializeNBT(registries, tag.getCompound("inventory"));
+        CompoundTag savedInventory = tag.getCompound("inventory").copy();
+        savedInventory.putInt("Size", inventory.getSlots());
+        inventory.deserializeNBT(registries, savedInventory);
         energy.deserializeNBT(registries, tag.getCompound("energy"));
         state = State.valueOf(tag.getString("state"));
         progress = tag.getLong("progress");
@@ -502,7 +573,7 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
                 case 0, 1, 2, 3 -> word(progress, index);
                 case 4, 5, 6, 7 -> word(requiredProgress, index - 4);
                 case 8, 9, 10, 11 -> word(energy.stored().internalValue(), index - 8);
-                case 12, 13, 14, 15 -> word(displayedCePerTick, index - 12);
+                case 12, 13, 14, 15 -> word(displayedEnergy(), index - 12);
                 case 16 -> state.ordinal();
                 case 17 -> type().tier();
                 case 18 -> activeInputLevel >= 0 ? activeInputLevel
@@ -534,8 +605,16 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
             this.direction = direction;
         }
 
+        private boolean automatic() {
+            return type().kind() == ClayProductionType.Kind.AUTOMATIC_CONDENSER;
+        }
+
         @Override
         public int getSlots() {
+            if (automatic()) {
+                return direction == null || insertionRoute(direction) >= 0 || extractionRoute(direction) >= 0
+                        ? AUTO_GRID_SLOTS : 0;
+            }
             if (direction == null) {
                 return 4;
             }
@@ -544,11 +623,15 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return inventory.getStackInSlot(mappedSlot(slot));
+            return inventory.getStackInSlot(automatic() ? AUTO_GRID_START + slot : mappedSlot(slot));
         }
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (automatic()) {
+                return (direction == null || insertionRoute(direction) >= 0 && matchesFilter(direction, stack))
+                        ? inventory.insertItem(AUTO_GRID_START + slot, stack, simulate) : stack;
+            }
             int mappedSlot = mappedSlot(slot);
             return mappedSlot == OUTPUT_SLOT || direction != null && !matchesFilter(direction, stack)
                     ? stack : inventory.insertItem(mappedSlot, stack, simulate);
@@ -556,17 +639,27 @@ public final class ClayProductionBlockEntity extends BlockEntity implements Menu
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (automatic()) {
+                // TileAutoClayCondenser.canExtractItem: only levels at or above the limit sample.
+                ItemStack stack = inventory.getStackInSlot(AUTO_GRID_START + slot);
+                return (direction == null || extractionRoute(direction) >= 0)
+                        && ClayProductionRules.productionLevel(stack).orElse(-1) >= limitLevelForExtraction()
+                        ? inventory.extractItem(AUTO_GRID_START + slot, amount, simulate) : ItemStack.EMPTY;
+            }
             return mappedSlot(slot) == OUTPUT_SLOT
                     ? inventory.extractItem(OUTPUT_SLOT, amount, simulate) : ItemStack.EMPTY;
         }
 
         @Override
         public int getSlotLimit(int slot) {
-            return inventory.getSlotLimit(mappedSlot(slot));
+            return inventory.getSlotLimit(automatic() ? AUTO_GRID_START + slot : mappedSlot(slot));
         }
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
+            if (automatic()) {
+                return inventory.isItemValid(AUTO_GRID_START + slot, stack);
+            }
             int mappedSlot = mappedSlot(slot);
             return mappedSlot != OUTPUT_SLOT
                     && (direction == null || matchesFilter(direction, stack))

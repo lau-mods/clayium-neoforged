@@ -15,6 +15,10 @@ public final class AreaMachineRenderer implements BlockEntityRenderer<AreaMachin
     public void render(
             AreaMachineBlockEntity machine, float partialTick, PoseStack poseStack,
             MultiBufferSource buffers, int packedLight, int packedOverlay) {
+        // Original UtilRender.renderAxisAlignedBB: box appearance 0 hides the area.
+        if (machine.boxState() == 0) {
+            return;
+        }
         AreaOutlineRenderer.render(
                 machine.workArea(), machine.getBlockPos(), poseStack, buffers, 1.0F, 0.85F, 0.1F);
     }

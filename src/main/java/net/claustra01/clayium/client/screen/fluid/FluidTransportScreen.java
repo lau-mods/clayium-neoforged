@@ -1,186 +1,90 @@
 package net.claustra01.clayium.client.screen.fluid;
 
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import net.claustra01.clayium.client.screen.legacy.LegacyGuiGraphics;
-import net.claustra01.clayium.fluid.FluidTransportControlPayload;
 import net.claustra01.clayium.fluid.FluidTransportMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.network.PacketDistributor;
 
+/** Fluid buffer: one recessed tank centred in the machine area and the stored amount below it. */
 public final class FluidTransportScreen extends AbstractContainerScreen<FluidTransportMenu> {
-
-    private final Map<Direction, Button> faceButtons = new EnumMap<>(Direction.class);
-    private Button redstoneButton;
-    private Button filterModeButton;
+    private static final int TANK_X = 63;
+    private static final int TANK_Y = 18;
+    private static final int TANK_WIDTH = 50;
+    private static final int TANK_HEIGHT = 34;
 
     public FluidTransportScreen(FluidTransportMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 201;
+        imageHeight = FluidTransportMenu.MACHINE_HEIGHT + 94;
+        titleLabelX = 6;
+        titleLabelY = 6;
         inventoryLabelX = 8;
-        inventoryLabelY = 104;
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        int index = 0;
-        for (Direction direction : Direction.values()) {
-            Button button = addRenderableWidget(Button.builder(faceText(direction), pressed -> cycleFace(direction))
-                    .bounds(leftPos + 7 + index * 27, topPos + 19, 26, 14).build());
-            faceButtons.put(direction, button);
-            index++;
-        }
-        redstoneButton = addRenderableWidget(Button.builder(redstoneText(), pressed -> send(
-                        FluidTransportControlPayload.REDSTONE, menu.redstoneCondition().next().ordinal()))
-                .bounds(leftPos + 7, topPos + 35, 54, 16).build());
-        filterModeButton = addRenderableWidget(Button.builder(filterModeText(), pressed -> send(
-                        FluidTransportControlPayload.FILTER_MODE, 0))
-                .bounds(leftPos + 116, topPos + 35, 53, 16).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.clayium.fluid.filter.set"), pressed -> send(
-                        FluidTransportControlPayload.FILTER_CURRENT, 0))
-                .bounds(leftPos + 98, topPos + 73, 36, 14).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.clayium.fluid.filter.clear"), pressed -> send(
-                        FluidTransportControlPayload.FILTER_CLEAR, 0))
-                .bounds(leftPos + 136, topPos + 73, 34, 14).build());
-    }
-
-    @Override
-    protected void containerTick() {
-        super.containerTick();
-        faceButtons.forEach((direction, button) -> button.setMessage(faceText(direction)));
-        redstoneButton.setMessage(redstoneText());
-        filterModeButton.setMessage(filterModeText());
-    }
-
-    private void cycleFace(Direction direction) {
-        send(direction.get3DDataValue(), menu.faceMode(direction).next().ordinal());
-    }
-
-    private void send(int action, int value) {
-        PacketDistributor.sendToServer(new FluidTransportControlPayload(menu.transportPos(), action, value));
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
-        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + 104, 0, 0, 176, 86);
-        graphics.blit(LegacyGuiGraphics.SLOT, leftPos + 151, topPos + 53, 0, 0, 18, 18);
-        drawTank(graphics, menu.fluid());
-    }
-
-    private void drawTank(GuiGraphics graphics, FluidStack fluid) {
-        int left = leftPos + 69;
-        int top = topPos + 38;
-        graphics.fill(left, top, left + 36, top + 50, 0xFF202020);
-        if (!fluid.isEmpty()) {
-            IClientFluidTypeExtensions appearance = IClientFluidTypeExtensions.of(fluid.getFluid());
-            int tint = appearance.getTintColor(fluid);
-            int fill = Math.min(48, Math.max(1, (int)((long)menu.amount() * 48L / menu.capacity())));
-            graphics.enableScissor(left + 1, top + 49 - fill, left + 35, top + 49);
-            graphics.blit(left + 1, top + 1, 0, 34, 48,
-                    Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                            .apply(appearance.getStillTexture(fluid)),
-                    (tint >> 16 & 0xFF) / 255.0F,
-                    (tint >> 8 & 0xFF) / 255.0F,
-                    (tint & 0xFF) / 255.0F,
-                    (tint >>> 24) / 255.0F);
-            graphics.disableScissor();
-        }
-        graphics.renderOutline(left, top, 36, 50, 0xFF808080);
+        inventoryLabelY = FluidTransportMenu.MACHINE_HEIGHT;
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
+        renderTooltip(graphics, mouseX, mouseY);
         int x = mouseX - leftPos;
         int y = mouseY - topPos;
-        if (x >= 69 && x < 105 && y >= 38 && y < 88) {
+        if (x >= TANK_X && x < TANK_X + TANK_WIDTH && y >= TANK_Y && y < TANK_Y + TANK_HEIGHT) {
             FluidStack fluid = menu.fluid();
             graphics.renderTooltip(font, List.of(
                     fluid.isEmpty() ? Component.translatable("gui.clayium.fluid.empty") : fluid.getHoverName(),
-                    Component.literal(menu.amount() + " / " + menu.capacity() + " mB"),
-                    Component.translatable("gui.clayium.fluid.pending", menu.pendingAmount() + " mB"))
+                    Component.literal(menu.amount() + " / " + menu.capacity() + " mB"))
                     .stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
-        } else {
-            renderTooltip(graphics, mouseX, mouseY);
         }
     }
 
     @Override
+    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+        LegacyGuiGraphics.background(graphics, leftPos, topPos, imageWidth, imageHeight);
+        graphics.blit(LegacyGuiGraphics.PLAYER_INVENTORY, leftPos, topPos + FluidTransportMenu.MACHINE_HEIGHT,
+                0, 0, 176, 94, 256, 256);
+        int left = leftPos + TANK_X;
+        int top = topPos + TANK_Y;
+        graphics.fill(left, top, left + TANK_WIDTH, top + TANK_HEIGHT, 0xFF8B8B8B);
+        graphics.fill(left, top, left + TANK_WIDTH - 1, top + 1, 0xFF373737);
+        graphics.fill(left, top, left + 1, top + TANK_HEIGHT - 1, 0xFF373737);
+        graphics.fill(left + 1, top + TANK_HEIGHT - 1, left + TANK_WIDTH, top + TANK_HEIGHT, 0xFFFFFFFF);
+        graphics.fill(left + TANK_WIDTH - 1, top + 1, left + TANK_WIDTH, top + TANK_HEIGHT, 0xFFFFFFFF);
+        FluidStack fluid = menu.fluid();
+        if (fluid.isEmpty() || menu.capacity() <= 0) {
+            return;
+        }
+        IClientFluidTypeExtensions appearance = IClientFluidTypeExtensions.of(fluid.getFluid());
+        int tint = appearance.getTintColor(fluid);
+        int inner = TANK_HEIGHT - 2;
+        int fill = (int)Math.min(inner, Math.max(1L, (long)menu.amount() * inner / menu.capacity()));
+        var sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(appearance.getStillTexture(fluid));
+        int bottom = top + 1 + inner;
+        graphics.enableScissor(left + 1, bottom - fill, left + TANK_WIDTH - 1, bottom);
+        for (int tileX = left + 1; tileX < left + TANK_WIDTH - 1; tileX += 16) {
+            for (int tileY = top + 1; tileY < bottom; tileY += 16) {
+                graphics.blit(tileX, tileY, 0, 16, 16, sprite,
+                        (tint >> 16 & 0xFF) / 255.0F, (tint >> 8 & 0xFF) / 255.0F,
+                        (tint & 0xFF) / 255.0F, (tint >>> 24) / 255.0F);
+            }
+        }
+        graphics.disableScissor();
+    }
+
+    @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        String titleText = title.getString();
-        if (font.width(titleText) > 118) {
-            titleText = font.plainSubstrByWidth(titleText, 112) + "…";
-        }
-        graphics.drawString(font, titleText, 7, 7, 0x404040, false);
-        Component amount = Component.literal(menu.amount() + " / " + menu.capacity() + " mB");
-        graphics.drawString(font, amount, 87 - font.width(amount) / 2, 90, 0x404040, false);
-        graphics.drawString(font, compactAmount(menu.transferPerTick(), " mB/t"), 7, 56, 0x404040, false);
-        graphics.drawString(font, Component.translatable("gui.clayium.fluid.pending", "").getString().trim(),
-                7, 68, 0x404040, false);
-        graphics.drawString(font, compactAmount(menu.pendingAmount(), " mB"), 7, 78, 0x404040, false);
-        String filter = menu.filteredFluidName();
-        if (font.width(filter) > 32) {
-            filter = font.plainSubstrByWidth(filter, 26) + "…";
-        }
-        graphics.drawString(font, filter, 116, 61, 0x404040, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
-    }
-
-    private String compactAmount(int amount, String unit) {
-        String exact = amount + unit;
-        if (font.width(exact) <= 60) {
-            return exact;
-        }
-        String suffix = amount >= 1_000_000 ? "M" : "k";
-        int divisor = amount >= 1_000_000 ? 1_000_000 : 1_000;
-        String compact = amount / divisor + suffix + unit;
-        if (font.width(compact) <= 60) {
-            return compact;
-        }
-        return font.plainSubstrByWidth(compact, 54) + "…";
-    }
-
-    private Component faceText(Direction direction) {
-        String mode = switch (menu.faceMode(direction)) {
-            case INPUT -> "I";
-            case OUTPUT -> "O";
-            case BOTH -> "B";
-            case DISABLED -> "X";
-        };
-        return Component.literal(shortName(direction) + ":" + mode);
-    }
-
-    private Component redstoneText() {
-        return Component.translatable(
-                "gui.clayium.fluid.redstone." + menu.redstoneCondition().name().toLowerCase(java.util.Locale.ROOT));
-    }
-
-    private Component filterModeText() {
-        return Component.translatable(menu.filterBlacklist()
-                ? "gui.clayium.fluid.filter.blacklist" : "gui.clayium.fluid.filter.whitelist");
-    }
-
-    private static String shortName(Direction direction) {
-        return switch (direction) {
-            case DOWN -> "D";
-            case UP -> "U";
-            case NORTH -> "N";
-            case SOUTH -> "S";
-            case WEST -> "W";
-            case EAST -> "E";
-        };
+        graphics.drawString(font, title, titleLabelX, titleLabelY, LegacyGuiGraphics.TEXT_COLOR, false);
+        String amount = menu.amount() + " / " + menu.capacity() + " mB";
+        graphics.drawString(font, amount, (imageWidth - font.width(amount)) / 2, TANK_Y + TANK_HEIGHT + 4,
+                LegacyGuiGraphics.TEXT_COLOR, false);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY,
+                LegacyGuiGraphics.TEXT_COLOR, false);
     }
 }

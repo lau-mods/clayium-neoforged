@@ -14,10 +14,5 @@ public record FluidTransportSpecification(int tier, String id, int capacity, int
             new FluidTransportSpecification(11, "fluid_translator_tier_11", 4_096_000, 256_000),
             new FluidTransportSpecification(12, "fluid_translator_tier_12", 16_384_000, 1_024_000),
             new FluidTransportSpecification(13, "fluid_translator_tier_13", 65_536_000, 4_096_000));
-    public static final FluidTransportSpecification TRANSFER_MACHINE =
-            new FluidTransportSpecification(5, "fluid_transfer_machine_tier_5", 8_000, 500);
-
-    public static final List<FluidTransportSpecification> VALUES = java.util.stream.Stream
-            .concat(TRANSLATORS.stream(), java.util.stream.Stream.of(TRANSFER_MACHINE))
-            .toList();
+    public static final List<FluidTransportSpecification> VALUES = TRANSLATORS;
 }
