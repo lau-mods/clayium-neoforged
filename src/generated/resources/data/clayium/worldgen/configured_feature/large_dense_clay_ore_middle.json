@@ -1,0 +1,42 @@
+{
+  "type": "clayium:composite_clay_ore",
+  "config": {
+    "dense_size": 0,
+    "discard_chance_on_air_exposure": 0.0,
+    "independent_large": true,
+    "large_chance": 0.0,
+    "primary_size": 6,
+    "targets": [
+      {
+        "dense_state": {
+          "Name": "clayium:dense_clay_ore"
+        },
+        "large_state": {
+          "Name": "clayium:large_dense_clay_ore"
+        },
+        "primary_state": {
+          "Name": "clayium:clay_ore"
+        },
+        "target": {
+          "predicate_type": "minecraft:tag_match",
+          "tag": "minecraft:stone_ore_replaceables"
+        }
+      },
+      {
+        "dense_state": {
+          "Name": "clayium:deepslate_dense_clay_ore"
+        },
+        "large_state": {
+          "Name": "clayium:deepslate_large_dense_clay_ore"
+        },
+        "primary_state": {
+          "Name": "clayium:deepslate_clay_ore"
+        },
+        "target": {
+          "predicate_type": "minecraft:tag_match",
+          "tag": "minecraft:deepslate_ore_replaceables"
+        }
+      }
+    ]
+  }
+}

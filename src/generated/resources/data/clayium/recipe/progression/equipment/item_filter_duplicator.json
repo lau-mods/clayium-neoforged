@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "clayium:white_list_item_filter"
+    },
+    {
+      "item": "clayium:white_list_item_filter"
+    },
+    {
+      "item": "clayium:white_list_item_filter"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:item_filter_duplicator"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "clayium:block/buffer_tier_13"
+      }
+    }
+  ]
+}

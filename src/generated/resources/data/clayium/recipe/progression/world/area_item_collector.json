@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:zk60_a_alloy_hull"
+      }
+    },
+    {
+      "count": 64,
+      "ingredient": {
+        "item": "clayium:integrated_circuit"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:area_item_collector"
+    }
+  ],
+  "processing_method": "clayium:assembler",
+  "processing_ticks": 6000,
+  "required_tier": 6
+}

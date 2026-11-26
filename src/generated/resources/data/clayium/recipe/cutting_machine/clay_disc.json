@@ -1,0 +1,22 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:large_clay_ball"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:clay_disc"
+    }
+  ],
+  "processing_method": "clayium:cutting_machine",
+  "processing_ticks": 2,
+  "progression_rate": "ticks",
+  "required_tier": 0
+}

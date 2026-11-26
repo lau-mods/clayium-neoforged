@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100,
+  "item_inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium:industrial_clay_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:industrial_clay"
+    }
+  ],
+  "processing_method": "clayium:condenser",
+  "processing_ticks": 20,
+  "required_tier": 4
+}

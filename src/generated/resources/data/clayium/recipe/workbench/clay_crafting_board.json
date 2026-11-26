@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "W": {
+      "item": "clayium:clay_work_table"
+    }
+  },
+  "pattern": [
+    "PPP",
+    " W "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:clay_crafting_board"
+  }
+}

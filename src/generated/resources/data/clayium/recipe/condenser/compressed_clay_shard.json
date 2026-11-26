@@ -1,0 +1,22 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium:compressed_clay_shard"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:compressed_clay"
+    }
+  ],
+  "processing_method": "clayium:condenser",
+  "processing_ticks": 3,
+  "progression_rate": "ticks",
+  "required_tier": 0
+}

@@ -1,0 +1,912 @@
+{
+  "status": "running",
+  "active": [
+    {
+      "id": "M44",
+      "phase": "e2e",
+      "baseCommit": "44e9e95ca810136ee95c01e0ed273fd0fce143d3",
+      "failures": {
+        "build": 0,
+        "gametest": 0,
+        "e2e": 0
+      },
+      "recoveries": 0,
+      "codeReview": {
+        "kind": "code",
+        "issues": [
+          {
+            "target": "src/main/resources/data/clayium/parity_ledger.tsv (645 rows with 欠落/未確認)",
+            "acId": "AC-F049-001",
+            "problem": "The committed ledger still contains 269 `欠落` and 376 `未確認` rows (all 20 GUI rows, 25 renderer rows, most survival_recipe rows and recipe_semantics:original_call_mapping). `parityLedgerHasNoMissingOrUnverifiedEntries` fails, which M44_IMPLEMENTATION.md admits.",
+            "reason": "AC-F049-001/005/007 require 0 `欠落` and 0 `未確認`, and the milestone approach requires fixing each `欠落` in its domain class and confirming each `未確認` with a GameTest or E2E. The final gate is not met.",
+            "fix": "Fix the 398 differing original routes found by map-original-recipe-semantics.mjs in their datagen classes. Extend the comparison until every concrete original call maps to a port recipe. Run the GUI/renderer visual comparison and the release gate, regenerate the ledger, and commit it only once `parityLedgerHasNoMissingOrUnverifiedEntries` passes.",
+            "id": "CR-001",
+            "status": "accepted",
+            "history": [
+              {
+                "status": "accepted",
+                "by": "codex",
+                "note": "accepted: 台帳が269件の欠落と376件の未確認を保持し、最終GameTestを失敗させる現在の判定は「未確認を同等とみなさない」というACに適合します。ただし比較自体は未完了で、この指摘はM44のブロッカーとして残ります。",
+                "at": "2026-11-25T05:00:52.858Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/gui-parity.mjs, tests/e2e/world-rendering.mjs, scripts/build-visual-parity-report.mjs; reference/original/visual/ (absent)",
+            "acId": "AC-F049-002",
+            "problem": "No original visual baseline exists (reference/original/visual/ is gitignored and empty), and no visual-parity.json has been produced. All GUI and renderer units stay `未確認`. The special NEI explanations, the work table ? operations and the PAN list have no executed comparison evidence.",
+            "reason": "AC-F049-002 requires an implementation and a verification image or test for every original screen, operation and renderer. A static layout table is not evidence.",
+            "fix": "Capture the original screenshots and their manifest, run gui-parity.mjs and world-rendering.mjs on two clients, generate build/reports/m44/visual-parity.json, and regenerate the ledger so these units are judged on executed evidence.",
+            "id": "CR-002",
+            "status": "accepted",
+            "history": [
+              {
+                "status": "accepted",
+                "by": "codex",
+                "note": "accepted: 原作画像と実行済み比較結果がないGUI・renderer行を同等へ昇格させない現在の判定が正しいためです。画像ベースラインとvisual-parity.jsonは未取得で、AC-F049-002は未達です。",
+                "at": "2026-11-25T05:00:52.858Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/e2e/release-gate.mjs; M44_IMPLEMENTATION.md:24",
+            "acId": "AC-F049-006",
+            "problem": "The two-client release gate has never been executed: the client failed at glfwInit. The scenario also has coverage gaps. Flight-modifier removal and attribute residue are not asserted, only max health. CE conservation is only an upper bound. PAN search boundedness is not checked. The clients leave and return to the chunk-loaded area, but machine state there is not re-verified.",
+            "reason": "AC-F049-006 requires proof that there is no duplication or loss, no residual attributes, no unbounded search, no desynchronisation and no leftover ticket across restart, chunk departure/return and gadget changes.",
+            "fix": "Run the release gate in an environment with a display. Add asserts that NeoForge CREATIVE_FLIGHT and block_interaction_range modifiers are gone after the gadgets are removed, that grinder CE consumed matches dust produced, that the PAN state is identical after leaving and returning, and that both clients reconnect.",
+            "id": "CR-003",
+            "status": "accepted",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: release-gateへ飛行・到達距離modifierの解除、粉生成量とCE消費の厳密一致、PAN候補と状態の離脱復帰比較、ticket範囲内機械状態、2クライアント再接続検査を追加しました。構文検査済みですが画面付きE2E実行は未実施です。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "Asserts were added, but the release gate still has not been run: the client failed at glfwInit and there is no display. The fix itself says it needs a run in an environment with a display, and nothing shows that happened.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The release gate already asserts gadget flight/range modifier removal, exact grinder CE conservation, bounded and stable PAN state, chunk-return machine state, ticket cleanup, and both-client reconnection. Secondary-client creation now reuses the primary client's configured Java executable instead of JAVA_HOME or PATH, addressing the GLFW/runtime mismatch. Static validation and the Gradle build pass; actual display-backed execution must be performed by the harness because its runtime state is read-only here.",
+                "at": "2026-11-25T05:05:03.668Z"
+              },
+              {
+                "status": "open",
+                "by": "claude",
+                "note": "The only change is that the secondary client now reuses the primary client's Java executable. That is a plausible fix for the glfwInit failure, but nothing shows the two-client release gate has run on a machine with a display. The fix asked for a real run, and the code still has not been run.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: The scenario now asserts removal of CREATIVE_FLIGHT and block_interaction_range modifiers, exact grinder CE-to-output conservation, bounded and unchanged PAN state, unchanged ticket-loaded machine state after chunk departure/return, ticket cleanup, and both-client reconnection. Secondary creation uses the primary client’s configured Java executable. A real harness lifecycle was attempted from an isolated runtime clone, but this sandbox prohibited the server from binding localhost before clients could launch; the remaining successful display-backed execution must therefore occur in the harness E2E stage.",
+                "at": "2026-11-25T05:13:07.486Z"
+              },
+              {
+                "status": "accepted",
+                "by": "codex",
+                "note": "accepted: The current scenario contains all requested assertions and AC-F049-006 is registered to it. Actual deployment, two-client startup, restart, and execution are assigned by the E2E contract to the harness. An isolated real launch reached NeoForge server startup but this restricted environment rejected the localhost bind with “Operation not permitted,” before either client could launch. Protected .harness-state cannot be altered, so no further source correction can produce runtime evidence here; the display-backed harness stage must execute it.",
+                "at": "2026-11-25T05:14:30.248Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/ClayiumConfig.java:41-55,129-135; recipe/ConfigEnabledCondition.java:20-22",
+            "acId": "AC-F049-004",
+            "problem": "HardcoreAluminium, HardcoreOsmium and EnableInjectorRecipeOfInterface are SERVER config values, but ConfigEnabledCondition reads them while datapacks load. On world start, NeoForge loads world datapacks before the SERVER config, so `value()` catches IllegalStateException and silently returns the default. The switches only take effect after `/reload`. `optionalRecipeSwitchesDriveConditions` only tests the reload path.",
+            "reason": "AC-F049-004 requires the preserved settings to work. A user who sets HardcoreAluminium=true sees no change on server start, and the try/catch fallback hides the load-order problem.",
+            "fix": "Move the recipe-switch options (and ProgressionRate if it must apply to recipe loading) to the COMMON (startup) spec so they are loaded before datapacks. Remove the IllegalStateException fallback in `value()`, and add a test that confirms the condition state on the initial load.",
+            "id": "CR-004",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: レシピ切替とProgressionRateを起動時にロードされるCOMMON specへ移し、IllegalStateExceptionの既定値フォールバックを削除しました。初回ロード状態のGameTestも追加しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The recipe switches and ProgressionRate now live in COMMON_SPEC, which loads at startup. The IllegalStateException fallback is removed. A GameTest checks the initial-load state.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches generate-parity-ledger.mjs. The config load-order fix is unaffected.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches E2E scripts. The config load-order fix is unaffected.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only changes inventory slots in release-gate.mjs. The config load-order fix is unaffected.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only touches E2E scripts. The config load-order fix is unaffected.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff touches only E2E scripts. The config load-order fix is unaffected.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/ClayiumConfig.java:6-7,58-60,113-120,124-130,145-148,177-262; energy/TierManager.java:6-7,94-98,122-132",
+            "acId": "AC-F049-004",
+            "problem": "The config code has dead or duplicated parts. MIN_TIER, MAX_TIER and checkTier are duplicated in TierManager. The trivial `define` factories and the NaN-filled `overrides` array hack add indirection. TransportBalance defines `_def` keys and null fallbacks that are never reached, because every tier is defined. The `value()` try/catch is a fallback. TransportParameters keeps a two-argument constructor plus `intervalTicks()` and `maximumItems()`, which collapse the independent insert and extract settings with min and max. BufferBlockEntity and BufferScreen use them, so a buffer's limit no longer matches the configured extract limit.",
+            "reason": "The code style allows one direct path per behavior, abstractions only with two current call sites, and no unused code. Collapsing insert and extract also breaks the original's separate settings.",
+            "fix": "Keep tier bounds in one place, replace the factories and the NaN array with direct per-tier definitions, and remove the unreachable `_def` transport keys and fallbacks. Remove the two-argument constructor and min/max accessors, and have BufferBlockEntity and BufferScreen use maximumInsertItems/maximumExtractItems explicitly.",
+            "id": "CR-005",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: Tier境界をClayiumConfigへ集約し、NaN override、不要factory、到達不能なtransport既定値を削除しました。Bufferはinsert/extract設定を個別に参照します。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "Tier bounds are now only in ClayiumConfig. The NaN override array, the factories, and the TransportBalance defaults are removed. TransportParameters no longer has the min/max accessors, and no callers remain. Buffer code uses maximumExtractItems.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the config or TierManager code.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the config or TierManager.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the config or TierManager.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the config or TierManager.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the config or TierManager.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/ClayiumConfig.java:36-39 (LaserQuality in COMMON spec)",
+            "acId": "AC-F049-004",
+            "problem": "LaserQuality only affects the client renderer (LaserBlockEntityRenderer) but is registered in the COMMON spec under `render`.",
+            "reason": "Render-only options belong to the CLIENT config type. COMMON makes a dedicated server generate and own a value it never uses.",
+            "fix": "Register a CLIENT spec holding LaserQuality (and the existing render-only CAReactorGlittering), and register it with ModConfig.Type.CLIENT.",
+            "id": "CR-006",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: LaserQualityとCAReactorGlitteringをCLIENT specへ分離し、ModConfig.Type.CLIENTで登録しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "LaserQuality and CAReactorGlittering are in CLIENT_SPEC, registered with ModConfig.Type.CLIENT.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the CLIENT spec.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the CLIENT spec.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the CLIENT spec.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the CLIENT spec.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the CLIENT spec.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/recipe/ProgressionRateRules.java:14-100",
+            "acId": "AC-F049-004",
+            "problem": "ProgressionRate applicability is a hard-coded Java list of about 80 recipe IDs, split across three sets. The datapack recipe and this Java list must stay in sync by hand. A datapack that overrides or adds such a recipe cannot express the original call-site scaling.",
+            "reason": "The datapack is the source of truth for recipes, and JSON data should come from datagen. Keeping recipe semantics in a separate hard-coded ID list duplicates the recipe definition.",
+            "fix": "Add an optional ClayiumMachineRecipe codec field (e.g. `progression_rate: ticks|outputs|stacks`) set by the datagen builders for the original scaled call sites, read it in ClayiumRecipeCache, ClayMachineBlockEntity and RecipeViewerPage, and delete the ID sets.",
+            "id": "CR-007",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 機械レシピcodecへprogression_rateを追加し、datagenが対象レシピへticks、outputs、stacks等を記録する方式へ変更しました。手書きID集合は削除しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The recipe codec has a progression_rate field that datagen sets. ProgressionRateRules reads it from the recipe, and the hard-coded ID sets are deleted.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the progression_rate codec field.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the progression_rate codec field.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the progression_rate codec field.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the progression_rate codec field.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the progression_rate codec field.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/tool/ClayCraftingToolItem.java:25-41",
+            "acId": "AC-F049-003",
+            "problem": "The ProgressionRate durability is written into DataComponents.MAX_DAMAGE only on the remainder stack. Freshly crafted tools show the base durability, and stacks keep a stale MAX_DAMAGE after ProgressionRate changes, while `willBreak` uses the live value.",
+            "reason": "Tool remainder must match the original consistently. The durability bar and the break decision can disagree.",
+            "fix": "Set the default MAX_DAMAGE consistently (e.g. compute it in the crafting result or via `getMaxDamage` override) and use the stack's own max damage for both the break check and the display.",
+            "id": "CR-008",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: ClayCraftingToolItemがstackの表示耐久と破損判定の双方で動的な最大耐久を使用するようにし、新品工具も同じ値を表示するGameTestを追加しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "ClayCraftingToolItem overrides getMaxDamage(stack), and willBreak uses stack.getMaxDamage(). Fresh tools and remainders now show and use the same value.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch ClayCraftingToolItem.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch ClayCraftingToolItem.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch ClayCraftingToolItem.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch ClayCraftingToolItem.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch ClayCraftingToolItem.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "scripts/*.mjs (extract-original-recipe-semantics.mjs:7,32-36; generate-parity-ledger.mjs:8; verify-recipe-parity.mjs:7; extract-original-recipe-calls.mjs:7)",
+            "acId": null,
+            "problem": "The scripts read the original JAR from `reference/original/` instead of `.tmp/`, and the M43 docs say `.tmp/clayium-0.4.6.36.hotfix2.jar`. The CFR JAR is taken from `../cfr-0.152.jar`, outside the repository. extract-original-recipe-calls.mjs only prints to the console and is not used by the generator. compare-original-recipe-semantics.mjs duplicates the separator-weight comparison already done by map-original-recipe-semantics.mjs.",
+            "reason": "Shared rules require dependency JARs and auxiliary tools in `.tmp/`. They forbid committing helper scripts that the AGENTS.md generator spec does not need, and duplicated responsibilities. A path outside the repo is environment-specific.",
+            "fix": "Read the original JAR and CFR from `.tmp/` (CFR via CFR_JAR only). Remove extract-original-recipe-calls.mjs and compare-original-recipe-semantics.mjs, or fold the separator check into the mapper, and update AGENTS.md to list only the committed generators.",
+            "id": "CR-009",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: 原作JARと中間表を.tmp配下へ移し、CFR_JARも.tmp内だけを許可しました。重複・未使用スクリプトを削除し、AGENTS.mdの生成手順を更新しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The scripts read the JAR from .tmp/, and CFR_JAR must be under .tmp/. The two redundant scripts are deleted. No reference/original/clayium or ../cfr paths remain in the scripts.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The ledger generator change adds no external paths. The scripts still read from .tmp/.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff touches no generator scripts. The scripts still read from .tmp/.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff touches no generator scripts. They still read from .tmp/.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff touches no generator scripts under scripts/.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch the generator scripts under scripts/.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/resources/data/clayium/original_recipe_semantics.tsv",
+            "acId": null,
+            "problem": "A 3175-row table of decompiled original CRecipes expressions and bytecode evidence is placed under src/main/resources, so it ships in the mod JAR. No mod or GameTest code reads it; only build scripts use it.",
+            "reason": "These are unused resources in the JAR, and they redistribute decompiled original source text.",
+            "fix": "Write this intermediate to `.tmp/` (or build/) and keep it out of src/main/resources and out of the JAR.",
+            "id": "CR-010",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: decompile由来のoriginal_recipe_semantics.tsvを配布resourcesから削除し、.tmpの生成中間物として参照するよう変更しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "original_recipe_semantics.tsv is removed from src/main/resources. The scripts write it to .tmp/ instead.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The table is still outside src/main/resources.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The table is still outside src/main/resources.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The table is still outside src/main/resources.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The table is still outside src/main/resources.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The table is still outside src/main/resources.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "M44_IMPLEMENTATION.md",
+            "acId": null,
+            "problem": "A work-log and status-report file is committed at the repository root.",
+            "reason": "The shared rules forbid work history in repository docs. AGENTS.md holds the current spec and README only user-facing information.",
+            "fix": "Delete M44_IMPLEMENTATION.md and report verification status in the work report instead.",
+            "id": "CR-011",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: M44_IMPLEMENTATION.mdを削除しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "M44_IMPLEMENTATION.md is deleted.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "M44_IMPLEMENTATION.md stays deleted.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back M44_IMPLEMENTATION.md.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back M44_IMPLEMENTATION.md.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back M44_IMPLEMENTATION.md.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not bring back M44_IMPLEMENTATION.md.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "AGENTS.md (M11, M33, M21/M41, M18, M38, M23, M29 sections)",
+            "acId": null,
+            "problem": "AGENTS.md was not updated for behaviour this diff adds:\n- M33 still says the HardcoreOsmium branch is excluded, but `blast_furnace/osmium_from_impure_osmium` is now generated.\n- M11 does not document the new HardcoreAluminium-conditioned impure-aluminium recipes.\n- The `storage_container_expansion` special recipe, the `nbt_preserving_auto_eat` special recipe replacing the shapeless auto-eat recipe, `oec_block`, the 22 `progression/ca_injector/interface/*` recipes and the LaserQuality plane rendering are undocumented.\n- The c:dusts tag inputs for hafnium, strontium and barium are undocumented.",
+            "reason": "Changes to IDs, registrations, data generation rules and behaviour must update AGENTS.md in the same change, and the docs must not contradict the code.",
+            "fix": "Update the M11, M18, M21, M23, M29, M33 and M38 sections to describe these recipes, IDs, conditions and the render behaviour, and remove the contradicting exclusion text.",
+            "id": "CR-012",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AGENTS.mdへ条件付きAluminium/Osmium、特殊storage/auto-eatレシピ、OEC block、injector-interfaceレシピ、LaserQuality描画、追加dust tag入力を追記しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AGENTS.md now covers the HardcoreOsmium and HardcoreAluminium recipes, the storage expansion and auto-eat special recipes, oec_block, the injector-interface recipes, LaserQuality, and the dust tags. The old exclusion text is gone.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch AGENTS.md.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "tests/acceptance.json:976-1052,1324-1338",
+            "acId": "AC-F049-003",
+            "problem": "AC-F049-003 is linked only to `resonatingCollectorStops...` and release-gate.mjs, which do not exercise processing time, CE/t, separator lottery, tool remainder, laser, mining or filter copy. AC-F049-002 is linked only to release-gate.mjs, which has no GUI, NEI, PAN-list or renderer checks.",
+            "reason": "Each criterion must be tied to the GameTests and E2E scenarios that actually prepare, act on and assert it.",
+            "fix": "Link AC-F049-003 to the existing tests (`metalSeparatorPreservesWeights...`, `craftingToolsReturnDamageAndRawClayExactlyOnce`, `laserTransmitsConvertsAccumulatesAndHonorsProtection`, `areaFiltersAndActivator...`, `crucibleAndFilterCopies...`, processing-time/CE tests). Link AC-F049-002 to gui-parity.mjs, world-rendering.mjs, the recipe-viewer scenarios and GuiParity GameTests, not release-gate.mjs.",
+            "id": "CR-013",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: AC-F049-002をGUI・world renderer・JEI・EMIシナリオとGUI GameTestへ、AC-F049-003を分離抽選・工具・レーザー・範囲操作・filter copy・CE計算の既存GameTestへ紐付けました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "AC-F049-002 now links to the GUI, world-rendering, JEI and EMI scenarios and the GUI GameTests. AC-F049-003 links to the separator, tool, laser, area, filter-copy and tier-calculation GameTests.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch tests/acceptance.json. The generator now reads it to check that the GUI and world-rendering E2E scenarios are registered.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff adds AC-F049-002 screenshots to gui-parity, world-rendering and the viewer checks. This supports the GUI, renderer and viewer links.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff only changes the slots a gadget test uses. The acceptance links are unchanged.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not change the acceptance links in tests/acceptance.json.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff changes E2E scripts only and adds screenshots tagged AC-F049-003 and AC-F049-007. It does not change the links in tests/acceptance.json.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/datagen/material/MaterialBlockStateProvider.java:22",
+            "acId": null,
+            "problem": "The new `oec_block` entry in MATERIAL_TEXTURES is never read, because OEC_BLOCK is not part of MATERIAL_BLOCKS and is generated by the explicit cubeAll call on line 48.",
+            "reason": "Unused code must be removed.",
+            "fix": "Delete the `oec_block` map entry (and restore the formatting of the neighbouring entries).",
+            "id": "CR-014",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: MaterialBlockStateProviderの未使用oec_blockマップ項目を削除しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The unused oec_block map entry is removed and the neighbouring entries are re-formatted.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch MaterialBlockStateProvider.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch MaterialBlockStateProvider.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch MaterialBlockStateProvider.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch MaterialBlockStateProvider.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch MaterialBlockStateProvider.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          },
+          {
+            "target": "src/main/java/net/claustra01/clayium/pan/PanBlockEntity.java:690-701,736-757; recipe/StorageContainerExpansionRecipe.java:32",
+            "acId": null,
+            "problem": "PAN adapter loading adds `validHandlerSize` and `sanitizeAdapterInventory`, which re-check handler sizes and strip or trim saved patterns. StorageContainerExpansionRecipe.assemble re-runs the matches() checks.",
+            "reason": "Validate only states the game can produce. Saved data comes from this block entity, and assemble is only called after matches succeeds.",
+            "fix": "Deserialize the handlers directly without the size and sanitising checks, and drop the duplicated validation in assemble.",
+            "id": "CR-015",
+            "status": "resolved",
+            "history": [
+              {
+                "status": "open",
+                "by": "codex",
+                "note": "fixed: PAN保存データのhandlerサイズ再検査とsanitize処理を削除し、special recipeのassembleからmatches済み条件の重複検証を削除しました。",
+                "at": "2026-11-25T05:00:52.858Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The PAN handler-size checks and sanitize code are removed. assemble in the storage and auto-eat recipes no longer re-runs the matches() checks.",
+                "at": "2026-11-25T05:01:26.833Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch this. The previous resolved verdict stands.",
+                "at": "2026-11-25T05:07:58.085Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch PanBlockEntity or the recipe classes.",
+                "at": "2026-11-25T05:23:44.309Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch PanBlockEntity or the recipe classes.",
+                "at": "2026-11-25T05:45:29.202Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch PanBlockEntity or the recipe classes.",
+                "at": "2026-11-25T06:03:51.486Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch PanBlockEntity or the recipe classes.",
+                "at": "2026-11-25T06:20:21.187Z"
+              },
+              {
+                "status": "resolved",
+                "by": "claude",
+                "note": "The diff does not touch PanBlockEntity or the recipe classes.",
+                "at": "2026-11-25T07:23:37.552Z"
+              }
+            ]
+          }
+        ]
+      },
+      "codeReviewTree": "71af8af8f556f2a4328350e6f83561dca753e4a1",
+      "e2eReview": null,
+      "failure": {
+        "phase": "e2e",
+        "summary": "3 E2E scenario(s) failed",
+        "details": "tests/e2e/recipe-viewers.mjs: Error: Command failed: python3 tests/e2e/compare-nei.py .tmp/clayium-0.4.6.36.hotfix2.jar .harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-metal-separator-original-nei-layout.png metal-separator jei .harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/jei-metal-separator-hotfix2-comparison.png 6\nTraceback (most recent call last):\n  File \".harness-state/runtime/worktrees/M44/tests/e2e/compare-nei.py\", line 99, in <module>\n    compare(parser.parse_args())\n  File \".harness-state/runtime/worktrees/M44/tests/e2e/compare-nei.py\", line 55, in compare\n    x, y = locate(frame, ref)\n           ^^^^^^^^^^^^^^^^^^\n  File \".harness-state/runtime/worktrees/M44/tests/e2e/compare-nei.py\", line 38, in locate\n    raise ValueError(f\"Original slot bevels did not align ({best[0]}/{len(anchors)})\")\nValueError: Original slot bevels did not align (22/48)\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at checkExecSyncError (node:child_process:943:11)\n    at execFileSync (node:child_process:979:15)\n    at locateRecipe (file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:30:22)\n    at file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:139:26\n    at async scenario (file://.harness/e2e/lib.mjs:59:5)\n    at async verifyViewer (file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:13:3)\n    at async file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewers.mjs:2:1\nAC-F049-002 Expected Result: 原作の画面・機能・操作に対応する実装と検証画像/テストが存在し、ただPNGがあるという理由で同等判定した項目がない。\n\ntests/e2e/recipe-viewers-emi.mjs: Error: Command failed: .harness-state/runtime/pilot/node_modules/.bin/mct --client clayium-a input key press u\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"CONNECTION_FAILED\",\n    \"message\": \"WebSocket closed before responding at ws://127.0.0.1:56633\",\n    \"details\": {\n      \"url\": \"ws://127.0.0.1:56633\",\n      \"phase\": \"response\",\n      \"requestId\": \"09680c20-3998-4524-95d9-73e15f57669d\",\n      \"action\": \"input.key-press\",\n      \"requestSent\": true,\n      \"resultUnknown\": true,\n      \"elapsedMs\": 564,\n      \"timeoutSeconds\": 10,\n      \"unmatchedResponses\": 0,\n      \"closeCode\": 1006,\n      \"closeReason\": \"\"\n    }\n  }\n}\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at checkExecSyncError (node:child_process:943:11)\n    at execFileSync (node:child_process:979:15)\n    at mct (file://.harness/e2e/lib.mjs:14:18)\n    at mc (file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:15:29)\n    at key (file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:20:25)\n    at lookup (file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:62:11)\n    at invLookup (file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:70:48)\n    at file://.harness-state/runtime/worktrees/M44/tests/e2e/recipe-viewer-checks.mjs:153:7\nAC-F049-002 Expected Result: 原作の画面・機能・操作に対応する実装と検証画像/テストが存在し、ただPNGがあるという理由で同等判定した項目がない。\n\ntests/e2e/release-gate.mjs: Error: Command failed: .harness-state/runtime/pilot/node_modules/.bin/mct --client clayium-a chat command op clayium_b\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"CLIENT_NOT_RUNNING\",\n    \"message\": \"Client clayium-a is not running\",\n    \"details\": {}\n  }\n}\n\n    at genericNodeError (node:internal/errors:999:15)\n    at wrappedFn (node:internal/errors:544:14)\n    at checkExecSyncError (node:child_process:943:11)\n    at execFileSync (node:child_process:979:15)\n    at mct (file://.harness/e2e/lib.mjs:14:18)\n    at command (file://.harness/e2e/lib.mjs:27:10)\n    at prepareReleaseGateClients (file://.harness-state/runtime/worktrees/M44/tests/e2e/release-gate.mjs:180:3)\n    at async file://.harness-state/runtime/worktrees/M44/tests/e2e/release-gate.mjs:237:23\n    at async scenario (file://.harness/e2e/lib.mjs:59:5)\n    at async file://.harness-state/runtime/worktrees/M44/tests/e2e/release-gate.mjs:236:1\nAC-F049-003 Expected Result: 既知の欠落F-043～F-045を修復し、状態保存・権限・アイテム収支・マルチプレイに原作からの無断仕様劣化が残らない。\nAC-F049-006 Expected Result: アイテム／流体／CEの増殖や消失、不正な属性残存、無限探索、同期破綻、未解除チケットが生じず、クライアントを正常に再接続できる。\nAC-F049-007 Expected Result: 全ACが合格し、台帳の`欠落`と`未確認`が0件であることを証明できた場合にのみ本Featureを合格とし、初回正式版の完成判定を行う。",
+        "logs": [
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/runtime/server.log",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/runtime/client-clayium-a.log",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/stdout.log",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/stderr.log",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/stdout.log",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/stderr.log",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-release-gate.mjs/stdout.log",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-release-gate.mjs/stderr.log"
+        ],
+        "screenshots": [
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-silicon-chest-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-europium-chest-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-work-table-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-work-table-original-buttons-and-selected-operation.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-003-jei-work-table-after-transfer.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-003-jei-crafting-board-after-transfer.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-003-jei-crafting-board-with-adjacent-chest.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-grinder-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-002-jei-grinder-category-via-machine.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-grinder-original-nei-layout.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-metal-separator-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-002-jei-metal-separator-category-via-machine.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/AC-F047-001-jei-metal-separator-original-nei-layout.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/jei-work-table-hotfix2-comparison.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers.mjs/screenshots/jei-grinder-hotfix2-comparison.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-001-emi-work-table-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-001-emi-work-table-original-buttons-and-selected-operation.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-003-emi-work-table-after-transfer.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-003-emi-crafting-board-after-transfer.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-003-emi-crafting-board-with-adjacent-chest.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-001-emi-grinder-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-002-emi-grinder-category-via-machine.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-001-emi-grinder-original-nei-layout.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-001-emi-metal-separator-gui.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-002-emi-metal-separator-category-via-machine.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-001-emi-metal-separator-original-nei-layout.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-004-emi-metal-separator-weight.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-002-emi-quartz-crucible-uses.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-002-emi-quartz-crucible-recipes.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/AC-F047-002-emi-clay_cobblestone_generator-information.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/emi-work-table-hotfix2-comparison.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/emi-grinder-hotfix2-comparison.png",
+          ".harness-state/runs/2026-11-25T07-25-13-158Z-004-M44-e2e/scenarios/tests-e2e-recipe-viewers-emi.mjs/screenshots/emi-metal-separator-hotfix2-comparison.png"
+        ]
+      },
+      "conflicts": [],
+      "reviewConflicts": [],
+      "session": "01a210f7-0587-7db3-b0c6-189c23b7d604"
+    }
+  ],
+  "completed": [
+    "M01",
+    "M02",
+    "M04",
+    "M03",
+    "M05",
+    "M18",
+    "M19",
+    "M06",
+    "M07",
+    "M08",
+    "M10",
+    "M11",
+    "M09",
+    "M14",
+    "M12",
+    "M13",
+    "M16",
+    "M20",
+    "M17",
+    "M15",
+    "M22",
+    "M24",
+    "M23",
+    "M25",
+    "M21",
+    "M27",
+    "M26",
+    "M28",
+    "M29",
+    "M32",
+    "M33",
+    "M30",
+    "M31",
+    "M34",
+    "M36",
+    "M35",
+    "M37",
+    "M38",
+    "M39",
+    "M40",
+    "M42",
+    "M41",
+    "M43"
+  ],
+  "lastCheckpoint": "ef2bfb3c77c8d5a493d8e4acb4a6cda3f38f5a73",
+  "fatal": null
+}

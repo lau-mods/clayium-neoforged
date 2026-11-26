@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 200000000000,
+  "item_inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium:oec_energy_storage_upgrade"
+      }
+    },
+    {
+      "count": 64,
+      "ingredient": {
+        "item": "clayium:antimatter"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:opa_energy_storage_upgrade"
+    }
+  ],
+  "processing_method": "clayium:ca_injector",
+  "processing_ticks": 4000,
+  "required_tier": 13
+}

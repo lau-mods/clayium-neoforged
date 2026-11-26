@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "clayium:large_impure_silicon_plate"
+    },
+    "*": {
+      "item": "clayium:large_silicone_plate"
+    },
+    "C": {
+      "item": "clayium:advanced_circuit"
+    },
+    "E": {
+      "item": "clayium:clay_energy_excitor"
+    }
+  },
+  "pattern": [
+    "#E#",
+    "*C*",
+    "#*#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:advanced_machine_hull"
+  }
+}

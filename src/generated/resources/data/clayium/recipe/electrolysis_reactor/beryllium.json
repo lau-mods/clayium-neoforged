@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:dusts/impure_beryllium"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:beryllium_dust"
+    }
+  ],
+  "processing_method": "clayium:electrolysis_reactor",
+  "processing_ticks": 3000,
+  "required_tier": 9
+}

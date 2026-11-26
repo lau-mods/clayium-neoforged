@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 10000000000,
+  "item_inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium:octuple_pure_antimatter_plate"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:large_octuple_pure_antimatter_plate"
+    }
+  ],
+  "processing_method": "clayium:bending_machine",
+  "processing_ticks": 40,
+  "required_tier": 9
+}

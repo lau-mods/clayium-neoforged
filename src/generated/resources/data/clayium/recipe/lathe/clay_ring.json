@@ -1,0 +1,22 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:clay_disc"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:clay_ring"
+    }
+  ],
+  "processing_method": "clayium:lathe",
+  "processing_ticks": 2,
+  "progression_rate": "ticks",
+  "required_tier": 0
+}

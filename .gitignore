@@ -36,8 +36,12 @@ bin/
 run/
 !**/src/**/run/
 **/src/generated/**/.cache/
-
-### Local migration workspace ###
-.tmp/
 repo/
 !**/src/**/repo/
+.harness-state/runs/
+.harness-state/runtime/
+
+.tmp/
+reference/original/
+
+.codex/rules/harness-gradle.rules

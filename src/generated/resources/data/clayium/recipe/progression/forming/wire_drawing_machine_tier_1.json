@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "clayium:clay_machine_hull"
+    },
+    "*": {
+      "item": "clayium:clay_gear"
+    },
+    "=": {
+      "item": "clayium:clay_pipe"
+    },
+    "o": {
+      "item": "clayium:clay_spindle"
+    }
+  },
+  "pattern": [
+    "*o*",
+    "=#=",
+    "*o*"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:wire_drawing_machine_tier_1"
+  }
+}

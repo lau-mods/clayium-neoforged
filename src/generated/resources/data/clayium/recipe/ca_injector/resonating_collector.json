@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 200000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:antimatter_machine_hull"
+      }
+    },
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium:antimatter"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:ca_resonating_collector"
+    }
+  ],
+  "processing_method": "clayium:ca_injector",
+  "processing_ticks": 4000,
+  "required_tier": 10
+}

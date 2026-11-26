@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100,
+  "item_inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium:az91_d_alloy_plate"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:large_az91_d_alloy_plate"
+    }
+  ],
+  "processing_method": "clayium:bending_machine",
+  "processing_ticks": 40,
+  "required_tier": 4
+}

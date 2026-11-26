@@ -1,6 +1,0 @@
-{
-  "parent": "clayium_neoforged:block/clay_water_wheel",
-  "textures": {
-    "overlay": "clayium_neoforged:block/clay_water_wheel_active"
-  }
-}

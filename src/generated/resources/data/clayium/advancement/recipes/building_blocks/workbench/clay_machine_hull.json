@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_raw_hull": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium:raw_clay_machine_hull"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium:workbench/clay_machine_hull"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_raw_hull"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium:workbench/clay_machine_hull"
+    ]
+  }
+}

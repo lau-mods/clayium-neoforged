@@ -1,102 +1,86 @@
-/*
- * SPDX-License-Identifier: CC-BY-4.0
- *
- * This file is part of the Clayium NeoForge port.
- */
 package net.claustra01.clayium.energy;
 
+import net.claustra01.clayium.material.CompressionTier;
+import net.claustra01.clayium.registry.MaterialRegistration;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-/**
- * Server-owned Clay Energy storage. CE is deliberately independent from FE;
- * exposing a NeoForge FE capability belongs only to the dedicated converter.
- */
-public final class ClayEnergyStorage {
-    private static final String ENERGY_KEY = "Energy";
+public final class ClayEnergyStorage implements INBTSerializable<CompoundTag> {
+    public static final String ENERGY_NBT_KEY = "clay_energy";
+    public static final boolean EXPOSES_FE_CAPABILITY = false;
 
-    private final long capacity;
-    private final long maxReceive;
-    private final long maxExtract;
-    private long energy;
+    private ClayEnergy stored;
 
-    public ClayEnergyStorage(long capacity, long maxReceive, long maxExtract) {
-        if (capacity < 0 || maxReceive < 0 || maxExtract < 0) {
-            throw new IllegalArgumentException("Clay Energy limits must not be negative");
+    public ClayEnergyStorage() {
+        this(ClayEnergy.ZERO);
+    }
+
+    public ClayEnergyStorage(ClayEnergy initialEnergy) {
+        stored = initialEnergy;
+    }
+
+    public ClayEnergy stored() {
+        return stored;
+    }
+
+    public ClayEnergy add(ClayEnergy energy) {
+        ClayEnergy before = stored;
+        stored = stored.plus(energy);
+        return ClayEnergy.ofInternal(stored.internalValue() - before.internalValue());
+    }
+
+    public boolean consume(ClayEnergy required) {
+        if (!stored.canAfford(required)) {
+            return false;
         }
-        this.capacity = capacity;
-        this.maxReceive = maxReceive;
-        this.maxExtract = maxExtract;
+        stored = stored.minus(required);
+        return true;
     }
 
-    public long capacity() {
-        return capacity;
-    }
-
-    public long energyStored() {
-        return energy;
-    }
-
-    public long maxReceive() {
-        return maxReceive;
-    }
-
-    public long maxExtract() {
-        return maxExtract;
-    }
-
-    public long receive(long amount, boolean simulate) {
-        if (amount <= 0 || maxReceive == 0 || energy >= capacity) {
-            return 0;
+    public boolean consume(ClayEnergy required, ItemStack fuelSlot) {
+        if (!stored.canAfford(required) && !produceClayEnergy(fuelSlot)) {
+            return false;
         }
-        long accepted = Math.min(Math.min(amount, maxReceive), capacity - energy);
-        if (!simulate) {
-            energy += accepted;
-        }
-        return accepted;
+        return consume(required);
     }
 
-    public long extract(long amount, boolean simulate) {
-        if (amount <= 0 || maxExtract == 0 || energy <= 0) {
-            return 0;
+    public boolean produceClayEnergy(ItemStack fuelSlot) {
+        ClayEnergy fuelValue = fuelValue(fuelSlot);
+        if (fuelValue.internalValue() == 0L) {
+            return false;
         }
-        long extracted = Math.min(Math.min(amount, maxExtract), energy);
-        if (!simulate) {
-            energy -= extracted;
+        ClayEnergy accepted = add(fuelValue);
+        if (accepted.internalValue() == 0L) {
+            return false;
         }
-        return extracted;
+        fuelSlot.shrink(1);
+        return true;
     }
 
-    public void setEnergy(long energy) {
-        if (energy < 0) {
-            this.energy = 0;
-        } else if (energy > capacity) {
-            this.energy = capacity;
-        } else {
-            this.energy = energy;
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        tag.putLong(ENERGY_NBT_KEY, stored.internalValue());
+        return tag;
+    }
+
+    @Override
+    public void deserializeNBT(HolderLookup.Provider registries, CompoundTag tag) {
+        stored = ClayEnergy.ofInternal(tag.getLong(ENERGY_NBT_KEY));
+    }
+
+    public static ClayEnergy fuelValue(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return ClayEnergy.ZERO;
         }
-    }
-
-    public ClayEnergySnapshot snapshot() {
-        return new ClayEnergySnapshot(energy, capacity);
-    }
-
-    public void applySnapshot(ClayEnergySnapshot snapshot) {
-        if (snapshot.capacity() != capacity) {
-            throw new IllegalArgumentException("Clay Energy capacity changed during synchronization");
+        for (CompressionTier compressionTier : CompressionTier.values()) {
+            if (compressionTier.clayEnergy() > 0L
+                    && stack.is(MaterialRegistration.COMPRESSION_BLOCKS.get(compressionTier.id()).get().asItem())) {
+                return ClayEnergy.ofCe(compressionTier.clayEnergy());
+            }
         }
-        setEnergy(snapshot.energy());
-    }
-
-    public void save(CompoundTag tag) {
-        tag.putLong(ENERGY_KEY, energy);
-    }
-
-    public void load(CompoundTag tag) {
-        if (tag.contains(ENERGY_KEY, Tag.TAG_LONG)) {
-            setEnergy(tag.getLong(ENERGY_KEY));
-        } else {
-            energy = 0;
-        }
+        return ClayEnergy.ZERO;
     }
 }

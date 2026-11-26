@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: CC-BY-4.0 */
 package net.claustra01.clayium.logistics;
 
-/** Prevents item and fluid pipe shapes from connecting to each other. */
+/** Keeps item and fluid pipe networks from connecting across incompatible capabilities. */
 public enum IoTransportKind {
     ITEM,
-    FLUID
+    FLUID,
+    ENERGY
 }

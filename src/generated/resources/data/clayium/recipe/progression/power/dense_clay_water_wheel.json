@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "clayium:dense_clay_machine_hull"
+    },
+    {
+      "item": "clayium:dense_clay_wheel"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:dense_clay_water_wheel"
+  }
+}

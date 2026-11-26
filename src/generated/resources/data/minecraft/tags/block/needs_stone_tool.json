@@ -1,0 +1,11 @@
+{
+  "values": [
+    "clayium:clay_ore",
+    "clayium:deepslate_clay_ore",
+    "clayium:dense_clay_ore",
+    "clayium:deepslate_dense_clay_ore",
+    "clayium:large_dense_clay_ore",
+    "clayium:deepslate_large_dense_clay_ore",
+    "clayium:clayium_block"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "clayium:block/clayworktable_side",
+    "side": "clayium:block/clayworktable_side",
+    "top": "clayium:block/clayworktable"
+  }
+}

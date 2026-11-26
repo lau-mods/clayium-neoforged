@@ -1,0 +1,22 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1,
+  "item_inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "minecraft:cobblestone"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 16,
+      "id": "minecraft:gravel"
+    }
+  ],
+  "processing_method": "clayium:grinder",
+  "processing_ticks": 10,
+  "progression_rate": "stacks",
+  "required_tier": 0
+}

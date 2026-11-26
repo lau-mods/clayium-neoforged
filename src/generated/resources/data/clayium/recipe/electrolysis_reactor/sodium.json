@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 10000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:dusts/impure_sodium"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:sodium_dust"
+    }
+  ],
+  "processing_method": "clayium:electrolysis_reactor",
+  "processing_ticks": 100,
+  "required_tier": 6
+}

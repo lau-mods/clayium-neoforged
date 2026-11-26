@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1000000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:clay_gadget_long_arm"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:manipulator_mk_ii"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:clay_gadget_longer_arm"
+    }
+  ],
+  "processing_method": "clayium:assembler",
+  "processing_ticks": 120,
+  "required_tier": 4
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "H": {
+      "item": "clayium:solar_clay_fabricator_mk_i"
+    },
+    "P": {
+      "item": "clayium:compressed_energetic_clay"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "PRP",
+    "PHP",
+    "PRP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:solar_clay_fabricator_mk_ii"
+  }
+}

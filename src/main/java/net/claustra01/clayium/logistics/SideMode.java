@@ -1,8 +1,6 @@
-/*
- * SPDX-License-Identifier: CC-BY-4.0
- */
 package net.claustra01.clayium.logistics;
 
+/** A display-level projection of the independent insertion and extraction routes. */
 public enum SideMode {
     DISABLED,
     INPUT,
@@ -15,9 +13,5 @@ public enum SideMode {
 
     public boolean allowsExtract() {
         return this == OUTPUT || this == INPUT_OUTPUT;
-    }
-
-    public SideMode next() {
-        return values()[(ordinal() + 1) % values().length];
     }
 }

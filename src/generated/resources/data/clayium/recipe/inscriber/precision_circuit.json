@@ -1,0 +1,27 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 1000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "clayium:silicon_plate"
+      }
+    },
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "clayium:energized_clay_dust"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:precision_circuit"
+    }
+  ],
+  "processing_method": "clayium:inscriber",
+  "processing_ticks": 120,
+  "required_tier": 0
+}

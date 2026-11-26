@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "item": "clayium:silicone_block"
+    },
+    {
+      "tag": "c:dyes/white"
+    }
+  ],
+  "result": {
+    "count": 8,
+    "id": "clayium:white_silicone_block"
+  }
+}

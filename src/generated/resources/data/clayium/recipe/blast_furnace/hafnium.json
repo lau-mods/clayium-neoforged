@@ -1,0 +1,21 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 10000,
+  "item_inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "tag": "c:dusts/hafnium"
+      }
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 1,
+      "id": "clayium:hafnium_ingot"
+    }
+  ],
+  "processing_method": "clayium:blast_furnace",
+  "processing_ticks": 500,
+  "required_tier": 6
+}

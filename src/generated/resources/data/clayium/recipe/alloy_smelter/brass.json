@@ -1,0 +1,37 @@
+{
+  "type": "clayium:machine",
+  "clay_energy": 100,
+  "item_inputs": [
+    {
+      "count": 3,
+      "ingredient": [
+        {
+          "tag": "c:ingots/copper"
+        },
+        {
+          "tag": "c:dusts/copper"
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "ingredient": [
+        {
+          "tag": "c:ingots/zinc"
+        },
+        {
+          "tag": "c:dusts/zinc"
+        }
+      ]
+    }
+  ],
+  "item_outputs": [
+    {
+      "count": 4,
+      "id": "clayium:brass_ingot"
+    }
+  ],
+  "processing_method": "clayium:alloy_smelter",
+  "processing_ticks": 40,
+  "required_tier": 6
+}

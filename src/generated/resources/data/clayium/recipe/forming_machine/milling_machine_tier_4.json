@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "clayium:basic_circuit"
+    },
+    "H": {
+      "item": "clayium:clay_machine_hull"
+    },
+    "P": {
+      "item": "clayium:advanced_industrial_clay_plate"
+    },
+    "S": {
+      "item": "clayium:clay_gear"
+    }
+  },
+  "pattern": [
+    " S ",
+    "CHC",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:milling_machine_tier_4"
+  }
+}

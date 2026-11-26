@@ -1,0 +1,1036 @@
+{
+  "reference": {
+    "mod": "Clayium 0.4.6.36 hotfix2 for Minecraft 1.7.10",
+    "method": "The original Gui classes were inspected from bytecode. GuiTemp supplies a four-pixel nine-tile border, machine-area height plus a 94-pixel player inventory, title at 6,6, and dark-gray text 0x404040.",
+    "fontDifference": "Minecraft 1.21.1 font metrics, GUI scaling, narration, and accessibility focus rendering are allowed differences.",
+    "buttonMapping": "button.png is a 16x16 icon atlas, not a 200x20 widget strip. Text controls use Minecraft's widget/button, widget/button_highlighted and widget/button_disabled sprites; no icon atlas cells are resampled into text controls.",
+    "verificationLimit": "The SHA-256-pinned hotfix2 JAR was decompiled for the original layouts. Conditional layouts retain their exact formulas from their original Container classes.",
+    "originalJarSha256": "c16e35d241d46c290e07f5d0cfd35e498db79be33a374615782163ef0f5801f2",
+    "originalCoordinateEvidence": {
+      "GuiTemp": "ContainerTemp initializes machineGuiSizeX=176 and machineGuiSizeY=72; GuiTemp sets imageWidth=machineGuiSizeX and imageHeight=machineGuiSizeY+94. GuiTemp draws the title at (6,6), color 0x404040. Player slots use offsetX+8+18*column, offsetY+12+18*row; hotbar uses offsetY+70.",
+      "GuiClayMachines": "ContainerClayMachines sets the input slot to (44,35) and result slot to (116,35).",
+      "GuiWaterWheel": "GuiWaterWheel renders progress text at (6,machineGuiSizeY-12), durability at (90,machineGuiSizeY-12), and surrounding-water text at (90,machineGuiSizeY), all color 0x404040.",
+      "GuiPANCore": "Constructor initializes tableX=11, tableY=18, sliderWidth=10, marginR=11, and marginB=14; comparator choices are item, cost, and consumption.",
+      "GuiAutoTrader": "ContainerAutoTrader uses a 176x182 window with input slots (36,53), (62,53), result (120,53), and player inventory (8,100). GuiAutoTrader renders offer buy A/B/sell at (36,24), (62,24), (120,24), with 16x16 tooltips; previous/next buttons are 12x19 at (17,23)/(147,23); disabled overlays are 28x21 at (83,21)/(83,51)."
+    },
+    "assetVerification": "All 19 GUI asset digests were recomputed from assets/clayium/textures/gui/ in the SHA-256-pinned original JAR and match this table.",
+    "comparisonMethod": "Each screens[] row pairs originalLayout with portedLayout. Coordinates are relative to the upper-left GUI origin; screenshots are captured by tests/e2e/gui-parity.mjs. Generic source classes use their concrete menu example in portedScreens."
+  },
+  "assets": [
+    {
+      "file": "autotrader.png",
+      "sha256": "721ecc027452a647d6f364a4b4a3fe3dc5b57307ed5855611fe9ef4895fe37a4"
+    },
+    {
+      "file": "back.png",
+      "sha256": "91bbae30893ada1943d641076850551ebc4087edcb6151bbef58860f15434622"
+    },
+    {
+      "file": "button.png",
+      "sha256": "04f523984da899df14f50122e4f00a35c08a4452d35da07668c016c1773eac1f"
+    },
+    {
+      "file": "claycraftingtable.png",
+      "sha256": "d409addcb1ee0be7ee13eebcb694525cb05df93d06479c8587921005dc6e8da0"
+    },
+    {
+      "file": "clayworktable.png",
+      "sha256": "60f7cdf4e09a8e3694416e87aef403fc899c729852df0355cce216009d7073b9"
+    },
+    {
+      "file": "gui_b.png",
+      "sha256": "40bd6db030fe696c65aacbf98684b3f33992f413b9d1d88db52936f4161cbdc7"
+    },
+    {
+      "file": "gui_back.png",
+      "sha256": "dd60803bc4754f70555d25c7c7e6e929292eee961412620cdd2be2c4579ec2a5"
+    },
+    {
+      "file": "gui_bl.png",
+      "sha256": "22c927b57b96527a5ac3d5fc488bff54311eecbbbc4ef20bb9d5bf50df5a18ba"
+    },
+    {
+      "file": "gui_br.png",
+      "sha256": "ab807bbf956b5ddff97b26ecb7f1dc67342956cb975e8b116946a2ae974e6106"
+    },
+    {
+      "file": "gui_l.png",
+      "sha256": "aff58cc107ad8214303a7a152fac7bc568912f5db3051c3baa4e70dac7202ffa"
+    },
+    {
+      "file": "gui_playerinventory.png",
+      "sha256": "1e2c4a4404705b880fb0b41054bc8fac14e017cf7fc3dc77d6564d18237e1960"
+    },
+    {
+      "file": "gui_r.png",
+      "sha256": "c98324ea07350e046653a2599ad7dc4227b783a16db0c06ed02827c8a93830d1"
+    },
+    {
+      "file": "gui_t.png",
+      "sha256": "74155576efc733a413eda108df409429769c7d39ef739e667396e0f2a4f86f72"
+    },
+    {
+      "file": "gui_tl.png",
+      "sha256": "53597b31a7a1f078d4c3882f56b876c64472d0c050cdc4ea600d07b069d39e3a"
+    },
+    {
+      "file": "gui_tr.png",
+      "sha256": "e43710999f4b4429b47af08b10687a2183d35e19d115f9b8f8be32b68f8913ad"
+    },
+    {
+      "file": "nei.png",
+      "sha256": "06d062e06f9845506e6ba3b8e1bb6da22ef94b4150941976f737f076911f67fd"
+    },
+    {
+      "file": "playerinventory.png",
+      "sha256": "e304c66e46684aed3c8139334dabd73723c46577cf74fc7730d1fd8409fe71fc"
+    },
+    {
+      "file": "progressbarfurnace.png",
+      "sha256": "b8f1a60c4aa87ef1ccb0218af9deadda64ec4c83c221783762da2532412b980e"
+    },
+    {
+      "file": "slot.png",
+      "sha256": "ddbc0bda245fe1895b68eeb181e78b0f21d9653541ea4adad05fcd9960a15ef4"
+    }
+  ],
+  "screens": [
+    {
+      "original": "GuiTemp",
+      "ported": "LegacyGuiGraphics and every tiled Screen",
+      "window": "176 x (machineY+94); machineY=72 default",
+      "parts": "title, machine area, player inventory",
+      "allowedDifference": "generic tiled background and inventory",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiTemp + mods.clayium.gui.container.ContainerTemp",
+        "window": "176 x (machineY+94); machineY=72 default",
+        "slots": "player (8,machineY+12) 9x3; hotbar (8,machineY+70)",
+        "progress": "none",
+        "energy": "none",
+        "buttons": "none",
+        "labels": "title (6,6), inventory (8,machineY); #404040",
+        "scroll": "none",
+        "tooltips": "slot stack tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#legacy-tiled-processing-window-slots-progress-and-ce",
+      "portedScreens": [
+        "ClayMachineScreen",
+        "WaterWheelScreen",
+        "MetalChestScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        },
+        "WaterWheelScreen": {
+          "window": [
+            176,
+            126
+          ],
+          "slots": "no machine slots; player (8,44), hotbar (8,102)",
+          "progress": "text (6,20), no bar",
+          "text": "efficiency (90,20); water (90,32); title (7,6); #404040",
+          "screenshot": "water-wheel-flow-efficiency-and-progress"
+        },
+        "MetalChestScreen": {
+          "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112-(20 if rows>6)",
+          "slots": "storage x=(width-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(width-176)/2+8, y=height-82",
+          "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16; server clickMenuButton",
+          "text": "title 6,6 and player label when rows <= 6; page (playerX+162,machineY+32) when pages > 1; #404040",
+          "screenshot": "multipage-europium-chest-page-two",
+          "allowedDifference": "Named material variants replace metadata; large-chest slot geometry now matches original ContainerNormalInventory."
+        }
+      }
+    },
+    {
+      "original": "GuiClayContainerTemp",
+      "ported": "ClayMachineScreen, WaterWheel and environment Screens",
+      "window": "inherited GuiTemp",
+      "parts": "machine name and hull/front identity",
+      "allowedDifference": "shared machine foreground",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayContainerTemp + mods.clayium.gui.container.ContainerTemp",
+        "window": "176 x (machineY+94); machineY=72 gives 176x166",
+        "slots": "abstract GUI adds no slots; concrete ContainerTemp player (8,machineY+12), hotbar (8,machineY+70)",
+        "progress": "no bar in this abstract GUI; concrete machine draws 24x17 at (76,35)",
+        "energy": "resonance (80,machineY-12); overclock (80,machineY)",
+        "buttons": "none in this abstract GUI; concrete machine button (80,machineY-16) if enabled",
+        "labels": "title (6,6); #404040",
+        "scroll": "none",
+        "tooltips": "slot and energy item"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#legacy-tiled-processing-window-slots-progress-and-ce",
+      "portedScreens": [
+        "ClayMachineScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        }
+      }
+    },
+    {
+      "original": "GuiClayEnergyTemp",
+      "ported": "ClayMachineScreen, ClayProductionScreen and FE converter Screen",
+      "window": "inherited GuiTemp",
+      "parts": "CE value and fuel slot",
+      "allowedDifference": "long CE and current fuel slot replace old client field",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayEnergyTemp + mods.clayium.gui.container.ContainerTemp",
+        "window": "176 x (machineY+94); machineY=72 gives 176x166",
+        "slots": "abstract GUI adds no slots; concrete ContainerTemp player (8,machineY+12), hotbar (8,machineY+70)",
+        "progress": "no bar in this abstract GUI; concrete machine draws 24x17 at (76,35)",
+        "energy": "CE (4,machineY-12), fuel icon (-12,machineY-16)",
+        "buttons": "none in this abstract GUI; concrete machine button (80,machineY-16) if enabled",
+        "labels": "title (6,6); #404040",
+        "scroll": "none",
+        "tooltips": "fuel item tooltip"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#legacy-tiled-processing-window-slots-progress-and-ce",
+      "portedScreens": [
+        "ClayMachineScreen",
+        "ClayProductionScreen",
+        "EnergyConverterScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        },
+        "ClayProductionScreen": {
+          "window": [
+            176,
+            180
+          ],
+          "slots": "input 44,46; output 116,46; fuel 44,68; optional limit 66,68; player 8,100",
+          "progress": "88,47 24x17",
+          "screenshot": "clay-production-progress"
+        },
+        "EnergyConverterScreen": {
+          "window": [
+            176,
+            185
+          ],
+          "slots": "fuel 35,53; player 8,105",
+          "text": "CE 62,31; stored FE 62,44; generated 62,57; output 62,70",
+          "screenshot": "ce-fe-converter-storage-and-rate"
+        }
+      }
+    },
+    {
+      "original": "GuiClayMachines",
+      "ported": "ClayMachineScreen",
+      "window": "176x166 for default machineY=72",
+      "parts": "input 44,35; output 116,35; fuel 44,57; player inventory 8,90; 24x17 progress; Tier and CE",
+      "allowedDifference": "The 176x172 window moves player slots from Y=84 to Y=90 to fit the fuel slot and synchronized state/CE labels. The I/O toggle opens the six face controls in the header.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayMachines + mods.clayium.gui.container.ContainerClayMachines",
+        "window": "176x166 for default machineY=72",
+        "slots": "input (44,35), output (116,35); player (8,84)",
+        "progress": "bar (76,35) 24x17",
+        "energy": "CE (4,60); resonance/overclock (80,60/72)",
+        "buttons": "button (80,56) 16x16 if enabled",
+        "labels": "title (6,6); #404040",
+        "scroll": "none",
+        "tooltips": "progress and slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#legacy-tiled-processing-window-slots-progress-and-ce",
+      "portedScreens": [
+        "ClayMachineScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        }
+      }
+    },
+    {
+      "original": "GuiClayWorkTable",
+      "ported": "ClayWorkTableScreen / ClayWorkTableMenu",
+      "window": "176x166",
+      "parts": "six tool actions; input 17,30; tool 80,17; outputs 143,30 and 143,55; progress",
+      "allowedDifference": "current tooltip and narration APIs",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayWorkTable + mods.clayium.gui.container.ContainerClayWorkTable",
+        "window": "176x166",
+        "slots": "input (17,30), tool (80,17), results (143,30)/(143,55); player (8,84)",
+        "progress": "bar (48,29) 80x16; burn (56,36) 14x8",
+        "energy": "none",
+        "buttons": "six 16x16 buttons at (40+16*i,52), i=0..5",
+        "labels": "title (6,6), inventory (8,72); #404040",
+        "scroll": "none",
+        "tooltips": "tool/action and slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#original-clay-work-table-actions-and-inventory",
+      "portedScreens": [
+        "ClayWorkTableScreen"
+      ],
+      "portedLayout": {
+        "ClayWorkTableScreen": {
+          "window": [
+            176,
+            166
+          ],
+          "slots": "input 17,30; tool 80,17; outputs 143,30 and 143,55",
+          "screenshot": "original-clay-work-table-actions-and-inventory"
+        }
+      }
+    },
+    {
+      "original": "GuiClayCraftingTable",
+      "ported": "ClayCraftingBoardScreen / ClayCraftingBoardMenu",
+      "window": "176 x (machineY+94); machineY derived from adjacent inventory maxY+2",
+      "parts": "3x3 pattern at 30,17; result 124,35; nearby slots start 8,73; player inventory starts 8,machineY+12",
+      "allowedDifference": "IItemHandler replaces legacy IInventory",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayCraftingTable + mods.clayium.gui.container.ContainerClayCraftingTable",
+        "window": "176 x (machineY+94); machineY derived from adjacent inventory maxY+2",
+        "slots": "pattern (30,17) 3x3, result (124,35); adjacent inventory (17,73) or (30,17), according to source",
+        "progress": "bar (90,34) 24x17 when applicable",
+        "energy": "none",
+        "buttons": "none",
+        "labels": "title (6,6); #404040",
+        "scroll": "adjacent inventory visible directly",
+        "tooltips": "result/slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#clay-crafting-board-pattern-and-adjacent-slots",
+      "portedScreens": [
+        "ClayCraftingBoardScreen"
+      ],
+      "portedLayout": {
+        "ClayCraftingBoardScreen": {
+          "window": [
+            176,
+            166
+          ],
+          "slots": "standalone 176x166; adjacent rows expand to 176x222; pattern 30,17; result 124,35; nearby 8,73; player 8,machineY+12",
+          "screenshot": "clay-crafting-board-pattern-and-adjacent-slots"
+        }
+      }
+    },
+    {
+      "original": "GuiWaterWheel",
+      "ported": "WaterWheelScreen / WaterWheelMenu",
+      "window": "176x126; ContainerNothing machineY=32",
+      "parts": "progress at 80,37, flowing-water count at 7,24, efficiency at 7,65",
+      "allowedDifference": "FluidState flowing-water count replaces the old water check; the port now restores the original 176x126 window and player slots.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiWaterWheel + mods.clayium.gui.container.ContainerNothing",
+        "window": "176x126; ContainerNothing machineY=32",
+        "slots": "no machine slots; player (8,44), hotbar (8,102)",
+        "progress": "none",
+        "energy": "none",
+        "buttons": "none",
+        "labels": "progress (6,20), durability (90,20), water (90,32); #404040",
+        "scroll": "none",
+        "tooltips": "slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#water-wheel-flow-efficiency-and-progress",
+      "portedScreens": [
+        "WaterWheelScreen"
+      ],
+      "portedLayout": {
+        "WaterWheelScreen": {
+          "window": [
+            176,
+            126
+          ],
+          "slots": "no machine slots; player (8,44), hotbar (8,102)",
+          "progress": "text (6,20), no bar",
+          "text": "efficiency (90,20); water (90,32); title (7,6); #404040",
+          "screenshot": "water-wheel-flow-efficiency-and-progress"
+        }
+      }
+    },
+    {
+      "original": "GuiChemicalMetalSeparator",
+      "ported": "ClayMachineScreen",
+      "window": "176x190; machineY=96",
+      "parts": "24x17 progress and weighted result slot",
+      "allowedDifference": "M14 selects one weighted output on the server and exposes one result slot instead of the original 4x4 preview/result matrix; the shared 176x172 processing window displays the selected result and CE.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiChemicalMetalSeparator + mods.clayium.gui.container.ContainerChemicalMetalSeparator",
+        "window": "176x190; machineY=96",
+        "slots": "input (25,44), 4x4 outputs (85+18*j,17+18*i); player (8,108)",
+        "progress": "GuiClayMachines 24x17 bar at (76,35)",
+        "energy": "CE (4,84)",
+        "buttons": "inherited machine button if enabled",
+        "labels": "title (6,6); #404040",
+        "scroll": "none",
+        "tooltips": "weighted output slots"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#metal-separator-output-layout",
+      "portedScreens": [
+        "ClayMachineScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        }
+      }
+    },
+    {
+      "original": "GuiClayBlastFurnace",
+      "ported": "ClayMachineScreen",
+      "window": "176x166 default machineY=72",
+      "parts": "multiblock status, progress, CE and slots",
+      "allowedDifference": "current structure diagnostics use server state",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayBlastFurnace + mods.clayium.gui.container.ContainerClayMachines",
+        "window": "176x166 default machineY=72",
+        "slots": "ContainerClayMachines input (44,35), output (116,35); player (8,84), hotbar (8,142)",
+        "progress": "24x17 at (76,35)",
+        "energy": "CE (4,60)",
+        "buttons": "inherited machine button",
+        "labels": "recipe Tier (64,60); #404040",
+        "scroll": "none",
+        "tooltips": "progress and slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#blast-furnace-structure-layout",
+      "portedScreens": [
+        "ClayMachineScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        }
+      }
+    },
+    {
+      "original": "GuiClayReactor",
+      "ported": "ClayMachineScreen",
+      "window": "176x166 default machineY=72",
+      "parts": "reactor state, progress, CE and slots",
+      "allowedDifference": "direct fluid tanks replace capsules",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayReactor + mods.clayium.gui.container.ContainerClayMachines",
+        "window": "176x166 default machineY=72",
+        "slots": "ContainerClayMachines input (44,35), output (116,35); player (8,84), hotbar (8,142)",
+        "progress": "24x17 at (76,35)",
+        "energy": "CE (4,60)",
+        "buttons": "inherited machine button",
+        "labels": "Tier and laser (64,60); #404040",
+        "scroll": "none",
+        "tooltips": "progress and slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#reactor-structure-layout",
+      "portedScreens": [
+        "ClayMachineScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        }
+      }
+    },
+    {
+      "original": "GuiCAReactor",
+      "ported": "ClayMachineScreen",
+      "window": "176x166 default machineY=72",
+      "parts": "formed state, coil/hull count, rank, progress and CE",
+      "allowedDifference": "continuous structure diagnostics use synchronized values",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiCAReactor + mods.clayium.gui.container.ContainerClayMachines",
+        "window": "176x166 default machineY=72",
+        "slots": "ContainerClayMachines input (44,35), output (116,35); player (8,84), hotbar (8,142)",
+        "progress": "24x17 at (76,35)",
+        "energy": "CE (4,60)",
+        "buttons": "status button (machineX-84,machineY-1) 80x10",
+        "labels": "rank/hull (6,16), efficiency (64,machineY-12); #404040",
+        "scroll": "none",
+        "tooltips": "structure and progress"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#ca-reactor-structure-status",
+      "portedScreens": [
+        "ClayMachineScreen"
+      ],
+      "portedLayout": {
+        "ClayMachineScreen": {
+          "window": [
+            176,
+            172
+          ],
+          "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+          "progress": "76,35 24x17",
+          "text": "title 6,6; CE and Tier in upper machine area",
+          "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+        }
+      }
+    },
+    {
+      "original": "GuiClayRFGenerator",
+      "ported": "EnergyConverterScreen / EnergyConverterMenu",
+      "window": "176x184; ContainerNothing machineY=90",
+      "parts": "fuel slot 35,53; CE at 62,31; FE at 62,44; generation at 62,57; output at 62,70; player inventory starts 8,105",
+      "allowedDifference": "FE replaces RF. The new fuel slot at (35,53) and separate synchronized value labels displace the original text-only layout.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiClayRFGenerator + mods.clayium.gui.container.ContainerNothing",
+        "window": "176x184; ContainerNothing machineY=90",
+        "slots": "no machine slots; player (8,102), hotbar (8,160)",
+        "progress": "none",
+        "energy": "inherited CE (4,78)",
+        "buttons": "none",
+        "labels": "RF storage (12,20), conversion (12,40), output (12,52), overclock (12,64); #404040",
+        "scroll": "none",
+        "tooltips": "fuel icon tooltip"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#ce-fe-converter-storage-and-rate",
+      "portedScreens": [
+        "EnergyConverterScreen"
+      ],
+      "portedLayout": {
+        "EnergyConverterScreen": {
+          "window": [
+            176,
+            185
+          ],
+          "slots": "fuel 35,53; player 8,105",
+          "text": "CE 62,31; stored FE 62,44; generated 62,57; output 62,70",
+          "screenshot": "ce-fe-converter-storage-and-rate"
+        }
+      }
+    },
+    {
+      "original": "GuiStorageContainer",
+      "ported": "StorageContainerScreen and VoidContainerScreen",
+      "window": "176x166 default machineY=72",
+      "parts": "insert, extract and memory slots, count/capacity and player inventory",
+      "allowedDifference": "The memory slot is implemented as a server-authoritative ghost sample so selecting an item does not consume it; extraction remains backed by the direct NeoForge item capability.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiStorageContainer + mods.clayium.gui.container.ContainerStorageContainer",
+        "window": "176x166 default machineY=72",
+        "slots": "insert (44,35), extract (116,35), memory (142,18); player (8,84)",
+        "progress": "none",
+        "energy": "none",
+        "buttons": "none",
+        "labels": "count/capacity right-aligned near x=80 at y=60; #404040",
+        "scroll": "none",
+        "tooltips": "slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#storage-count-and-capacity",
+      "portedScreens": [
+        "StorageContainerScreen",
+        "VoidContainerScreen"
+      ],
+      "portedLayout": {
+        "StorageContainerScreen": {
+          "window": [
+            176,
+            168
+          ],
+          "slots": "insert (44,35), extract (116,35), memory ghost (142,18); player (8,84)",
+          "screenshot": "storage-count-and-capacity",
+          "operation": "memory sample is copied at count 1 without consuming the cursor; insert rejects nonmatching item, damage or components; extract is output-only"
+        },
+        "VoidContainerScreen": {
+          "window": [
+            176,
+            168
+          ],
+          "slots": "input 80,35; player below 76",
+          "screenshot": "void-container-target"
+        }
+      }
+    },
+    {
+      "original": "GuiMultipageContainer",
+      "ported": "MetalChestScreen / MetalChestMenu",
+      "window": "machineX=176+18*max(columns-9,0)+8 if large callback; machineY=rows*18+18-(20 if rows>6); totalY=machineY+94",
+      "parts": "page controls, active-page slots and player inventory",
+      "allowedDifference": "Named materials replace metadata; current page controls and slot geometry follow ContainerNormalInventory formulas.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiMultipageContainer + mods.clayium.gui.container.ContainerNormalInventory",
+        "window": "machineX=176+18*max(columns-9,0)+8 if large callback; machineY=rows*18+18-(20 if rows>6); totalY=machineY+94",
+        "slots": "storage x=(machineX-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(machineX-176)/2+8, y=machineY+12",
+        "progress": "none",
+        "energy": "none",
+        "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16",
+        "labels": "page text (playerX+162,machineY+32); #404040",
+        "scroll": "server page index",
+        "tooltips": "slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#multipage-europium-chest-page-two",
+      "portedScreens": [
+        "MetalChestScreen"
+      ],
+      "portedLayout": {
+        "MetalChestScreen": {
+          "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112-(20 if rows>6)",
+          "slots": "storage x=(width-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(width-176)/2+8, y=height-82",
+          "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16; server clickMenuButton",
+          "text": "title 6,6 and player label when rows <= 6; page (playerX+162,machineY+32) when pages > 1; #404040",
+          "screenshot": "multipage-europium-chest-page-two",
+          "allowedDifference": "Named material variants replace metadata; large-chest slot geometry now matches original ContainerNormalInventory."
+        }
+      }
+    },
+    {
+      "original": "GuiItemFilterString",
+      "ported": "FilterScreen memory-list replacement",
+      "window": "176x130; ContainerItemFilterString machineY=36",
+      "parts": "B/W mode and ten remembered item/filter stacks",
+      "allowedDifference": "The string-condition editor is replaced by the original whitelist memory grid with a unified B/W toggle.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiItemFilterString + mods.clayium.gui.container.ContainerItemFilterString",
+        "window": "176x130; ContainerItemFilterString machineY=36",
+        "slots": "no machine slots; player (8,48), hotbar (8,106)",
+        "progress": "none",
+        "energy": "none",
+        "buttons": "text field (12,18) 152x12",
+        "labels": "title (6,6); #404040",
+        "scroll": "none",
+        "tooltips": "text field and slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#memory-filter-grid-and-mode",
+      "portedScreens": [
+        "FilterScreen"
+      ],
+      "portedLayout": {
+        "FilterScreen": {
+          "window": [
+            176,
+            148
+          ],
+          "slots": "memory 43,18 5x2; player 8,66; hotbar 8,124",
+          "buttons": "B/W mode 136,28",
+          "text": "title 6,6; inventory label 8,54",
+          "screenshot": "memory-filter-grid-and-mode"
+        }
+      }
+    },
+    {
+      "original": "GuiAreaMiner",
+      "ported": "AreaMachineScreen",
+      "window": "machineX=176; machineY=tile.inventoryY*18+36, or *36+38 for two-grid mode; totalY=machineY+94",
+      "parts": "operation, harvest, fortune, silk filters, output and mode",
+      "allowedDifference": "world height and direct filter slots follow current rules",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiAreaMiner + mods.clayium.gui.container.ContainerAreaMiner",
+        "window": "machineX=176; machineY=tile.inventoryY*18+36, or *36+38 for two-grid mode; totalY=machineY+94",
+        "slots": "grid x=(machineX-32-18*inventoryX)/2+18*i, y=18+18*j; three filters at x=gridRight+4, y=18/36/54",
+        "progress": "none",
+        "energy": "CE (4,machineY-12)",
+        "buttons": "four 16x16 mode buttons at (16,16),(34,16),(16,34),(34,34); vertical mode uses y=16/34/52/70",
+        "labels": "laser (64,machineY-12), filter labels (machineX-48,21/39/57); #404040",
+        "scroll": "none",
+        "tooltips": "filter/mode tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#area-miner-mode-and-three-filters",
+      "portedScreens": [
+        "AreaMachineScreen"
+      ],
+      "portedLayout": {
+        "AreaMachineScreen": {
+          "window": [
+            230,
+            215
+          ],
+          "slots": "operation 8,35; harvest 8,58; fortune 26,58; silk 44,58; player 8,133",
+          "screenshot": "area-target-raytrace-sneak-and-three-filters"
+        }
+      }
+    },
+    {
+      "original": "GuiAreaActivator",
+      "ported": "AreaMachineScreen",
+      "window": "machineX=176; machineY=tile.inventoryY*18+36; totalY=machineY+94",
+      "parts": "target, ray trace, sneak and remembered hit",
+      "allowedDifference": "current ray trace settings are synchronized",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiAreaActivator + mods.clayium.gui.container.ContainerAreaActivator",
+        "window": "machineX=176; machineY=tile.inventoryY*18+36; totalY=machineY+94",
+        "slots": "grid x=(machineX-18*inventoryX)/2+18*i, y=18+18*j; filter x=gridRight+4,y=18",
+        "progress": "none",
+        "energy": "CE (4,machineY-12)",
+        "buttons": "mode (16,16),(34,16),(16,34),(34,34); target/ray/sneak at (machineX-32,16/34/52), 16x16",
+        "labels": "laser (64,machineY-12); #404040",
+        "scroll": "none",
+        "tooltips": "target and mode icon tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#area-target-raytrace-sneak-and-three-filters",
+      "portedScreens": [
+        "AreaMachineScreen"
+      ],
+      "portedLayout": {
+        "AreaMachineScreen": {
+          "window": [
+            230,
+            215
+          ],
+          "slots": "operation 8,35; harvest 8,58; fortune 26,58; silk 44,58; player 8,133",
+          "screenshot": "area-target-raytrace-sneak-and-three-filters"
+        }
+      }
+    },
+    {
+      "original": "GuiAutoTrader",
+      "ported": "AutoTraderScreen / AutoTraderMenu",
+      "window": "176x182; machineY=88",
+      "parts": "offer icons (36,24)/(62,24)/(120,24); slots (36,53)/(62,53)/(120,53); player (8,100); previous/next 12x19 at (17,23)/(147,23)",
+      "allowedDifference": "live MerchantOffer prices and CE fuel slot",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiAutoTrader + mods.clayium.gui.container.ContainerAutoTrader",
+        "window": "176x182; machineY=88",
+        "slots": "inputs (36,53)/(62,53), result (120,53); player (8,100)",
+        "progress": "none",
+        "energy": "CE (4,76)",
+        "buttons": "prev/next (17,23)/(147,23) 12x19",
+        "labels": "offer icons (36,24)/(62,24)/(120,24), title (6,6); #404040",
+        "scroll": "offer page arrows",
+        "tooltips": "16x16 offer icon tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#auto-trader-offer-page-and-selection",
+      "portedScreens": [
+        "AutoTraderScreen"
+      ],
+      "portedLayout": {
+        "AutoTraderScreen": {
+          "window": [
+            176,
+            195
+          ],
+          "slots": "costs 36,53 and 62,53; output 120,53; CE fuel 8,53; player 8,110",
+          "buttons": "previous 17,23; next 147,23; 12x19",
+          "text": "title 7,6; Tier 126,6; page 75,39; state/uses 7,71 and 95,71; CE 7,81; stored 7,91",
+          "screenshot": "auto-trader-offer-page-and-selection",
+          "operation": "previous/next send TradeSelectPayload; selected offer and live prices arrive in TradeSnapshotPayload",
+          "allowedDifference": "The added CE fuel slot and CE labels are required by the current energy system."
+        }
+      }
+    },
+    {
+      "original": "GuiPANAdapter",
+      "ported": "Paged PAN adapter pattern/result grid plus PanScreen",
+      "window": "176x190; ContainerPANAdapter machineY=96",
+      "parts": "page-specific 3x3 pattern, 3x3 derived result, 9 real sub-item slots and connected recipe capability",
+      "allowedDifference": "Page arrows use the current widget sprites while preserving the original page count, slot coordinates and server-authoritative operation.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiPANAdapter + mods.clayium.gui.container.ContainerPANAdapter",
+        "window": "176x190; ContainerPANAdapter machineY=96",
+        "slots": "3x3 inputs x=(176-54)/2-29+18*i,y=18+18*j; outputs x=(176-54)/2+31+18*i; 9 extra slots x=8+18*i,y=74",
+        "progress": "none",
+        "energy": "CE (4,84)",
+        "buttons": "prev (4,36), next (156,36), 16x16",
+        "labels": "page (156,64); #404040",
+        "scroll": "adapter page arrows",
+        "tooltips": "slot tooltips"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#pan-adapter-status-layout",
+      "portedScreens": [
+        "PanScreen adapter"
+      ],
+      "portedLayout": {
+        "PanScreen adapter": {
+          "window": [
+            176,
+            190
+          ],
+          "slots": "pattern ghost 3x3 at x=32..68, result ghost 3x3 at x=92..128, sub-items x=8..152 y=74; player (8,108), hotbar (8,166)",
+          "progress": "none",
+          "buttons": "previous (4,36), next (156,36), server-validated",
+          "text": "title (7,6), page and network state, inventory (8,97); #404040",
+          "scroll": "Tier 10/11/12/13 expose 1/2/4/8 pages",
+          "tooltip": "pattern, result, sub-item and player inventory slot tooltips",
+          "screenshot": "pan-adapter-status-layout",
+          "allowedDifference": "Recipe inspection is server-side; original adapter 3x3 recipe slots and paging are not exposed in the port."
+        }
+      }
+    },
+    {
+      "original": "GuiPANCore",
+      "ported": "PanScreen / PanMenu",
+      "window": "176x238; ContainerPANCore machineY=144",
+      "parts": "sort 6,17; reverse 61,17; page 99,17 and 119,17; prohibit 139,17; six candidates start 26,32; slider 170,32",
+      "allowedDifference": "The 1.21.1 core retains the original 176x238 window and player slot Y=156. Its six server-synchronized candidate rows and page-level slider replace the old client-side scrolling table because the candidate list is server authoritative.",
+      "originalLayout": {
+        "source": "mods.clayium.gui.client.GuiPANCore + mods.clayium.gui.container.ContainerPANCore",
+        "window": "176x238; ContainerPANCore machineY=144",
+        "slots": "no machine slots; player (8,156), hotbar (8,214)",
+        "progress": "none",
+        "energy": "CE (4,132)",
+        "buttons": "sort I/M/C at (90/106/122,5) 12x12; Dump (140,5) 30x12; detail (72,133) 12x12; slider (155,18) 10x112",
+        "labels": "table origin (11,18); cost text at cell x+24,y+4 color -2302756; consumption text at second column color -986896",
+        "scroll": "10px slider and mouse wheel",
+        "tooltips": "item, cost, consumption and prohibition"
+      },
+      "comparisonScreenshot": "tests/e2e/gui-parity.mjs#pan-sorted-reversed-cost-list-and-prohibition",
+      "portedScreens": [
+        "PanScreen core"
+      ],
+      "portedLayout": {
+        "PanScreen core": {
+          "window": [
+            176,
+            238
+          ],
+          "slots": "player (8,156), hotbar (8,214)",
+          "buttons": "sort 6,17; reverse 61,17; previous 99,17; next 119,17; prohibit 139,17; candidates 26,32 at 16px pitch",
+          "text": "network 7,123; page 118,7; inventory label 8,145; #404040",
+          "scroll": "slider 170,32 6x96; mouse wheel advances pages",
+          "tooltip": "item, cost, CE, prohibition",
+          "screenshot": "pan-sorted-reversed-cost-list-and-prohibition",
+          "allowedDifference": "Six server-synchronized candidate rows and page-level slider replace the original client-scrolled table."
+        }
+      }
+    }
+  ],
+  "additionalPortedScreens": [
+    "BufferScreen",
+    "MultitrackBufferScreen",
+    "DistributorScreen",
+    "FluidTransportScreen",
+    "AutoCrafterScreen",
+    "AutoTraderScreen",
+    "AreaMachineScreen",
+    "MetalChestScreen",
+    "StorageContainerScreen",
+    "VoidContainerScreen",
+    "GadgetHolderScreen",
+    "ClayProductionScreen"
+  ],
+  "portedLayouts": {
+    "ClayMachineScreen": {
+      "window": [
+        176,
+        172
+      ],
+      "slots": "input 44,35; output 116,35; fuel 44,57; player 8,90",
+      "progress": "76,35 24x17",
+      "text": "title 6,6; CE and Tier in upper machine area",
+      "screenshot": "legacy-tiled-processing-window-slots-progress-and-ce"
+    },
+    "ClayWorkTableScreen": {
+      "window": [
+        176,
+        166
+      ],
+      "slots": "input 17,30; tool 80,17; outputs 143,30 and 143,55",
+      "screenshot": "original-clay-work-table-actions-and-inventory"
+    },
+    "ClayCraftingBoardScreen": {
+      "window": [
+        176,
+        234
+      ],
+      "slots": "pattern 30,17 3x3; result 124,35; nearby 8,84; player 8,151",
+      "screenshot": "clay-crafting-board-pattern-and-adjacent-slots"
+    },
+    "WaterWheelScreen": {
+      "window": [
+        176,
+        126
+      ],
+      "slots": "no machine slots; player (8,44), hotbar (8,102)",
+      "progress": "text (6,20), no bar",
+      "text": "efficiency (90,20); water (90,32); title (7,6); #404040",
+      "screenshot": "water-wheel-flow-efficiency-and-progress"
+    },
+    "EnergyConverterScreen": {
+      "window": [
+        176,
+        185
+      ],
+      "slots": "fuel 35,53; player 8,105",
+      "text": "CE 62,31; stored FE 62,44; generated 62,57; output 62,70",
+      "screenshot": "ce-fe-converter-storage-and-rate"
+    },
+    "FilterScreen": {
+      "window": [
+        176,
+        148
+      ],
+      "slots": "memory 43,18 5x2; player 8,66; hotbar 8,124",
+      "buttons": "B/W mode 136,28",
+      "text": "title 6,6; inventory label 8,54",
+      "screenshot": "memory-filter-grid-and-mode"
+    },
+    "BufferScreen": {
+      "window": [
+        176,
+        220
+      ],
+      "slots": "Tier 9 storage 8,18 9x6; player 8,138; hotbar 8,196",
+      "screenshot": "original-tier-sized-buffer-inventory"
+    },
+    "MultitrackBufferScreen": {
+      "window": [
+        230,
+        230
+      ],
+      "slots": "track 62,61 3x3; filter 126,79; player 35,141",
+      "buttons": "track arrows 8,22 and 202,22; six face buttons start 8,40",
+      "screenshot": "multitrack-color-and-filter"
+    },
+    "DistributorScreen": {
+      "window": [
+        230,
+        212
+      ],
+      "slots": "storage 62,54 3x3; player 35,130",
+      "screenshot": "distributor-output-rules"
+    },
+    "FluidTransportScreen": {
+      "window": [
+        176,
+        166
+      ],
+      "slots": "no machine slots; player 8,84; hotbar 8,142",
+      "screenshot": "direct-fluid-tank-and-millibucket-value"
+    },
+    "AutoCrafterScreen": {
+      "window": [
+        230,
+        226
+      ],
+      "slots": "pattern 8,34 3x3; result preview 75,52; player inventory below machine area",
+      "screenshot": "auto-crafter-pattern-and-output"
+    },
+    "AutoTraderScreen": {
+      "window": [
+        176,
+        195
+      ],
+      "slots": "costs 36,53 and 62,53; output 120,53; CE fuel 8,53; player 8,110",
+      "buttons": "previous 17,23; next 147,23; 12x19",
+      "text": "title 7,6; Tier 126,6; page 75,39; state/uses 7,71 and 95,71; CE 7,81; stored 7,91",
+      "screenshot": "auto-trader-offer-page-and-selection",
+      "operation": "previous/next send TradeSelectPayload; selected offer and live prices arrive in TradeSnapshotPayload",
+      "allowedDifference": "The added CE fuel slot and CE labels are required by the current energy system."
+    },
+    "AreaMachineScreen": {
+      "window": [
+        230,
+        215
+      ],
+      "slots": "operation 8,35; harvest 8,58; fortune 26,58; silk 44,58; player 8,133",
+      "screenshot": "area-target-raytrace-sneak-and-three-filters"
+    },
+    "MetalChestScreen": {
+      "window": "176+18*max(columns-9,0)+(8 if rows>6), height=rows*18+112-(20 if rows>6)",
+      "slots": "storage x=(width-18*columns)/2+1+18*i, y=(rows>6?6:18)+18*j; player x=(width-176)/2+8, y=height-82",
+      "buttons": "previous (playerX+162,machineY+12), next (playerX+180,machineY+12), 16x16; server clickMenuButton",
+      "text": "title 6,6 and player label when rows <= 6; page (playerX+162,machineY+32) when pages > 1; #404040",
+      "screenshot": "multipage-europium-chest-page-two",
+      "allowedDifference": "Named material variants replace metadata; large-chest slot geometry now matches original ContainerNormalInventory."
+    },
+    "StorageContainerScreen": {
+      "window": [
+        176,
+        168
+      ],
+      "slots": "single input (44,35); player (8,84)",
+      "screenshot": "storage-count-and-capacity",
+      "allowedDifference": "Single direct-capability slot replaces legacy insert/extract/memory slots; capacity remains server authoritative."
+    },
+    "VoidContainerScreen": {
+      "window": [
+        176,
+        168
+      ],
+      "slots": "input 80,35; player below 76",
+      "screenshot": "void-container-target"
+    },
+    "GadgetHolderScreen": {
+      "window": [
+        176,
+        173
+      ],
+      "slots": "gadget 17,29 8x2; player 8,91",
+      "text": "installed label 17,18",
+      "screenshot": "gadget-holder-original-slot-grid"
+    },
+    "ClayProductionScreen": {
+      "window": [
+        176,
+        180
+      ],
+      "slots": "input 44,46; output 116,46; fuel 44,68; optional limit 66,68; player 8,100",
+      "progress": "88,47 24x17",
+      "screenshot": "clay-production-progress"
+    },
+    "PanScreen core": {
+      "window": [
+        176,
+        238
+      ],
+      "slots": "player (8,156), hotbar (8,214)",
+      "buttons": "sort 6,17; reverse 61,17; previous 99,17; next 119,17; prohibit 139,17; candidates 26,32 at 16px pitch",
+      "text": "network 7,123; page 118,7; inventory label 8,145; #404040",
+      "scroll": "slider 170,32 6x96; mouse wheel advances pages",
+      "tooltip": "item, cost, CE, prohibition",
+      "screenshot": "pan-sorted-reversed-cost-list-and-prohibition",
+      "allowedDifference": "Six server-synchronized candidate rows and page-level slider replace the original client-scrolled table."
+    },
+    "PanScreen duplicator": {
+      "window": [
+        176,
+        185
+      ],
+      "slots": "sample 35,35; antimatter 35,57; output 125,35; fuel 35,79; player 8,105",
+      "progress": "84,36 24x17",
+      "screenshot": "pan-duplicator-sample-and-ce"
+    },
+    "PanScreen adapter": {
+      "window": [
+        176,
+        190
+      ],
+      "slots": "no machine slots; player (8,108), hotbar (8,166)",
+      "progress": "none",
+      "buttons": "none",
+      "text": "title (7,6), network (7,27), inventory (8,97); #404040",
+      "scroll": "none",
+      "tooltip": "player inventory slot tooltips",
+      "screenshot": "pan-adapter-status-layout",
+      "allowedDifference": "Recipe inspection is server-side; original adapter 3x3 recipe slots and paging are not exposed in the port."
+    }
+  }
+}

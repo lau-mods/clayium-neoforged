@@ -1,34 +1,34 @@
-/* SPDX-License-Identifier: CC-BY-4.0 */
 package net.claustra01.clayium.logistics;
 
 import java.util.Arrays;
+import java.util.function.BiPredicate;
 import java.util.function.IntSupplier;
-import net.claustra01.clayium.world.item.ClayFilterItem;
+import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
-/** Shared mutable side-I/O state used by machines, buffers, and utility devices. */
+/** Shared relative-side routing state for item and fluid devices. */
 public final class SideConfiguration {
-    public static final int SIDE_COUNT = 6;
-
     private final int[] insertionRoutes;
     private final int[] extractionRoutes;
-    private final ItemStack[] filters;
+    @Nullable private final ItemStack[] filters;
     private final IntSupplier insertionRouteCount;
     private final IntSupplier extractionRouteCount;
+    private final BiPredicate<ItemStack, ItemStack> filterMatcher;
 
     public SideConfiguration(
             int[] insertionRoutes,
             int[] extractionRoutes,
-            ItemStack[] filters,
+            @Nullable ItemStack[] filters,
             IntSupplier insertionRouteCount,
-            IntSupplier extractionRouteCount) {
-        if (insertionRoutes.length != SIDE_COUNT || extractionRoutes.length != SIDE_COUNT) {
+            IntSupplier extractionRouteCount,
+            BiPredicate<ItemStack, ItemStack> filterMatcher) {
+        if (insertionRoutes.length != RelativeFace.COUNT || extractionRoutes.length != RelativeFace.COUNT) {
             throw new IllegalArgumentException("Side route arrays must contain six entries");
         }
-        if (filters != null && filters.length != SIDE_COUNT) {
+        if (filters != null && filters.length != RelativeFace.COUNT) {
             throw new IllegalArgumentException("Side filter array must contain six entries");
         }
         this.insertionRoutes = insertionRoutes;
@@ -36,6 +36,16 @@ public final class SideConfiguration {
         this.filters = filters;
         this.insertionRouteCount = insertionRouteCount;
         this.extractionRouteCount = extractionRouteCount;
+        this.filterMatcher = filterMatcher;
+    }
+
+    public static SideConfiguration withoutFilters(
+            int[] insertionRoutes,
+            int[] extractionRoutes,
+            IntSupplier insertionRouteCount,
+            IntSupplier extractionRouteCount) {
+        return new SideConfiguration(insertionRoutes, extractionRoutes, null,
+                insertionRouteCount, extractionRouteCount, (filter, stack) -> true);
     }
 
     public int insertionRoute(Direction facing, Direction side) {
@@ -58,6 +68,21 @@ public final class SideConfiguration {
         return extractionRoutes[index];
     }
 
+    public SideMode mode(Direction facing, Direction side) {
+        boolean input = insertionRoute(facing, side) >= 0;
+        boolean output = extractionRoute(facing, side) >= 0;
+        if (input && output) return SideMode.INPUT_OUTPUT;
+        if (input) return SideMode.INPUT;
+        if (output) return SideMode.OUTPUT;
+        return SideMode.DISABLED;
+    }
+
+    public void setRoutes(Direction facing, Direction side, int insertionRoute, int extractionRoute) {
+        int index = RelativeFace.index(facing, side);
+        insertionRoutes[index] = sanitize(insertionRoute, insertionRouteCount.getAsInt());
+        extractionRoutes[index] = sanitize(extractionRoute, extractionRouteCount.getAsInt());
+    }
+
     public boolean hasFilter(Direction facing, Direction side) {
         return filters != null && !filters[RelativeFace.index(facing, side)].isEmpty();
     }
@@ -69,15 +94,14 @@ public final class SideConfiguration {
     public void setFilter(Direction facing, Direction side, ItemStack filter) {
         if (filters != null) {
             filters[RelativeFace.index(facing, side)] = filter.isEmpty()
-                    ? ItemStack.EMPTY
-                    : filter.copyWithCount(1);
+                    ? ItemStack.EMPTY : filter.copyWithCount(1);
         }
     }
 
     public boolean matchesFilter(Direction facing, Direction side, ItemStack stack) {
-        return filters == null
-                || filters[RelativeFace.index(facing, side)].isEmpty()
-                || ClayFilterItem.matches(filters[RelativeFace.index(facing, side)], stack);
+        if (filters == null) return true;
+        ItemStack filter = filters[RelativeFace.index(facing, side)];
+        return filter.isEmpty() || filterMatcher.test(filter, stack);
     }
 
     public int[] insertionRoutes() {
@@ -86,6 +110,11 @@ public final class SideConfiguration {
 
     public int[] extractionRoutes() {
         return extractionRoutes;
+    }
+
+    @Nullable
+    public ItemStack[] filters() {
+        return filters;
     }
 
     public void replaceRoutes(int[] insertion, int[] extraction) {
@@ -97,41 +126,68 @@ public final class SideConfiguration {
         return value < 0 ? routeCount > 0 ? 0 : -1 : value + 1 < routeCount ? value + 1 : -1;
     }
 
-    public static boolean pipeConnects(ConfigurableItemDevice device, Direction side) {
+    public static boolean pipeConnects(ConfigurableIoDevice device, Direction side) {
         BlockEntity owner = device.ioOwner();
         if (!device.pipeEnabled() || owner.getLevel() == null) return false;
         BlockEntity neighbor = owner.getLevel().getBlockEntity(owner.getBlockPos().relative(side));
-        if (neighbor instanceof ConfigurableItemDevice adjacent) {
-            if (adjacent.ioTransportKind() != device.ioTransportKind()) return false;
+        if (neighbor instanceof ConfigurableIoDevice adjacent) {
             Direction opposite = side.getOpposite();
-            boolean ownPush = device.extractionRoute(side) >= 0
-                    && (adjacent.insertionRoute(opposite) >= 0
-                            || adjacent.allowsPassiveInsertion(opposite));
-            boolean ownPull = device.insertionRoute(side) >= 0
-                    && (adjacent.extractionRoute(opposite) >= 0
-                            || adjacent.allowsPassiveExtraction(opposite));
-            boolean adjacentPush = adjacent.extractionRoute(opposite) >= 0
-                    && (device.insertionRoute(side) >= 0
-                            || device.allowsPassiveInsertion(side));
-            boolean adjacentPull = adjacent.insertionRoute(opposite) >= 0
-                    && (device.extractionRoute(side) >= 0
-                            || device.allowsPassiveExtraction(side));
+            int extraction = device.extractionRoute(side);
+            int adjacentInsertion = adjacent.insertionRoute(opposite);
+            int insertion = device.insertionRoute(side);
+            int adjacentExtraction = adjacent.extractionRoute(opposite);
+            boolean ownPush = extraction >= 0 && acceptsInsertion(
+                    adjacent, opposite, device.extractionTransportKind(extraction));
+            boolean ownPull = insertion >= 0 && allowsExtraction(
+                    adjacent, opposite, device.insertionTransportKind(insertion));
+            boolean adjacentPush = adjacentExtraction >= 0 && acceptsInsertion(
+                    device, side, adjacent.extractionTransportKind(adjacentExtraction));
+            boolean adjacentPull = adjacentInsertion >= 0 && allowsExtraction(
+                    device, side, adjacent.insertionTransportKind(adjacentInsertion));
             return ownPush || ownPull || adjacentPush || adjacentPull;
         }
-        if (device.insertionRoute(side) < 0 && device.extractionRoute(side) < 0) return false;
-        return device.ioTransportKind() == IoTransportKind.FLUID
-                ? owner.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,
-                        owner.getBlockPos().relative(side), side.getOpposite()) != null
-                : owner.getLevel().getCapability(Capabilities.ItemHandler.BLOCK,
-                        owner.getBlockPos().relative(side), side.getOpposite()) != null;
+        int insertion = device.insertionRoute(side);
+        int extraction = device.extractionRoute(side);
+        return insertion >= 0 && hasCapability(device.insertionTransportKind(insertion), owner, side)
+                || extraction >= 0 && hasCapability(device.extractionTransportKind(extraction), owner, side);
     }
 
-    private static void copySanitized(int[] source, int[] target, int routeCount) {
+    private static boolean acceptsInsertion(
+            ConfigurableIoDevice device, Direction side, IoTransportKind kind) {
+        int route = device.insertionRoute(side);
+        return route >= 0
+                ? device.insertionTransportKind(route) == kind
+                : device.allowsPassiveInsertion(side, kind);
+    }
+
+    private static boolean allowsExtraction(
+            ConfigurableIoDevice device, Direction side, IoTransportKind kind) {
+        int route = device.extractionRoute(side);
+        return route >= 0
+                ? device.extractionTransportKind(route) == kind
+                : device.allowsPassiveExtraction(side, kind);
+    }
+
+    private static boolean hasCapability(IoTransportKind kind, BlockEntity owner, Direction side) {
+        var level = owner.getLevel();
+        var neighborPos = owner.getBlockPos().relative(side);
+        Direction neighborSide = side.getOpposite();
+        return switch (kind) {
+            case ITEM -> level.getCapability(Capabilities.ItemHandler.BLOCK, neighborPos, neighborSide) != null;
+            case FLUID -> level.getCapability(Capabilities.FluidHandler.BLOCK, neighborPos, neighborSide) != null;
+            case ENERGY -> level.getCapability(Capabilities.EnergyStorage.BLOCK, neighborPos, neighborSide) != null;
+        };
+    }
+
+    private static int sanitize(int value, int count) {
+        return value >= -1 && value < count ? value : -1;
+    }
+
+    private static void copySanitized(int[] source, int[] target, int count) {
         int[] values = source == target ? source.clone() : source;
         Arrays.fill(target, -1);
-        for (int index = 0; index < Math.min(values.length, SIDE_COUNT); index++) {
-            int value = values[index];
-            target[index] = value >= -1 && value < routeCount ? value : -1;
+        for (int index = 0; index < Math.min(values.length, RelativeFace.COUNT); index++) {
+            target[index] = sanitize(values[index], count);
         }
     }
 }

@@ -1,0 +1,1404 @@
+{
+  "gameTests": [
+    {
+      "acId": "AC-F047-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalneicoordinatesdriveeverymachineviewerlayout"
+    },
+    {
+      "acId": "AC-F047-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyrecipemethodandoriginaldescriptionpageiscovered"
+    },
+    {
+      "acId": "AC-F047-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "worktoolsandmetalprobabilitiesuseserverrecipeinputs"
+    },
+    {
+      "acId": "AC-F047-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "loadeddatapackvaluesremainthesingleviewersource"
+    },
+    {
+      "acId": "AC-F047-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "datapackreloadreplacescacheandskipsmissingexternalitem"
+    },
+    {
+      "acId": "AC-F046-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "legacymenusexposeoriginalslotrelationships"
+    },
+    {
+      "acId": "AC-F046-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "panviewstateandprohibitionsurvivesave"
+    },
+    {
+      "acId": "AC-F046-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "prohibitedpansamplestopsconnectedduplicatoruntilpermitted"
+    },
+    {
+      "acId": "AC-F046-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "guipayloadsrejectwrongmenupositiondistanceandvalues"
+    },
+    {
+      "acId": "AC-F046-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalguipnghashesremainunmodified"
+    },
+    {
+      "acId": "AC-F045-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "craftingtoolsreturndamageandrawclayexactlyonce"
+    },
+    {
+      "acId": "AC-F045-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "areafiltersandactivatorpreservepriorityprotectionandinteraction"
+    },
+    {
+      "acId": "AC-F045-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "lasertransmitsconvertsaccumulatesandhonorsprotection"
+    },
+    {
+      "acId": "AC-F045-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "crucibleandfiltercopiesconsumevalidateandpersistexactly"
+    },
+    {
+      "acId": "AC-F043-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allonehundredtwentythreecandidatemachineshaveclassifiedruntimepaths"
+    },
+    {
+      "acId": "AC-F043-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "progressionrecipesfordifferentproductsneversharethesameinputs"
+    },
+    {
+      "acId": "AC-F043-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "survivaldependencygraphreachesnontiercapanandcontainerswithouttierleap"
+    },
+    {
+      "acId": "AC-F043-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fiftysevenmetalchestshavebothoriginalcraftingroutesandequipmentisreachable"
+    },
+    {
+      "acId": "AC-F043-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reloadedviewerdatamatchesmachineacceptanceandexecution"
+    },
+    {
+      "acId": "AC-F039-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "threebythreeminingstaysinplaneandrespectsbreakprotection"
+    },
+    {
+      "acId": "AC-F039-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "rememberedclayshaperotatesminesandsurvivesitemserialization"
+    },
+    {
+      "acId": "AC-F039-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fourclaytoolskeeporiginaldurabilityspeedoreharvestandconfig"
+    },
+    {
+      "acId": "AC-F027-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blockbreakeruseslootprotectionandloadedchunks"
+    },
+    {
+      "acId": "AC-F027-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "activatormatchesplayeruseanddeniedactionshavenosideeffects"
+    },
+    {
+      "acId": "AC-F001-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "namedregistriesuseclayiumnamespace"
+    },
+    {
+      "acId": "AC-F001-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalregistrycatalogtracksallmachinevariants"
+    },
+    {
+      "acId": "AC-F001-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalpngbytesareunchanged"
+    },
+    {
+      "acId": "AC-F001-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "englishandjapanesetranslationsincludetierandunits"
+    },
+    {
+      "acId": "AC-F002-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "compressiontierspreserveoriginalvalues"
+    },
+    {
+      "acId": "AC-F002-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "compressionrecipesroundtripninetoone"
+    },
+    {
+      "acId": "AC-F002-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalmaterialshapeledgerisexact"
+    },
+    {
+      "acId": "AC-F002-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "materialnamescolorsandtooltipsarecomplete"
+    },
+    {
+      "acId": "AC-F003-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "compositeoregenerationisnestedandhostaware"
+    },
+    {
+      "acId": "AC-F003-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fourorelayersusespecifiedtrialssizesandheights"
+    },
+    {
+      "acId": "AC-F003-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "worldgenisoverworldonlyanddatapackdriven"
+    },
+    {
+      "acId": "AC-F003-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "oredropsmatchranksfortuneandsilktouch"
+    },
+    {
+      "acId": "AC-F005-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "machinerecipeparsingandexecutionconditionsarelossless"
+    },
+    {
+      "acId": "AC-F005-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "datapackreloadreplacescacheandskipsmissingexternalitem"
+    },
+    {
+      "acId": "AC-F006-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "energeticclayfuelvaluesandconsumptionareexact"
+    },
+    {
+      "acId": "AC-F006-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayenergyboundariesformattingandnbtroundtriparesafe"
+    },
+    {
+      "acId": "AC-F006-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "ordinaryclayenergystoragedoesnotexposefe"
+    },
+    {
+      "acId": "AC-F006-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originaltierandtransporttablesareexact"
+    },
+    {
+      "acId": "AC-F006-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tiercalculationspreserveroundingandpreventfreework"
+    },
+    {
+      "acId": "AC-F008-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "vanillaresourcesreachtieroneparts"
+    },
+    {
+      "acId": "AC-F008-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayworktablepressesconsumeinputsanddamagetools"
+    },
+    {
+      "acId": "AC-F008-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "claycraftingboardusesadjacentitemhandlerwithoutloss"
+    },
+    {
+      "acId": "AC-F008-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "workbenchmenusexposeoperableslots"
+    },
+    {
+      "acId": "AC-F007-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "sharedmachinestatesurvivesstopssavesandrecipechanges"
+    },
+    {
+      "acId": "AC-F007-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "grindertierthreefourandsixusesharedtierparameters"
+    },
+    {
+      "acId": "AC-F007-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "machinemenuandfacesenforceserverownedaccess"
+    },
+    {
+      "acId": "AC-F009-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "flowingwaterusesoriginalrollweartierandsupplycap"
+    },
+    {
+      "acId": "AC-F009-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "waterloggedsourcescountaswaterbutnotflowingpower"
+    },
+    {
+      "acId": "AC-F011-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfourteenprocessingmachinesregisterandprocess"
+    },
+    {
+      "acId": "AC-F011-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "grindertierthreefourandsixusesharedtierparameters"
+    },
+    {
+      "acId": "AC-F038-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "gadgetattributesuseexacthealthreachandflightvalues"
+    },
+    {
+      "acId": "AC-F038-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "activegadgetsdriveeatingattackandoperationintervals"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "holderremovalandrepeatedevaluationneverstackmodifiers"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "attachmentcloneandforeignflightpermissionsurvivelifecyclechanges"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "holdermenupersistsinstalledgadgets"
+    },
+    {
+      "acId": "AC-F038-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "creativetransitionspreservevanillaflight"
+    },
+    {
+      "acId": "AC-F040-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fourshooterspreserveoriginalperformanceandcharge"
+    },
+    {
+      "acId": "AC-F040-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayballcollisiondamageandremovalareserverauthoritative"
+    },
+    {
+      "acId": "AC-F040-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "teleportballacceptsonlysafeauthorizeddestinations"
+    },
+    {
+      "acId": "AC-F040-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "teleportballcheckssideimpactborderanddimension"
+    },
+    {
+      "acId": "AC-F010-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltwentysixformingmachinesmatchtheoriginaltierledger"
+    },
+    {
+      "acId": "AC-F010-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "representativeformingrecipespreserveoriginalinputsoutputsandconditions"
+    },
+    {
+      "acId": "AC-F010-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "consecutiveformingrecipesstayrunningbetweenoutputs"
+    },
+    {
+      "acId": "AC-F013-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allelevensmeltingmachinesuseoriginaltiersandrejectfe"
+    },
+    {
+      "acId": "AC-F013-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "smeltingalloyandelectrolysispreserveoriginalbalances"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tenbuffertierstransferexactamountsoveronehundredticks"
+    },
+    {
+      "acId": "AC-F019-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "bufferpagesexposeallonehundredstorageslots"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "bufferdirectionsredstoneandsimulationpreserveitemtotals"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "unifiedfiltermatchesmodestagsidsnamesmodsdamagecomponentsandnesting"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "filtersettingssurvivesaveguiswitchandconfigurationcopy"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "installedfilterscontrolchesttransfersaftersaveandpaste"
+    },
+    {
+      "acId": "AC-F019-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "filterrulevaluesandchanginghandlerremainsafe"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltiersusechestcapabilitiesandconserveitems"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "customcapabilitytransfersthroughneighborcache"
+    },
+    {
+      "acId": "AC-F019-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "changinghandlersreturnrejecteditemstorecovery"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltenassemblymachinesmatchtheoriginaltierledger"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyassemblytierprocessesitsrepresentativerecipe"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "hotfixtwoassemblybalancesandcevaluesarepreserved"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "centrifugemultioutputstopssavesandconsumesexactlyonce"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "centrifugemergesbeforeusingemptyoutputslots"
+    },
+    {
+      "acId": "AC-F012-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allassemblymachineshaveanobtainableconstructionpath"
+    },
+    {
+      "acId": "AC-F012-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "assemblymenuenergyequalsconsumedenergyforallthreeseries"
+    },
+    {
+      "acId": "AC-F015-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "condensersrequirenineitemsandpreserveoriginaltiersandtimes"
+    },
+    {
+      "acId": "AC-F015-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "automaticcondenserspreserveninetooneandlimits"
+    },
+    {
+      "acId": "AC-F015-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "productionmenusexposeonlyusableslotsandshiftinsert"
+    },
+    {
+      "acId": "AC-F016-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "solarmachinesrequireopenskyrespectcapsanduselithium"
+    },
+    {
+      "acId": "AC-F016-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "solarcepertickusesinputoutputdifference"
+    },
+    {
+      "acId": "AC-F017-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "clayfabricatorskeepsamplesduplicatecountsanduseoriginaltiming"
+    },
+    {
+      "acId": "AC-F014-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalseparatorpreservesweightstimeenergyandfulloutput"
+    },
+    {
+      "acId": "AC-F014-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "chemicalandmattermachinesuseoriginaltiersrecipesanddirectfluids"
+    },
+    {
+      "acId": "AC-F018-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "environmentmachinesdistinguishwaterlavasourcesandair"
+    },
+    {
+      "acId": "AC-F018-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "waterloggedfluidstatesdriveenvironmentmachines"
+    },
+    {
+      "acId": "AC-F018-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "quartzcruciblerequiresheatingandonestringwithoutduplication"
+    },
+    {
+      "acId": "AC-F020-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "matchingcolorscrosswithoutmixingandkeeptierspeedfiltersandstate"
+    },
+    {
+      "acId": "AC-F020-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "distributorssharefairlyacrossthreetiersandskipfulloutputs"
+    },
+    {
+      "acId": "AC-F023-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "convertersonlyturnclayenergyintoexternalfe"
+    },
+    {
+      "acId": "AC-F023-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allconvertertierspreserveratesrecipesredstoneandstoredfe"
+    },
+    {
+      "acId": "AC-F021-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "storagecapacityexpansionoverflowpersistenceandvoidareexact"
+    },
+    {
+      "acId": "AC-F021-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "storagecontentssurvivebreakingandplacement"
+    },
+    {
+      "acId": "AC-F021-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfiftysevenmetalchestsmatchthecapacityledger"
+    },
+    {
+      "acId": "AC-F021-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalchestmenuskeepindependentserverauthoritativepages"
+    },
+    {
+      "acId": "AC-F004-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "raworespreservemetalbalanceandvanilladrops"
+    },
+    {
+      "acId": "AC-F004-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "modernwoodsusetagsandbambooisnotasapling"
+    },
+    {
+      "acId": "AC-F024-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allinterfacessynchronizeonlytovalidatedpersistenttargets"
+    },
+    {
+      "acId": "AC-F022-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfluidtierstransferdirectlyandconservependingfluid"
+    },
+    {
+      "acId": "AC-F022-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fluidfiltersfacesandrestartpreserveexactamounts"
+    },
+    {
+      "acId": "AC-F022-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "capsulesstayremovedandalldirectfluidmachinesareregistered"
+    },
+    {
+      "acId": "AC-F041-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "replenishessixtyfourfuelandtransferseverytick"
+    },
+    {
+      "acId": "AC-F041-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "supplieditemsarecefuelwithoutfeorsurvivalrecipe"
+    },
+    {
+      "acId": "AC-F026-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "selectedtradeusesdiscountedcostsceoutputusesandvillagerexperience"
+    },
+    {
+      "acId": "AC-F026-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "failedconditionsareatomicandselectionpayloadisservervalidated"
+    },
+    {
+      "acId": "AC-F025-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allfivetierscraftatoriginalcycleswithoutinfiniteoutput"
+    },
+    {
+      "acId": "AC-F025-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blockedandpartialcraftsneverconsumematerialsorenergy"
+    },
+    {
+      "acId": "AC-F025-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "vanillaremainingitemsanddamagedrecipescommitexactlyonce"
+    },
+    {
+      "acId": "AC-F030-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "fourlasersconsumemergereflectandhonorredstone"
+    },
+    {
+      "acId": "AC-F030-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reflectorstopsattargetwhenemitterticksfirst"
+    },
+    {
+      "acId": "AC-F029-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "loadsexactlyninetickingchunks"
+    },
+    {
+      "acId": "AC-F029-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "ticketsreleaseandrestartvalidationremovesorphans"
+    },
+    {
+      "acId": "AC-F028-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "markerheightexpansionusesworldboundsandneverscansoutside"
+    },
+    {
+      "acId": "AC-F028-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "areamachinespreservecountsprotectiontierspeedandlaseracceleration"
+    },
+    {
+      "acId": "AC-F031-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "laserthresholdtagsandnaturalgenerationmatchclaytreerules"
+    },
+    {
+      "acId": "AC-F031-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "plantedtreegrowthdropsandoriginalprocessingroutearecomplete"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnacerejectsmissinglowtierandmisplacedinterfaces"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnaceprocessesonlythroughitssynchronizedinterface"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnacestartsadvancedclaysteelrecipe"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnacestartsoriginaldustsmeltingrecipe"
+    },
+    {
+      "acId": "AC-F032-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyshellchangeinvalidatesthecachedstructure"
+    },
+    {
+      "acId": "AC-F032-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactorlaseracceleratesandstructuredamagestopsprocessing"
+    },
+    {
+      "acId": "AC-F033-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alleightcamachinespreserveoriginaltiersrecipesandresonance"
+    },
+    {
+      "acId": "AC-F033-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "resonatingcollectorstopswithoutresonanceandneverconsumeswhenfull"
+    },
+    {
+      "acId": "AC-F034-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "overclockandresonanceuseoriginalproductsandboundaries"
+    },
+    {
+      "acId": "AC-F034-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "activecarecipekeepsitsstartvalueswhenaugmentschangeacrossreload"
+    },
+    {
+      "acId": "AC-F034-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "energystorageupgradescapatsixtyfouranddroponlytheexcess"
+    },
+    {
+      "acId": "AC-F035-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactoracceptsonlycoveredtiermatchedringsandinvalidatesitscache"
+    },
+    {
+      "acId": "AC-F035-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactoruseshotfixtwoformulacompressionenergytimeandsafestops"
+    },
+    {
+      "acId": "AC-F036-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "networktraversalisiterativeboundedandinvalidated"
+    },
+    {
+      "acId": "AC-F036-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "realnetworkscanstopsatdepthandnodelimits"
+    },
+    {
+      "acId": "AC-F036-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "connectedadapterrebuildsclosureafterrecipereload"
+    },
+    {
+      "acId": "AC-F036-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "recipeclosurerejectscyclesfreerecipesandunknowncomponents"
+    },
+    {
+      "acId": "AC-F036-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "connectedadapterrebuildsclosureafterrecipereload"
+    },
+    {
+      "acId": "AC-F037-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "duplicatorconsumesoneantimatterandexactcoreenergywhilekeepingsample"
+    },
+    {
+      "acId": "AC-F037-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "allpantiersduplicateatoriginalcerates"
+    },
+    {
+      "acId": "AC-F042-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "itemfluidandfetransferonlythroughneoforgecapabilities"
+    },
+    {
+      "acId": "AC-F042-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "commonminecraftandclayiumtagsresolvetoregistereditems"
+    },
+    {
+      "acId": "AC-F042-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyassemblytierprocessesitsrepresentativerecipe"
+    },
+    {
+      "acId": "AC-F042-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "datapackreloadreplacescacheandskipsmissingexternalitem"
+    },
+    {
+      "acId": "AC-F042-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "recipeviewerdatamatchesloadeddatapackrecipes"
+    },
+    {
+      "acId": "AC-F044-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alleightythreerestoredvarietieshaveregistriesdataandnames"
+    },
+    {
+      "acId": "AC-F044-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "oreshardsandcondensationpreserveoriginalbalances"
+    },
+    {
+      "acId": "AC-F044-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "elementalmillingmachineexecutesitsoriginalfirstcircuitrecipe"
+    },
+    {
+      "acId": "AC-F044-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalandsiliconerecipespreservematerialwithoutgrowth"
+    },
+    {
+      "acId": "AC-F044-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alloriginalpnghashesandtintlayersremainunmodified"
+    },
+    {
+      "acId": "AC-F048-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "pancableconnectionsrejectstoneandrebuild"
+    },
+    {
+      "acId": "AC-F048-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "visualconnectionstatesareserverauthoritative"
+    },
+    {
+      "acId": "AC-F048-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "rendererdatasurvivessavereloadandupdatetags"
+    },
+    {
+      "acId": "AC-F048-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alloriginalpnghashesandtintlayersremainunmodified"
+    },
+    {
+      "acId": "AC-F049-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "parityledgercoversindependentoriginalinventories"
+    },
+    {
+      "acId": "AC-F049-001",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "parityledgerhasnomissingorunverifiedentries"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originalneicoordinatesdriveeverymachineviewerlayout"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "everyrecipemethodandoriginaldescriptionpageiscovered"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "worktoolsandmetalprobabilitiesuseserverrecipeinputs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "legacymenusexposeoriginalslotrelationships"
+    },
+    {
+      "acId": "AC-F049-002",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "guipayloadsrejectwrongmenupositiondistanceandvalues"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "resonatingcollectorstopswithoutresonanceandneverconsumeswhenfull"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "metalseparatorpreservesweightstimeenergyandfulloutput"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "craftingtoolsreturndamageandrawclayexactlyonce"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "lasertransmitsconvertsaccumulatesandhonorsprotection"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "areafiltersandactivatorpreservepriorityprotectionandinteraction"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "crucibleandfiltercopiesconsumevalidateandpersistexactly"
+    },
+    {
+      "acId": "AC-F049-003",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tiercalculationspreserveroundingandpreventfreework"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "originaldefaultsandremovedoptionsareexact"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "tieroverridesaffectruntimelookups"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "progressionrateaffectsonlyoriginalcallsites"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "optionalrecipeswitchesdriveconditions"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "recipeswitchesapplyoninitialdatapackload"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "machinetransportsettingsdriveautomatictransfers"
+    },
+    {
+      "acId": "AC-F049-004",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "removedlegacyfeaturesremainabsentandcetofeisinitiallyreachable"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "alltiermachineandchestledgersclosewithoutexternaldependencies"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "survivaldependencygraphreachesnontiercapanandcontainerswithouttierleap"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "blastfurnaceprocessesonlythroughitssynchronizedinterface"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactorlaseracceleratesandstructuredamagestopsprocessing"
+    },
+    {
+      "acId": "AC-F049-005",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "reactoracceptsonlycoveredtiermatchedringsandinvalidatesitscache"
+    },
+    {
+      "acId": "AC-F049-007",
+      "report": "build/test-results/gametest/TEST-clayium.GameTests.xml",
+      "classname": "clayium:empty",
+      "name": "parityledgerhasnomissingorunverifiedentries"
+    }
+  ],
+  "e2e": [
+    {
+      "acId": "AC-F047-001",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F047-002",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F047-003",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F047-004",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F046-001",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F046-002",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F046-003",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F046-004",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F045-001",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
+    {
+      "acId": "AC-F045-002",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
+    {
+      "acId": "AC-F045-003",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
+    {
+      "acId": "AC-F045-004",
+      "scenario": "tests/e2e/original-behaviors.mjs"
+    },
+    {
+      "acId": "AC-F039-002",
+      "scenario": "tests/e2e/advanced-clay-tools.mjs"
+    },
+    {
+      "acId": "AC-F001-001",
+      "scenario": "tests/e2e/foundation-assets.mjs"
+    },
+    {
+      "acId": "AC-F001-002",
+      "scenario": "tests/e2e/foundation-assets.mjs"
+    },
+    {
+      "acId": "AC-F001-003",
+      "scenario": "tests/e2e/foundation-assets.mjs"
+    },
+    {
+      "acId": "AC-F002-003",
+      "scenario": "tests/e2e/material-catalog.mjs"
+    },
+    {
+      "acId": "AC-F007-003",
+      "scenario": "tests/e2e/processing-machine-gui.mjs"
+    },
+    {
+      "acId": "AC-F011-002",
+      "scenario": "tests/e2e/processing-machines.mjs"
+    },
+    {
+      "acId": "AC-F009-001",
+      "scenario": "tests/e2e/water-wheels.mjs"
+    },
+    {
+      "acId": "AC-F038-003",
+      "scenario": "tests/e2e/gadget-holder.mjs"
+    },
+    {
+      "acId": "AC-F003-003",
+      "scenario": "tests/e2e/clay-ores.mjs"
+    },
+    {
+      "acId": "AC-F008-002",
+      "scenario": "tests/e2e/clay-workbench.mjs"
+    },
+    {
+      "acId": "AC-F040-003",
+      "scenario": "tests/e2e/clay-shooters.mjs"
+    },
+    {
+      "acId": "AC-F040-002",
+      "scenario": "tests/e2e/clay-shooters.mjs"
+    },
+    {
+      "acId": "AC-F010-002",
+      "scenario": "tests/e2e/forming-machines.mjs"
+    },
+    {
+      "acId": "AC-F013-002",
+      "scenario": "tests/e2e/smelting-machines.mjs"
+    },
+    {
+      "acId": "AC-F019-003",
+      "scenario": "tests/e2e/item-buffer.mjs"
+    },
+    {
+      "acId": "AC-F019-002",
+      "scenario": "tests/e2e/item-buffer.mjs"
+    },
+    {
+      "acId": "AC-F021-001",
+      "scenario": "tests/e2e/storage-containers.mjs"
+    },
+    {
+      "acId": "AC-F021-002",
+      "scenario": "tests/e2e/storage-containers.mjs"
+    },
+    {
+      "acId": "AC-F012-002",
+      "scenario": "tests/e2e/assembly-machines.mjs"
+    },
+    {
+      "acId": "AC-F015-002",
+      "scenario": "tests/e2e/clay-production.mjs"
+    },
+    {
+      "acId": "AC-F016-002",
+      "scenario": "tests/e2e/clay-production.mjs"
+    },
+    {
+      "acId": "AC-F014-002",
+      "scenario": "tests/e2e/chemical-machines.mjs"
+    },
+    {
+      "acId": "AC-F018-001",
+      "scenario": "tests/e2e/environment-machines.mjs"
+    },
+    {
+      "acId": "AC-F018-002",
+      "scenario": "tests/e2e/environment-machines.mjs"
+    },
+    {
+      "acId": "AC-F020-002",
+      "scenario": "tests/e2e/multitrack-logistics.mjs"
+    },
+    {
+      "acId": "AC-F024-002",
+      "scenario": "tests/e2e/interfaces.mjs"
+    },
+    {
+      "acId": "AC-F022-003",
+      "scenario": "tests/e2e/fluid-transport.mjs"
+    },
+    {
+      "acId": "AC-F026-002",
+      "scenario": "tests/e2e/auto-trader.mjs"
+    },
+    {
+      "acId": "AC-F025-002",
+      "scenario": "tests/e2e/auto-crafters.mjs"
+    },
+    {
+      "acId": "AC-F030-002",
+      "scenario": "tests/e2e/clay-lasers.mjs"
+    },
+    {
+      "acId": "AC-F029-001",
+      "scenario": "tests/e2e/chunk-loader.mjs"
+    },
+    {
+      "acId": "AC-F028-003",
+      "scenario": "tests/e2e/area-machines.mjs"
+    },
+    {
+      "acId": "AC-F031-002",
+      "scenario": "tests/e2e/clay-tree.mjs"
+    },
+    {
+      "acId": "AC-F032-002",
+      "scenario": "tests/e2e/clay-multiblocks.mjs"
+    },
+    {
+      "acId": "AC-F033-001",
+      "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F033-002",
+      "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F034-001",
+      "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F034-002",
+      "scenario": "tests/e2e/ca-machines.mjs"
+    },
+    {
+      "acId": "AC-F035-003",
+      "scenario": "tests/e2e/ca-reactor.mjs"
+    },
+    {
+      "acId": "AC-F037-002",
+      "scenario": "tests/e2e/pan-machines.mjs"
+    },
+    {
+      "acId": "AC-F042-002",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F044-001",
+      "scenario": "tests/e2e/material-blocks.mjs"
+    },
+    {
+      "acId": "AC-F044-004",
+      "scenario": "tests/e2e/material-blocks.mjs"
+    },
+    {
+      "acId": "AC-F043-001",
+      "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F043-002",
+      "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F043-003",
+      "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F043-004",
+      "scenario": "tests/e2e/survival-recipes.mjs"
+    },
+    {
+      "acId": "AC-F048-001",
+      "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F048-002",
+      "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F048-003",
+      "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "scenario": "tests/e2e/gui-parity.mjs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "scenario": "tests/e2e/world-rendering.mjs"
+    },
+    {
+      "acId": "AC-F049-002",
+      "scenario": "tests/e2e/recipe-viewers.mjs"
+    },
+    {
+      "acId": "AC-F049-003",
+      "scenario": "tests/e2e/release-gate.mjs"
+    },
+    {
+      "acId": "AC-F049-006",
+      "scenario": "tests/e2e/release-gate.mjs"
+    },
+    {
+      "acId": "AC-F049-007",
+      "scenario": "tests/e2e/release-gate.mjs"
+    }
+  ]
+}

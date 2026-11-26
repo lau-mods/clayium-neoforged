@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "clayium:block/void_container"
+    }
+  }
+}

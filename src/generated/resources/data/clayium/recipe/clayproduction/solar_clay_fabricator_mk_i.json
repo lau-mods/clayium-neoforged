@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "H": {
+      "item": "clayium:automatic_clay_condenser_mk_i"
+    },
+    "P": {
+      "item": "minecraft:daylight_detector"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "PRP",
+    "PHP",
+    "PRP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:solar_clay_fabricator_mk_i"
+  }
+}

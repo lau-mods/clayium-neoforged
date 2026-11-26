@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "clayium:clay_circuit"
+    },
+    "H": {
+      "item": "clayium:clay_machine_hull"
+    },
+    "P": {
+      "item": "clayium:dense_clay_plate"
+    },
+    "S": {
+      "item": "clayium:clay_stick"
+    }
+  },
+  "pattern": [
+    " S ",
+    "CHC",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:wire_drawing_machine_tier_2"
+  }
+}

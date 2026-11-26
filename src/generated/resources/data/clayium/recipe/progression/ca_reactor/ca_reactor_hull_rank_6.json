@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "clayium:quadruple_compressed_pure_antimatter"
+    },
+    "H": {
+      "item": "clayium:ca_reactor_hull_rank_5"
+    },
+    "I": {
+      "item": "clayium:neptunium_ingot"
+    }
+  },
+  "pattern": [
+    "#I#",
+    "#H#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium:ca_reactor_hull_rank_6"
+  }
+}
