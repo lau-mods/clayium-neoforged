@@ -3,6 +3,7 @@ package net.claustra01.clayium.storage;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.StorageRegistration;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.IoTransportKind;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -38,7 +39,6 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
     private final int[] extractionRoutes = {-1, -1, -1, -1, -1, -1};
     private final SideConfiguration sideConfiguration = SideConfiguration.withoutFilters(
             insertionRoutes, extractionRoutes, () -> 1, () -> 1);
-    private final java.util.EnumMap<Direction, IItemHandler> sidedHandlers = new java.util.EnumMap<>(Direction.class);
     private final ItemStackHandler memoryInventory = new ItemStackHandler(1) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -59,7 +59,6 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
 
     public StorageContainerBlockEntity(BlockPos pos, BlockState state) {
         super(StorageRegistration.STORAGE_CONTAINER_BLOCK_ENTITY.get(), pos, state);
-        for (Direction direction : Direction.values()) sidedHandlers.put(direction, new SidedHandler(direction));
     }
 
     public long amount() {
@@ -79,7 +78,7 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
-        return direction == null ? handler : sidedHandlers.get(direction);
+        return handler;
     }
 
     public IItemHandler itemHandler() {
@@ -90,6 +89,12 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
     @Override public BlockEntity ioOwner() { return this; }
     @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() { return StorageContainerBlock.PIPE; }
     @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() { return StorageContainerBlock.FACING; }
+    @Override public boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
+    @Override public boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
         syncVisual();
@@ -151,23 +156,6 @@ public final class StorageContainerBlockEntity extends BlockEntity implements Me
             stored = ItemStack.EMPTY;
         } else if (!stored.isEmpty()) {
             stored.setCount(1);
-        }
-    }
-
-    private final class SidedHandler implements IItemHandler {
-        private final Direction direction;
-        private SidedHandler(Direction direction) { this.direction = direction; }
-        @Override public int getSlots() { return insertionRoute(direction) >= 0 || extractionRoute(direction) >= 0 ? 1 : 0; }
-        @Override public ItemStack getStackInSlot(int slot) { return handler.getStackInSlot(slot); }
-        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return insertionRoute(direction) >= 0 ? handler.insertItem(slot, stack, simulate) : stack;
-        }
-        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return extractionRoute(direction) >= 0 ? handler.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
-        }
-        @Override public int getSlotLimit(int slot) { return handler.getSlotLimit(slot); }
-        @Override public boolean isItemValid(int slot, ItemStack stack) {
-            return insertionRoute(direction) >= 0 && handler.isItemValid(slot, stack);
         }
     }
 

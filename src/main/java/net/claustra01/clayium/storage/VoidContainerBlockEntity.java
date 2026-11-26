@@ -3,12 +3,14 @@ package net.claustra01.clayium.storage;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.StorageRegistration;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.IoTransportKind;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -35,15 +37,12 @@ public final class VoidContainerBlockEntity extends BlockEntity implements MenuP
         @Override public int getSlotLimit(int slot) { return 64; }
         @Override public boolean isItemValid(int slot, ItemStack stack) { return true; }
     };
-    private final java.util.EnumMap<Direction, IItemHandler> sidedHandlers = new java.util.EnumMap<>(Direction.class);
-
     public VoidContainerBlockEntity(BlockPos pos, BlockState state) {
         super(StorageRegistration.VOID_CONTAINER_BLOCK_ENTITY.get(), pos, state);
-        for (Direction direction : Direction.values()) sidedHandlers.put(direction, new SidedHandler(direction));
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
-        return direction == null ? unsidedHandler : sidedHandlers.get(direction);
+        return unsidedHandler;
     }
 
     public IItemHandler itemHandler() {
@@ -54,9 +53,18 @@ public final class VoidContainerBlockEntity extends BlockEntity implements MenuP
     @Override public BlockEntity ioOwner() { return this; }
     @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() { return VoidContainerBlock.PIPE; }
     @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() { return VoidContainerBlock.FACING; }
+    @Override public boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
+    @Override public boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
         setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
         ioNeighborsChanged();
     }
 
@@ -70,17 +78,12 @@ public final class VoidContainerBlockEntity extends BlockEntity implements MenuP
         loadIoState(tag, registries);
     }
 
-    private final class SidedHandler implements IItemHandler {
-        private final Direction direction;
-        private SidedHandler(Direction direction) { this.direction = direction; }
-        @Override public int getSlots() { return insertionRoute(direction) >= 0 ? 1 : 0; }
-        @Override public ItemStack getStackInSlot(int slot) { return ItemStack.EMPTY; }
-        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return insertionRoute(direction) >= 0 ? ItemStack.EMPTY : stack;
-        }
-        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) { return ItemStack.EMPTY; }
-        @Override public int getSlotLimit(int slot) { return 64; }
-        @Override public boolean isItemValid(int slot, ItemStack stack) { return insertionRoute(direction) >= 0; }
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     @Override

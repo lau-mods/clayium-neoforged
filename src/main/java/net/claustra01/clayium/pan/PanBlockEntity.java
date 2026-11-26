@@ -27,6 +27,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -790,6 +791,14 @@ public final class PanBlockEntity extends BlockEntity implements MenuProvider, C
         closure = new PanRecipeClosure.Result(Map.of(), Map.of());
         sortedCandidates = null;
         loadIoState(tag, registries);
+    }
+
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     private final class PanItemHandler implements IItemHandler {

@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -31,6 +32,7 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public final class EnergyConverterBlockEntity extends BlockEntity implements MenuProvider, ConfigurableIoDevice {
@@ -289,6 +291,14 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
         loadIoState(tag, registries);
     }
 
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
+    }
+
     private final class OutputEnergyStorage implements IEnergyStorage {
         @Nullable private final Direction direction;
 
@@ -334,13 +344,16 @@ public final class EnergyConverterBlockEntity extends BlockEntity implements Men
         }
     }
 
-    private final class FuelHandler implements IItemHandler {
+    private final class FuelHandler implements IItemHandlerModifiable {
         @Nullable private final Direction direction;
 
         private FuelHandler(@Nullable Direction direction) { this.direction = direction; }
         private boolean enabled() { return direction == null || insertionRoute(direction) == 1; }
         @Override public int getSlots() { return enabled() ? 1 : 0; }
         @Override public ItemStack getStackInSlot(int slot) { return fuel.getStackInSlot(slot); }
+        @Override public void setStackInSlot(int slot, ItemStack stack) {
+            if (enabled()) fuel.setStackInSlot(slot, stack);
+        }
         @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             return enabled() && (direction == null || matchesFilter(direction, stack))
                     ? fuel.insertItem(slot, stack, simulate) : stack;

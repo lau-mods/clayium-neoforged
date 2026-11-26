@@ -11,6 +11,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -134,6 +135,9 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
         setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
         ioNeighborsChanged();
     }
 
@@ -183,6 +187,14 @@ public final class DistributorBlockEntity extends BlockEntity implements MenuPro
         loadIoState(tag, registries);
         nextOutputDirection = tag.getInt("next_output_direction");
         nextInputDirection = tag.getInt("next_input_direction");
+    }
+
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     private final class DistributorData implements ContainerData {

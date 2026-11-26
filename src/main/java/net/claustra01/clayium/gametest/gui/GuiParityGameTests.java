@@ -79,6 +79,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 @GameTestHolder(ClayiumMod.MOD_ID)
 @PrefixGameTestTemplate(false)
@@ -204,6 +205,8 @@ public final class GuiParityGameTests {
         EnergyConverterBlockEntity converter = helper.getBlockEntity(converterPos);
         EnergyConverterMenu converterMenu = new EnergyConverterMenu(6, player.getInventory(), converter,
                 new net.minecraft.world.inventory.SimpleContainerData(12));
+        require(converter.fuelHandler(null) instanceof IItemHandlerModifiable,
+                "The converter fuel slot cannot accept client container synchronization");
         slot(converterMenu.slots.get(0), 35, 53, "converter fuel");
         slot(converterMenu.slots.get(1), 8, 102, "converter player inventory");
         BlockPos topConverterPos = new BlockPos(11, 2, 2);

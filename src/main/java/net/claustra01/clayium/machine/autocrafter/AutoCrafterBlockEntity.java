@@ -17,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -372,6 +373,14 @@ public final class AutoCrafterBlockEntity extends BlockEntity implements MenuPro
         craftTick = Math.max(0, tag.getInt("craft_tick"));
         loadIoState(tag, registries);
         previewDirty = true;
+    }
+
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     private record CraftPlan(int[] consumed, List<ItemStack> outputs, RecipeHolder<CraftingRecipe> recipe) {

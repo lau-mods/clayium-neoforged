@@ -327,6 +327,12 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider, Conf
     @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() {
         return BufferBlock.FACING;
     }
+    @Override public boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
+    @Override public boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
     @Override public void ioConfigurationChanged() {
         updateDisplay();
         if (level != null) level.invalidateCapabilities(worldPosition);
@@ -626,8 +632,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider, Conf
 
         @Override
         public int getSlots() {
-            return direction != null && insertionRoute(direction) < 0 && extractionRoute(direction) < 0
-                    ? 0 : inventory.getSlots();
+            return inventory.getSlots();
         }
 
         @Override
@@ -637,15 +642,13 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider, Conf
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return acceptsInput() && (direction == null || insertionRoute(direction) >= 0)
-                    && (direction == null || matchesFilter(direction, stack))
+            return acceptsInput() && (direction == null || matchesFilter(direction, stack))
                     ? inventory.insertItem(slot, stack, simulate) : stack;
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return direction == null || extractionRoute(direction) >= 0
-                    ? inventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+            return inventory.extractItem(slot, amount, simulate);
         }
 
         @Override
@@ -655,8 +658,7 @@ public class BufferBlockEntity extends BlockEntity implements MenuProvider, Conf
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return (direction == null || insertionRoute(direction) >= 0)
-                    && (direction == null || matchesFilter(direction, stack))
+            return (direction == null || matchesFilter(direction, stack))
                     && inventory.isItemValid(slot, stack);
         }
     }

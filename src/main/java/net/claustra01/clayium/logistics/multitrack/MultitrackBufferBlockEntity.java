@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.energy.TierManager;
 import net.claustra01.clayium.logistics.BufferBlockEntity;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.IoTransportKind;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.logistics.filter.ItemFilter;
 import net.claustra01.clayium.registry.LogisticsRegistration;
@@ -228,6 +229,12 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
     @Override public BlockEntity ioOwner() { return this; }
     @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() { return MultitrackBufferBlock.PIPE; }
     @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() { return MultitrackBufferBlock.FACING; }
+    @Override public boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
+    @Override public boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
+        return kind == IoTransportKind.ITEM;
+    }
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
         setChanged();
@@ -252,7 +259,7 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
     }
 
     public IItemHandler itemHandler(@Nullable Direction direction) {
-        return direction == null ? combinedHandler() : new RoutedFaceHandler(direction);
+        return combinedHandler();
     }
 
     public IItemHandler trackHandler(int trackIndex, @Nullable Direction direction) {
@@ -405,55 +412,6 @@ public final class MultitrackBufferBlockEntity extends BlockEntity implements Me
         @Override public boolean isItemValid(int slot, ItemStack stack) {
             return (direction == null || track.faceMode(direction).canInput())
                     && track.accepts(stack);
-        }
-    }
-
-    private final class RoutedFaceHandler implements IItemHandler {
-        private final Direction direction;
-
-        private RoutedFaceHandler(Direction direction) {
-            this.direction = direction;
-        }
-
-        private int inputTrack() { return insertionRoute(direction); }
-        private int outputTrack() { return extractionRoute(direction); }
-        private boolean sharedTrack() { return inputTrack() >= 0 && inputTrack() == outputTrack(); }
-
-        @Override public int getSlots() {
-            return (inputTrack() >= 0 ? SLOTS_PER_TRACK : 0)
-                    + (outputTrack() >= 0 && !sharedTrack() ? SLOTS_PER_TRACK : 0);
-        }
-
-        private int trackForSlot(int slot) {
-            if (inputTrack() >= 0 && slot < SLOTS_PER_TRACK) return inputTrack();
-            return outputTrack();
-        }
-
-        private int localSlot(int slot) {
-            return inputTrack() >= 0 && slot >= SLOTS_PER_TRACK ? slot - SLOTS_PER_TRACK : slot;
-        }
-
-        @Override public ItemStack getStackInSlot(int slot) {
-            return track(trackForSlot(slot)).inventory.getStackInSlot(localSlot(slot));
-        }
-
-        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            if (inputTrack() < 0 || slot >= SLOTS_PER_TRACK) return stack;
-            return track(inputTrack()).inventory.insertItem(slot, stack, simulate);
-        }
-
-        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            int outputStart = inputTrack() >= 0 && !sharedTrack() ? SLOTS_PER_TRACK : 0;
-            if (outputTrack() < 0 || slot < outputStart) return ItemStack.EMPTY;
-            return track(outputTrack()).inventory.extractItem(slot - outputStart, amount, simulate);
-        }
-
-        @Override public int getSlotLimit(int slot) {
-            return track(trackForSlot(slot)).inventory.getSlotLimit(localSlot(slot));
-        }
-
-        @Override public boolean isItemValid(int slot, ItemStack stack) {
-            return inputTrack() >= 0 && slot < SLOTS_PER_TRACK && track(inputTrack()).accepts(stack);
         }
     }
 

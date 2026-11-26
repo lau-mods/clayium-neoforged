@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -121,6 +122,9 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
         setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
         ioNeighborsChanged();
     }
 
@@ -147,6 +151,14 @@ public final class CobblestoneGeneratorBlockEntity extends BlockEntity implement
         }
         progress = tag.getInt("progress");
         loadIoState(tag, registries);
+    }
+
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     private final class OutputHandler implements IItemHandler {

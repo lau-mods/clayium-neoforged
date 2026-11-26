@@ -78,6 +78,40 @@ public final class LogisticsGameTests {
     }
 
     @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
+    public static void pipesUseActiveRoutesAndOriginalPassiveBufferEndpoints(GameTestHelper helper) {
+        BufferBlockEntity source = placedBuffer(helper, 7, new BlockPos(1, 1, 1));
+        BufferBlockEntity target = placedBuffer(helper, 7, new BlockPos(2, 1, 1));
+        setOnlyFace(source, Direction.EAST, BufferBlockEntity.FaceMode.DISABLED);
+        setOnlyFace(target, Direction.WEST, BufferBlockEntity.FaceMode.DISABLED);
+        helper.getLevel().setBlockAndUpdate(source.getBlockPos(),
+                source.getBlockState().setValue(net.claustra01.clayium.logistics.BufferBlock.PIPE, true));
+        helper.getLevel().setBlockAndUpdate(target.getBlockPos(),
+                target.getBlockState().setValue(net.claustra01.clayium.logistics.BufferBlock.PIPE, true));
+
+        require(!source.pipeConnects(Direction.EAST) && !target.pipeConnects(Direction.WEST),
+                "Two passive buffer faces connected without an active import or export route");
+
+        source.setFaceMode(Direction.EAST, BufferBlockEntity.FaceMode.OUTPUT);
+        require(source.pipeConnects(Direction.EAST) && target.pipeConnects(Direction.WEST),
+                "An active export did not join the neighboring passive buffer pipe");
+        source.inventory().setStackInSlot(0, new ItemStack(Items.DIAMOND, 16));
+        BufferBlockEntity.serverTick(helper.getLevel(), source.getBlockPos(), source.getBlockState(), source);
+        require(total(source.inventory()) == 0 && total(target.inventory()) == 16,
+                "The connected export could not insert into the passive buffer capability");
+
+        target.inventory().setStackInSlot(0, ItemStack.EMPTY);
+        source.inventory().setStackInSlot(0, new ItemStack(Items.CLAY_BALL, 16));
+        source.setFaceMode(Direction.EAST, BufferBlockEntity.FaceMode.DISABLED);
+        target.setFaceMode(Direction.WEST, BufferBlockEntity.FaceMode.INPUT);
+        require(source.pipeConnects(Direction.EAST) && target.pipeConnects(Direction.WEST),
+                "An active import did not join the neighboring passive buffer pipe");
+        BufferBlockEntity.serverTick(helper.getLevel(), target.getBlockPos(), target.getBlockState(), target);
+        require(total(source.inventory()) == 0 && total(target.inventory()) == 16,
+                "The connected import could not extract from the passive buffer capability");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = ClayiumMod.MOD_ID)
     public static void bufferPagesExposeAllOneHundredStorageSlots(GameTestHelper helper) {
         BufferBlockEntity buffer = placedBuffer(helper, 9, new BlockPos(1, 1, 1));
         var player = helper.makeMockPlayer(GameType.CREATIVE);

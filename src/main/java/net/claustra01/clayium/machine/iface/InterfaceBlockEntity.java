@@ -6,6 +6,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.registry.InterfaceRegistration;
 import net.claustra01.clayium.logistics.ConfigurableIoDevice;
+import net.claustra01.clayium.logistics.IoTransportKind;
 import net.claustra01.clayium.logistics.SideConfiguration;
 import net.claustra01.clayium.laser.LaserBeam;
 import net.claustra01.clayium.multiblock.MultiblockStructureNotifier;
@@ -76,6 +77,12 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
     @Override public BlockEntity ioOwner() { return this; }
     @Override public net.minecraft.world.level.block.state.properties.BooleanProperty ioPipeProperty() { return InterfaceBlock.PIPE; }
     @Override public net.minecraft.world.level.block.state.properties.DirectionProperty ioFacingProperty() { return InterfaceBlock.FACING; }
+    @Override public boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
+        return interfaceType() == InterfaceType.ITEM && kind == IoTransportKind.ITEM;
+    }
+    @Override public boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
+        return interfaceType() == InterfaceType.ITEM && kind == IoTransportKind.ITEM;
+    }
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
         setChangedAndSync();
@@ -281,7 +288,6 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public int getSlots() {
-            if (direction != null && insertionRoute(direction) < 0 && extractionRoute(direction) < 0) return 0;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler == null ? 0 : targetHandler.getSlots();
         }
@@ -295,7 +301,6 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            if (direction != null && insertionRoute(direction) < 0) return stack;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler == null || slot < 0 || slot >= targetHandler.getSlots()
                     ? stack : targetHandler.insertItem(slot, stack, simulate);
@@ -303,7 +308,6 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (direction != null && extractionRoute(direction) < 0) return ItemStack.EMPTY;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler == null || slot < 0 || slot >= targetHandler.getSlots()
                     ? ItemStack.EMPTY : targetHandler.extractItem(slot, amount, simulate);
@@ -318,7 +322,6 @@ public final class InterfaceBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            if (direction != null && insertionRoute(direction) < 0) return false;
             IItemHandler targetHandler = resolveItemHandler(direction);
             return targetHandler != null && slot >= 0 && slot < targetHandler.getSlots()
                     && targetHandler.isItemValid(slot, stack);

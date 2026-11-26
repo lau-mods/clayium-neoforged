@@ -136,17 +136,36 @@ public final class SideConfiguration {
             int adjacentInsertion = adjacent.insertionRoute(opposite);
             int insertion = device.insertionRoute(side);
             int adjacentExtraction = adjacent.extractionRoute(opposite);
-            return extraction >= 0 && adjacentInsertion >= 0
-                        && device.extractionTransportKind(extraction)
-                                == adjacent.insertionTransportKind(adjacentInsertion)
-                    || insertion >= 0 && adjacentExtraction >= 0
-                        && device.insertionTransportKind(insertion)
-                                == adjacent.extractionTransportKind(adjacentExtraction);
+            boolean ownPush = extraction >= 0 && acceptsInsertion(
+                    adjacent, opposite, device.extractionTransportKind(extraction));
+            boolean ownPull = insertion >= 0 && allowsExtraction(
+                    adjacent, opposite, device.insertionTransportKind(insertion));
+            boolean adjacentPush = adjacentExtraction >= 0 && acceptsInsertion(
+                    device, side, adjacent.extractionTransportKind(adjacentExtraction));
+            boolean adjacentPull = adjacentInsertion >= 0 && allowsExtraction(
+                    device, side, adjacent.insertionTransportKind(adjacentInsertion));
+            return ownPush || ownPull || adjacentPush || adjacentPull;
         }
         int insertion = device.insertionRoute(side);
         int extraction = device.extractionRoute(side);
         return insertion >= 0 && hasCapability(device.insertionTransportKind(insertion), owner, side)
                 || extraction >= 0 && hasCapability(device.extractionTransportKind(extraction), owner, side);
+    }
+
+    private static boolean acceptsInsertion(
+            ConfigurableIoDevice device, Direction side, IoTransportKind kind) {
+        int route = device.insertionRoute(side);
+        return route >= 0
+                ? device.insertionTransportKind(route) == kind
+                : device.allowsPassiveInsertion(side, kind);
+    }
+
+    private static boolean allowsExtraction(
+            ConfigurableIoDevice device, Direction side, IoTransportKind kind) {
+        int route = device.extractionRoute(side);
+        return route >= 0
+                ? device.extractionTransportKind(route) == kind
+                : device.allowsPassiveExtraction(side, kind);
     }
 
     private static boolean hasCapability(IoTransportKind kind, BlockEntity owner, Direction side) {

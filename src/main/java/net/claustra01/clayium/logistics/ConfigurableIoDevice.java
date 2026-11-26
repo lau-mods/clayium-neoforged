@@ -49,6 +49,16 @@ public interface ConfigurableIoDevice {
         return ioTransportKind();
     }
 
+    /** True when an active neighboring route may insert through this otherwise unconfigured face. */
+    default boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
+        return false;
+    }
+
+    /** True when an active neighboring route may extract through this otherwise unconfigured face. */
+    default boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
+        return false;
+    }
+
     default String insertionFaceTexture(int route) {
         return switch (insertionTransportKind(route)) {
             case FLUID -> "import_l";

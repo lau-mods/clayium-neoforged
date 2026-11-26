@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -330,9 +331,21 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         return FluidTransportBlock.FACING;
     }
     @Override public IoTransportKind ioTransportKind() { return IoTransportKind.FLUID; }
+    @Override public boolean allowsPassiveInsertion(Direction side, IoTransportKind kind) {
+        return isPassiveEndpoint() && kind == IoTransportKind.FLUID;
+    }
+    @Override public boolean allowsPassiveExtraction(Direction side, IoTransportKind kind) {
+        return isPassiveEndpoint() && kind == IoTransportKind.FLUID;
+    }
+    private boolean isPassiveEndpoint() {
+        return !specification().equals(FluidTransportSpecification.TRANSFER_MACHINE);
+    }
     @Override public void ioConfigurationChanged() {
         if (level != null) level.invalidateCapabilities(worldPosition);
         setChangedAndSync();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
         ioNeighborsChanged();
     }
 
@@ -397,6 +410,14 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
         setChanged();
     }
 
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
+    }
+
     public enum FaceMode {
         INPUT,
         OUTPUT,
@@ -441,7 +462,8 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public int getTanks() {
-            return direction != null && insertionRoute(direction) < 0 && extractionRoute(direction) < 0 ? 0 : 1;
+            return isPassiveEndpoint() || direction == null
+                    || insertionRoute(direction) >= 0 || extractionRoute(direction) >= 0 ? 1 : 0;
         }
 
         @Override
@@ -456,12 +478,14 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public boolean isFluidValid(int tankIndex, FluidStack stack) {
-            return (direction == null || insertionRoute(direction) >= 0) && accepts(stack);
+            return (isPassiveEndpoint() || direction == null || insertionRoute(direction) >= 0)
+                    && accepts(stack);
         }
 
         @Override
         public int fill(FluidStack resource, FluidAction action) {
-            if ((direction != null && insertionRoute(direction) < 0) || !accepts(resource)) {
+            if ((!isPassiveEndpoint() && direction != null && insertionRoute(direction) < 0)
+                    || !accepts(resource)) {
                 return 0;
             }
             int filled = tank.fill(resource.copyWithAmount(Math.min(resource.getAmount(), remainingTransfer())), action);
@@ -476,7 +500,8 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
-            if (direction != null && extractionRoute(direction) < 0 || !accepts(resource)) {
+            if (!isPassiveEndpoint() && direction != null && extractionRoute(direction) < 0
+                    || !accepts(resource)) {
                 return FluidStack.EMPTY;
             }
             FluidStack drained = tank.drain(resource.copyWithAmount(Math.min(resource.getAmount(), remainingTransfer())), action);
@@ -486,7 +511,8 @@ public final class FluidTransportBlockEntity extends BlockEntity implements Menu
 
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
-            if (direction != null && extractionRoute(direction) < 0 || !accepts(tank.getFluid())) {
+            if (!isPassiveEndpoint() && direction != null && extractionRoute(direction) < 0
+                    || !accepts(tank.getFluid())) {
                 return FluidStack.EMPTY;
             }
             FluidStack drained = tank.drain(Math.min(maxDrain, remainingTransfer()), action);
