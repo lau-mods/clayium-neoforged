@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "clayium_neoforged:block/advanced_fluid_translator",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "clayium_neoforged:block/advanced_fluid_translator",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/advanced_fluid_translator",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/advanced_fluid_translator",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "clayium_neoforged:block/advanced_fluid_translator"
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/advanced_fluid_translator",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

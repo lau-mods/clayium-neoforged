@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "clayium_neoforged:block/machinehull-6",
+    "east": "clayium_neoforged:block/machinehull-6",
+    "north": "clayium_neoforged:block/machinehull-6",
+    "particle": "clayium_neoforged:block/solar",
+    "south": "clayium_neoforged:block/machinehull-6",
+    "up": "clayium_neoforged:block/solar",
+    "west": "clayium_neoforged:block/machinehull-6"
+  }
+}

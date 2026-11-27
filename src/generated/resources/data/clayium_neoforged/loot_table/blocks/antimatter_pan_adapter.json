@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "clayium_neoforged:antimatter_pan_adapter"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "clayium_neoforged:blocks/antimatter_pan_adapter"
+}

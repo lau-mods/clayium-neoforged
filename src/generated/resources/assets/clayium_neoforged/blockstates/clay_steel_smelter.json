@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium_neoforged:block/clay_steel_smelter",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/clay_steel_smelter"
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/clay_steel_smelter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/clay_steel_smelter",
+      "y": 270
+    }
+  }
+}

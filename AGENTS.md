@@ -164,8 +164,8 @@ CE→FE の変換効率、発電量、出力上限、容量、出力方向、レ
 | 02 | NeoForge ビルド環境と起動基盤 | 完了 | Java 21、対象 NeoForge、wrapper、Gradle、MOD metadata、起動・登録基盤を整備 | Gradle 9.2.1・NeoForge 21.1.264・JEI optional・neoforge.mods.toml・テクスチャ再配置・登録基盤を整備し `./gradlew compileJava build --offline` 成功とJAR内metadataを確認 |
 | 03 | 旧外部依存・不要な旧コードの整理 | 完了 | 第3節の方針に従い参照・ロード順・連携コードを整理し、必要な本体機能を維持 | 旧cofh/invtweaks/modsソースと一時除外設定を削除し、Tier・方向・数値整形・進行倍率基盤と単体テスト・旧依存ゼロ検証を整備 |
 | 04 | 素材・アイテム・ブロック登録 | 完了 | 旧 ID＋メタデータと新 ID・状態の対応を確立し、全種類の登録漏れを検証 | 全427ブロック・独立309アイテム（計736アイテム）・272素材・25形状・DataComponent・CreativeTabを登録し台帳との1対1完全一致を単体テストで検証 |
-| 05 | DataGen と基本リソース | 未着手（次） | タグ、モデル、BlockState、言語、loot 等の生成基盤とテクスチャ対応を整備 | — |
-| 06 | Clay Energy 基盤 | 未着手 | CE の型、容量、消費計算、保存、転送、関連する強化処理を移植 | — |
+| 05 | DataGen と基本リソース | 完了 | タグ、モデル、BlockState、言語、loot 等の生成基盤とテクスチャ対応を整備 | BlockState・Model・Tag・LootTable・EN/JA言語(各1,185キー)のDataGenとクライアント色ハンドラを整備し、2回連続runData決定性一致・全2,332 JSON/テクスチャ照合・test・buildを確認 |
+| 06 | Clay Energy 基盤 | 未着手（次） | CE の型、容量、消費計算、保存、転送、関連する強化処理を移植 | — |
 | 07 | 独自レシピと DataGen | 未着手 | RecipeType・Serializer、数量・Tier・時間・CE・優先順位等を維持し、全対象レシピを生成・比較 | — |
 | 08 | 機械・搬送・ストレージ基盤 | 未着手 | BlockEntity、アイテム・流体搬送、方向設定、フィルター、機械稼働・保存処理を整備 | — |
 | 09 | 各種加工機械・補助機械 | 未着手 | 原版の対象機械を Tier・レシピ・性能・制約を維持して移植 | — |

@@ -1,0 +1,19 @@
+{
+  "values": [
+    "clayium_neoforged:dense_clay",
+    "clayium_neoforged:compressed_clay",
+    "clayium_neoforged:industrial_clay",
+    "clayium_neoforged:advanced_industrial_clay",
+    "clayium_neoforged:energetic_clay",
+    "clayium_neoforged:compressed_energetic_clay",
+    "clayium_neoforged:double_compressed_energetic_clay",
+    "clayium_neoforged:triple_compressed_energetic_clay",
+    "clayium_neoforged:quadruple_compressed_energetic_clay",
+    "clayium_neoforged:quintuple_compressed_energetic_clay",
+    "clayium_neoforged:sextuple_compressed_energetic_clay",
+    "clayium_neoforged:septuple_compressed_energetic_clay",
+    "clayium_neoforged:octuple_compressed_energetic_clay",
+    "clayium_neoforged:raw_clay_machine_hull",
+    "clayium_neoforged:clay_tree_log"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium_neoforged:block/advanced_grinder",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/advanced_grinder"
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/advanced_grinder",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/advanced_grinder",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "clayium_neoforged:block/machinehull-4",
+    "east": "clayium_neoforged:block/autocrafterside",
+    "north": "clayium_neoforged:block/autocrafterside",
+    "particle": "clayium_neoforged:block/autocraftertop",
+    "south": "clayium_neoforged:block/autocrafterside",
+    "up": "clayium_neoforged:block/autocraftertop",
+    "west": "clayium_neoforged:block/autocrafterside"
+  }
+}

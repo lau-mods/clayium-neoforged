@@ -1,0 +1,22 @@
+{
+  "values": [
+    "clayium_neoforged:clay_large_plate",
+    "clayium_neoforged:dense_clay_large_plate",
+    "clayium_neoforged:industrial_clay_large_plate",
+    "clayium_neoforged:advanced_industrial_clay_large_plate",
+    "clayium_neoforged:impure_silicon_large_plate",
+    "clayium_neoforged:silicone_large_plate",
+    "clayium_neoforged:silicon_large_plate",
+    "clayium_neoforged:aluminium_large_plate",
+    "clayium_neoforged:impure_aluminium_large_plate",
+    "clayium_neoforged:clay_steel_large_plate",
+    "clayium_neoforged:clayium_large_plate",
+    "clayium_neoforged:ultimate_alloy_large_plate",
+    "clayium_neoforged:antimatter_large_plate",
+    "clayium_neoforged:pure_antimatter_large_plate",
+    "clayium_neoforged:octuple_energetic_clay_large_plate",
+    "clayium_neoforged:octuple_pure_antimatter_large_plate",
+    "clayium_neoforged:az91d_large_plate",
+    "clayium_neoforged:zk60a_large_plate"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "clayium_neoforged:block/basic_salt_extractor",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "clayium_neoforged:block/basic_salt_extractor",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/basic_salt_extractor",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/basic_salt_extractor",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "clayium_neoforged:block/basic_salt_extractor"
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/basic_salt_extractor",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

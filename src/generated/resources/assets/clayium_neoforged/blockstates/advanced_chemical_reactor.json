@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium_neoforged:block/advanced_chemical_reactor",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/advanced_chemical_reactor"
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/advanced_chemical_reactor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/advanced_chemical_reactor",
+      "y": 270
+    }
+  }
+}

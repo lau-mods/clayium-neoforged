@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium_neoforged:block/basic_lathe",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/basic_lathe"
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/basic_lathe",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/basic_lathe",
+      "y": 270
+    }
+  }
+}

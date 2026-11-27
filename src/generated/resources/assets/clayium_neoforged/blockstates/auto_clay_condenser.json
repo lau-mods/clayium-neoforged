@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "clayium_neoforged:block/auto_clay_condenser",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/auto_clay_condenser"
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/auto_clay_condenser",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/auto_clay_condenser",
+      "y": 270
+    }
+  }
+}

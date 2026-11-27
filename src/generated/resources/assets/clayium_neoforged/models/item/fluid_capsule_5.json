@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "clayium_neoforged:item/capsule0005",
+    "layer1": "clayium_neoforged:item/capsule0005_mask"
+  }
+}

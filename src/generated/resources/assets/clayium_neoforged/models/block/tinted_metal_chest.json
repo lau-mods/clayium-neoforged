@@ -1,0 +1,126 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#base",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#base",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#base",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#base",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#base",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#base",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        14,
+        15
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#dark",
+          "tintindex": 1
+        },
+        "east": {
+          "texture": "#dark",
+          "tintindex": 1
+        },
+        "north": {
+          "texture": "#dark",
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#dark",
+          "tintindex": 1
+        },
+        "up": {
+          "texture": "#dark",
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#dark",
+          "tintindex": 1
+        }
+      },
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        14,
+        15
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#light",
+          "tintindex": 2
+        },
+        "east": {
+          "texture": "#light",
+          "tintindex": 2
+        },
+        "north": {
+          "texture": "#light",
+          "tintindex": 2
+        },
+        "south": {
+          "texture": "#light",
+          "tintindex": 2
+        },
+        "up": {
+          "texture": "#light",
+          "tintindex": 2
+        },
+        "west": {
+          "texture": "#light",
+          "tintindex": 2
+        }
+      },
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        14,
+        15
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "base": "clayium_neoforged:block/metalblock_base",
+    "dark": "clayium_neoforged:block/metalblock_dark",
+    "light": "clayium_neoforged:block/metalblock_light",
+    "particle": "clayium_neoforged:block/metalblock_base"
+  }
+}

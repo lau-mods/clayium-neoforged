@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "clayium_neoforged:block/clayium_clay_laser_interface",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "clayium_neoforged:block/clayium_clay_laser_interface",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "clayium_neoforged:block/clayium_clay_laser_interface",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/clayium_clay_laser_interface",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "clayium_neoforged:block/clayium_clay_laser_interface"
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/clayium_clay_laser_interface",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

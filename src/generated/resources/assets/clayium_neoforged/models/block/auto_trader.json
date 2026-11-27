@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "clayium_neoforged:block/az91dhull",
+    "east": "clayium_neoforged:block/autotraderside",
+    "north": "clayium_neoforged:block/autotraderside",
+    "particle": "clayium_neoforged:block/autotradertop",
+    "south": "clayium_neoforged:block/autotraderside",
+    "up": "clayium_neoforged:block/autotradertop",
+    "west": "clayium_neoforged:block/autotraderside"
+  }
+}

@@ -22,7 +22,7 @@ class NoLegacyDepsTest {
     );
 
     @Test
-    void mainSourcesContainNoRemovedLegacyDependencies() throws IOException {
+    void mainSourcesContainNoRemovedLegacyDependenciesOrServerClientLeaks() throws IOException {
         Path projectDir = Path.of(System.getProperty("clayium.projectDir", "."));
         Path mainJava = projectDir.resolve("src/main/java");
         assertTrue(Files.isDirectory(mainJava), "Expected src/main/java directory at " + mainJava.toAbsolutePath());
@@ -35,6 +35,15 @@ class NoLegacyDepsTest {
                     assertTrue(
                             !content.contains(token),
                             "Forbidden legacy reference '" + token + "' in " + file
+                    );
+                }
+                String rel = mainJava.relativize(file).toString().replace('\\', '/');
+                boolean clientAllowed = rel.startsWith("net/claustra01/clayium/client/")
+                        || rel.startsWith("net/claustra01/clayium/compat/jei/");
+                if (!clientAllowed) {
+                    assertTrue(
+                            !content.contains("net.minecraft.client."),
+                            "Client-only class reference outside client/compat package in " + rel
                     );
                 }
             }
