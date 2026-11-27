@@ -1,34 +1,58 @@
 {
   "variants": {
-    "active=false,facing=east": {
+    "active=false,facing=east,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core",
       "y": 90
     },
-    "active=false,facing=north": {
+    "active=false,facing=east,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
+    },
+    "active=false,facing=north,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core"
     },
-    "active=false,facing=south": {
+    "active=false,facing=north,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
+    },
+    "active=false,facing=south,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core",
       "y": 180
     },
-    "active=false,facing=west": {
+    "active=false,facing=south,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
+    },
+    "active=false,facing=west,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core",
       "y": 270
     },
-    "active=true,facing=east": {
+    "active=false,facing=west,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
+    },
+    "active=true,facing=east,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core_active",
       "y": 90
     },
-    "active=true,facing=north": {
+    "active=true,facing=east,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
+    },
+    "active=true,facing=north,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core_active"
     },
-    "active=true,facing=south": {
+    "active=true,facing=north,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
+    },
+    "active=true,facing=south,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core_active",
       "y": 180
     },
-    "active=true,facing=west": {
+    "active=true,facing=south,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
+    },
+    "active=true,facing=west,pipe_mode=false": {
       "model": "clayium_neoforged:block/antimatter_ca_reactor_core_active",
       "y": 270
+    },
+    "active=true,facing=west,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-9"
     }
   }
 }

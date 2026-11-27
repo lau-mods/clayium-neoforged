@@ -1,19 +1,31 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_ca_injector",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=north,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_ca_injector"
     },
-    "facing=south": {
+    "facing=north,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=south,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_ca_injector",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=west,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_ca_injector",
       "y": 270
+    },
+    "facing=west,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
     }
   }
 }

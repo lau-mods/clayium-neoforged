@@ -1,19 +1,31 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,pipe_mode=false": {
       "model": "clayium_neoforged:block/precision_bending_machine",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-5"
+    },
+    "facing=north,pipe_mode=false": {
       "model": "clayium_neoforged:block/precision_bending_machine"
     },
-    "facing=south": {
+    "facing=north,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-5"
+    },
+    "facing=south,pipe_mode=false": {
       "model": "clayium_neoforged:block/precision_bending_machine",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-5"
+    },
+    "facing=west,pipe_mode=false": {
       "model": "clayium_neoforged:block/precision_bending_machine",
       "y": 270
+    },
+    "facing=west,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-5"
     }
   }
 }

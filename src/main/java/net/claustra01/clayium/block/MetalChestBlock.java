@@ -1,15 +1,20 @@
 package net.claustra01.clayium.block;
 
+import javax.annotation.Nullable;
+import net.claustra01.clayium.blockentity.MetalChestBlockEntity;
 import net.claustra01.clayium.material.CMaterial;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Metal chest block storing its material and original slot layout (cols, rows, pages).
+ * Metal chest block storing its material, original slot layout (cols, rows, pages),
+ * and BlockEntity container. Cannot enter piping mode ({@code canBePipe() == false}).
  */
 public class MetalChestBlock extends HorizontalClayContainerBlock {
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
@@ -25,6 +30,16 @@ public class MetalChestBlock extends HorizontalClayContainerBlock {
         this.cols = cols;
         this.rows = rows;
         this.pages = pages;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
+    }
+
+    @Override
+    public boolean canBePipe() {
+        return false;
     }
 
     public CMaterial getMaterial() {
@@ -50,5 +65,11 @@ public class MetalChestBlock extends HorizontalClayContainerBlock {
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new MetalChestBlockEntity(pos, state);
     }
 }

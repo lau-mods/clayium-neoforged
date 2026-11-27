@@ -2,6 +2,7 @@ package net.claustra01.clayium.registry;
 
 import com.mojang.serialization.Codec;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.component.ClayiumDataComponentTypes.ContainerIoMemoryData;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.DirectionMemoryData;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.FilterConfigData;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.MarkerPosData;
@@ -66,6 +67,12 @@ public final class ClayiumDataComponents {
             REGISTRY.register("storage_content", () -> DataComponentType.<StorageContentData>builder()
                     .persistent(StorageContentData.CODEC)
                     .networkSynchronized(StorageContentData.STREAM_CODEC)
+                    .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ContainerIoMemoryData>> IO_MEMORY =
+            REGISTRY.register("io_memory", () -> DataComponentType.<ContainerIoMemoryData>builder()
+                    .persistent(ContainerIoMemoryData.CODEC)
+                    .networkSynchronized(ContainerIoMemoryData.STREAM_CODEC)
                     .build());
 
     private ClayiumDataComponents() {}

@@ -15,6 +15,7 @@ import net.claustra01.clayium.block.ClayOreBlock;
 import net.claustra01.clayium.block.ClayTreeLeavesBlock;
 import net.claustra01.clayium.block.ClayTreeLogBlock;
 import net.claustra01.clayium.block.ClayTreeSaplingBlock;
+import net.claustra01.clayium.block.ClayWorkTableBlock;
 import net.claustra01.clayium.block.CompressedClayBlock;
 import net.claustra01.clayium.block.DirectionalClayContainerBlock;
 import net.claustra01.clayium.block.HorizontalClayContainerBlock;
@@ -26,6 +27,7 @@ import net.claustra01.clayium.block.PANAdapterBlock;
 import net.claustra01.clayium.block.PANDuplicatorBlock;
 import net.claustra01.clayium.block.PanCableBlock;
 import net.claustra01.clayium.block.QuartzCrucibleBlock;
+import net.claustra01.clayium.block.RedstoneInterfaceBlock;
 import net.claustra01.clayium.block.SiliconeColoredBlock;
 import net.claustra01.clayium.block.StorageContainerBlock;
 import net.claustra01.clayium.block.TieredBlock;
@@ -79,7 +81,7 @@ public final class ClayiumBlocks {
     }
 
     private static Properties stoneMachineProps() {
-        return Properties.of().mapColor(MapColor.METAL).strength(2.0F, 5.0F).sound(SoundType.METAL).requiresCorrectToolForDrops();
+        return Properties.of().mapColor(MapColor.METAL).strength(2.0F, 5.0F).sound(SoundType.METAL).requiresCorrectToolForDrops().dynamicShape();
     }
 
     private static Properties clayProps(float hardness) {
@@ -179,7 +181,7 @@ public final class ClayiumBlocks {
         reg("opa_machine_hull", () -> new MachineHullBlock(metalProps(), 13, "machinehull-12"));
         reg("az91d_alloy_hull", () -> new MachineHullBlock(metalProps(), 6, "az91dhull"));
         reg("zk60a_alloy_hull", () -> new MachineHullBlock(metalProps(), 6, "zk60ahull"));
-        reg("clay_work_table", () -> new ClayContainerBlock(Properties.of().mapColor(MapColor.STONE).strength(2.0F, 2.0F).sound(SoundType.STONE).requiresCorrectToolForDrops(), 0, "clayworktable", "clayworktable", "crafting", null));
+        reg("clay_work_table", () -> new ClayWorkTableBlock(Properties.of().mapColor(MapColor.STONE).strength(2.0F, 2.0F).sound(SoundType.STONE).requiresCorrectToolForDrops()));
         reg("clay_crafting_table", () -> new ClayCraftingTableBlock(clayProps(1.0F).explosionResistance(4.0F).noOcclusion()));
         regContainer("elemental_milling_machine", 1, 1, "machinehull-0", "millingmachine", "machine", null);
         regContainer("energetic_clay_condenser", 3, 1, "machinehull-2", "eccondenser", "machine", null);
@@ -199,7 +201,7 @@ public final class ClayiumBlocks {
         regActiveContainer("clay_reactor", 7, 1, "machinehull-6", "reactor", "multiblock", null, OverlayMode.FRONT_ONLY);
         regContainer("ca_collector", 10, 1, "machinehull-9", "cacollector", "machine", null);
         regContainer("energetic_clay_decomposer", 13, 1, "machinehull-12", "ecdecomposer", "machine", null);
-        reg("storage_container", () -> new StorageContainerBlock(metalProps().noOcclusion()));
+        reg("storage_container", () -> new StorageContainerBlock(metalProps().noOcclusion().dynamicShape()));
         regContainer("vacuum_container", 6, 1, "az91dhull", "vacuumcontainer", "storage", null, OverlayMode.VACUUM_CONTAINER);
         regContainer("auto_trader", 8, 1, "az91dhull", "autotradertop", "machine", null, OverlayMode.AUTO_TRADER);
         reg("clay_marker", () -> new ClayMarkerBlock(clayProps(0.5F).explosionResistance(5.0F).noOcclusion(), 7, "minecraft:block/clay"));
@@ -322,15 +324,15 @@ public final class ClayiumBlocks {
         regContainer("pure_antimatter_clay_interface", 11, 0, "machinehull-10", "interface", "interface", "tooltip.Interface", OverlayMode.ALL_FACES);
         regContainer("oec_clay_interface", 12, 0, "machinehull-11", "interface", "interface", "tooltip.Interface", OverlayMode.ALL_FACES);
         regContainer("opa_clay_interface", 13, 0, "machinehull-12", "interface", "interface", "tooltip.Interface", OverlayMode.ALL_FACES);
-        regContainer("advanced_redstone_interface", 5, 0, "machinehull-4", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("precision_redstone_interface", 6, 0, "machinehull-5", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("clay_steel_redstone_interface", 7, 0, "machinehull-6", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("clayium_redstone_interface", 8, 0, "machinehull-7", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("ultimate_redstone_interface", 9, 0, "machinehull-8", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("antimatter_redstone_interface", 10, 0, "machinehull-9", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("pure_antimatter_redstone_interface", 11, 0, "machinehull-10", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("oec_redstone_interface", 12, 0, "machinehull-11", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
-        regContainer("opa_redstone_interface", 13, 0, "machinehull-12", "redstoneinterface", "interface", "tooltip.RedstoneInterface", OverlayMode.ALL_FACES);
+        reg("advanced_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 5, "machinehull-4"));
+        reg("precision_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 6, "machinehull-5"));
+        reg("clay_steel_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 7, "machinehull-6"));
+        reg("clayium_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 8, "machinehull-7"));
+        reg("ultimate_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 9, "machinehull-8"));
+        reg("antimatter_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 10, "machinehull-9"));
+        reg("pure_antimatter_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 11, "machinehull-10"));
+        reg("oec_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 12, "machinehull-11"));
+        reg("opa_redstone_interface", () -> new RedstoneInterfaceBlock(stoneMachineProps(), 13, "machinehull-12"));
         regContainer("precision_electrolysis_reactor", 6, 1, "machinehull-5", "electrolysisreactor", "machine", null);
         regContainer("clay_steel_electrolysis_reactor", 7, 1, "machinehull-6", "electrolysisreactor", "machine", null);
         regContainer("clayium_electrolysis_reactor", 8, 1, "machinehull-7", "electrolysisreactor", "machine", null);

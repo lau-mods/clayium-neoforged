@@ -1,27 +1,45 @@
 {
   "variants": {
-    "facing=down": {
+    "facing=down,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_fluid_translator",
       "x": 90
     },
-    "facing=east": {
+    "facing=down,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=east,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_fluid_translator",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=north,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_fluid_translator"
     },
-    "facing=south": {
+    "facing=north,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=south,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_fluid_translator",
       "y": 180
     },
-    "facing=up": {
+    "facing=south,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=up,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_fluid_translator",
       "x": 270
     },
-    "facing=west": {
+    "facing=up,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
+    },
+    "facing=west,pipe_mode=false": {
       "model": "clayium_neoforged:block/opa_fluid_translator",
       "y": 270
+    },
+    "facing=west,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-12"
     }
   }
 }

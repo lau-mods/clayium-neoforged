@@ -1,34 +1,58 @@
 {
   "variants": {
-    "facing=east,upgraded=false": {
+    "facing=east,pipe_mode=false,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container",
       "y": 90
     },
-    "facing=east,upgraded=true": {
+    "facing=east,pipe_mode=false,upgraded=true": {
       "model": "clayium_neoforged:block/storage_container_upgraded",
       "y": 90
     },
-    "facing=north,upgraded=false": {
+    "facing=east,pipe_mode=true,upgraded=false": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "facing=east,pipe_mode=true,upgraded=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "facing=north,pipe_mode=false,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container"
     },
-    "facing=north,upgraded=true": {
+    "facing=north,pipe_mode=false,upgraded=true": {
       "model": "clayium_neoforged:block/storage_container_upgraded"
     },
-    "facing=south,upgraded=false": {
+    "facing=north,pipe_mode=true,upgraded=false": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "facing=north,pipe_mode=true,upgraded=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "facing=south,pipe_mode=false,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container",
       "y": 180
     },
-    "facing=south,upgraded=true": {
+    "facing=south,pipe_mode=false,upgraded=true": {
       "model": "clayium_neoforged:block/storage_container_upgraded",
       "y": 180
     },
-    "facing=west,upgraded=false": {
+    "facing=south,pipe_mode=true,upgraded=false": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "facing=south,pipe_mode=true,upgraded=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "facing=west,pipe_mode=false,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container",
       "y": 270
     },
-    "facing=west,upgraded=true": {
+    "facing=west,pipe_mode=false,upgraded=true": {
       "model": "clayium_neoforged:block/storage_container_upgraded",
       "y": 270
+    },
+    "facing=west,pipe_mode=true,upgraded=false": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "facing=west,pipe_mode=true,upgraded=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
     }
   }
 }

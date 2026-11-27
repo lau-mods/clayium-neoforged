@@ -167,8 +167,8 @@ CE→FE の変換効率、発電量、出力上限、容量、出力方向、レ
 | 05 | DataGen と基本リソース | 完了 | タグ、モデル、BlockState、言語、loot 等の生成基盤とテクスチャ対応を整備 | 2層オーバーレイ・半透明renderType・Buffer系インベントリ描画・流体カプセル着色・ClayOre専用ドロップ関数・EN/JA言語(各1,185キー)・タグ・DataGenを整備し、2回連続runData決定性一致(4,214 JSON)・全スクリプト・test・buildを確認 |
 | 06 | Clay Energy 基盤 | 完了 | CE の型、容量、消費計算、保存、転送、関連する強化処理を移植 | long型CE・圧縮粘土消費・4x16bit同期分割・オーバークロック・容量拡張・CA共振/リアクター計算基盤と単体テストを整備しtest・build成功を確認 |
 | 07 | 独自レシピと DataGen | 完了 | RecipeType・Serializer、数量・Tier・時間・CE・優先順位等を維持し、全対象レシピを生成・比較 | RecipeType/Serializer(ClayMachine 25カテゴリ・ClayWorkTable・ChemicalMetalSeparator)・動的レシピ4種・ConfigCondition・RecipeProviderを実装し1,394レシピ(本体機械947・作業台16・CMS 19重み合計488等)を検証、2回連続runData決定性一致・test・build成功を確認 |
-| 08 | 機械・搬送・ストレージ基盤 | 未着手（次） | BlockEntity、アイテム・流体搬送、方向設定、フィルター、機械稼働・保存処理を整備 | — |
-| 09 | 各種加工機械・補助機械 | 未着手 | 原版の対象機械を Tier・レシピ・性能・制約を維持して移植 | — |
+| 08 | 機械・搬送・ストレージ基盤 | 完了 | BlockEntity、アイテム・流体搬送、方向設定、フィルター、機械稼働・保存処理を整備 | 9種BlockEntity(Buffer/Multitrack/FluidTranslator/Storage/Vacuum/MetalChest/Distributor/ClayInterface/RedstoneInterface)・12種フィルター・Cap登録・配管VoxelShape・自動搬入出・DataComponent/NBT永続化を整備し、2回連続runData決定性一致(4,229 JSON)・全30テスト・buildを確認 |
+| 09 | 各種加工機械・補助機械 | 未着手（次） | 原版の対象機械を Tier・レシピ・性能・制約を維持して移植 | — |
 | 10 | GUI・描画・ネットワーク | 未着手 | メニュー、画面、操作・同期、特殊描画を移植し、クライアントとサーバーを分離 | — |
 | 11 | 特殊機能・ワールド生成 | 未着手 | ガジェット、特殊ツール、レーザー、リアクター、範囲操作、ワールド生成等の未移植機能を解消 | — |
 | 12 | PAN ネットワーク | 未着手 | 通常 PAN ケーブル、Core、Adapter 等を移植し、導通・描画・当たり判定を検証 | — |

@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "pipe_mode=false": {
       "model": "clayium_neoforged:block/clayium_clay_interface"
+    },
+    "pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_machinehull-7"
     }
   }
 }

@@ -1,50 +1,86 @@
 {
   "variants": {
-    "active=false,facing=down": {
+    "active=false,facing=down,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator",
       "x": 90
     },
-    "active=false,facing=east": {
+    "active=false,facing=down,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=false,facing=east,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator",
       "y": 90
     },
-    "active=false,facing=north": {
+    "active=false,facing=east,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=false,facing=north,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator"
     },
-    "active=false,facing=south": {
+    "active=false,facing=north,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=false,facing=south,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator",
       "y": 180
     },
-    "active=false,facing=up": {
+    "active=false,facing=south,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=false,facing=up,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator",
       "x": 270
     },
-    "active=false,facing=west": {
+    "active=false,facing=up,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=false,facing=west,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator",
       "y": 270
     },
-    "active=true,facing=down": {
+    "active=false,facing=west,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=true,facing=down,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator_active",
       "x": 90
     },
-    "active=true,facing=east": {
+    "active=true,facing=down,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=true,facing=east,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator_active",
       "y": 90
     },
-    "active=true,facing=north": {
+    "active=true,facing=east,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=true,facing=north,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator_active"
     },
-    "active=true,facing=south": {
+    "active=true,facing=north,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=true,facing=south,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator_active",
       "y": 180
     },
-    "active=true,facing=up": {
+    "active=true,facing=south,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=true,facing=up,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator_active",
       "x": 270
     },
-    "active=true,facing=west": {
+    "active=true,facing=up,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
+    },
+    "active=true,facing=west,pipe_mode=false": {
       "model": "clayium_neoforged:block/activator_active",
       "y": 270
+    },
+    "active=true,facing=west,pipe_mode=true": {
+      "model": "clayium_neoforged:block/pipe_core_az91dhull"
     }
   }
 }

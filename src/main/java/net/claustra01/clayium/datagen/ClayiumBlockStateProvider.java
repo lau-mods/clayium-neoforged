@@ -1,5 +1,7 @@
 package net.claustra01.clayium.datagen;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.block.ClayContainerBlock;
@@ -37,6 +39,7 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 public class ClayiumBlockStateProvider extends BlockStateProvider {
     private static final String TRANSLUCENT = "minecraft:translucent";
     private static final String CUTOUT = "minecraft:cutout";
+    private final Map<String, ModelFile> pipeCoreCache = new HashMap<>();
 
     public ClayiumBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
         super(output, ClayiumMod.MOD_ID, exFileHelper);
@@ -235,6 +238,9 @@ public class ClayiumBlockStateProvider extends BlockStateProvider {
                 .end();
 
         getVariantBuilder(storage).forAllStates(state -> {
+            if (state.hasProperty(ClayContainerBlock.PIPE_MODE) && state.getValue(ClayContainerBlock.PIPE_MODE)) {
+                return ConfiguredModel.builder().modelFile(pipeCoreModel(storage.getBaseTexture())).build();
+            }
             ModelFile m = state.getValue(StorageContainerBlock.UPGRADED) ? upgraded : normal;
             return ConfiguredModel.builder()
                     .modelFile(m)
@@ -249,26 +255,48 @@ public class ClayiumBlockStateProvider extends BlockStateProvider {
                 .end();
     }
 
+    private ModelFile pipeCoreModel(String baseTex) {
+        return this.pipeCoreCache.computeIfAbsent(baseTex, tex -> {
+            ResourceLocation base = resolveBlockTexture(tex);
+            return models().getBuilder("block/pipe_core_" + tex)
+                    .parent(models().getExistingFile(mcLoc("block/block")))
+                    .texture("base", base)
+                    .texture("particle", base)
+                    .element().from(5, 5, 5).to(11, 11, 11)
+                    .allFaces((dir, face) -> face.texture("#base"))
+                    .end();
+        });
+    }
+
     private void registerContainerBlock(String path, ClayContainerBlock container) {
         ModelFile inactiveModel = buildContainerModel(path, container, false);
         ModelFile activeModel = container.hasActiveOverlay() ? buildContainerModel(path + "_active", container, true) : inactiveModel;
 
         FacingMode mode = container.getFacingMode();
         if (mode == FacingMode.HORIZONTAL) {
-            if (container.hasActiveOverlay()) {
-                getVariantBuilder(container).forAllStates(state -> ConfiguredModel.builder()
-                        .modelFile(state.getValue(ClayContainerBlock.ACTIVE) ? activeModel : inactiveModel)
+            getVariantBuilder(container).forAllStates(state -> {
+                if (state.hasProperty(ClayContainerBlock.PIPE_MODE) && state.getValue(ClayContainerBlock.PIPE_MODE)) {
+                    return ConfiguredModel.builder().modelFile(pipeCoreModel(container.getBaseTexture())).build();
+                }
+                ModelFile model = container.hasActiveOverlay() && state.getValue(ClayContainerBlock.ACTIVE) ? activeModel : inactiveModel;
+                return ConfiguredModel.builder()
+                        .modelFile(model)
                         .rotationY(horizontalRotationY(state.getValue(BlockStateProperties.HORIZONTAL_FACING)))
-                        .build());
-            } else {
-                horizontalBlock(container, inactiveModel);
-            }
+                        .build();
+            });
         } else if (mode == FacingMode.ALL) {
-            if (container.hasActiveOverlay()) {
-                directionalNorthBlock(container, state -> state.getValue(ClayContainerBlock.ACTIVE) ? activeModel : inactiveModel);
-            } else {
-                directionalNorthBlock(container, state -> inactiveModel);
-            }
+            directionalNorthBlock(container, state -> {
+                if (state.hasProperty(ClayContainerBlock.PIPE_MODE) && state.getValue(ClayContainerBlock.PIPE_MODE)) {
+                    return pipeCoreModel(container.getBaseTexture());
+                }
+                return container.hasActiveOverlay() && state.getValue(ClayContainerBlock.ACTIVE) ? activeModel : inactiveModel;
+            });
+        } else if (container.defaultBlockState().hasProperty(ClayContainerBlock.PIPE_MODE)) {
+            getVariantBuilder(container).forAllStates(state -> ConfiguredModel.builder()
+                    .modelFile(state.getValue(ClayContainerBlock.PIPE_MODE)
+                            ? pipeCoreModel(container.getBaseTexture())
+                            : inactiveModel)
+                    .build());
         } else {
             simpleBlock(container, inactiveModel);
         }
@@ -434,6 +462,11 @@ public class ClayiumBlockStateProvider extends BlockStateProvider {
 
     private void directionalNorthBlock(Block block, Function<BlockState, ModelFile> modelFunc) {
         getVariantBuilder(block).forAllStates(state -> {
+            if (state.hasProperty(ClayContainerBlock.PIPE_MODE) && state.getValue(ClayContainerBlock.PIPE_MODE)) {
+                return ConfiguredModel.builder()
+                        .modelFile(modelFunc.apply(state))
+                        .build();
+            }
             Direction dir = state.getValue(BlockStateProperties.FACING);
             int rotX = switch (dir) {
                 case UP -> 270;

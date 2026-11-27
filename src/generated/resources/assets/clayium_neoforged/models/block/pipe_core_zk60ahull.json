@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#base"
+        },
+        "east": {
+          "texture": "#base"
+        },
+        "north": {
+          "texture": "#base"
+        },
+        "south": {
+          "texture": "#base"
+        },
+        "up": {
+          "texture": "#base"
+        },
+        "west": {
+          "texture": "#base"
+        }
+      },
+      "from": [
+        5,
+        5,
+        5
+      ],
+      "to": [
+        11,
+        11,
+        11
+      ]
+    }
+  ],
+  "textures": {
+    "base": "clayium_neoforged:block/zk60ahull",
+    "particle": "clayium_neoforged:block/zk60ahull"
+  }
+}

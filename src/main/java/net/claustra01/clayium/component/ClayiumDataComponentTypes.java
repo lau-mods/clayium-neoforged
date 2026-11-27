@@ -3,6 +3,7 @@ package net.claustra01.clayium.component;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -68,19 +69,51 @@ public final class ClayiumDataComponentTypes {
     public record FilterConfigData(
             String pattern,
             boolean regex,
-            ItemContainerContents slots) {
+            ItemContainerContents slots,
+            boolean copy) {
+
+        public FilterConfigData(String pattern, boolean regex, ItemContainerContents slots) {
+            this(pattern, regex, slots, false);
+        }
 
         public static final Codec<FilterConfigData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.optionalFieldOf("pattern", "").forGetter(FilterConfigData::pattern),
                 Codec.BOOL.optionalFieldOf("regex", false).forGetter(FilterConfigData::regex),
-                ItemContainerContents.CODEC.optionalFieldOf("slots", ItemContainerContents.EMPTY).forGetter(FilterConfigData::slots)
+                ItemContainerContents.CODEC.optionalFieldOf("slots", ItemContainerContents.EMPTY).forGetter(FilterConfigData::slots),
+                Codec.BOOL.optionalFieldOf("copy", false).forGetter(FilterConfigData::copy)
         ).apply(instance, FilterConfigData::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, FilterConfigData> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8, FilterConfigData::pattern,
                 ByteBufCodecs.BOOL, FilterConfigData::regex,
                 ItemContainerContents.STREAM_CODEC, FilterConfigData::slots,
+                ByteBufCodecs.BOOL, FilterConfigData::copy,
                 FilterConfigData::new
+        );
+    }
+
+    public record ContainerIoMemoryData(
+            String facingMode,
+            Direction facing,
+            boolean pipeMode,
+            List<Integer> insertRoutes,
+            List<Integer> extractRoutes) {
+
+        public static final Codec<ContainerIoMemoryData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.STRING.fieldOf("facing_mode").forGetter(ContainerIoMemoryData::facingMode),
+                Direction.CODEC.fieldOf("facing").forGetter(ContainerIoMemoryData::facing),
+                Codec.BOOL.optionalFieldOf("pipe_mode", false).forGetter(ContainerIoMemoryData::pipeMode),
+                Codec.INT.listOf().fieldOf("insert_routes").forGetter(ContainerIoMemoryData::insertRoutes),
+                Codec.INT.listOf().fieldOf("extract_routes").forGetter(ContainerIoMemoryData::extractRoutes)
+        ).apply(instance, ContainerIoMemoryData::new));
+
+        public static final StreamCodec<ByteBuf, ContainerIoMemoryData> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8, ContainerIoMemoryData::facingMode,
+                Direction.STREAM_CODEC, ContainerIoMemoryData::facing,
+                ByteBufCodecs.BOOL, ContainerIoMemoryData::pipeMode,
+                ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), ContainerIoMemoryData::insertRoutes,
+                ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), ContainerIoMemoryData::extractRoutes,
+                ContainerIoMemoryData::new
         );
     }
 
