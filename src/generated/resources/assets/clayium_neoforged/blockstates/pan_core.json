@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "clayium_neoforged:block/pan_core",
+      "y": 90
+    },
+    "facing=north": {
       "model": "clayium_neoforged:block/pan_core"
+    },
+    "facing=south": {
+      "model": "clayium_neoforged:block/pan_core",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "clayium_neoforged:block/pan_core",
+      "y": 270
     }
   }
 }

@@ -1,12 +1,16 @@
 package net.claustra01.clayium.item;
 
+import java.util.List;
+import net.claustra01.clayium.util.ClayiumTooltips;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 
 /**
- * Baked clay crafting tools (Rolling Pin, Slicer, Spatula) that take damage in crafting grids
- * and turn into clay balls once exhausted.
+ * Baked clay crafting tools (Rolling Pin, Slicer, Spatula) that take damage in crafting grids,
+ * disallow anvil repair, and turn into clay balls once exhausted.
  */
 public class CraftingToolItem extends Item {
     private final int clayBallsOnBreak;
@@ -31,6 +35,11 @@ public class CraftingToolItem extends Item {
     }
 
     @Override
+    public boolean isRepairable(ItemStack stack) {
+        return false;
+    }
+
+    @Override
     public boolean hasCraftingRemainingItem(ItemStack stack) {
         return true;
     }
@@ -43,5 +52,11 @@ public class CraftingToolItem extends Item {
         ItemStack copy = stack.copy();
         copy.setDamageValue(stack.getDamageValue() + 1);
         return copy;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
+        ClayiumTooltips.appendLocalizedTooltip(tooltip, stack.getDescriptionId() + ".tooltip", flag);
     }
 }

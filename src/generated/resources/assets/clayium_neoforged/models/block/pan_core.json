@@ -41,28 +41,8 @@
     },
     {
       "faces": {
-        "down": {
-          "cullface": "down",
-          "texture": "#overlay"
-        },
-        "east": {
-          "cullface": "east",
-          "texture": "#overlay"
-        },
         "north": {
           "cullface": "north",
-          "texture": "#overlay"
-        },
-        "south": {
-          "cullface": "south",
-          "texture": "#overlay"
-        },
-        "up": {
-          "cullface": "up",
-          "texture": "#overlay"
-        },
-        "west": {
-          "cullface": "west",
           "texture": "#overlay"
         }
       },

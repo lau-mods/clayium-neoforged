@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,upgraded=true": {
+      "model": "clayium_neoforged:block/storage_container_upgraded",
+      "y": 90
+    },
+    "facing=north,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container"
     },
-    "facing=south": {
+    "facing=north,upgraded=true": {
+      "model": "clayium_neoforged:block/storage_container_upgraded"
+    },
+    "facing=south,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,upgraded=true": {
+      "model": "clayium_neoforged:block/storage_container_upgraded",
+      "y": 180
+    },
+    "facing=west,upgraded=false": {
       "model": "clayium_neoforged:block/storage_container",
+      "y": 270
+    },
+    "facing=west,upgraded=true": {
+      "model": "clayium_neoforged:block/storage_container_upgraded",
       "y": 270
     }
   }

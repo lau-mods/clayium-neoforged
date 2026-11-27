@@ -1,3 +1,11 @@
 {
-  "parent": "clayium_neoforged:block/storage_container"
+  "parent": "clayium_neoforged:block/storage_container",
+  "overrides": [
+    {
+      "model": "clayium_neoforged:block/storage_container_upgraded",
+      "predicate": {
+        "clayium_neoforged:upgraded": 1.0
+      }
+    }
+  ]
 }

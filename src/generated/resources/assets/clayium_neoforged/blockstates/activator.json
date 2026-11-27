@@ -1,18 +1,49 @@
 {
   "variants": {
-    "facing=east": {
+    "active=false,facing=down": {
+      "model": "clayium_neoforged:block/activator",
+      "x": 90
+    },
+    "active=false,facing=east": {
       "model": "clayium_neoforged:block/activator",
       "y": 90
     },
-    "facing=north": {
+    "active=false,facing=north": {
       "model": "clayium_neoforged:block/activator"
     },
-    "facing=south": {
+    "active=false,facing=south": {
       "model": "clayium_neoforged:block/activator",
       "y": 180
     },
-    "facing=west": {
+    "active=false,facing=up": {
       "model": "clayium_neoforged:block/activator",
+      "x": 270
+    },
+    "active=false,facing=west": {
+      "model": "clayium_neoforged:block/activator",
+      "y": 270
+    },
+    "active=true,facing=down": {
+      "model": "clayium_neoforged:block/activator_active",
+      "x": 90
+    },
+    "active=true,facing=east": {
+      "model": "clayium_neoforged:block/activator_active",
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "clayium_neoforged:block/activator_active"
+    },
+    "active=true,facing=south": {
+      "model": "clayium_neoforged:block/activator_active",
+      "y": 180
+    },
+    "active=true,facing=up": {
+      "model": "clayium_neoforged:block/activator_active",
+      "x": 270
+    },
+    "active=true,facing=west": {
+      "model": "clayium_neoforged:block/activator_active",
       "y": 270
     }
   }

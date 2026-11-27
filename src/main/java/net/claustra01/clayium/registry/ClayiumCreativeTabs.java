@@ -2,11 +2,13 @@ package net.claustra01.clayium.registry;
 
 import net.claustra01.clayium.ClayiumConfig;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.component.ClayiumDataComponentTypes.StorageContentData;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -23,7 +25,16 @@ public final class ClayiumCreativeTabs {
                     .icon(() -> new ItemStack(ClayiumItems.byPath("clay_work_table").get()))
                     .displayItems((parameters, output) -> {
                         for (var entry : ClayiumItems.blockItems().entrySet()) {
-                            output.accept(entry.getValue().get());
+                            Item item = entry.getValue().get();
+                            output.accept(item);
+                            if ("storage_container".equals(entry.getKey())) {
+                                ItemStack upgraded = new ItemStack(item);
+                                upgraded.set(
+                                        ClayiumDataComponents.STORAGE_CONTENT.get(),
+                                        new StorageContentData(Items.AIR, 0L, Integer.MAX_VALUE)
+                                );
+                                output.accept(upgraded);
+                            }
                         }
                         for (var entry : ClayiumItems.standaloneItems().entrySet()) {
                             String path = entry.getKey();

@@ -61,7 +61,7 @@
   "render_type": "minecraft:cutout",
   "textures": {
     "base": "clayium_neoforged:block/machinehull-6",
-    "overlay": "clayium_neoforged:block/condenser",
+    "overlay": "clayium_neoforged:block/autoclaycondenser",
     "particle": "clayium_neoforged:block/machinehull-6"
   }
 }

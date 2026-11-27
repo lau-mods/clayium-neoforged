@@ -2,28 +2,25 @@
   "variants": {
     "facing=down": {
       "model": "clayium_neoforged:block/ultimate_distributor",
-      "x": 180
+      "x": 90
     },
     "facing=east": {
       "model": "clayium_neoforged:block/ultimate_distributor",
-      "x": 90,
       "y": 90
     },
     "facing=north": {
-      "model": "clayium_neoforged:block/ultimate_distributor",
-      "x": 90
+      "model": "clayium_neoforged:block/ultimate_distributor"
     },
     "facing=south": {
       "model": "clayium_neoforged:block/ultimate_distributor",
-      "x": 90,
       "y": 180
     },
     "facing=up": {
-      "model": "clayium_neoforged:block/ultimate_distributor"
+      "model": "clayium_neoforged:block/ultimate_distributor",
+      "x": 270
     },
     "facing=west": {
       "model": "clayium_neoforged:block/ultimate_distributor",
-      "x": 90,
       "y": 270
     }
   }

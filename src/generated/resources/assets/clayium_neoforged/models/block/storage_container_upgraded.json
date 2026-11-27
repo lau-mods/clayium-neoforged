@@ -1,0 +1,128 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#base"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#base"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#base"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#base"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#base"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#base"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#top"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#side"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#front"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#side"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#side"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#ex"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#ex"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#ex"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#ex"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#ex"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#ex"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    }
+  ],
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "base": "clayium_neoforged:block/az91dhull",
+    "ex": "clayium_neoforged:block/storagecontainerex",
+    "front": "clayium_neoforged:block/storagecontainer",
+    "particle": "clayium_neoforged:block/az91dhull",
+    "side": "clayium_neoforged:block/storagecontainerside",
+    "top": "clayium_neoforged:block/storagecontainertop"
+  }
+}

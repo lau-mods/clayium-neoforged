@@ -1,12 +1,89 @@
 {
-  "parent": "minecraft:block/cube",
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#base"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#base"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#base"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#base"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#base"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#base"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#top"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#side"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#front"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#side"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#side"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    }
+  ],
+  "render_type": "minecraft:translucent",
   "textures": {
-    "down": "clayium_neoforged:block/storagecontainerside",
-    "east": "clayium_neoforged:block/storagecontainerside",
-    "north": "clayium_neoforged:block/storagecontainer",
-    "particle": "clayium_neoforged:block/storagecontainer",
-    "south": "clayium_neoforged:block/storagecontainerside",
-    "up": "clayium_neoforged:block/storagecontainertop",
-    "west": "clayium_neoforged:block/storagecontainerside"
+    "base": "clayium_neoforged:block/az91dhull",
+    "front": "clayium_neoforged:block/storagecontainer",
+    "particle": "clayium_neoforged:block/az91dhull",
+    "side": "clayium_neoforged:block/storagecontainerside",
+    "top": "clayium_neoforged:block/storagecontainertop"
   }
 }

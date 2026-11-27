@@ -34,6 +34,7 @@
       ]
     }
   ],
+  "render_type": "minecraft:translucent",
   "textures": {
     "cable": "clayium_neoforged:block/pancable",
     "particle": "clayium_neoforged:block/pancable"

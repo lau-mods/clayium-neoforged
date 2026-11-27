@@ -32,18 +32,7 @@
               "type": "minecraft:item",
               "functions": [
                 {
-                  "add": false,
-                  "count": {
-                    "type": "minecraft:uniform",
-                    "max": 16.0,
-                    "min": 4.0
-                  },
-                  "function": "minecraft:set_count"
-                },
-                {
-                  "enchantment": "minecraft:fortune",
-                  "formula": "minecraft:ore_drops",
-                  "function": "minecraft:apply_bonus"
+                  "function": "clayium_neoforged:clay_ore_bonus"
                 },
                 {
                   "function": "minecraft:explosion_decay"

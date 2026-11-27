@@ -24,8 +24,19 @@ public class DirectionalClayContainerBlock extends ClayContainerBlock {
             @Nullable String overlayTexture,
             @Nullable String categoryKey,
             @Nullable String tooltipKey) {
-        super(properties, tier, baseTexture, overlayTexture, categoryKey, tooltipKey);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this(properties, tier, baseTexture, overlayTexture, categoryKey, tooltipKey, OverlayMode.FRONT_ONLY);
+    }
+
+    public DirectionalClayContainerBlock(
+            Properties properties,
+            int tier,
+            String baseTexture,
+            @Nullable String overlayTexture,
+            @Nullable String categoryKey,
+            @Nullable String tooltipKey,
+            OverlayMode overlayMode) {
+        super(properties, tier, baseTexture, overlayTexture, categoryKey, tooltipKey, overlayMode);
+        this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
     }
 
     @Override

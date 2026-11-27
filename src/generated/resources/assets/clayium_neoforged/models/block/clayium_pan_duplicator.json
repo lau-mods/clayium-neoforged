@@ -41,9 +41,29 @@
     },
     {
       "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#other"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#other"
+        },
         "north": {
           "cullface": "north",
-          "texture": "#overlay"
+          "texture": "#front"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#other"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#other"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#other"
         }
       },
       "from": [
@@ -60,8 +80,9 @@
   ],
   "render_type": "minecraft:cutout",
   "textures": {
-    "base": "clayium_neoforged:block/pancasing",
-    "overlay": "clayium_neoforged:block/panduplicator",
-    "particle": "clayium_neoforged:block/pancasing"
+    "base": "clayium_neoforged:block/machinehull-7",
+    "front": "clayium_neoforged:block/panduplicator",
+    "other": "clayium_neoforged:block/pancasing",
+    "particle": "clayium_neoforged:block/machinehull-7"
   }
 }

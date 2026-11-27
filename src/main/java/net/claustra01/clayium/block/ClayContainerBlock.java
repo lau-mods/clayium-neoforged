@@ -4,15 +4,30 @@ import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 /**
  * Base block for Clayium machines, buffers, interfaces, and special containers (metaMode=0: no facing property).
  */
 public class ClayContainerBlock extends Block implements ITieredBlock {
+    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
+
     public enum FacingMode {
         NONE,
         HORIZONTAL,
         ALL
+    }
+
+    public enum OverlayMode {
+        FRONT_ONLY,
+        ALL_FACES,
+        TOP_ONLY,
+        FRONT_AND_BACK_MINER,
+        PAN_DUPLICATOR,
+        AUTO_CRAFTER,
+        AUTO_TRADER,
+        STORAGE_CONTAINER,
+        VACUUM_CONTAINER
     }
 
     private final int tier;
@@ -23,6 +38,7 @@ public class ClayContainerBlock extends Block implements ITieredBlock {
     private final String categoryKey;
     @Nullable
     private final String tooltipKey;
+    private final OverlayMode overlayMode;
 
     public ClayContainerBlock(
             Properties properties,
@@ -31,12 +47,24 @@ public class ClayContainerBlock extends Block implements ITieredBlock {
             @Nullable String overlayTexture,
             @Nullable String categoryKey,
             @Nullable String tooltipKey) {
+        this(properties, tier, baseTexture, overlayTexture, categoryKey, tooltipKey, OverlayMode.FRONT_ONLY);
+    }
+
+    public ClayContainerBlock(
+            Properties properties,
+            int tier,
+            String baseTexture,
+            @Nullable String overlayTexture,
+            @Nullable String categoryKey,
+            @Nullable String tooltipKey,
+            OverlayMode overlayMode) {
         super(properties);
         this.tier = tier;
         this.baseTexture = baseTexture;
         this.overlayTexture = overlayTexture;
         this.categoryKey = categoryKey;
         this.tooltipKey = tooltipKey;
+        this.overlayMode = overlayMode;
     }
 
     @Override
@@ -50,6 +78,14 @@ public class ClayContainerBlock extends Block implements ITieredBlock {
 
     public Direction getFacing(BlockState state) {
         return Direction.NORTH;
+    }
+
+    public boolean hasActiveOverlay() {
+        return false;
+    }
+
+    public OverlayMode getOverlayMode() {
+        return this.overlayMode;
     }
 
     public String getBaseTexture() {

@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=east": {
+    "active=false,facing=east": {
       "model": "clayium_neoforged:block/oec_ca_reactor_core",
       "y": 90
     },
-    "facing=north": {
+    "active=false,facing=north": {
       "model": "clayium_neoforged:block/oec_ca_reactor_core"
     },
-    "facing=south": {
+    "active=false,facing=south": {
       "model": "clayium_neoforged:block/oec_ca_reactor_core",
       "y": 180
     },
-    "facing=west": {
+    "active=false,facing=west": {
       "model": "clayium_neoforged:block/oec_ca_reactor_core",
+      "y": 270
+    },
+    "active=true,facing=east": {
+      "model": "clayium_neoforged:block/oec_ca_reactor_core_active",
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "clayium_neoforged:block/oec_ca_reactor_core_active"
+    },
+    "active=true,facing=south": {
+      "model": "clayium_neoforged:block/oec_ca_reactor_core_active",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "clayium_neoforged:block/oec_ca_reactor_core_active",
       "y": 270
     }
   }

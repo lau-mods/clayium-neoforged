@@ -2,6 +2,10 @@ package net.claustra01.clayium.datagen;
 
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.item.ClayMaterialItem;
+import net.claustra01.clayium.item.ClayPickaxeItem;
+import net.claustra01.clayium.item.ClayShovelItem;
+import net.claustra01.clayium.item.ClaySteelPickaxeItem;
+import net.claustra01.clayium.item.ClaySteelShovelItem;
 import net.claustra01.clayium.item.ClayToolItem;
 import net.claustra01.clayium.item.ClayToolItem.ToolKind;
 import net.claustra01.clayium.item.CraftingToolItem;
@@ -38,13 +42,25 @@ public class ClayiumItemModelProvider extends ItemModelProvider {
             } else if (item instanceof FluidCapsuleItem capsule) {
                 String ic = capsule.getIconName();
                 withExistingParent(path, mcLoc("item/generated"))
-                        .texture("layer0", modLoc("item/" + ic))
-                        .texture("layer1", modLoc("item/" + ic + "_mask"));
+                        .texture("layer0", modLoc("item/" + ic + "_mask"))
+                        .texture("layer1", modLoc("item/" + ic));
             } else if (item instanceof CraftingToolItem tool) {
                 withExistingParent(path, mcLoc("item/handheld"))
                         .texture("layer0", modLoc("item/" + tool.getIconName()));
+            } else if (item instanceof ClayPickaxeItem pickaxe) {
+                withExistingParent(path, mcLoc("item/handheld"))
+                        .texture("layer0", modLoc("item/" + pickaxe.getIconName()));
+            } else if (item instanceof ClayShovelItem shovel) {
+                withExistingParent(path, mcLoc("item/handheld"))
+                        .texture("layer0", modLoc("item/" + shovel.getIconName()));
+            } else if (item instanceof ClaySteelPickaxeItem pickaxe) {
+                withExistingParent(path, mcLoc("item/handheld"))
+                        .texture("layer0", modLoc("item/" + pickaxe.getIconName()));
+            } else if (item instanceof ClaySteelShovelItem shovel) {
+                withExistingParent(path, mcLoc("item/handheld"))
+                        .texture("layer0", modLoc("item/" + shovel.getIconName()));
             } else if (item instanceof ClayToolItem tool) {
-                String parent = isHandheld(tool.getToolKind()) ? "item/handheld" : "item/generated";
+                String parent = tool.getToolKind() == ToolKind.CLAY_WRENCH ? "item/handheld" : "item/generated";
                 withExistingParent(path, mcLoc(parent))
                         .texture("layer0", modLoc("item/" + tool.getIconName()));
             } else if (item instanceof SimpleTieredItem simple) {
@@ -52,12 +68,5 @@ public class ClayiumItemModelProvider extends ItemModelProvider {
                         .texture("layer0", modLoc("item/" + simple.getIconName()));
             }
         }
-    }
-
-    private static boolean isHandheld(ToolKind kind) {
-        return switch (kind) {
-            case CLAY_WRENCH, CLAY_SHOVEL, CLAY_PICKAXE, CLAY_STEEL_PICKAXE, CLAY_STEEL_SHOVEL -> true;
-            default -> false;
-        };
     }
 }

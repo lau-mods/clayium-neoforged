@@ -44,6 +44,10 @@
         "north": {
           "cullface": "north",
           "texture": "#overlay"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#back"
         }
       },
       "from": [
@@ -60,6 +64,7 @@
   ],
   "render_type": "minecraft:cutout",
   "textures": {
+    "back": "clayium_neoforged:block/minerback",
     "base": "clayium_neoforged:block/az91dhull",
     "overlay": "clayium_neoforged:block/areaminer",
     "particle": "clayium_neoforged:block/az91dhull"

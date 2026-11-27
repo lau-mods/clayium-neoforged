@@ -1,12 +1,8 @@
 {
-  "parent": "minecraft:block/cube",
+  "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "down": "clayium_neoforged:block/compressedclay-0",
-    "east": "clayium_neoforged:block/clayworktable_side",
-    "north": "clayium_neoforged:block/clayworktable_side",
-    "particle": "clayium_neoforged:block/clayworktable",
-    "south": "clayium_neoforged:block/clayworktable_side",
-    "up": "clayium_neoforged:block/clayworktable",
-    "west": "clayium_neoforged:block/clayworktable_side"
+    "bottom": "clayium_neoforged:block/clayworktable",
+    "side": "clayium_neoforged:block/clayworktable_side",
+    "top": "clayium_neoforged:block/clayworktable"
   }
 }

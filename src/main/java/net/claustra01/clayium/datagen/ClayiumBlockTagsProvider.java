@@ -3,6 +3,8 @@ package net.claustra01.clayium.datagen;
 import java.util.concurrent.CompletableFuture;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.block.ClayContainerBlock;
+import net.claustra01.clayium.block.ClayCraftingTableBlock;
+import net.claustra01.clayium.block.ClayMarkerBlock;
 import net.claustra01.clayium.block.ClayOreBlock;
 import net.claustra01.clayium.block.ClayTreeLeavesBlock;
 import net.claustra01.clayium.block.ClayTreeLogBlock;
@@ -15,6 +17,7 @@ import net.claustra01.clayium.block.PanCableBlock;
 import net.claustra01.clayium.block.QuartzCrucibleBlock;
 import net.claustra01.clayium.block.SiliconeColoredBlock;
 import net.claustra01.clayium.block.UpgradeBlock;
+import net.claustra01.clayium.item.ClayShovelItem;
 import net.claustra01.clayium.registry.ClayiumBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -38,6 +41,7 @@ public class ClayiumBlockTagsProvider extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         var pickaxe = tag(BlockTags.MINEABLE_WITH_PICKAXE);
         var shovel = tag(BlockTags.MINEABLE_WITH_SHOVEL);
+        var clayBlocks = tag(ClayShovelItem.CLAY_BLOCKS_TAG);
         var stoneTool = tag(BlockTags.NEEDS_STONE_TOOL);
         var beaconBase = tag(BlockTags.BEACON_BASE_BLOCKS);
         var leaves = tag(BlockTags.LEAVES);
@@ -55,8 +59,13 @@ public class ClayiumBlockTagsProvider extends BlockTagsProvider {
 
             if (block instanceof CompressedClayBlock) {
                 shovel.add(block);
+                clayBlocks.add(block);
             } else if ("raw_clay_machine_hull".equals(path)) {
                 shovel.add(block);
+                clayBlocks.add(block);
+            } else if (block instanceof ClayCraftingTableBlock || block instanceof ClayMarkerBlock) {
+                shovel.add(block);
+                clayBlocks.add(block);
             } else if (block instanceof ClayOreBlock oreBlock) {
                 pickaxe.add(block);
                 stoneTool.add(block);
@@ -86,6 +95,7 @@ public class ClayiumBlockTagsProvider extends BlockTagsProvider {
             } else if (block instanceof ClayTreeLogBlock) {
                 logs.add(block);
                 shovel.add(block);
+                clayBlocks.add(block);
             } else if (block instanceof ClayTreeSaplingBlock) {
                 saplings.add(block);
             } else if (block instanceof MachineHullBlock

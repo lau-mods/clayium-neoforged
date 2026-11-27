@@ -4,64 +4,199 @@
     {
       "faces": {
         "down": {
-          "cullface": "down",
-          "texture": "#base"
+          "texture": "#all"
         },
         "east": {
-          "cullface": "east",
-          "texture": "#base"
+          "texture": "#all"
         },
         "north": {
-          "cullface": "north",
-          "texture": "#base"
+          "texture": "#all"
         },
         "south": {
-          "cullface": "south",
-          "texture": "#base"
+          "texture": "#all"
         },
         "up": {
-          "cullface": "up",
-          "texture": "#base"
+          "texture": "#all"
         },
         "west": {
-          "cullface": "west",
-          "texture": "#base"
+          "texture": "#all"
         }
       },
       "from": [
-        0,
-        0,
-        0
+        4,
+        4,
+        12
       ],
       "to": [
-        16,
-        16,
-        16
+        12,
+        12,
+        14
       ]
     },
     {
       "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
         "north": {
-          "cullface": "north",
-          "texture": "#overlay"
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
         }
       },
       "from": [
-        0,
-        0,
-        0
+        4.5,
+        4.5,
+        10
       ],
       "to": [
-        16,
-        16,
-        16
+        11.5,
+        11.5,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        }
+      },
+      "from": [
+        5,
+        5,
+        8
+      ],
+      "to": [
+        11,
+        11,
+        10
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        }
+      },
+      "from": [
+        6,
+        6,
+        6
+      ],
+      "to": [
+        10,
+        10,
+        8
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        }
+      },
+      "from": [
+        7,
+        7,
+        4
+      ],
+      "to": [
+        9,
+        9,
+        6
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        }
+      },
+      "from": [
+        7.5,
+        7.5,
+        2
+      ],
+      "to": [
+        8.5,
+        8.5,
+        4
       ]
     }
   ],
-  "render_type": "minecraft:cutout",
+  "render_type": "minecraft:translucent",
   "textures": {
-    "base": "clayium_neoforged:block/machinehull-6",
-    "overlay": "clayium_neoforged:block/laserreflector",
-    "particle": "clayium_neoforged:block/machinehull-6"
+    "all": "clayium_neoforged:block/laserreflector",
+    "particle": "clayium_neoforged:block/laserreflector"
   }
 }

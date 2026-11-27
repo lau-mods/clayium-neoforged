@@ -91,5 +91,12 @@ public class ClayiumItemTagsProvider extends ItemTagsProvider {
         tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "silicon"))).add(siliconPlate);
         tag(ItemTags.create(ClayiumMod.id("salt"))).add(saltItem);
         tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "salt"))).add(saltItem);
+
+        tag(ItemTags.PICKAXES)
+                .add(ClayiumItems.byPath("clay_pickaxe").get())
+                .add(ClayiumItems.byPath("clay_steel_pickaxe").get());
+        tag(ItemTags.SHOVELS)
+                .add(ClayiumItems.byPath("clay_shovel").get())
+                .add(ClayiumItems.byPath("clay_steel_shovel").get());
     }
 }

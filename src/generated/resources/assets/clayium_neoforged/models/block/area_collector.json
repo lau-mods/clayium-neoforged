@@ -60,8 +60,8 @@
   ],
   "render_type": "minecraft:cutout",
   "textures": {
-    "base": "clayium_neoforged:block/machinehull-6",
+    "base": "clayium_neoforged:block/zk60ahull",
     "overlay": "clayium_neoforged:block/areacollector",
-    "particle": "clayium_neoforged:block/machinehull-6"
+    "particle": "clayium_neoforged:block/zk60ahull"
   }
 }

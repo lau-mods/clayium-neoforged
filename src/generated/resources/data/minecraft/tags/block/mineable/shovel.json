@@ -14,6 +14,11 @@
     "clayium_neoforged:septuple_compressed_energetic_clay",
     "clayium_neoforged:octuple_compressed_energetic_clay",
     "clayium_neoforged:raw_clay_machine_hull",
+    "clayium_neoforged:clay_crafting_table",
+    "clayium_neoforged:clay_marker",
+    "clayium_neoforged:clay_open_pit_marker",
+    "clayium_neoforged:clay_ground_leveling_marker",
+    "clayium_neoforged:clay_prism_marker",
     "clayium_neoforged:clay_tree_log"
   ]
 }
