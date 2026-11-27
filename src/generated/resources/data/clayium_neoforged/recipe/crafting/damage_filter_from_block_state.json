@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:block_state_item_filter"
+    },
+    {
+      "item": "minecraft:clay"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:damage_value_item_filter"
+  }
+}

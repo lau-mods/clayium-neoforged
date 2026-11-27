@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_open_pit_marker"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_ground_leveling_marker"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_prism_marker"
+    }
+  ],
+  "tier": 6,
+  "time": 480
+}

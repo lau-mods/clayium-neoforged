@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 200000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/praseodymium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:neodymium_ingot"
+    }
+  ],
+  "tier": 9,
+  "time": 200
+}

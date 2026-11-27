@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_chemical_reactor"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_core"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clayium_electrolysis_reactor"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

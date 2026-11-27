@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_plate"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:basic_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 16,
+      "id": "clayium_neoforged:basic_buffer"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

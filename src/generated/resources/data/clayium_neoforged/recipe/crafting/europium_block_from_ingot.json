@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    },
+    {
+      "tag": "c:ingots/europium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:europium_block"
+  }
+}

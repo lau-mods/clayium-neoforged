@@ -3,6 +3,7 @@ package net.claustra01.clayium.datagen;
 import java.util.concurrent.CompletableFuture;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.block.ClayOreBlock;
+import net.claustra01.clayium.block.MetalChestBlock;
 import net.claustra01.clayium.block.MetalMaterialBlock;
 import net.claustra01.clayium.block.SiliconeColoredBlock;
 import net.claustra01.clayium.item.ClayMaterialItem;
@@ -38,17 +39,29 @@ public class ClayiumItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.ORES, Tags.Items.ORES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
 
+        var metalChests = tag(ItemTags.create(ClayiumMod.id("metal_chests")));
         for (var entry : ClayiumBlocks.all().entrySet()) {
             Block block = entry.getValue().get();
             Item item = ClayiumItems.byPath(entry.getKey()).get();
             if (block instanceof MetalMaterialBlock metalBlock) {
                 tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/" + metalBlock.getMaterial().idPrefix())))
                         .add(item);
+                if ("aluminium".equals(metalBlock.getMaterial().idPrefix())) {
+                    tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/aluminum")))
+                            .add(item);
+                }
+            } else if (block instanceof MetalChestBlock) {
+                metalChests.add(item);
             } else if (block instanceof SiliconeColoredBlock) {
                 tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/silicone")))
                         .add(item);
-            } else if (block instanceof ClayOreBlock) {
-                tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "ores/clay")))
+            } else if (block instanceof ClayOreBlock oreBlock) {
+                String oreFolder = switch (oreBlock.getVariantIndex()) {
+                    case 1 -> "ores/dense_clay";
+                    case 2 -> "ores/large_dense_clay";
+                    default -> "ores/clay";
+                };
+                tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", oreFolder)))
                         .add(item);
             }
         }
@@ -60,6 +73,9 @@ public class ClayiumItemTagsProvider extends ItemTagsProvider {
                 String matKey = matItem.getMaterial().idPrefix();
                 tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", shape.tagFolder()))).add(item);
                 tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", shape.tagFolder() + "/" + matKey))).add(item);
+                if ("aluminium".equals(matKey)) {
+                    tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", shape.tagFolder() + "/aluminum"))).add(item);
+                }
                 tag(ItemTags.create(ClayiumMod.id("shapes/" + shape.idSuffix()))).add(item);
             }
         }
@@ -69,7 +85,11 @@ public class ClayiumItemTagsProvider extends ItemTagsProvider {
         tag(ItemTags.create(ClayiumMod.id("circuits/advanced"))).add(ClayiumItems.byPath("precision_circuit").get());
         tag(ItemTags.create(ClayiumMod.id("circuits/elite"))).add(ClayiumItems.byPath("integrated_circuit").get());
         tag(ItemTags.create(ClayiumMod.id("circuits/ultimate"))).add(ClayiumItems.byPath("clay_core").get());
-        tag(ItemTags.create(ClayiumMod.id("silicon"))).add(ClayiumItems.byPath("silicon_plate").get());
-        tag(ItemTags.create(ClayiumMod.id("salt"))).add(ClayiumItems.byPath("salt").get());
+        Item siliconPlate = ClayiumItems.byPath("silicon_plate").get();
+        Item saltItem = ClayiumItems.byPath("salt").get();
+        tag(ItemTags.create(ClayiumMod.id("silicon"))).add(siliconPlate);
+        tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "silicon"))).add(siliconPlate);
+        tag(ItemTags.create(ClayiumMod.id("salt"))).add(saltItem);
+        tag(ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "salt"))).add(saltItem);
     }
 }

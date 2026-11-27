@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    },
+    {
+      "tag": "c:ingots/potassium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:potassium_block"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "minecraft:blaze_rod"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:ender_pearl"
+    }
+  ],
+  "tier": 9,
+  "time": 200
+}

@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:auto_clay_condenser"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

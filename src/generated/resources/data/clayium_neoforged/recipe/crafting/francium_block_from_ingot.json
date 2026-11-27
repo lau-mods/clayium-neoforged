@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    },
+    {
+      "tag": "c:ingots/francium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:francium_block"
+  }
+}

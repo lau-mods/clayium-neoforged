@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10,
+  "inputs": [
+    {
+      "count": 5,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_stick"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_gear"
+    }
+  ],
+  "tier": 3,
+  "time": 20
+}

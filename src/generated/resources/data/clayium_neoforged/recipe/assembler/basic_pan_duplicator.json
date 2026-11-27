@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:basic_machine_hull"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:pan_cable"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:basic_pan_duplicator"
+    }
+  ],
+  "tier": 10,
+  "time": 20
+}

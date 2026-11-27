@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "condenser",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_5"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_6"
+    }
+  ],
+  "tier": 10,
+  "time": 6
+}

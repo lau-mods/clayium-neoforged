@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 300000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_bending_machine"
+      }
+    },
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_bending_machine"
+    }
+  ],
+  "tier": 7,
+  "time": 4000
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:pure_antimatter_7"
+    },
+    "H": {
+      "item": "clayium_neoforged:ca_reactor_hull_rank_8"
+    },
+    "I": {
+      "tag": "c:ingots/curium"
+    }
+  },
+  "pattern": [
+    "#I#",
+    "#H#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:ca_reactor_hull_rank_9"
+  }
+}

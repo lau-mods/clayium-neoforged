@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 3000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:basic_salt_extractor"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_salt_extractor"
+    }
+  ],
+  "tier": 5,
+  "time": 4000
+}

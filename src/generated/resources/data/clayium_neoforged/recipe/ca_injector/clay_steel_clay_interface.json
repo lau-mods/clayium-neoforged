@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "enable_injector_recipe_of_interface"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 300000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_clay_interface"
+      }
+    },
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_clay_interface"
+    }
+  ],
+  "tier": 7,
+  "time": 4000
+}

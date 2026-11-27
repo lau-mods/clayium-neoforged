@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_shooter_3"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:teleportation_parts"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:instant_teleporter"
+    }
+  ],
+  "tier": 10,
+  "time": 3000
+}

@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "hardcore_osmium"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "tag": "c:ingots/impure_osmium"
+    },
+    "*": {
+      "item": "minecraft:chest"
+    }
+  },
+  "pattern": [
+    "###",
+    "#*#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:osmium_chest"
+  }
+}

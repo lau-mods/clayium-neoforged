@@ -1,0 +1,18 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_plate"
+    }
+  ]
+}

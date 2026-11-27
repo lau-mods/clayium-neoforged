@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    },
+    {
+      "tag": "c:ingots/impure_silicon"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:impure_silicon_block"
+  }
+}

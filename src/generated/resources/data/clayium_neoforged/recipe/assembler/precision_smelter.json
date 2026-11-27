@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_machine_hull"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:simple_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:precision_smelter"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

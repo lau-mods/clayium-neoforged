@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 300000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:solar_clay_fabricator_mk2"
+      }
+    },
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:lithium_solar_clay_fabricator"
+    }
+  ],
+  "tier": 7,
+  "time": 4000
+}

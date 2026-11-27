@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_machine_hull"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_assembler"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:antimatter_assembler"
+    }
+  ],
+  "tier": 6,
+  "time": 40
+}

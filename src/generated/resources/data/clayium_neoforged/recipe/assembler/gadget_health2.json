@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:gadget_health1"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_anima"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:gadget_health2"
+    }
+  ],
+  "tier": 10,
+  "time": 120
+}

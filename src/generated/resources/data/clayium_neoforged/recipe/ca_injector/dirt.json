@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 200000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:gravel"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:dirt"
+    }
+  ],
+  "tier": 10,
+  "time": 60
+}

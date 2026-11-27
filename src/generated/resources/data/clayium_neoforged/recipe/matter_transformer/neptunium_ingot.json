@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 800000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/uranium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:neptunium_ingot"
+    }
+  ],
+  "tier": 9,
+  "time": 200
+}

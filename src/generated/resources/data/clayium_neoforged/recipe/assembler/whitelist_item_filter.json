@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 8,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_circuit"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:whitelist_item_filter"
+    }
+  ],
+  "tier": 4,
+  "time": 20
+}

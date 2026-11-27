@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "hardcore_osmium"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "blast_furnace",
+  "energy": 4000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/impure_osmium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:osmium_ingot"
+    }
+  ],
+  "tier": 11,
+  "time": 100
+}

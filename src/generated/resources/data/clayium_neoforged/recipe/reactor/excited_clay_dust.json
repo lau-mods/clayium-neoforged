@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 100000,
+  "inputs": [
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium_neoforged:energized_clay_dust"
+      }
+    },
+    {
+      "ingredient": {
+        "tag": "c:dusts/lithium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 4,
+      "id": "clayium_neoforged:excited_clay_dust"
+    }
+  ],
+  "tier": 7,
+  "time": 2000000
+}

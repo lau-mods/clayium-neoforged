@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_cylinder"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 2,
+      "id": "clayium_neoforged:dense_clay_blade"
+    }
+  ],
+  "time": 8
+}

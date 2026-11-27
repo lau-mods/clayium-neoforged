@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:storage_blocks/rhenium"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:rhenium_ingot"
+  }
+}

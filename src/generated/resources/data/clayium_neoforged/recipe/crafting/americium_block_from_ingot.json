@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    },
+    {
+      "tag": "c:ingots/americium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:americium_block"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "expected": false,
+      "key": "hardcore_osmium"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 100000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/osmium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:rhenium_ingot"
+    }
+  ],
+  "tier": 12,
+  "time": 200
+}

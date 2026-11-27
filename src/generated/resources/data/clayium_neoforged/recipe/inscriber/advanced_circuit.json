@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "inscriber",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:impure_silicon_plate"
+      }
+    },
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "clayium_neoforged:energized_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_circuit"
+    }
+  ],
+  "time": 120
+}

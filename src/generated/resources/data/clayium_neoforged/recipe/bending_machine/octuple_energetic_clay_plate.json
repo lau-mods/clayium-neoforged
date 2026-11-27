@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:octuple_compressed_energetic_clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:octuple_energetic_clay_plate"
+    }
+  ],
+  "tier": 9,
+  "time": 20
+}

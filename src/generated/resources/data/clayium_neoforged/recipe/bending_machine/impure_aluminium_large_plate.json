@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "hardcore_aluminium"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 100,
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:impure_aluminium_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:impure_aluminium_large_plate"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

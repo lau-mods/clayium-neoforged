@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "count": 8,
+      "ingredient": {
+        "tag": "c:gems/pure_antimatter"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:integrated_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:teleportation_parts"
+    }
+  ],
+  "tier": 11,
+  "time": 10000000000000
+}

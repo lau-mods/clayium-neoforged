@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "alloy_smelter",
+  "energy": 10000,
+  "inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "tag": "c:ingots/zinc"
+      }
+    },
+    {
+      "ingredient": {
+        "tag": "c:ingots/aluminium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 10,
+      "id": "clayium_neoforged:zincalminium_ingot"
+    }
+  ],
+  "tier": 6,
+  "time": 50
+}

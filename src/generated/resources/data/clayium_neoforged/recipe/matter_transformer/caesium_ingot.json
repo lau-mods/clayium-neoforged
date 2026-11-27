@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 20000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/rubidium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:caesium_ingot"
+    }
+  ],
+  "tier": 8,
+  "time": 200
+}

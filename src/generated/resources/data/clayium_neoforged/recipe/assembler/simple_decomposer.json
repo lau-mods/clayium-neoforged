@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:simple_machine_hull"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_gear"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:simple_decomposer"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "energetic_clay_condenser",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:quintuple_compressed_energetic_clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:sextuple_compressed_energetic_clay"
+    }
+  ],
+  "tier": 4,
+  "time": 64
+}

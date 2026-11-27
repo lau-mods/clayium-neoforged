@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:gadget_blank"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:integrated_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:gadget_auto_eat0"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

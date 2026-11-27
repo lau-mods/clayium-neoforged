@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_large_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_multitrack_buffer"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

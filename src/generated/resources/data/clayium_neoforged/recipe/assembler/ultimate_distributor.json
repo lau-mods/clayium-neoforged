@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:ultimate_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:ultimate_machine_hull"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:ultimate_distributor"
+    }
+  ],
+  "tier": 6,
+  "time": 120
+}

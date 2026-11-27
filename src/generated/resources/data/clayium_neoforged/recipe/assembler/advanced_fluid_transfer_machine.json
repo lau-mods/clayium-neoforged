@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "enable_fluid_capsule"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000,
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_fluid_translator"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_machine_hull"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_fluid_transfer_machine"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_dust"
+    }
+  ],
+  "time": 3
+}

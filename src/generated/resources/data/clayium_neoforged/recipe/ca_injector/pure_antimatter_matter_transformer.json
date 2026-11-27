@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 3000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_matter_transformer"
+      }
+    },
+    {
+      "count": 17,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_matter_transformer"
+    }
+  ],
+  "tier": 11,
+  "time": 4000
+}

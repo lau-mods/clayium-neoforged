@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "clayium_neoforged:clay_small_ring"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_short_stick"
+  }
+}

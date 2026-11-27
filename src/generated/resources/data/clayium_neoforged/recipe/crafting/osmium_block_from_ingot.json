@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    },
+    {
+      "tag": "c:ingots/osmium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:osmium_block"
+  }
+}

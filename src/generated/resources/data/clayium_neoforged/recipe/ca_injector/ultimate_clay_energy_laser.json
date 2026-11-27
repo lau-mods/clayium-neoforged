@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 30000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_clay_energy_laser"
+      }
+    },
+    {
+      "count": 10,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:ultimate_clay_energy_laser"
+    }
+  ],
+  "tier": 9,
+  "time": 4000
+}

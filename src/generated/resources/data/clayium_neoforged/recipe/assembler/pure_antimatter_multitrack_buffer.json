@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_large_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_multitrack_buffer"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

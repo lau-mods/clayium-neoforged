@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    },
+    {
+      "tag": "c:ingots/iridium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:iridium_block"
+  }
+}

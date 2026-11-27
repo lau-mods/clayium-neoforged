@@ -35,6 +35,10 @@ public final class ClayiumDataGenerators {
         );
         generator.addProvider(
                 event.includeServer(),
+                new ClayiumRecipeProvider(packOutput, lookupProvider)
+        );
+        generator.addProvider(
+                event.includeServer(),
                 new LootTableProvider(
                         packOutput,
                         Set.of(),

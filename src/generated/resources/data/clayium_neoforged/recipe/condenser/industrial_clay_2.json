@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "condenser",
+  "energy": 1,
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_shard"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:industrial_clay"
+    }
+  ],
+  "time": 6
+}

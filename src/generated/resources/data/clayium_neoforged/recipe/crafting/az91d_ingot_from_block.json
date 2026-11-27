@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:storage_blocks/az91d"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:az91d_ingot"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:az91d_alloy_hull"
+    },
+    "C": {
+      "item": "clayium_neoforged:precision_circuit"
+    },
+    "P": {
+      "item": "clayium_neoforged:advanced_circuit"
+    }
+  },
+  "pattern": [
+    "PCP",
+    "C#C",
+    "PCP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_chunk_loader"
+  }
+}

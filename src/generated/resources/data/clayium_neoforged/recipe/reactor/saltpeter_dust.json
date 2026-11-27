@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:organic_clay_dust"
+      }
+    },
+    {
+      "ingredient": {
+        "tag": "c:dusts/potassium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:saltpeter_dust"
+    }
+  ],
+  "tier": 8,
+  "time": 10000
+}

@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100,
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:az91d_plate"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:basic_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_shooter_0"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

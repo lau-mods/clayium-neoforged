@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "alloy_smelter",
+  "energy": 100,
+  "inputs": [
+    {
+      "count": 3,
+      "ingredient": {
+        "tag": "c:ingots/copper"
+      }
+    },
+    {
+      "ingredient": {
+        "tag": "c:ingots/tin"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 4,
+      "id": "clayium_neoforged:bronze_ingot"
+    }
+  ],
+  "time": 40
+}

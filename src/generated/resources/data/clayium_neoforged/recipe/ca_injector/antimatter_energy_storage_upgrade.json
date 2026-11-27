@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 20000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_overclocker"
+      }
+    },
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:antimatter_energy_storage_upgrade"
+    }
+  ],
+  "tier": 9,
+  "time": 4000
+}

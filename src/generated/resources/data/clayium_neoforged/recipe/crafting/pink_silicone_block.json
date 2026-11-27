@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "tag": "c:storage_blocks/silicone"
+    },
+    "*": {
+      "tag": "c:dyes/pink"
+    }
+  },
+  "pattern": [
+    "###",
+    "#*#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "id": "clayium_neoforged:pink_silicone_block"
+  }
+}

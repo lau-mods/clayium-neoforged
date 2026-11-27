@@ -1,0 +1,24 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "chemical_reactor",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/quartz"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:impure_silicon_ingot"
+    }
+  ],
+  "tier": 8
+}

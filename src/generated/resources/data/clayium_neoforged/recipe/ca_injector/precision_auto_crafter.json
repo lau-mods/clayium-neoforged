@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 30000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_auto_crafter"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:precision_auto_crafter"
+    }
+  ],
+  "tier": 6,
+  "time": 4000
+}

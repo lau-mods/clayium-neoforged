@@ -46,6 +46,8 @@ public class ClayiumBlockTagsProvider extends BlockTagsProvider {
         var ores = tag(Tags.Blocks.ORES);
         var storageBlocks = tag(Tags.Blocks.STORAGE_BLOCKS);
         var clayOres = tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "ores/clay")));
+        var denseClayOres = tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "ores/dense_clay")));
+        var largeDenseClayOres = tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "ores/large_dense_clay")));
 
         for (var entry : ClayiumBlocks.all().entrySet()) {
             String path = entry.getKey();
@@ -55,17 +57,25 @@ public class ClayiumBlockTagsProvider extends BlockTagsProvider {
                 shovel.add(block);
             } else if ("raw_clay_machine_hull".equals(path)) {
                 shovel.add(block);
-            } else if (block instanceof ClayOreBlock) {
+            } else if (block instanceof ClayOreBlock oreBlock) {
                 pickaxe.add(block);
                 stoneTool.add(block);
                 ores.add(block);
-                clayOres.add(block);
+                switch (oreBlock.getVariantIndex()) {
+                    case 1 -> denseClayOres.add(block);
+                    case 2 -> largeDenseClayOres.add(block);
+                    default -> clayOres.add(block);
+                }
             } else if (block instanceof MetalMaterialBlock metalBlock) {
                 pickaxe.add(block);
                 beaconBase.add(block);
                 storageBlocks.add(block);
                 tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/" + metalBlock.getMaterial().idPrefix())))
                         .add(block);
+                if ("aluminium".equals(metalBlock.getMaterial().idPrefix())) {
+                    tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/aluminum")))
+                            .add(block);
+                }
             } else if (block instanceof MetalChestBlock || block instanceof SiliconeColoredBlock) {
                 pickaxe.add(block);
                 if (block instanceof SiliconeColoredBlock) {

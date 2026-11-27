@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:gadget_antimatter_overclock"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_spirit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:gadget_repeatedly_attack"
+    }
+  ],
+  "tier": 10,
+  "time": 120
+}

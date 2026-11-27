@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    },
+    {
+      "tag": "c:ingots/calcium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:calcium_block"
+  }
+}

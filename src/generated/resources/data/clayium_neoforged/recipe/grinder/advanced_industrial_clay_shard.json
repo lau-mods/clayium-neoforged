@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ores/large_dense_clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 5,
+      "id": "clayium_neoforged:advanced_industrial_clay_shard"
+    }
+  ],
+  "time": 9
+}

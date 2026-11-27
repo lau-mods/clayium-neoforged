@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "expected": false,
+      "key": "hardcore_aluminium"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:precision_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:aluminium_large_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:precision_multitrack_buffer"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

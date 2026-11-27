@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    },
+    {
+      "tag": "c:ingots/zirconium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:zirconium_block"
+  }
+}

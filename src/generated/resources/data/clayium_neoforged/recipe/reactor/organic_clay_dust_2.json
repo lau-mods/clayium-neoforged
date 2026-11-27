@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_soul"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 2,
+      "id": "clayium_neoforged:organic_clay_dust"
+    }
+  ],
+  "tier": 11,
+  "time": 100000000000000
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:clay_circuit_board"
+    },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "-": {
+      "item": "clayium_neoforged:dense_clay_stick"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_ring"
+    }
+  },
+  "pattern": [
+    "-*-",
+    "o#o",
+    "-*-"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_circuit"
+  }
+}

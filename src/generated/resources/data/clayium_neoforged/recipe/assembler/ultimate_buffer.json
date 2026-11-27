@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:ultimate_alloy_plate"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_brain"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 16,
+      "id": "clayium_neoforged:ultimate_buffer"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

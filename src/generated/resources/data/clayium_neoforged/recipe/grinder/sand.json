@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 10,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:gravel"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:sand"
+    }
+  ],
+  "time": 10
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "blast_furnace",
+  "energy": 200000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/strontium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:strontium_ingot"
+    }
+  ],
+  "tier": 7,
+  "time": 1000
+}

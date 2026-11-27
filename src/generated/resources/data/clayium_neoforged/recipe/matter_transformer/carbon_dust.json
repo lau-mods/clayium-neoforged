@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/industrial_clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:carbon_dust"
+    }
+  ],
+  "tier": 7,
+  "time": 200
+}

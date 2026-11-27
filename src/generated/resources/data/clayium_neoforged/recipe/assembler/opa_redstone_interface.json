@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:opa_clay_interface"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:energized_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:opa_redstone_interface"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

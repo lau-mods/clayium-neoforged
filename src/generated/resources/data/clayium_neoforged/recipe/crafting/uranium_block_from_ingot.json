@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:uranium_block"
+  }
+}

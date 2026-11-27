@@ -102,16 +102,25 @@ public final class ClayiumDataComponentTypes {
 
     public record StorageContentData(
             Item item,
-            long count) {
+            long count,
+            int maxStorage) {
+
+        public static final int DEFAULT_MAX_STORAGE = 65536;
+
+        public StorageContentData(Item item, long count) {
+            this(item, count, DEFAULT_MAX_STORAGE);
+        }
 
         public static final Codec<StorageContentData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(StorageContentData::item),
-                Codec.LONG.fieldOf("count").forGetter(StorageContentData::count)
+                Codec.LONG.fieldOf("count").forGetter(StorageContentData::count),
+                Codec.INT.optionalFieldOf("max_storage", DEFAULT_MAX_STORAGE).forGetter(StorageContentData::maxStorage)
         ).apply(instance, StorageContentData::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, StorageContentData> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.registry(net.minecraft.core.registries.Registries.ITEM), StorageContentData::item,
                 ByteBufCodecs.VAR_LONG, StorageContentData::count,
+                ByteBufCodecs.VAR_INT, StorageContentData::maxStorage,
                 StorageContentData::new
         );
     }

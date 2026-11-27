@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    },
+    {
+      "tag": "c:ingots/rubidium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:rubidium_block"
+  }
+}

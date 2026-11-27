@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000,
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "minecraft:paper"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "minecraft:string"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:lead"
+    }
+  ],
+  "tier": 10,
+  "time": 600
+}

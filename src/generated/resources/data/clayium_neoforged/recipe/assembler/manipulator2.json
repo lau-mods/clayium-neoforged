@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:manipulator1"
+      }
+    },
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_core"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:manipulator2"
+    }
+  ],
+  "tier": 4,
+  "time": 20
+}

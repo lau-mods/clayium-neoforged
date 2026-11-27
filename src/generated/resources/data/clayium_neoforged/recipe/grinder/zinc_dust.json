@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 25,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/zinc"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:zinc_dust"
+    }
+  ],
+  "time": 80
+}

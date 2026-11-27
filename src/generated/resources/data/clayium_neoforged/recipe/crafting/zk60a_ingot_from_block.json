@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:storage_blocks/zk60a"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:zk60a_ingot"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "centrifuge",
+  "energy": 4,
+  "inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_dust"
+    }
+  ],
+  "time": 20
+}

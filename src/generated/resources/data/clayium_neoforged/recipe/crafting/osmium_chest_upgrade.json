@@ -1,0 +1,28 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "expected": false,
+      "key": "hardcore_osmium"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "tag": "c:ingots/osmium"
+    },
+    "*": {
+      "tag": "clayium_neoforged:metal_chests"
+    }
+  },
+  "pattern": [
+    "###",
+    "#*#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:osmium_chest"
+  }
+}

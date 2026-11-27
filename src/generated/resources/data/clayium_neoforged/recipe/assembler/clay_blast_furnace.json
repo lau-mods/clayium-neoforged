@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_smelter"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_clay_interface"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_blast_furnace"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

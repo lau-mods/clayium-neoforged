@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "lathe",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_small_disc"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_small_ring"
+    }
+  ],
+  "time": 2
+}

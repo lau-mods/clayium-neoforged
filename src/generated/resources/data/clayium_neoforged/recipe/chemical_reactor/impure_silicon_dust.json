@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "expected": false,
+      "key": "hardcore_aluminium"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "chemical_reactor",
+  "energy": 1000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:impure_silicon_dust"
+    },
+    {
+      "count": 1,
+      "id": "clayium_neoforged:aluminium_dust"
+    }
+  ],
+  "tier": 5,
+  "time": 30
+}

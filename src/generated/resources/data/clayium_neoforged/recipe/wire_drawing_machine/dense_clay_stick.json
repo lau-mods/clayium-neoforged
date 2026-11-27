@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "wire_drawing_machine",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_cylinder"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 8,
+      "id": "clayium_neoforged:dense_clay_stick"
+    }
+  ],
+  "time": 6
+}

@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_auto_crafter"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_machine_hull"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_auto_crafter"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

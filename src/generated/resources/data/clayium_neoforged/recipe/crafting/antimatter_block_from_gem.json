@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    },
+    {
+      "tag": "c:gems/antimatter"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:antimatter_block"
+  }
+}

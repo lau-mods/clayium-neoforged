@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:area_miner"
+      }
+    },
+    {
+      "count": 64,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_brain"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:advanced_area_miner"
+    }
+  ],
+  "tier": 6,
+  "time": 6000
+}

@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 300000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:oec_buffer"
+      }
+    },
+    {
+      "count": 30,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:opa_buffer"
+    }
+  ],
+  "tier": 13,
+  "time": 4000
+}

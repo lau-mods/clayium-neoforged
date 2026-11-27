@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    },
+    {
+      "tag": "c:ingots/plutonium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:plutonium_block"
+  }
+}

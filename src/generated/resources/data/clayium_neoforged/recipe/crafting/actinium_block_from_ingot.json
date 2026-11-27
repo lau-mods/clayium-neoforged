@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    },
+    {
+      "tag": "c:ingots/actinium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:actinium_block"
+  }
+}

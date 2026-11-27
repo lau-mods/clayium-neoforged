@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:organic_clay_dust"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:gravel"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:dirt"
+    }
+  ],
+  "tier": 7,
+  "time": 100
+}

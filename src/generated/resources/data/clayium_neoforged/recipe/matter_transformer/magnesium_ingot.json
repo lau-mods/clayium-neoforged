@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/beryllium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:magnesium_ingot"
+    }
+  ],
+  "tier": 7,
+  "time": 200
+}

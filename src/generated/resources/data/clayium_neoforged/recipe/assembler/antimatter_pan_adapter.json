@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_resonator"
+      }
+    },
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:pan_cable"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:antimatter_pan_adapter"
+    }
+  ],
+  "tier": 10,
+  "time": 60
+}

@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "minecraft:rotten_flesh"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:porkchop"
+    }
+  ],
+  "tier": 9,
+  "time": 200
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:cocoa_beans"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:nether_wart"
+    }
+  ],
+  "tier": 8,
+  "time": 20
+}

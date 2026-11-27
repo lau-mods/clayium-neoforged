@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "decomposer",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 3,
+      "id": "clayium_neoforged:energized_clay_dust"
+    }
+  ],
+  "time": 60
+}

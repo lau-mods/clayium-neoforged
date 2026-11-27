@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 30000000000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_soul"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "tag": "c:gems/antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_anima"
+    }
+  ],
+  "tier": 11,
+  "time": 100000000000000
+}

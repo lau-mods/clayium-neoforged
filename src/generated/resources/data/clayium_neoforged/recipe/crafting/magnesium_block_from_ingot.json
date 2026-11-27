@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    },
+    {
+      "tag": "c:ingots/magnesium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:magnesium_block"
+  }
+}

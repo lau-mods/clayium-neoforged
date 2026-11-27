@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:dense_clay_machine_hull"
+    },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "-": {
+      "item": "clayium_neoforged:dense_clay_cylinder"
+    },
+    "P": {
+      "item": "clayium_neoforged:dense_clay_plate"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_spindle"
+    }
+  },
+  "pattern": [
+    "o-*",
+    "P#P",
+    "o-*"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:dense_clay_bending_machine"
+  }
+}

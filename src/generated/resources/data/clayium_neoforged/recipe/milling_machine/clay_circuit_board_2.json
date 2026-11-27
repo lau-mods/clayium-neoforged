@@ -1,0 +1,18 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "milling_machine",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_circuit_board"
+    }
+  ]
+}

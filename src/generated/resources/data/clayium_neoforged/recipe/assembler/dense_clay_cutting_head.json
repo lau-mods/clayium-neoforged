@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_large_plate"
+      }
+    },
+    {
+      "count": 8,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_cutting_head"
+    }
+  ],
+  "tier": 3,
+  "time": 20
+}

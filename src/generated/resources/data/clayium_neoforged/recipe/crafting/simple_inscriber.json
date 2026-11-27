@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:simple_machine_hull"
+    },
+    "*": {
+      "item": "clayium_neoforged:dense_clay_gear"
+    },
+    "C": {
+      "item": "clayium_neoforged:simple_circuit"
+    },
+    "o": {
+      "item": "clayium_neoforged:dense_clay_spindle"
+    }
+  },
+  "pattern": [
+    "*o*",
+    "C#C",
+    "*C*"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:simple_inscriber"
+  }
+}

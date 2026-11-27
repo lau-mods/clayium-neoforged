@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_machine_hull"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_grinding_head"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:precision_grinder"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

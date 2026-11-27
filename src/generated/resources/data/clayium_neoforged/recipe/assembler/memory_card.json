@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_io_configurator"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:precision_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:memory_card"
+    }
+  ],
+  "tier": 6,
+  "time": 20
+}

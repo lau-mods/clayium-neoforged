@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    },
+    {
+      "tag": "c:ingots/praseodymium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:praseodymium_block"
+  }
+}

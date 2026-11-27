@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 1,
+  "inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "minecraft:cobblestone"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 16,
+      "id": "minecraft:gravel"
+    }
+  ],
+  "time": 10
+}

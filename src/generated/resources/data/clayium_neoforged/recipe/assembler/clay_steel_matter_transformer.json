@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_reactor"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_electrolysis_reactor"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_matter_transformer"
+    }
+  ],
+  "tier": 6,
+  "time": 120
+}

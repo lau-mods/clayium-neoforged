@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter_ca_injector"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_reactor"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:antimatter_matter_transformer"
+    }
+  ],
+  "tier": 10,
+  "time": 120
+}

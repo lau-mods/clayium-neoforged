@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "smelter",
+  "energy": 500,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/sodium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:sodium_ingot"
+    }
+  ],
+  "tier": 5,
+  "time": 200
+}

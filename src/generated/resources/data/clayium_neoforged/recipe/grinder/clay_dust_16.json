@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_spindle"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 4,
+      "id": "clayium_neoforged:clay_dust"
+    }
+  ],
+  "time": 12
+}

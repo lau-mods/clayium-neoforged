@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    },
+    {
+      "tag": "c:ingots/neptunium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:neptunium_block"
+  }
+}

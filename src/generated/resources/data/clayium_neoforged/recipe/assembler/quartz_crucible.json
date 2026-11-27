@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000,
+  "inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "tag": "c:dusts/quartz"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:quartz_crucible"
+    }
+  ],
+  "time": 20
+}

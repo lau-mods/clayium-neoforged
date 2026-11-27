@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    },
+    {
+      "tag": "c:ingots/silicone"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:silicone_block"
+  }
+}

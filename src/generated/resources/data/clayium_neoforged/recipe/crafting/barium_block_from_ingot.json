@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    },
+    {
+      "tag": "c:ingots/barium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:barium_block"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "centrifuge",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_tree_log"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 16,
+      "id": "clayium_neoforged:advanced_industrial_clay_dust"
+    },
+    {
+      "count": 5,
+      "id": "clayium_neoforged:manganese_dust"
+    },
+    {
+      "count": 3,
+      "id": "clayium_neoforged:lithium_dust"
+    },
+    {
+      "count": 1,
+      "id": "clayium_neoforged:zirconium_dust"
+    }
+  ],
+  "tier": 6,
+  "time": 400
+}

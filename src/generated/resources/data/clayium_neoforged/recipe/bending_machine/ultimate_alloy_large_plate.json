@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 100,
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "tag": "c:plates/ultimate_alloy"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:ultimate_alloy_large_plate"
+    }
+  ],
+  "tier": 4,
+  "time": 360
+}

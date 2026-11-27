@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 1000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "minecraft:wool"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 4,
+      "id": "minecraft:string"
+    }
+  ],
+  "tier": 5,
+  "time": 100
+}

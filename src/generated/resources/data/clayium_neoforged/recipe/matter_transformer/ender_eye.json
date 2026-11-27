@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:ink_sac"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:ender_eye"
+    }
+  ],
+  "tier": 9,
+  "time": 100
+}

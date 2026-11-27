@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "tag": "c:dusts/ultimate_alloy"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:glass_bottle"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:experience_bottle"
+    }
+  ],
+  "tier": 11,
+  "time": 100000000000000
+}

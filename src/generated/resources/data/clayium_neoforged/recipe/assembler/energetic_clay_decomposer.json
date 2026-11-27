@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:opa_machine_hull"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:opa_ca_reactor_coil"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:energetic_clay_decomposer"
+    }
+  ],
+  "tier": 10,
+  "time": 120
+}

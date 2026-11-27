@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:pure_antimatter_3"
+    },
+    "D": {
+      "item": "clayium_neoforged:clay_steel_pan_duplicator"
+    },
+    "I": {
+      "tag": "c:ingots/francium"
+    },
+    "M": {
+      "item": "clayium_neoforged:clayium_machine_hull"
+    }
+  },
+  "pattern": [
+    "#I#",
+    "DMD",
+    "#I#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clayium_pan_duplicator"
+  }
+}

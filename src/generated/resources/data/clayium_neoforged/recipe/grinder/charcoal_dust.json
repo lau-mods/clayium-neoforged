@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 250,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:charcoal"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:charcoal_dust"
+    }
+  ],
+  "tier": 5,
+  "time": 80
+}

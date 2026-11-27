@@ -7,6 +7,7 @@ import net.claustra01.clayium.registry.ClayiumDataComponents;
 import net.claustra01.clayium.registry.ClayiumEntities;
 import net.claustra01.clayium.registry.ClayiumItems;
 import net.claustra01.clayium.registry.ClayiumMenus;
+import net.claustra01.clayium.registry.ClayiumRecipeConditions;
 import net.claustra01.clayium.registry.ClayiumRecipeSerializers;
 import net.claustra01.clayium.registry.ClayiumRecipeTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -33,6 +34,7 @@ public class ClayiumMod {
         ClayiumMenus.register(modEventBus);
         ClayiumRecipeTypes.register(modEventBus);
         ClayiumRecipeSerializers.register(modEventBus);
+        ClayiumRecipeConditions.register(modEventBus);
         ClayiumCreativeTabs.register(modEventBus);
     }
 

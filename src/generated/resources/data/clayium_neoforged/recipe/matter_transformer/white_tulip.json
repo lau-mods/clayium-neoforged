@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:orange_tulip"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:white_tulip"
+    }
+  ],
+  "tier": 7,
+  "time": 20
+}

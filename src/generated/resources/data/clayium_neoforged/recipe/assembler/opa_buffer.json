@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:octuple_pure_antimatter_plate"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_psyche"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 16,
+      "id": "clayium_neoforged:opa_buffer"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

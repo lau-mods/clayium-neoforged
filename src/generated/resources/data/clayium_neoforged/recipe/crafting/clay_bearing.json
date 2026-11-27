@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "i": {
+      "item": "minecraft:clay_ball"
+    },
+    "o": {
+      "item": "clayium_neoforged:clay_ring"
+    }
+  },
+  "pattern": [
+    "iii",
+    "ioi",
+    "iii"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_bearing"
+  }
+}

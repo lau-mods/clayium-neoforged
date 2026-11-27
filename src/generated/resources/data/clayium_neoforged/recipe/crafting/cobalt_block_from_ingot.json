@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    },
+    {
+      "tag": "c:ingots/cobalt"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:cobalt_block"
+  }
+}

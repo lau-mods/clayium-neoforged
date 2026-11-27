@@ -1,0 +1,24 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "alloy_smelter",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/gold"
+      }
+    },
+    {
+      "ingredient": {
+        "tag": "c:ingots/silver"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 2,
+      "id": "clayium_neoforged:electrum_ingot"
+    }
+  ],
+  "time": 40
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/zk60a"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:zk60a_plate"
+    }
+  ],
+  "tier": 4,
+  "time": 20
+}

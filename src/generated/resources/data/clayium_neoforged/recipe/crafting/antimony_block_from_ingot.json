@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    },
+    {
+      "tag": "c:ingots/antimony"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:antimony_block"
+  }
+}

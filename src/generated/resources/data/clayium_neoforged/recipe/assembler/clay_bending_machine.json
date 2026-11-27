@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_machine_hull"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_bending_machine"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_machine_hull"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_smelter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clayium_smelter"
+    }
+  ],
+  "tier": 6,
+  "time": 2000
+}

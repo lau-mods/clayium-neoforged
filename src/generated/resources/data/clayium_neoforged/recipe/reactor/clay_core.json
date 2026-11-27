@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:integrated_circuit"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:excited_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_core"
+    }
+  ],
+  "tier": 7,
+  "time": 8000000
+}

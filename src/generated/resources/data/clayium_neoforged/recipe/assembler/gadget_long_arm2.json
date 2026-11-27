@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:gadget_long_arm1"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:manipulator3"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:gadget_long_arm2"
+    }
+  ],
+  "tier": 10,
+  "time": 120
+}

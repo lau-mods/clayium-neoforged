@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "alloy_smelter",
+  "energy": 100000,
+  "inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "tag": "c:ingots/magnesium"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:zincalminium_ingot"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 10,
+      "id": "clayium_neoforged:az91d_ingot"
+    }
+  ],
+  "tier": 6,
+  "time": 500
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:potato"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:poisonous_potato"
+    }
+  ],
+  "tier": 11,
+  "time": 10000000000
+}

@@ -1,0 +1,24 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "blast_furnace",
+  "energy": 5000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_dust"
+      }
+    },
+    {
+      "ingredient": {
+        "tag": "c:dusts/manganese"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_ingot"
+    }
+  ],
+  "tier": 8
+}

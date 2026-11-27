@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 30000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:ultimate_machine_hull"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:lithium_solar_clay_fabricator"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_fabricator_mk2"
+    }
+  ],
+  "tier": 9,
+  "time": 100000000000
+}

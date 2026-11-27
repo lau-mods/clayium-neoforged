@@ -1,0 +1,18 @@
+{
+  "type": "clayium_neoforged:clay_work_table",
+  "button": 5,
+  "clicks": 2,
+  "input": {
+    "ingredient": {
+      "item": "clayium_neoforged:clay_disc"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_ring"
+  },
+  "secondary_result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_small_disc"
+  }
+}

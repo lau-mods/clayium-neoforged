@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    },
+    {
+      "tag": "c:ingots/rhenium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:rhenium_block"
+  }
+}

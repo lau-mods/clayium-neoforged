@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clayium_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:laser_parts"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clayium_clay_laser_interface"
+    }
+  ],
+  "tier": 6,
+  "time": 120
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:storage_blocks/octuple_pure_antimatter"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "clayium_neoforged:octuple_pure_antimatter"
+  }
+}

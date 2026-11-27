@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    },
+    {
+      "tag": "c:ingots/lanthanum"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:lanthanum_block"
+  }
+}

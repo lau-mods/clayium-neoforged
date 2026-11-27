@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    },
+    {
+      "tag": "c:ingots/az91d"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:az91d_block"
+  }
+}

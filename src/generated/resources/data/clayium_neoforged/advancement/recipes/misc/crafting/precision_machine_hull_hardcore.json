@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "hardcore_aluminium"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_clay": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:clay_ball"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:crafting/precision_machine_hull_hardcore"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_clay"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:crafting/precision_machine_hull_hardcore"
+    ]
+  }
+}

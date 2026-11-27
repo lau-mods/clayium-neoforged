@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/carbon"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:organic_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:rotten_flesh"
+    }
+  ],
+  "tier": 11,
+  "time": 100000000000000
+}

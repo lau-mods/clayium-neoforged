@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 30,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:elemental_milling_machine"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:simple_milling_machine"
+    }
+  ],
+  "tier": 3,
+  "time": 4000
+}

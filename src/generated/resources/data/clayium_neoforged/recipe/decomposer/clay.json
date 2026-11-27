@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "decomposer",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 9,
+      "id": "minecraft:clay"
+    }
+  ],
+  "time": 3
+}

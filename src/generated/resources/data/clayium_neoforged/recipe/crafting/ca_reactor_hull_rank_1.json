@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "clayium_neoforged:antimatter"
+    },
+    "H": {
+      "item": "clayium_neoforged:antimatter_machine_hull"
+    },
+    "I": {
+      "tag": "c:ingots/rubidium"
+    }
+  },
+  "pattern": [
+    "#I#",
+    "#H#",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:ca_reactor_hull_rank_1"
+  }
+}

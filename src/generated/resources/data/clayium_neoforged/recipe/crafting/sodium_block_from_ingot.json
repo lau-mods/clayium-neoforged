@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    },
+    {
+      "tag": "c:ingots/sodium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:sodium_block"
+  }
+}

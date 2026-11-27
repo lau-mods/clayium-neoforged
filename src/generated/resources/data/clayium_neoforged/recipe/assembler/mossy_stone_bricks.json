@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:stone_bricks"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:vine"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:mossy_stone_bricks"
+    }
+  ],
+  "tier": 6,
+  "time": 20
+}

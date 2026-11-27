@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:oec_machine_hull"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_buffer"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:oec_clay_interface"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

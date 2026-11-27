@@ -1,0 +1,24 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_machine_hull"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_cutting_head"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_cutting_machine"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

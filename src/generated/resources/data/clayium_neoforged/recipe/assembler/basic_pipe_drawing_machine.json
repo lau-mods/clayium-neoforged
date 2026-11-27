@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:basic_machine_hull"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_cylinder"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:basic_pipe_drawing_machine"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

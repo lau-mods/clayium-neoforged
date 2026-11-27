@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 100000000000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:octuple_pure_antimatter_plate"
+      }
+    },
+    {
+      "count": 64,
+      "ingredient": {
+        "tag": "c:ingots/rhenium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:opa_ca_reactor_coil"
+    }
+  ],
+  "tier": 13,
+  "time": 1000000000000000
+}

@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/coal"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:coal"
+    }
+  ],
+  "tier": 7,
+  "time": 10000
+}

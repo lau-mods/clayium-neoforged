@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "blast_furnace",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/iron"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "minecraft:coal"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:steel_ingot"
+    }
+  ],
+  "tier": 6,
+  "time": 500
+}

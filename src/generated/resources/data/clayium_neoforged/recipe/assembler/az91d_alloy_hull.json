@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:az91d_large_plate"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:precision_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:az91d_alloy_hull"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

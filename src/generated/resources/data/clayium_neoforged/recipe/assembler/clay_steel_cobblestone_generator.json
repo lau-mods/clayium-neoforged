@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:simple_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_steel_cobblestone_generator"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

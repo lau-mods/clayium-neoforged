@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    },
+    {
+      "tag": "c:ingots/bismuth"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:bismuth_block"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    },
+    {
+      "tag": "c:ingots/ultimate_alloy"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:ultimate_alloy_block"
+  }
+}

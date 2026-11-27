@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 100000000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:clay_brain"
+      }
+    },
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "clayium_neoforged:excited_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_spirit"
+    }
+  ],
+  "tier": 9,
+  "time": 10000000000000
+}

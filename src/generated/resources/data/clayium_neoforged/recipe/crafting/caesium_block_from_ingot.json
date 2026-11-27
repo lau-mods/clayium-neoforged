@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    },
+    {
+      "tag": "c:ingots/caesium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:caesium_block"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "clayium_neoforged:clay_work_table",
+  "button": 3,
+  "clicks": 10,
+  "input": {
+    "count": 6,
+    "ingredient": {
+      "item": "clayium_neoforged:clay_plate"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:clay_large_plate"
+  }
+}

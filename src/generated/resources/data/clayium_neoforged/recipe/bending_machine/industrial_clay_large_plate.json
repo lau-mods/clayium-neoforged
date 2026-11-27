@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 2,
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:industrial_clay_large_plate"
+    }
+  ],
+  "tier": 2,
+  "time": 8
+}

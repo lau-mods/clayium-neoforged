@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "inscriber",
+  "energy": 2,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_circuit_board"
+      }
+    },
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_circuit"
+    }
+  ],
+  "time": 20
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "blast_furnace",
+  "energy": 4000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/titanium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:titanium_ingot"
+    }
+  ],
+  "tier": 8,
+  "time": 2000
+}

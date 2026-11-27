@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:clay"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:integrated_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_marker"
+    }
+  ],
+  "tier": 6,
+  "time": 480
+}

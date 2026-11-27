@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:oec_machine_hull"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_ca_injector"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:oec_ca_injector"
+    }
+  ],
+  "tier": 10,
+  "time": 480
+}

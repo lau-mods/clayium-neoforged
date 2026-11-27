@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "energetic_clay_decomposer",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:double_compressed_energetic_clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 9,
+      "id": "clayium_neoforged:compressed_energetic_clay"
+    }
+  ],
+  "tier": 13,
+  "time": 0
+}

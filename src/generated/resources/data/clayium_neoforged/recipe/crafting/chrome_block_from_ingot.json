@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    },
+    {
+      "tag": "c:ingots/chrome"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:chrome_block"
+  }
+}

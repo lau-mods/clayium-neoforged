@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_large_plate"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:simple_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_cobblestone_generator"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

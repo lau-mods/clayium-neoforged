@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "tag": "c:storage_blocks/silicone"
+    },
+    "*": {
+      "tag": "c:dyes/light_blue"
+    }
+  },
+  "pattern": [
+    "###",
+    "#*#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "id": "clayium_neoforged:light_blue_silicone_block"
+  }
+}

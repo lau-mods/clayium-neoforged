@@ -1,0 +1,21 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "energetic_clay_condenser",
+  "energy": 1,
+  "inputs": [
+    {
+      "count": 9,
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:energetic_clay"
+    }
+  ],
+  "tier": 3,
+  "time": 16
+}

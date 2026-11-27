@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 25000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_plate"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_dust"
+    }
+  ],
+  "tier": 10,
+  "time": 80
+}

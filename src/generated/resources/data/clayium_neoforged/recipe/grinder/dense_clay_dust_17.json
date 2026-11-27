@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 1,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:dense_clay_cutting_head"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 9,
+      "id": "clayium_neoforged:dense_clay_dust"
+    }
+  ],
+  "time": 108
+}

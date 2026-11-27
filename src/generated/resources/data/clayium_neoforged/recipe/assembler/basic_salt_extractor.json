@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:basic_buffer"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:basic_circuit"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:basic_salt_extractor"
+    }
+  ],
+  "tier": 4,
+  "time": 40
+}

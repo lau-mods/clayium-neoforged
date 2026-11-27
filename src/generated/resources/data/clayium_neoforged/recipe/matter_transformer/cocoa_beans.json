@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 1000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:pumpkin_seeds"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:cocoa_beans"
+    }
+  ],
+  "tier": 8,
+  "time": 20
+}

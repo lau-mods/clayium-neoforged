@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "blast_furnace",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/beryllium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:beryllium_ingot"
+    }
+  ],
+  "tier": 6,
+  "time": 500
+}

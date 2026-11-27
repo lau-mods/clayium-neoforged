@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 1000000000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:pure_antimatter_plate"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "tag": "c:ingots/iridium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:pure_antimatter_ca_reactor_coil"
+    }
+  ],
+  "tier": 11,
+  "time": 100000000000000
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "bending_machine",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/az91d"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:az91d_plate"
+    }
+  ],
+  "tier": 4,
+  "time": 20
+}

@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 3000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:energetic_clay_condenser_mk2"
+      }
+    },
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:auto_clay_condenser"
+    }
+  ],
+  "tier": 5,
+  "time": 4000
+}

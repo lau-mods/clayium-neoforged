@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    },
+    {
+      "tag": "c:ingots/molybdenum"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:molybdenum_block"
+  }
+}

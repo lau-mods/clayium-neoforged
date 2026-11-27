@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "hardcore_osmium"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 30000000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/iridium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:impure_osmium_ingot"
+    }
+  ],
+  "tier": 11,
+  "time": 200
+}

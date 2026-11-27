@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 10000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:advanced_industrial_clay_dust"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:impure_ultimate_alloy_ingot"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:ultimate_alloy_ingot"
+    }
+  ],
+  "tier": 8,
+  "time": 1000000000
+}

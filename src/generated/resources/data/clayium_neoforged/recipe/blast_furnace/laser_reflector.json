@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "blast_furnace",
+  "energy": 20000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:industrial_clay_dust"
+      }
+    },
+    {
+      "count": 8,
+      "ingredient": {
+        "tag": "c:dusts/quartz"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:laser_reflector"
+    }
+  ],
+  "tier": 7,
+  "time": 100
+}

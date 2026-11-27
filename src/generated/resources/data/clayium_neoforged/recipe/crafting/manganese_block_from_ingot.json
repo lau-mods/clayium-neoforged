@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    },
+    {
+      "tag": "c:ingots/manganese"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:manganese_block"
+  }
+}

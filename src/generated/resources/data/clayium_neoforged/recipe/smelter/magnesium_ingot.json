@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "smelter",
+  "energy": 2000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:dusts/magnesium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:magnesium_ingot"
+    }
+  ],
+  "tier": 6,
+  "time": 400
+}

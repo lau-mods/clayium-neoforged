@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 50000000000,
+  "inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "clayium_neoforged:oec_machine_hull"
+      }
+    },
+    {
+      "count": 32,
+      "ingredient": {
+        "item": "clayium_neoforged:oec_resonator"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:oec_overclocker"
+    }
+  ],
+  "tier": 12,
+  "time": 1000000000000000
+}

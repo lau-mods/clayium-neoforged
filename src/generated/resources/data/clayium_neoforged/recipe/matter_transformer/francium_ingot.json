@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 30000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/caesium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:francium_ingot"
+    }
+  ],
+  "tier": 8,
+  "time": 200
+}

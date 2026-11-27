@@ -1,0 +1,27 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "clayium_neoforged:az91d_plate"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "clayium_neoforged:synchronous_parts"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:synchronizer"
+    }
+  ],
+  "tier": 6,
+  "time": 20
+}

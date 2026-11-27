@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    },
+    {
+      "tag": "c:gems/octuple_pure_antimatter"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:octuple_pure_antimatter_block"
+  }
+}

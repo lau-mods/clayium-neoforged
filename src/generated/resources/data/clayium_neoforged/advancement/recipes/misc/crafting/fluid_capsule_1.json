@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "enable_fluid_capsule"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_clay": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:clay_ball"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium_neoforged:crafting/fluid_capsule_1"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_clay"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium_neoforged:crafting/fluid_capsule_1"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "centrifuge",
+  "energy": 4,
+  "inputs": [
+    {
+      "count": 16,
+      "ingredient": {
+        "item": "minecraft:gravel"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 16,
+      "id": "clayium_neoforged:dense_clay"
+    }
+  ],
+  "tier": 5
+}

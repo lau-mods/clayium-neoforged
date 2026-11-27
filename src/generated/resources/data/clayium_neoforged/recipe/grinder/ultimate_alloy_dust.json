@@ -1,0 +1,19 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 25,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/ultimate_alloy"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:ultimate_alloy_dust"
+    }
+  ],
+  "time": 720
+}

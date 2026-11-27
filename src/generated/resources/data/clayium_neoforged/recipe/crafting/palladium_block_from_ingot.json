@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    },
+    {
+      "tag": "c:ingots/palladium"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "clayium_neoforged:palladium_block"
+  }
+}

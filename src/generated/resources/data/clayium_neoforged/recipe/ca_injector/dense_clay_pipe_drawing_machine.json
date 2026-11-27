@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "ca_injector",
+  "energy": 3,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_pipe_drawing_machine"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:antimatter"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:dense_clay_pipe_drawing_machine"
+    }
+  ],
+  "tier": 2,
+  "time": 4000
+}

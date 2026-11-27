@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "grinder",
+  "energy": 250,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:gems/lapis"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:lapis_dust"
+    }
+  ],
+  "tier": 5,
+  "time": 80
+}

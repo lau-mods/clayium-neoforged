@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "clayium_neoforged:config",
+      "key": "hardcore_osmium"
+    }
+  ],
+  "type": "clayium_neoforged:clay_machine",
+  "category": "reactor",
+  "energy": 10000000000,
+  "inputs": [
+    {
+      "count": 6,
+      "ingredient": {
+        "item": "clayium_neoforged:octuple_energetic_clay_plate"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "tag": "c:ingots/impure_osmium"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:oec_ca_reactor_coil"
+    }
+  ],
+  "tier": 12,
+  "time": 1000000000000000
+}

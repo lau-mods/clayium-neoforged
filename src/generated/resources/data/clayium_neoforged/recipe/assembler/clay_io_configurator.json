@@ -1,0 +1,25 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 10000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_rolling_pin"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_slicer"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:clay_io_configurator"
+    }
+  ],
+  "tier": 6,
+  "time": 20
+}

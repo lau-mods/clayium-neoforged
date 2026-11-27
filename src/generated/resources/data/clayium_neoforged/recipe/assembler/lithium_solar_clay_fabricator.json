@@ -1,0 +1,26 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "assembler",
+  "energy": 100000,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_steel_machine_hull"
+      }
+    },
+    {
+      "count": 16,
+      "ingredient": {
+        "tag": "c:plates/silicon"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:lithium_solar_clay_fabricator"
+    }
+  ],
+  "tier": 4,
+  "time": 120
+}

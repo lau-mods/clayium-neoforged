@@ -1,0 +1,24 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "chemical_reactor",
+  "energy": 100,
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:sodium_carbonate_dust"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "clayium_neoforged:clay_dust"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "clayium_neoforged:quartz_dust"
+    }
+  ],
+  "time": 120
+}

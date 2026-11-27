@@ -1,0 +1,20 @@
+{
+  "type": "clayium_neoforged:clay_machine",
+  "category": "matter_transformer",
+  "energy": 9000000,
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/manganese"
+      }
+    }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:iron_ingot"
+    }
+  ],
+  "tier": 7,
+  "time": 200
+}
