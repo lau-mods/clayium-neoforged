@@ -1,8 +1,18 @@
 package net.claustra01.clayium.block;
 
+import javax.annotation.Nullable;
+import net.claustra01.clayium.blockentity.ClayWorkTableBlockEntity;
+import net.claustra01.clayium.registry.ClayiumBlockEntities;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 /**
  * Clay Work Table (Tier 0 manual crafting block; does not enter piping mode).
@@ -20,5 +30,39 @@ public class ClayWorkTableBlock extends ClayContainerBlock {
     @Override
     public boolean canBePipe() {
         return false;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock())) {
+            if (level.getBlockEntity(pos) instanceof ClayWorkTableBlockEntity table) {
+                for (ItemStack stack : table.getItems()) {
+                    if (!stack.isEmpty()) {
+                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack.copy());
+                    }
+                }
+            }
+            super.onRemove(state, level, pos, newState, movedByPiston);
+        }
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ClayWorkTableBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level level, BlockState state, BlockEntityType<T> type) {
+        if (level.isClientSide || type != ClayiumBlockEntities.CLAY_WORK_TABLE.get()) {
+            return null;
+        }
+        return (lvl, p, st, be) -> {
+            if (be instanceof ClayWorkTableBlockEntity table) {
+                ClayWorkTableBlockEntity.serverTick(lvl, p, st, table);
+            }
+        };
     }
 }

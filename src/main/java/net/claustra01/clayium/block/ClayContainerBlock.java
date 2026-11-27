@@ -1,18 +1,43 @@
 package net.claustra01.clayium.block;
 
 import javax.annotation.Nullable;
+import net.claustra01.clayium.blockentity.AssemblerBlockEntity;
+import net.claustra01.clayium.blockentity.AutoClayCondenserBlockEntity;
+import net.claustra01.clayium.blockentity.AutoCrafterBlockEntity;
+import net.claustra01.clayium.blockentity.AutoTraderBlockEntity;
+import net.claustra01.clayium.blockentity.BlastFurnaceBlockEntity;
 import net.claustra01.clayium.blockentity.BufferBlockEntity;
+import net.claustra01.clayium.blockentity.CACollectorBlockEntity;
+import net.claustra01.clayium.blockentity.CACondenserBlockEntity;
+import net.claustra01.clayium.blockentity.CAInjectorBlockEntity;
+import net.claustra01.clayium.blockentity.CAReactorBlockEntity;
+import net.claustra01.clayium.blockentity.CentrifugeBlockEntity;
+import net.claustra01.clayium.blockentity.ChemicalMetalSeparatorBlockEntity;
+import net.claustra01.clayium.blockentity.ChemicalReactorBlockEntity;
+import net.claustra01.clayium.blockentity.ClayChunkLoaderBlockEntity;
 import net.claustra01.clayium.blockentity.ClayContainerBlockEntity;
+import net.claustra01.clayium.blockentity.ClayCraftingTableBlockEntity;
+import net.claustra01.clayium.blockentity.ClayFabricatorBlockEntity;
 import net.claustra01.clayium.blockentity.ClayInterfaceBlockEntity;
+import net.claustra01.clayium.blockentity.CobblestoneGeneratorBlockEntity;
+import net.claustra01.clayium.blockentity.CreativeEnergySourceBlockEntity;
 import net.claustra01.clayium.blockentity.DistributorBlockEntity;
 import net.claustra01.clayium.blockentity.FluidTranslatorBlockEntity;
 import net.claustra01.clayium.blockentity.IGeneralInterface;
+import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.MultitrackBufferBlockEntity;
+import net.claustra01.clayium.blockentity.PANDuplicatorBlockEntity;
+import net.claustra01.clayium.blockentity.ReactorBlockEntity;
+import net.claustra01.clayium.blockentity.SaltExtractorBlockEntity;
+import net.claustra01.clayium.blockentity.SimpleClayMachineBlockEntity;
+import net.claustra01.clayium.blockentity.SolarClayFabricatorBlockEntity;
 import net.claustra01.clayium.blockentity.StorageContainerBlockEntity;
 import net.claustra01.clayium.blockentity.VacuumContainerBlockEntity;
+import net.claustra01.clayium.blockentity.WaterWheelBlockEntity;
 import net.claustra01.clayium.registry.ClayiumBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -268,27 +293,161 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
     }
 
     @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        if ("buffer".equals(this.categoryKey)) {
-            if ("tooltip.MultitrackBuffer".equals(this.tooltipKey)) {
-                return new MultitrackBufferBlockEntity(pos, state);
+    public static String resolveBlockEntityCategory(Block block) {
+        if (block instanceof MetalChestBlock) {
+            return "metal_chest";
+        }
+        if (block instanceof RedstoneInterfaceBlock) {
+            return "redstone_interface";
+        }
+        if (block instanceof QuartzCrucibleBlock) {
+            return "quartz_crucible";
+        }
+        if (block instanceof StorageContainerBlock) {
+            return "storage_container";
+        }
+        if (block instanceof ClayWorkTableBlock) {
+            return "clay_work_table";
+        }
+        if (block instanceof ClayCraftingTableBlock) {
+            return "clay_crafting_table";
+        }
+        if (block instanceof PANDuplicatorBlock) {
+            return "pan_duplicator";
+        }
+        if (!(block instanceof ClayContainerBlock cc)) {
+            return null;
+        }
+        String path = BuiltInRegistries.BLOCK.getKey(block).getPath();
+        if ("buffer".equals(cc.categoryKey)) {
+            return "tooltip.MultitrackBuffer".equals(cc.tooltipKey) ? "multitrack_buffer" : "buffer";
+        }
+        if ("fluid".equals(cc.categoryKey)) {
+            if ("tooltip.FluidTranslator".equals(cc.tooltipKey)) {
+                return "fluid_translator";
             }
-            return new BufferBlockEntity(pos, state);
+            if ("advanced_fluid_transfer_machine".equals(path)) {
+                return "chemical_reactor";
+            }
         }
-        if ("fluid".equals(this.categoryKey) && "tooltip.FluidTranslator".equals(this.tooltipKey)) {
-            return new FluidTranslatorBlockEntity(pos, state);
+        if ("storage".equals(cc.categoryKey)) {
+            return "vacuum_container";
         }
-        if ("storage".equals(this.categoryKey)) {
-            return new VacuumContainerBlockEntity(pos, state);
+        if ("tooltip.Distributor".equals(cc.tooltipKey)) {
+            return "distributor";
         }
-        if ("tooltip.Distributor".equals(this.tooltipKey)) {
-            return new DistributorBlockEntity(pos, state);
+        if ("tooltip.Interface".equals(cc.tooltipKey)) {
+            return "clay_interface";
         }
-        if ("tooltip.Interface".equals(this.tooltipKey)) {
-            return new ClayInterfaceBlockEntity(pos, state);
+        if ("tooltip.LaserInterface".equals(cc.tooltipKey)) {
+            return "laser_interface";
+        }
+        if ("clay_chunk_loader".equals(path)) {
+            return "clay_chunk_loader";
+        }
+        if ("generator".equals(cc.categoryKey)) {
+            return "water_wheel";
+        }
+        if ("clay_blast_furnace".equals(path)) {
+            return "blast_furnace";
+        }
+        if ("clay_reactor".equals(path)) {
+            return "reactor";
+        }
+        if (path.endsWith("_ca_reactor_core")) {
+            return "ca_reactor";
+        }
+        if ("creative_ce_source".equals(path)) {
+            return "creative_ce_source";
+        }
+        if (path.startsWith("auto_clay_condenser")) {
+            return "auto_clay_condenser";
+        }
+        if (path.contains("solar_clay_fabricator")) {
+            return "solar_clay_fabricator";
+        }
+        if (path.startsWith("clay_fabricator_")) {
+            return "clay_fabricator";
+        }
+        if ("chemical_metal_separator".equals(path)) {
+            return "chemical_metal_separator";
+        }
+        if (path.endsWith("_cobblestone_generator")) {
+            return "cobblestone_generator";
+        }
+        if (path.endsWith("_salt_extractor")) {
+            return "salt_extractor";
+        }
+        if (path.endsWith("_auto_crafter")) {
+            return "auto_crafter";
+        }
+        if ("auto_trader".equals(path)) {
+            return "auto_trader";
+        }
+        if ("ca_collector".equals(path)) {
+            return "ca_collector";
+        }
+        if (path.endsWith("_ca_condenser")) {
+            return "ca_condenser";
+        }
+        if (path.endsWith("_ca_injector")) {
+            return "ca_injector";
+        }
+        if (path.endsWith("_centrifuge")) {
+            return "centrifuge";
+        }
+        if (path.endsWith("_chemical_reactor")) {
+            return "chemical_reactor";
+        }
+        if (path.endsWith("_assembler") || path.endsWith("_inscriber") || path.endsWith("_alloy_smelter")) {
+            return "assembler";
+        }
+        if ("machine".equals(cc.categoryKey)) {
+            return "simple_machine";
         }
         return null;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        String key = resolveBlockEntityCategory(state.getBlock());
+        if (key == null) {
+            return null;
+        }
+        return switch (key) {
+            case "buffer" -> new BufferBlockEntity(pos, state);
+            case "multitrack_buffer" -> new MultitrackBufferBlockEntity(pos, state);
+            case "fluid_translator" -> new FluidTranslatorBlockEntity(pos, state);
+            case "vacuum_container" -> new VacuumContainerBlockEntity(pos, state);
+            case "distributor" -> new DistributorBlockEntity(pos, state);
+            case "clay_interface" -> new ClayInterfaceBlockEntity(pos, state);
+            case "laser_interface" -> new LaserInterfaceBlockEntity(pos, state);
+            case "clay_crafting_table" -> new ClayCraftingTableBlockEntity(pos, state);
+            case "clay_chunk_loader" -> new ClayChunkLoaderBlockEntity(pos, state);
+            case "water_wheel" -> new WaterWheelBlockEntity(pos, state);
+            case "blast_furnace" -> new BlastFurnaceBlockEntity(pos, state);
+            case "reactor" -> new ReactorBlockEntity(pos, state);
+            case "ca_reactor" -> new CAReactorBlockEntity(pos, state);
+            case "creative_ce_source" -> new CreativeEnergySourceBlockEntity(pos, state);
+            case "auto_clay_condenser" -> new AutoClayCondenserBlockEntity(pos, state);
+            case "solar_clay_fabricator" -> new SolarClayFabricatorBlockEntity(pos, state);
+            case "clay_fabricator" -> new ClayFabricatorBlockEntity(pos, state);
+            case "chemical_metal_separator" -> new ChemicalMetalSeparatorBlockEntity(pos, state);
+            case "cobblestone_generator" -> new CobblestoneGeneratorBlockEntity(pos, state);
+            case "salt_extractor" -> new SaltExtractorBlockEntity(pos, state);
+            case "auto_crafter" -> new AutoCrafterBlockEntity(pos, state);
+            case "auto_trader" -> new AutoTraderBlockEntity(pos, state);
+            case "ca_collector" -> new CACollectorBlockEntity(pos, state);
+            case "ca_condenser" -> new CACondenserBlockEntity(pos, state);
+            case "ca_injector" -> new CAInjectorBlockEntity(pos, state);
+            case "centrifuge" -> new CentrifugeBlockEntity(pos, state);
+            case "chemical_reactor" -> new ChemicalReactorBlockEntity(pos, state);
+            case "assembler" -> new AssemblerBlockEntity(pos, state);
+            case "simple_machine" -> new SimpleClayMachineBlockEntity(pos, state);
+            case "pan_duplicator" -> new PANDuplicatorBlockEntity(pos, state);
+            default -> null;
+        };
     }
 
     @Nullable
@@ -298,14 +457,9 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
         if (level.isClientSide) {
             return null;
         }
-        if (type == ClayiumBlockEntities.BUFFER.get()
-                || type == ClayiumBlockEntities.MULTITRACK_BUFFER.get()
-                || type == ClayiumBlockEntities.FLUID_TRANSLATOR.get()
-                || type == ClayiumBlockEntities.STORAGE_CONTAINER.get()
-                || type == ClayiumBlockEntities.VACUUM_CONTAINER.get()
-                || type == ClayiumBlockEntities.METAL_CHEST.get()
-                || type == ClayiumBlockEntities.DISTRIBUTOR.get()
-                || type == ClayiumBlockEntities.CLAY_INTERFACE.get()) {
+        if (resolveBlockEntityCategory(state.getBlock()) != null
+                && type != ClayiumBlockEntities.CLAY_WORK_TABLE.get()
+                && type != ClayiumBlockEntities.QUARTZ_CRUCIBLE.get()) {
             return (lvl, p, st, be) -> {
                 if (be instanceof ClayContainerBlockEntity container) {
                     container.serverTick();

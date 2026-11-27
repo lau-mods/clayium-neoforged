@@ -9,7 +9,9 @@ public final class ProgressionRate {
     private ProgressionRate() {}
 
     public static double rate() {
-        return ClayiumConfig.PROGRESSION_RATE.get();
+        return ClayiumConfig.SPEC.isLoaded()
+                ? ClayiumConfig.PROGRESSION_RATE.get()
+                : ClayiumConfig.PROGRESSION_RATE.getDefault();
     }
 
     public static double multiplyD(double value) {

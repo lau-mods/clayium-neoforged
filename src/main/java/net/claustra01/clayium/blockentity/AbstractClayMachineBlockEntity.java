@@ -3,6 +3,7 @@ package net.claustra01.clayium.blockentity;
 import net.claustra01.clayium.block.ClayContainerBlock;
 import net.claustra01.clayium.energy.ClayEnergyUpgradeMath;
 import net.claustra01.clayium.energy.ClayEnergyUpgradeMath.AdjacentUpgradeSummary;
+import net.claustra01.clayium.util.UtilTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -43,6 +44,54 @@ public abstract class AbstractClayMachineBlockEntity extends TieredClayContainer
         return true;
     }
 
+    @Override
+    public boolean acceptEnergyClay() {
+        return UtilTier.acceptEnergyClay(getTier());
+    }
+
+    public int canPushButton() {
+        return canProceedCraft() ? 1 : 0;
+    }
+
+    public void pushButton() {
+        if (canPushButton() == 1) {
+            this.clayEnergyStorage.addEnergy(5L);
+        }
+        markForSync();
+    }
+
+    protected boolean shouldDisplayActiveOverlay() {
+        return this.doingWork;
+    }
+
+    protected boolean canFitOutputStack(int slot, net.minecraft.world.item.ItemStack result) {
+        if (result.isEmpty()) {
+            return true;
+        }
+        net.minecraft.world.item.ItemStack existing = getStack(slot);
+        if (existing.isEmpty()) {
+            return true;
+        }
+        if (!net.minecraft.world.item.ItemStack.isSameItemSameComponents(existing, result)) {
+            return false;
+        }
+        int total = existing.getCount() + result.getCount();
+        return total <= getInventoryStackLimit(slot) && total <= existing.getMaxStackSize();
+    }
+
+    protected void addOutputStack(int slot, net.minecraft.world.item.ItemStack result) {
+        if (result.isEmpty()) {
+            return;
+        }
+        net.minecraft.world.item.ItemStack existing = getStack(slot);
+        if (existing.isEmpty()) {
+            setStack(slot, result.copy());
+        } else if (net.minecraft.world.item.ItemStack.isSameItemSameComponents(existing, result)) {
+            existing.grow(result.getCount());
+            markForSync();
+        }
+    }
+
     public boolean isCrafting() {
         return this.machineCraftTime > 0L;
     }
@@ -69,9 +118,9 @@ public abstract class AbstractClayMachineBlockEntity extends TieredClayContainer
         markForSync();
     }
 
-    protected abstract boolean canProceedCraft();
+    public abstract boolean canProceedCraft();
 
-    protected abstract void proceedCraft();
+    public abstract void proceedCraft();
 
     @Override
     public void serverTick() {
@@ -113,7 +162,7 @@ public abstract class AbstractClayMachineBlockEntity extends TieredClayContainer
         }
         BlockState state = getBlockState();
         if (state.hasProperty(ClayContainerBlock.ACTIVE)) {
-            boolean shouldBeActive = this.doingWork;
+            boolean shouldBeActive = shouldDisplayActiveOverlay();
             if (state.getValue(ClayContainerBlock.ACTIVE) != shouldBeActive) {
                 this.level.setBlock(this.worldPosition, state.setValue(ClayContainerBlock.ACTIVE, shouldBeActive), Block.UPDATE_CLIENTS);
             }

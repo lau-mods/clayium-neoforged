@@ -15,19 +15,41 @@ public final class ClayiumCapabilities {
 
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        registerContainerItemHandler(event, ClayiumBlockEntities.BUFFER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.MULTITRACK_BUFFER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.FLUID_TRANSLATOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.STORAGE_CONTAINER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.VACUUM_CONTAINER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.METAL_CHEST);
+        registerContainerItemHandler(event, ClayiumBlockEntities.DISTRIBUTOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CLAY_INTERFACE);
+        registerContainerItemHandler(event, ClayiumBlockEntities.SIMPLE_MACHINE);
+        registerContainerItemHandler(event, ClayiumBlockEntities.ASSEMBLER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CENTRIFUGE);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CHEMICAL_REACTOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CHEMICAL_METAL_SEPARATOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CA_INJECTOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CA_CONDENSER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CA_COLLECTOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.BLAST_FURNACE);
+        registerContainerItemHandler(event, ClayiumBlockEntities.REACTOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CA_REACTOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.AUTO_CLAY_CONDENSER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.SOLAR_CLAY_FABRICATOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CLAY_FABRICATOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.COBBLESTONE_GENERATOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.SALT_EXTRACTOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.WATER_WHEEL);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CREATIVE_CE_SOURCE);
+        registerContainerItemHandler(event, ClayiumBlockEntities.AUTO_CRAFTER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.AUTO_TRADER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.PAN_DUPLICATOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.CLAY_CRAFTING_TABLE);
+        registerContainerItemHandler(event, ClayiumBlockEntities.LASER_INTERFACE);
+
         event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.BUFFER.get(),
-                (be, side) -> be.getItemHandler(side)
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.MULTITRACK_BUFFER.get(),
-                (be, side) -> be.getItemHandler(side)
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.FLUID_TRANSLATOR.get(),
+                ClayiumBlockEntities.CLAY_WORK_TABLE.get(),
                 (be, side) -> be.getItemHandler(side)
         );
         event.registerBlockEntity(
@@ -36,34 +58,21 @@ public final class ClayiumCapabilities {
                 (be, side) -> be.getFluidHandler(side)
         );
         event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.STORAGE_CONTAINER.get(),
-                (be, side) -> be.getItemHandler(side)
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.VACUUM_CONTAINER.get(),
-                (be, side) -> be.getItemHandler(side)
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.METAL_CHEST.get(),
-                (be, side) -> be.getItemHandler(side)
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.DISTRIBUTOR.get(),
-                (be, side) -> be.getItemHandler(side)
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ClayiumBlockEntities.CLAY_INTERFACE.get(),
-                (be, side) -> be.getItemHandler(side)
-        );
-        event.registerBlockEntity(
                 Capabilities.FluidHandler.BLOCK,
                 ClayiumBlockEntities.CLAY_INTERFACE.get(),
                 (be, side) -> be.getDelegatedFluidHandler(side)
+        );
+    }
+
+    private static <T extends net.claustra01.clayium.blockentity.ClayContainerBlockEntity> void registerContainerItemHandler(
+            RegisterCapabilitiesEvent event,
+            net.neoforged.neoforge.registries.DeferredHolder<
+                    net.minecraft.world.level.block.entity.BlockEntityType<?>,
+                    net.minecraft.world.level.block.entity.BlockEntityType<T>> type) {
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                type.get(),
+                (be, side) -> be.getItemHandler(side)
         );
     }
 }
