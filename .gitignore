@@ -38,10 +38,5 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
-.harness-state/runs/
-.harness-state/runtime/
 
 .tmp/
-reference/original/
-
-.codex/rules/harness-gradle.rules

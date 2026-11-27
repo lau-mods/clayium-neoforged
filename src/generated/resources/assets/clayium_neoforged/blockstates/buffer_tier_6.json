@@ -1,9 +1,0 @@
-{
-  "multipart": [
-    {
-      "apply": {
-        "model": "clayium_neoforged:block/buffer_tier_6"
-      }
-    }
-  ]
-}

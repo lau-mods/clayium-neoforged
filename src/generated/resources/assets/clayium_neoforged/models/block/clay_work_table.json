@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "bottom": "clayium_neoforged:block/clayworktable_side",
-    "side": "clayium_neoforged:block/clayworktable_side",
-    "top": "clayium_neoforged:block/clayworktable"
-  }
-}
