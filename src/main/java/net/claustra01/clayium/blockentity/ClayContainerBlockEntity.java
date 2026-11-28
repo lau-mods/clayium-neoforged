@@ -142,6 +142,31 @@ public abstract class ClayContainerBlockEntity extends BlockEntity implements IG
         return this.clayEnergyStorage;
     }
 
+    public long getClayEnergy() {
+        return this.clayEnergyStorage.getStored();
+    }
+
+    public boolean hasCustomName() {
+        return this.customName != null && !this.customName.isEmpty();
+    }
+
+    @Nullable
+    public String getCustomName() {
+        return this.customName;
+    }
+
+    public int getInsertRoute(RelativeSide side) {
+        return this.insertRoutes[side.id()];
+    }
+
+    public int getExtractRoute(RelativeSide side) {
+        return this.extractRoutes[side.id()];
+    }
+
+    public ItemStack getFilter(RelativeSide side) {
+        return this.filters.get(side.id());
+    }
+
     public boolean consumeClayEnergy(long energy) {
         boolean ok = this.clayEnergyStorage.consume(
                 energy,

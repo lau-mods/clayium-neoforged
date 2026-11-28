@@ -1,5 +1,6 @@
 package net.claustra01.clayium;
 
+import net.claustra01.clayium.network.ClayiumNetwork;
 import net.claustra01.clayium.registry.ClayiumBlockEntities;
 import net.claustra01.clayium.registry.ClayiumBlocks;
 import net.claustra01.clayium.registry.ClayiumCreativeTabs;
@@ -38,6 +39,7 @@ public class ClayiumMod {
         ClayiumRecipeConditions.register(modEventBus);
         ClayiumLootFunctions.register(modEventBus);
         ClayiumCreativeTabs.register(modEventBus);
+        modEventBus.addListener(ClayiumNetwork::register);
     }
 
     public static ResourceLocation id(String path) {

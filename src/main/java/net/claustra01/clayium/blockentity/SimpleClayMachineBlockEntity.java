@@ -50,6 +50,11 @@ public class SimpleClayMachineBlockEntity extends AbstractClayMachineBlockEntity
     }
 
     @Override
+    public String getRecipeCategoryId() {
+        return this.recipeCategoryId;
+    }
+
+    @Override
     protected void initParamsByTier(int tier) {
         setDefaultTransportationParamsByTier(tier, ParamMode.MACHINE);
         MachineConfig cfg = resolveMachineConfig(getBlockState());

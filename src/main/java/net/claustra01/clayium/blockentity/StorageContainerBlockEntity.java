@@ -72,6 +72,18 @@ public class StorageContainerBlockEntity extends ClayContainerBlockEntity {
         return this.maxStorageSize;
     }
 
+    public boolean isVacuumContainer() {
+        return false;
+    }
+
+    public void setClientSyncedCount(int count) {
+        this.storedCount = Math.max(0, count);
+    }
+
+    public void setClientSyncedMaxSize(int max) {
+        this.maxStorageSize = Math.max(1, max);
+    }
+
     public boolean isUpgraded() {
         return this.maxStorageSize >= (1 << 30);
     }

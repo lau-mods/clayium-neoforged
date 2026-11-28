@@ -27,20 +27,36 @@ import net.claustra01.clayium.blockentity.IGeneralInterface;
 import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.MultitrackBufferBlockEntity;
 import net.claustra01.clayium.blockentity.PANDuplicatorBlockEntity;
+import net.claustra01.clayium.blockentity.QuartzCrucibleBlockEntity;
 import net.claustra01.clayium.blockentity.ReactorBlockEntity;
+import net.claustra01.clayium.blockentity.RedstoneInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.SaltExtractorBlockEntity;
 import net.claustra01.clayium.blockentity.SimpleClayMachineBlockEntity;
 import net.claustra01.clayium.blockentity.SolarClayFabricatorBlockEntity;
 import net.claustra01.clayium.blockentity.StorageContainerBlockEntity;
 import net.claustra01.clayium.blockentity.VacuumContainerBlockEntity;
 import net.claustra01.clayium.blockentity.WaterWheelBlockEntity;
+import net.claustra01.clayium.menu.AutoClayCondenserMenu;
+import net.claustra01.clayium.menu.AutoCrafterMenu;
+import net.claustra01.clayium.menu.AutoTraderMenu;
+import net.claustra01.clayium.menu.ClayCraftingTableMenu;
+import net.claustra01.clayium.menu.DistributorMenu;
+import net.claustra01.clayium.menu.EnergyOnlyMenu;
+import net.claustra01.clayium.menu.MultitrackBufferMenu;
+import net.claustra01.clayium.menu.NormalInventoryMenu;
+import net.claustra01.clayium.menu.ProcessingMachineMenu;
+import net.claustra01.clayium.menu.StorageContainerMenu;
+import net.claustra01.clayium.menu.WaterWheelMenu;
 import net.claustra01.clayium.registry.ClayiumBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -275,6 +291,189 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            Player player,
+            BlockHitResult hit) {
+        if (level.isClientSide) {
+            return hasContainerMenu(level, pos) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+        }
+        return openMenuAt(level, pos, pos, player) ? InteractionResult.CONSUME : InteractionResult.PASS;
+    }
+
+    @Override
+    protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+        super.triggerEvent(state, level, pos, id, param);
+        BlockEntity be = level.getBlockEntity(pos);
+        return be != null && be.triggerEvent(id, param);
+    }
+
+    public static boolean hasContainerMenu(Level level, BlockPos pos) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof ClayInterfaceBlockEntity iface) {
+            return iface.isSynced() && iface.getCore() != null;
+        }
+        if (be instanceof ClayChunkLoaderBlockEntity
+                || be instanceof LaserInterfaceBlockEntity
+                || be instanceof RedstoneInterfaceBlockEntity
+                || be instanceof QuartzCrucibleBlockEntity) {
+            return false;
+        }
+        return be instanceof ClayContainerBlockEntity;
+    }
+
+    public static boolean openMenuAt(Level level, BlockPos targetPos, BlockPos interactionPos, Player player) {
+        BlockEntity be = level.getBlockEntity(targetPos);
+        if (be instanceof ClayInterfaceBlockEntity iface) {
+            if (!iface.isSynced()) {
+                return false;
+            }
+            BlockEntity core = iface.getCore();
+            Level coreLevel = iface.getCoreLevel();
+            if (core == null || coreLevel == null || core == iface) {
+                return false;
+            }
+            return openMenuAt(coreLevel, core.getBlockPos(), interactionPos, player);
+        }
+        if (!(be instanceof ClayContainerBlockEntity container)) {
+            return false;
+        }
+
+        Component title = container.hasCustomName()
+                ? Component.literal(container.getCustomName())
+                : container.getBlockState().getBlock().getName();
+
+        if (container instanceof net.claustra01.clayium.blockentity.AbstractClayMachineBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new ProcessingMachineMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof AutoClayCondenserBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new AutoClayCondenserMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof AutoCrafterBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new AutoCrafterMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof AutoTraderBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new AutoTraderMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof MultitrackBufferBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new MultitrackBufferMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof DistributorBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new DistributorMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof StorageContainerBlockEntity storage) {
+            boolean vacuum = storage.isVacuumContainer();
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new StorageContainerMenu(id, inv, targetPos, interactionPos, vacuum),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                        buf.writeBoolean(vacuum);
+                    });
+            return true;
+        }
+        if (container instanceof WaterWheelBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new WaterWheelMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof ClayCraftingTableBlockEntity) {
+            BlockPos chestPos = ClayCraftingTableMenu.findAdjacentChest(level, targetPos);
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new ClayCraftingTableMenu(id, inv, targetPos, interactionPos, chestPos),
+                            title),
+                    buf -> ClayCraftingTableMenu.writeInitData(buf, targetPos, interactionPos, chestPos));
+            return true;
+        }
+        if (container instanceof SolarClayFabricatorBlockEntity
+                || container instanceof ClayFabricatorBlockEntity
+                || container instanceof CreativeEnergySourceBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new EnergyOnlyMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof BufferBlockEntity
+                || container instanceof net.claustra01.clayium.blockentity.MetalChestBlockEntity
+                || container instanceof CACollectorBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new NormalInventoryMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        return false;
     }
 
     @Override

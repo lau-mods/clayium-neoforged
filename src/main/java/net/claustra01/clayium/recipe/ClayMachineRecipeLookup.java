@@ -111,4 +111,24 @@ public final class ClayMachineRecipeLookup {
         }
         return null;
     }
+
+    public static boolean isCraftableAnyInput(
+            Collection<ClayMachineRecipe> recipes,
+            ItemStack candidate,
+            int machineTier) {
+        if (candidate.isEmpty() || recipes.isEmpty()) {
+            return false;
+        }
+        for (ClayMachineRecipe recipe : recipes) {
+            if (recipe.tier() > machineTier) {
+                continue;
+            }
+            for (CountedIngredient input : recipe.inputs()) {
+                if (input.ingredient().test(candidate)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -11,6 +11,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -269,6 +272,7 @@ public class RedstoneInterfaceBlockEntity extends BlockEntity implements ISynchr
         tag.putInt("CoreBlockX", this.coreOffsetX);
         tag.putInt("CoreBlockY", this.coreOffsetY);
         tag.putInt("CoreBlockZ", this.coreOffsetZ);
+        tag.putBoolean("Synced", this.synced);
         tag.putInt("LastSignal", this.lastSignal);
         tag.putInt("LastPower", this.lastPower);
         tag.putString("ControlState", this.controlState);
@@ -283,6 +287,7 @@ public class RedstoneInterfaceBlockEntity extends BlockEntity implements ISynchr
         this.coreOffsetX = tag.getInt("CoreBlockX");
         this.coreOffsetY = tag.getInt("CoreBlockY");
         this.coreOffsetZ = tag.getInt("CoreBlockZ");
+        this.synced = tag.getBoolean("Synced");
         this.lastSignal = tag.getInt("LastSignal");
         this.lastPower = tag.getInt("LastPower");
         if (tag.contains("ControlState")) {
@@ -294,5 +299,22 @@ public class RedstoneInterfaceBlockEntity extends BlockEntity implements ISynchr
         } else {
             this.coreDimension = null;
         }
+    }
+
+    @Override
+    @Nullable
+    public ResourceKey<Level> getCoreDimension() {
+        return this.coreDimension;
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
+    }
+
+    @Override
+    @Nullable
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

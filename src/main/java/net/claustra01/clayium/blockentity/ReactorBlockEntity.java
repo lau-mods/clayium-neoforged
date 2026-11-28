@@ -9,6 +9,8 @@ import net.claustra01.clayium.laser.IClayLaserMachine;
 import net.claustra01.clayium.registry.ClayiumBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ReactorBlockEntity extends BlastFurnaceBlockEntity implements IClayLaserMachine {
     @Nullable
     public ClayLaser irradiatedLaser;
+    public long lastLaserEnergy = 0L;
 
     public ReactorBlockEntity(BlockPos pos, BlockState state) {
         super(ClayiumBlockEntities.REACTOR.get(), pos, state);
@@ -116,14 +119,42 @@ public class ReactorBlockEntity extends BlastFurnaceBlockEntity implements IClay
     @Override
     protected void onCraftingStep() {
         if (this.irradiatedLaser != null) {
-            this.machineCraftTime += (long) this.irradiatedLaser.getEnergy();
+            this.lastLaserEnergy = (long) this.irradiatedLaser.getEnergy();
+            this.machineCraftTime += this.lastLaserEnergy;
             this.irradiatedLaser = null;
+        }
+    }
+
+    @Override
+    public void serverTick() {
+        long prev = this.lastLaserEnergy;
+        super.serverTick();
+        if (this.level != null && !this.level.isClientSide) {
+            if (!isDoingWork() && this.irradiatedLaser == null) {
+                this.lastLaserEnergy = 0L;
+            }
+            if (prev != this.lastLaserEnergy) {
+                markForSync();
+            }
         }
     }
 
     @Override
     public boolean irradiateClayLaser(ClayLaser laser, Direction incomingSide) {
         this.irradiatedLaser = laser;
+        this.lastLaserEnergy = laser != null ? (long) laser.getEnergy() : 0L;
         return true;
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putLong("LastLaserEnergy", this.lastLaserEnergy);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        this.lastLaserEnergy = tag.getLong("LastLaserEnergy");
     }
 }

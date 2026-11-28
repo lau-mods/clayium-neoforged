@@ -17,6 +17,11 @@ public class VacuumContainerBlockEntity extends StorageContainerBlockEntity {
     }
 
     @Override
+    public boolean isVacuumContainer() {
+        return true;
+    }
+
+    @Override
     protected boolean checkFilterSlot(ItemStack candidate, ItemStack filter) {
         return super.checkFilterSlot(candidate, filter) || ClayiumFilterMatcher.match(filter, candidate);
     }

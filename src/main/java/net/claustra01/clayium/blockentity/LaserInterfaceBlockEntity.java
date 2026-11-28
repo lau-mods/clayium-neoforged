@@ -150,6 +150,7 @@ public class LaserInterfaceBlockEntity extends TieredClayContainerBlockEntity
         tag.putInt("CoreBlockX", this.coreOffsetX);
         tag.putInt("CoreBlockY", this.coreOffsetY);
         tag.putInt("CoreBlockZ", this.coreOffsetZ);
+        tag.putBoolean("Synced", this.synced);
         tag.putBoolean("AcceptCoordChanger", this.acceptCoordChanger);
         tag.putBoolean("InterDimensional", this.coreDimension != null);
         if (this.coreDimension != null) {
@@ -163,6 +164,7 @@ public class LaserInterfaceBlockEntity extends TieredClayContainerBlockEntity
         this.coreOffsetX = tag.getInt("CoreBlockX");
         this.coreOffsetY = tag.getInt("CoreBlockY");
         this.coreOffsetZ = tag.getInt("CoreBlockZ");
+        this.synced = tag.getBoolean("Synced");
         this.acceptCoordChanger = tag.getBoolean("AcceptCoordChanger");
         if (tag.contains("CoreBlockDimension")) {
             ResourceLocation dimId = ResourceLocation.tryParse(tag.getString("CoreBlockDimension"));
@@ -173,5 +175,11 @@ public class LaserInterfaceBlockEntity extends TieredClayContainerBlockEntity
             this.coreDimension = null;
         }
         syncCoreBlock();
+    }
+
+    @Override
+    @Nullable
+    public ResourceKey<Level> getCoreDimension() {
+        return this.coreDimension;
     }
 }

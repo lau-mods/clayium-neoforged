@@ -85,7 +85,7 @@ public class ClayInterfaceBlockEntity extends TieredClayContainerBlockEntity imp
     }
 
     @Nullable
-    protected Level getCoreLevel() {
+    public Level getCoreLevel() {
         if (this.level == null) {
             return null;
         }
@@ -283,6 +283,7 @@ public class ClayInterfaceBlockEntity extends TieredClayContainerBlockEntity imp
         tag.putInt("CoreBlockX", this.coreOffsetX);
         tag.putInt("CoreBlockY", this.coreOffsetY);
         tag.putInt("CoreBlockZ", this.coreOffsetZ);
+        tag.putBoolean("Synced", this.synced);
         tag.putBoolean("AcceptCoordChanger", this.acceptCoordChanger);
         if (this.coreDimension != null) {
             tag.putString("CoreBlockDimension", this.coreDimension.location().toString());
@@ -295,6 +296,7 @@ public class ClayInterfaceBlockEntity extends TieredClayContainerBlockEntity imp
         this.coreOffsetX = tag.getInt("CoreBlockX");
         this.coreOffsetY = tag.getInt("CoreBlockY");
         this.coreOffsetZ = tag.getInt("CoreBlockZ");
+        this.synced = tag.getBoolean("Synced");
         this.acceptCoordChanger = tag.getBoolean("AcceptCoordChanger");
         if (tag.contains("CoreBlockDimension")) {
             ResourceLocation loc = ResourceLocation.tryParse(tag.getString("CoreBlockDimension"));
@@ -302,6 +304,12 @@ public class ClayInterfaceBlockEntity extends TieredClayContainerBlockEntity imp
         } else {
             this.coreDimension = null;
         }
+    }
+
+    @Override
+    @Nullable
+    public ResourceKey<Level> getCoreDimension() {
+        return this.coreDimension;
     }
 
     private final class InterfaceItemHandler implements IItemHandler {

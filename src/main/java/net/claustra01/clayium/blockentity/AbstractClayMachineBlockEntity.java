@@ -44,6 +44,10 @@ public abstract class AbstractClayMachineBlockEntity extends TieredClayContainer
         return true;
     }
 
+    public String getRecipeCategoryId() {
+        return "";
+    }
+
     @Override
     public boolean acceptEnergyClay() {
         return UtilTier.acceptEnergyClay(getTier());
