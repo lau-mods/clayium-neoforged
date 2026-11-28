@@ -1013,7 +1013,6 @@
   "recipe.WireDrawingMachine": "粘土ワイヤー圧延機",
   "tile.blockActivator.tooltip.line1": "右クリックを代行",
   "tile.blockAdvancedFluidTransferMachine.tooltip.line1": "液体容器から液体を出し入れする",
-  "tile.blockAntimatterClayEnergyLaser.tooltip.line1": "3x青 + 3x緑 + 3x赤 と等しい",
   "tile.blockAreaActivator.tooltip.line1": "右クリックを代行",
   "tile.blockAutoClayCondenser.tooltip.line1": "全自動粘土工場の効率化に",
   "tile.blockAutoClayCondenserMK2.tooltip.line1": "全自動粘土工場の効率化に",

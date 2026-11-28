@@ -51,6 +51,10 @@ public class TieredBlockItem extends BlockItem implements ITieredItem, IClayEner
         Block block = getBlock();
         String tooltipPrefix = ClayiumTooltips.resolveBlockTooltipPrefix(block, block.getDescriptionId());
         ClayiumTooltips.appendLocalizedTooltip(tooltip, tooltipPrefix, flag);
+        String specificPrefix = block.getDescriptionId() + ".tooltip";
+        if (!specificPrefix.equals(tooltipPrefix)) {
+            ClayiumTooltips.appendLocalizedTooltip(tooltip, specificPrefix, flag);
+        }
 
         int tier = getTier(stack);
         if (tier >= 0) {

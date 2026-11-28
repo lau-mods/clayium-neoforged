@@ -4,14 +4,20 @@ import javax.annotation.Nullable;
 import net.claustra01.clayium.laser.ClayLaser;
 import net.claustra01.clayium.laser.IClayLaserMachine;
 import net.claustra01.clayium.registry.ClayiumBlockEntities;
+import net.claustra01.clayium.registry.ClayiumDataComponents;
+import net.claustra01.clayium.registry.ClayiumItems;
+import net.claustra01.clayium.util.ClayDirection.RelativeSide;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -88,6 +94,53 @@ public class LaserInterfaceBlockEntity extends TieredClayContainerBlockEntity
     @Override
     public boolean acceptsCoordChanger() {
         return this.acceptCoordChanger;
+    }
+
+    @Override
+    public int getItemUseMode(ItemStack stack, Player player) {
+        if (!stack.isEmpty()) {
+            if (stack.is(ClayiumItems.byPath("synchronizer").get())) {
+                return 90;
+            }
+            if (stack.is(ClayiumItems.byPath("synchronous_parts").get())) {
+                return 91;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public boolean isUsableTool(ItemStack stack, Player player, Direction hitFace) {
+        int mode = getItemUseMode(stack, player);
+        return mode == 90 || mode == 91;
+    }
+
+    @Override
+    protected void useItemFromSide(ItemStack stack, Player player, RelativeSide relSide, int mode, Direction hitFace) {
+        if (mode == 91 && !this.acceptCoordChanger) {
+            this.acceptCoordChanger = true;
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+            player.sendSystemMessage(Component.literal("Interface coordinate linking unlocked"));
+            return;
+        }
+        if (mode == 90 && this.acceptCoordChanger) {
+            GlobalPos gp = stack.get(ClayiumDataComponents.SYNCHRONIZER_TARGET.get());
+            if (gp != null) {
+                BlockPos target = gp.pos();
+                if (setCoreBlockDimension(gp.dimension())
+                        && setCoreBlockOffset(
+                                target.getX() - this.worldPosition.getX(),
+                                target.getY() - this.worldPosition.getY(),
+                                target.getZ() - this.worldPosition.getZ())) {
+                    player.sendSystemMessage(Component.literal(
+                            "Set Core block Coord (" + target.getX() + "," + target.getY() + "," + target.getZ()
+                                    + ") in dim " + gp.dimension().location()
+                    ));
+                }
+            }
+        }
     }
 
     @Nullable

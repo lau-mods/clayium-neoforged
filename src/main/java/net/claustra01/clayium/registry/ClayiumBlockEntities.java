@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import net.claustra01.clayium.ClayiumMod;
 import net.claustra01.clayium.block.ClayContainerBlock;
+import net.claustra01.clayium.blockentity.AreaActivatorBlockEntity;
+import net.claustra01.clayium.blockentity.AreaCollectorBlockEntity;
+import net.claustra01.clayium.blockentity.AreaMinerBlockEntity;
 import net.claustra01.clayium.blockentity.AssemblerBlockEntity;
 import net.claustra01.clayium.blockentity.AutoClayCondenserBlockEntity;
 import net.claustra01.clayium.blockentity.AutoCrafterBlockEntity;
@@ -19,14 +22,17 @@ import net.claustra01.clayium.blockentity.ChemicalMetalSeparatorBlockEntity;
 import net.claustra01.clayium.blockentity.ChemicalReactorBlockEntity;
 import net.claustra01.clayium.blockentity.ClayChunkLoaderBlockEntity;
 import net.claustra01.clayium.blockentity.ClayCraftingTableBlockEntity;
+import net.claustra01.clayium.blockentity.ClayEnergyLaserBlockEntity;
 import net.claustra01.clayium.blockentity.ClayFabricatorBlockEntity;
 import net.claustra01.clayium.blockentity.ClayInterfaceBlockEntity;
+import net.claustra01.clayium.blockentity.ClayMarkerBlockEntity;
 import net.claustra01.clayium.blockentity.ClayWorkTableBlockEntity;
 import net.claustra01.clayium.blockentity.CobblestoneGeneratorBlockEntity;
 import net.claustra01.clayium.blockentity.CreativeEnergySourceBlockEntity;
 import net.claustra01.clayium.blockentity.DistributorBlockEntity;
 import net.claustra01.clayium.blockentity.FluidTranslatorBlockEntity;
 import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
+import net.claustra01.clayium.blockentity.LaserReflectorBlockEntity;
 import net.claustra01.clayium.blockentity.MetalChestBlockEntity;
 import net.claustra01.clayium.blockentity.MultitrackBufferBlockEntity;
 import net.claustra01.clayium.blockentity.PANDuplicatorBlockEntity;
@@ -126,6 +132,18 @@ public final class ClayiumBlockEntities {
             regByCategory("quartz_crucible", QuartzCrucibleBlockEntity::new);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayChunkLoaderBlockEntity>> CLAY_CHUNK_LOADER =
             regByCategory("clay_chunk_loader", ClayChunkLoaderBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayEnergyLaserBlockEntity>> CLAY_ENERGY_LASER =
+            regByCategory("clay_energy_laser", ClayEnergyLaserBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserReflectorBlockEntity>> LASER_REFLECTOR =
+            regByCategory("laser_reflector", LaserReflectorBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayMarkerBlockEntity>> CLAY_MARKER =
+            regByCategory("clay_marker", ClayMarkerBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AreaMinerBlockEntity>> AREA_MINER =
+            regByCategory("area_miner", AreaMinerBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AreaCollectorBlockEntity>> AREA_COLLECTOR =
+            regByCategory("area_collector", AreaCollectorBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AreaActivatorBlockEntity>> AREA_ACTIVATOR =
+            regByCategory("area_activator", AreaActivatorBlockEntity::new);
 
     private static <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> regByCategory(
             String category,

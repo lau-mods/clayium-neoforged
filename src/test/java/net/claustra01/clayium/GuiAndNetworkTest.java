@@ -68,7 +68,7 @@ import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class Step10GuiAndNetworkTest {
+class GuiAndNetworkTest {
     private static RegistryAccess.Frozen registries;
 
     @BeforeAll
@@ -80,14 +80,14 @@ class Step10GuiAndNetworkTest {
 
     @Test
     void all15MenuTypesAreRegisteredAndDistinct() {
-        assertEquals(15, ClayiumMenus.REGISTRY.getEntries().size());
+        assertEquals(17, ClayiumMenus.REGISTRY.getEntries().size());
         Set<MenuType<?>> types = new HashSet<>();
         for (var entry : ClayiumMenus.REGISTRY.getEntries()) {
             MenuType<?> type = entry.get();
             assertNotNull(type);
             assertTrue(types.add(type), "Duplicate MenuType: " + entry.getId());
         }
-        assertEquals(15, types.size());
+        assertEquals(17, types.size());
     }
 
     @Test
@@ -231,13 +231,13 @@ class Step10GuiAndNetworkTest {
         for (String stem : allStems) {
             ResourceLocation texPath = ClayiumMod.id("textures/block/" + stem + ".png");
             assertNotNull(
-                    Step10GuiAndNetworkTest.class.getResource("/assets/" + texPath.getNamespace() + "/" + texPath.getPath()),
+                    GuiAndNetworkTest.class.getResource("/assets/" + texPath.getNamespace() + "/" + texPath.getPath()),
                     "Missing texture for " + stem
             );
             if (!"filter".equals(stem)) {
                 ResourceLocation pipePath = ClayiumMod.id("textures/block/" + stem + "_p.png");
                 assertNotNull(
-                        Step10GuiAndNetworkTest.class.getResource("/assets/" + pipePath.getNamespace() + "/" + pipePath.getPath()),
+                        GuiAndNetworkTest.class.getResource("/assets/" + pipePath.getNamespace() + "/" + pipePath.getPath()),
                         "Missing pipe texture for " + stem
                 );
             }

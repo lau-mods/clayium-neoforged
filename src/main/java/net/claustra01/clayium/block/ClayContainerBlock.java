@@ -1,6 +1,9 @@
 package net.claustra01.clayium.block;
 
 import javax.annotation.Nullable;
+import net.claustra01.clayium.blockentity.AreaActivatorBlockEntity;
+import net.claustra01.clayium.blockentity.AreaCollectorBlockEntity;
+import net.claustra01.clayium.blockentity.AreaMinerBlockEntity;
 import net.claustra01.clayium.blockentity.AssemblerBlockEntity;
 import net.claustra01.clayium.blockentity.AutoClayCondenserBlockEntity;
 import net.claustra01.clayium.blockentity.AutoCrafterBlockEntity;
@@ -17,6 +20,7 @@ import net.claustra01.clayium.blockentity.ChemicalReactorBlockEntity;
 import net.claustra01.clayium.blockentity.ClayChunkLoaderBlockEntity;
 import net.claustra01.clayium.blockentity.ClayContainerBlockEntity;
 import net.claustra01.clayium.blockentity.ClayCraftingTableBlockEntity;
+import net.claustra01.clayium.blockentity.ClayEnergyLaserBlockEntity;
 import net.claustra01.clayium.blockentity.ClayFabricatorBlockEntity;
 import net.claustra01.clayium.blockentity.ClayInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.CobblestoneGeneratorBlockEntity;
@@ -25,6 +29,7 @@ import net.claustra01.clayium.blockentity.DistributorBlockEntity;
 import net.claustra01.clayium.blockentity.FluidTranslatorBlockEntity;
 import net.claustra01.clayium.blockentity.IGeneralInterface;
 import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
+import net.claustra01.clayium.blockentity.LaserReflectorBlockEntity;
 import net.claustra01.clayium.blockentity.MultitrackBufferBlockEntity;
 import net.claustra01.clayium.blockentity.PANDuplicatorBlockEntity;
 import net.claustra01.clayium.blockentity.QuartzCrucibleBlockEntity;
@@ -36,6 +41,8 @@ import net.claustra01.clayium.blockentity.SolarClayFabricatorBlockEntity;
 import net.claustra01.clayium.blockentity.StorageContainerBlockEntity;
 import net.claustra01.clayium.blockentity.VacuumContainerBlockEntity;
 import net.claustra01.clayium.blockentity.WaterWheelBlockEntity;
+import net.claustra01.clayium.menu.AreaActivatorMenu;
+import net.claustra01.clayium.menu.AreaMinerMenu;
 import net.claustra01.clayium.menu.AutoClayCondenserMenu;
 import net.claustra01.clayium.menu.AutoCrafterMenu;
 import net.claustra01.clayium.menu.AutoTraderMenu;
@@ -320,6 +327,7 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
         }
         if (be instanceof ClayChunkLoaderBlockEntity
                 || be instanceof LaserInterfaceBlockEntity
+                || be instanceof LaserReflectorBlockEntity
                 || be instanceof RedstoneInterfaceBlockEntity
                 || be instanceof QuartzCrucibleBlockEntity) {
             return false;
@@ -449,7 +457,8 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
         }
         if (container instanceof SolarClayFabricatorBlockEntity
                 || container instanceof ClayFabricatorBlockEntity
-                || container instanceof CreativeEnergySourceBlockEntity) {
+                || container instanceof CreativeEnergySourceBlockEntity
+                || container instanceof ClayEnergyLaserBlockEntity) {
             player.openMenu(
                     new SimpleMenuProvider(
                             (id, inv, p) -> new EnergyOnlyMenu(id, inv, targetPos, interactionPos),
@@ -466,6 +475,28 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
             player.openMenu(
                     new SimpleMenuProvider(
                             (id, inv, p) -> new NormalInventoryMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof AreaMinerBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new AreaMinerMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof AreaActivatorBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new AreaActivatorMenu(id, inv, targetPos, interactionPos),
                             title),
                     buf -> {
                         buf.writeBlockPos(targetPos);
@@ -493,6 +524,9 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
 
     @Nullable
     public static String resolveBlockEntityCategory(Block block) {
+        if (block instanceof ClayMarkerBlock) {
+            return "clay_marker";
+        }
         if (block instanceof MetalChestBlock) {
             return "metal_chest";
         }
@@ -540,6 +574,21 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
         }
         if ("tooltip.LaserInterface".equals(cc.tooltipKey)) {
             return "laser_interface";
+        }
+        if (block instanceof LaserReflectorBlock) {
+            return "laser_reflector";
+        }
+        if ("laser".equals(cc.categoryKey)) {
+            return "clay_energy_laser";
+        }
+        if ("area".equals(cc.categoryKey)) {
+            if ("area_collector".equals(path)) {
+                return "area_collector";
+            }
+            if ("activator".equals(path) || "area_activator".equals(path)) {
+                return "area_activator";
+            }
+            return "area_miner";
         }
         if ("clay_chunk_loader".equals(path)) {
             return "clay_chunk_loader";
@@ -645,6 +694,11 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
             case "assembler" -> new AssemblerBlockEntity(pos, state);
             case "simple_machine" -> new SimpleClayMachineBlockEntity(pos, state);
             case "pan_duplicator" -> new PANDuplicatorBlockEntity(pos, state);
+            case "clay_energy_laser" -> new ClayEnergyLaserBlockEntity(pos, state);
+            case "laser_reflector" -> new LaserReflectorBlockEntity(pos, state);
+            case "area_miner" -> new AreaMinerBlockEntity(pos, state);
+            case "area_collector" -> new AreaCollectorBlockEntity(pos, state);
+            case "area_activator" -> new AreaActivatorBlockEntity(pos, state);
             default -> null;
         };
     }

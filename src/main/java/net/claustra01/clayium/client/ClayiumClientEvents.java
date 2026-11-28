@@ -5,11 +5,16 @@ import net.claustra01.clayium.block.MetalChestBlock;
 import net.claustra01.clayium.block.MetalMaterialBlock;
 import net.claustra01.clayium.block.SiliconeColoredBlock;
 import net.claustra01.clayium.block.StorageContainerBlock;
+import net.claustra01.clayium.client.renderer.AreaMachineRenderer;
 import net.claustra01.clayium.client.renderer.CAReactorRenderer;
 import net.claustra01.clayium.client.renderer.ClayContainerRenderer;
+import net.claustra01.clayium.client.renderer.ClayLaserRenderer;
+import net.claustra01.clayium.client.renderer.ClayMarkerRenderer;
 import net.claustra01.clayium.client.renderer.MetalChestRenderer;
 import net.claustra01.clayium.client.renderer.StorageContainerRenderer;
 import net.claustra01.clayium.client.renderer.SynchronizedInterfaceRenderer;
+import net.claustra01.clayium.client.screen.AreaActivatorScreen;
+import net.claustra01.clayium.client.screen.AreaMinerScreen;
 import net.claustra01.clayium.client.screen.AutoTraderScreen;
 import net.claustra01.clayium.client.screen.ClayCraftingTableScreen;
 import net.claustra01.clayium.client.screen.ClayWorkTableScreen;
@@ -31,8 +36,10 @@ import net.claustra01.clayium.menu.MultitrackBufferMenu;
 import net.claustra01.clayium.registry.ClayiumBlockEntities;
 import net.claustra01.clayium.registry.ClayiumBlocks;
 import net.claustra01.clayium.registry.ClayiumDataComponents;
+import net.claustra01.clayium.registry.ClayiumEntities;
 import net.claustra01.clayium.registry.ClayiumItems;
 import net.claustra01.clayium.registry.ClayiumMenus;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.BlockItem;
@@ -155,6 +162,8 @@ public final class ClayiumClientEvents {
         event.register(ClayiumMenus.ITEM_FILTER_WHITELIST.get(), SimpleContainerScreen<ItemFilterWhitelistMenu>::new);
         event.register(ClayiumMenus.ITEM_FILTER_STRING.get(), ItemFilterStringScreen::new);
         event.register(ClayiumMenus.GADGET_HOLDER.get(), SimpleContainerScreen<GadgetHolderMenu>::new);
+        event.register(ClayiumMenus.AREA_MINER.get(), AreaMinerScreen::new);
+        event.register(ClayiumMenus.AREA_ACTIVATOR.get(), AreaActivatorScreen::new);
     }
 
     @SubscribeEvent
@@ -193,5 +202,14 @@ public final class ClayiumClientEvents {
         event.registerBlockEntityRenderer(ClayiumBlockEntities.PAN_DUPLICATOR.get(), ClayContainerRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.CLAY_CRAFTING_TABLE.get(), ClayContainerRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.CLAY_CHUNK_LOADER.get(), ClayContainerRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.CLAY_ENERGY_LASER.get(), ClayLaserRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.LASER_REFLECTOR.get(), ClayLaserRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.CLAY_MARKER.get(), ClayMarkerRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.AREA_MINER.get(), AreaMachineRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.AREA_COLLECTOR.get(), AreaMachineRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.AREA_ACTIVATOR.get(), AreaMachineRenderer::new);
+
+        event.registerEntityRenderer(ClayiumEntities.CLAY_BALL.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(ClayiumEntities.TELEPORT_BALL.get(), ThrownItemRenderer::new);
     }
 }

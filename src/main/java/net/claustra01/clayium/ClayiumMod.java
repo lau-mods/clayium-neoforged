@@ -6,6 +6,7 @@ import net.claustra01.clayium.registry.ClayiumBlocks;
 import net.claustra01.clayium.registry.ClayiumCreativeTabs;
 import net.claustra01.clayium.registry.ClayiumDataComponents;
 import net.claustra01.clayium.registry.ClayiumEntities;
+import net.claustra01.clayium.registry.ClayiumFeatures;
 import net.claustra01.clayium.registry.ClayiumItems;
 import net.claustra01.clayium.registry.ClayiumLootFunctions;
 import net.claustra01.clayium.registry.ClayiumMenus;
@@ -33,6 +34,7 @@ public class ClayiumMod {
         ClayiumItems.register(modEventBus);
         ClayiumBlockEntities.register(modEventBus);
         ClayiumEntities.register(modEventBus);
+        ClayiumFeatures.register(modEventBus);
         ClayiumMenus.register(modEventBus);
         ClayiumRecipeTypes.register(modEventBus);
         ClayiumRecipeSerializers.register(modEventBus);

@@ -976,7 +976,7 @@ public final class ClayiumTranslations {
         out.put("gui.WaterWheel.progress", "Progress: %1$d");
         out.put("gui.WaterWheel.durability", "Durability: %1$d");
         out.put("gui.WaterWheel.surroundingWater", "Water: %1$d");
-        out.put("tile.blockAntimatterClayEnergyLaser.tooltip.line1", "Equal to 3xBlue + 3xGreen + 3xRed.");
+        out.put("block.clayium_neoforged.antimatter_clay_energy_laser.tooltip.line1", "Equal to 3xBlue + 3xGreen + 3xRed.");
         out.put("tooltip.ClayEnergyLaser.line1", "__DETAIL__");
         out.put("tooltip.ClayEnergyLaser.line2", "Laser is used to run Clay Reactor");
         out.put("tooltip.ClayEnergyLaser.line3", "or to accelerate Area Miner.");
@@ -2174,7 +2174,7 @@ public final class ClayiumTranslations {
         out.put("gui.WaterWheel.progress", "進捗: %1$d");
         out.put("gui.WaterWheel.durability", "耐久度: %1$d");
         out.put("gui.WaterWheel.surroundingWater", "水流: %1$d");
-        out.put("tile.blockAntimatterClayEnergyLaser.tooltip.line1", "3x青 + 3x緑 + 3x赤 と等しい");
+        out.put("block.clayium_neoforged.antimatter_clay_energy_laser.tooltip.line1", "3x青 + 3x緑 + 3x赤 と等しい");
         out.put("tooltip.ClayEnergyLaser.line1", "__DETAIL__");
         out.put("tooltip.ClayEnergyLaser.line2", "レーザーは粘土反応炉の稼動や、");
         out.put("tooltip.ClayEnergyLaser.line3", "範囲採掘機などの機械の加速に使用される");

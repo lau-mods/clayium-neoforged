@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "clayium_neoforged:clay_ore_vein",
+    "clayium_neoforged:large_dense_clay_ore_vein"
+  ],
+  "step": "underground_ores"
+}

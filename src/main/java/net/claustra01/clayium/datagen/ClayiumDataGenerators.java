@@ -55,6 +55,7 @@ public final class ClayiumDataGenerators {
                 event.includeClient(),
                 new ClayiumItemModelProvider(packOutput, existingFileHelper)
         );
+        generator.addProvider(event.includeServer(), new ClayiumWorldGenProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeClient(), new ClayiumLanguageProvider(packOutput, "en_us"));
         generator.addProvider(event.includeClient(), new ClayiumLanguageProvider(packOutput, "ja_jp"));
     }

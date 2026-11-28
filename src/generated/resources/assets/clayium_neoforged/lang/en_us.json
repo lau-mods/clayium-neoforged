@@ -1013,7 +1013,6 @@
   "recipe.WireDrawingMachine": "Clay Wire Drawing Machine",
   "tile.blockActivator.tooltip.line1": "Automatic right-clicker.",
   "tile.blockAdvancedFluidTransferMachine.tooltip.line1": "Fills or empties liquid containers.",
-  "tile.blockAntimatterClayEnergyLaser.tooltip.line1": "Equal to 3xBlue + 3xGreen + 3xRed.",
   "tile.blockAreaActivator.tooltip.line1": "Automatic right-clicker.",
   "tile.blockAutoClayCondenser.tooltip.line1": "Condenses clay automatically.",
   "tile.blockAutoClayCondenserMK2.tooltip.line1": "Condenses clay automatically.",

@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Shared operational foundation for Step 09/11 Clayium machines:
+ * Shared operational foundation for Clayium processing machines:
  * handles adjacent Overclocker / Energy Storage Upgrade modifiers, fractional overclock ticks,
  * {@link IExternalControl} redstone interface states, and active {@link BlockState} synchronization.
  */

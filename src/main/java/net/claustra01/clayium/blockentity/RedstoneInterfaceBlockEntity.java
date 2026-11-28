@@ -200,7 +200,7 @@ public class RedstoneInterfaceBlockEntity extends BlockEntity implements ISynchr
                 }
                 case "Do work once" -> {
                     if (this.lastSignal <= 0 && signal > 0) {
-                        core.startWork();
+                        core.doWorkOnce();
                     } else if (core.isDoingWork()) {
                         core.stopWork();
                     }

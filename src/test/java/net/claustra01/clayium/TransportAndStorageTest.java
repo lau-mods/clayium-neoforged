@@ -47,7 +47,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class Step08TransportAndStorageTest {
+class TransportAndStorageTest {
     private static RegistryAccess.Frozen registries;
 
     @BeforeAll

@@ -157,4 +157,24 @@ public final class ClayiumDataComponentTypes {
                 StorageContentData::new
         );
     }
+
+    public record ClaySteelToolConfigData(
+            int mode,
+            List<BlockPos> customOffsets) {
+
+        public ClaySteelToolConfigData {
+            customOffsets = List.copyOf(customOffsets);
+        }
+
+        public static final Codec<ClaySteelToolConfigData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.optionalFieldOf("mode", 0).forGetter(ClaySteelToolConfigData::mode),
+                BlockPos.CODEC.listOf().optionalFieldOf("custom_offsets", List.of()).forGetter(ClaySteelToolConfigData::customOffsets)
+        ).apply(instance, ClaySteelToolConfigData::new));
+
+        public static final StreamCodec<ByteBuf, ClaySteelToolConfigData> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, ClaySteelToolConfigData::mode,
+                BlockPos.STREAM_CODEC.apply(ByteBufCodecs.list()), ClaySteelToolConfigData::customOffsets,
+                ClaySteelToolConfigData::new
+        );
+    }
 }

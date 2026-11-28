@@ -2,6 +2,7 @@ package net.claustra01.clayium.registry;
 
 import com.mojang.serialization.Codec;
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.component.ClayiumDataComponentTypes.ClaySteelToolConfigData;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.ContainerIoMemoryData;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.DirectionMemoryData;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.FilterConfigData;
@@ -73,6 +74,12 @@ public final class ClayiumDataComponents {
             REGISTRY.register("io_memory", () -> DataComponentType.<ContainerIoMemoryData>builder()
                     .persistent(ContainerIoMemoryData.CODEC)
                     .networkSynchronized(ContainerIoMemoryData.STREAM_CODEC)
+                    .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ClaySteelToolConfigData>> CLAY_STEEL_TOOL_CONFIG =
+            REGISTRY.register("clay_steel_tool_config", () -> DataComponentType.<ClaySteelToolConfigData>builder()
+                    .persistent(ClaySteelToolConfigData.CODEC)
+                    .networkSynchronized(ClaySteelToolConfigData.STREAM_CODEC)
                     .build());
 
     private ClayiumDataComponents() {}

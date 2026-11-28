@@ -61,11 +61,16 @@ public final class ClayContainerIoIcons {
                 || container instanceof VacuumContainerBlockEntity) {
             return DEFAULT_INSERT;
         }
-        if (container instanceof SaltExtractorBlockEntity || container instanceof CACollectorBlockEntity) {
+        if (container instanceof SaltExtractorBlockEntity
+                || container instanceof CACollectorBlockEntity
+                || container instanceof ClayEnergyLaserBlockEntity
+                || container instanceof AreaCollectorBlockEntity) {
             return COLLECTOR_INSERT;
         }
-        Block block = container.getBlockState().getBlock();
-        if (block instanceof ClayContainerBlock cc && "area_miner".equals(cc.getCategoryKey())) {
+        if (container instanceof AreaActivatorBlockEntity) {
+            return MACHINE_INSERT;
+        }
+        if (container instanceof AreaMinerBlockEntity) {
             return MINER_INSERT;
         }
         if (container instanceof TieredClayContainerBlockEntity) {
@@ -96,7 +101,7 @@ public final class ClayContainerIoIcons {
         if ("rf_generator".equals(ClayContainerBlock.resolveBlockEntityCategory(container.getBlockState().getBlock()))) {
             return RF_EXTRACT;
         }
-        if ("clay_energy_laser".equals(ClayContainerBlock.resolveBlockEntityCategory(container.getBlockState().getBlock()))) {
+        if (container instanceof ClayEnergyLaserBlockEntity) {
             return EMPTY;
         }
         return DEFAULT_EXTRACT;

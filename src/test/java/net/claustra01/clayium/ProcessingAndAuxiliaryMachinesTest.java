@@ -67,7 +67,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class Step09MachinesTest {
+class ProcessingAndAuxiliaryMachinesTest {
     private static RegistryAccess.Frozen registries;
 
     @BeforeAll
@@ -78,7 +78,7 @@ class Step09MachinesTest {
     }
 
     @Test
-    void allStep09BlockEntityTypesAreNonOverlappingAndInstantiateExactClasses() {
+    void allMachineBlockEntityTypesAreNonOverlappingAndInstantiateExactClasses() {
         List<BlockEntityType<?>> allTypes = List.of(
                 ClayiumBlockEntities.BUFFER.get(),
                 ClayiumBlockEntities.MULTITRACK_BUFFER.get(),

@@ -170,8 +170,8 @@ CE→FE の変換効率、発電量、出力上限、容量、出力方向、レ
 | 08 | 機械・搬送・ストレージ基盤 | 完了 | BlockEntity、アイテム・流体搬送、方向設定、フィルター、機械稼働・保存処理を整備 | 9種BlockEntity(Buffer/Multitrack/FluidTranslator/Storage/Vacuum/MetalChest/Distributor/ClayInterface/RedstoneInterface)・12種フィルター・Cap登録・配管VoxelShape・自動搬入出・DataComponent/NBT永続化を整備し、2回連続runData決定性一致(4,229 JSON)・全30テスト・buildを確認 |
 | 09 | 各種加工機械・補助機械 | 完了 | 原版の対象機械を Tier・レシピ・性能・制約を維持して移植 | 26種の加工・マルチブロック・CA・補助機械BlockEntity(Simple/Assembler/Centrifuge/ChemicalReactor/Separator/CA系3種/BlastFurnace/Reactor/CAReactor/LaserInterface/AutoClayCondenser/Solar&ClayFabricator/CobbleGen/SaltExtractor/WaterWheel/CreativeCE/AutoCrafter/AutoTrader/PANDuplicator/WorkTable/CraftingTable/QuartzCrucible/ChunkLoader)・Capability・ChunkTicket・NBT保存を実装し、全36テスト・verifyスクリプト・build成功を確認 |
 | 10 | GUI・描画・ネットワーク | 完了 | メニュー、画面、操作・同期、特殊描画を移植し、クライアントとサーバーを分離 | 15種MenuType・11種Screen・3種CustomPacketPayload・6種BlockEntityRenderer・IOアイコン/Interface遠隔同期を実装し全41テスト・build成功を確認 |
-| 11 | 特殊機能・ワールド生成 | ▶ 作業中 | ガジェット、特殊ツール、レーザー、リアクター、範囲操作、ワールド生成等の未移植機能を解消 | — |
-| 12 | PAN ネットワーク | 未着手 | 通常 PAN ケーブル、Core、Adapter 等を移植し、導通・描画・当たり判定を検証 | — |
+| 11 | 特殊機能・ワールド生成 | 完了 | ガジェット、特殊ツール、レーザー、リアクター、範囲操作、ワールド生成等の未移植機能を解消 | レーザー・反射鏡・マーカー4種・範囲機械3種・ガジェット16種&ホルダー・特殊ツール・ClayShooter&投擲体2種・粘土樹&鉱脈DataGen(2回連続runData決定性一致・4,235 JSON)を実装し全46テスト・build成功を確認 |
+| 12 | PAN ネットワーク | ▶ 作業中 | 通常 PAN ケーブル、Core、Adapter 等を移植し、導通・描画・当たり判定を検証 | — |
 | 13 | FE 連携 | 未着手 | RF 発電機を FE に置換し、変換量・制御・容量・出力方向を検証 | — |
 | 14 | JEI 連携 | 未着手 | 原版 NEI 相当のレシピ表示・検索・GUI 連携を移植し、未導入時も正常動作 | — |
 | 15 | 原版との比較・全体検証 | 未着手 | 第13節の完了条件をすべて確認し、未移植・未検証事項を解消 | — |

@@ -3,6 +3,7 @@ package net.claustra01.clayium.menu;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.FilterConfigData;
 import net.claustra01.clayium.filter.ClayiumFilterMatcher;
 import net.claustra01.clayium.item.FilterItem;
+import net.claustra01.clayium.item.GadgetItem;
 import net.claustra01.clayium.registry.ClayiumDataComponents;
 import net.claustra01.clayium.registry.ClayiumMenus;
 import net.minecraft.core.NonNullList;
@@ -56,9 +57,14 @@ public class ItemFilterWhitelistMenu extends ClayiumBaseMenu {
         cfg.slots().copyInto(this.filterSlots);
     }
 
+    private static boolean isEditableFilterHolder(ItemStack stack) {
+        return stack.getItem() instanceof FilterItem
+                || (stack.getItem() instanceof GadgetItem gadget && gadget.getFamily() == GadgetItem.GadgetFamily.AUTO_EAT);
+    }
+
     private void saveToHeldFilter() {
         ItemStack held = getHeldFilterStack();
-        if (!(held.getItem() instanceof FilterItem)) {
+        if (!isEditableFilterHolder(held)) {
             return;
         }
         FilterConfigData cur = ClayiumFilterMatcher.getConfig(held);
@@ -137,7 +143,7 @@ public class ItemFilterWhitelistMenu extends ClayiumBaseMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return getHeldFilterStack().getItem() instanceof FilterItem;
+        return isEditableFilterHolder(getHeldFilterStack());
     }
 
     private class WhitelistContainer implements Container {

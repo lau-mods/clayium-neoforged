@@ -1,6 +1,8 @@
 package net.claustra01.clayium.registry;
 
 import net.claustra01.clayium.ClayiumMod;
+import net.claustra01.clayium.menu.AreaActivatorMenu;
+import net.claustra01.clayium.menu.AreaMinerMenu;
 import net.claustra01.clayium.menu.AutoClayCondenserMenu;
 import net.claustra01.clayium.menu.AutoCrafterMenu;
 import net.claustra01.clayium.menu.AutoTraderMenu;
@@ -60,6 +62,10 @@ public final class ClayiumMenus {
             REGISTRY.register("item_filter_string", () -> IMenuTypeExtension.create(ItemFilterStringMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<GadgetHolderMenu>> GADGET_HOLDER =
             REGISTRY.register("gadget_holder", () -> IMenuTypeExtension.create(GadgetHolderMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<AreaMinerMenu>> AREA_MINER =
+            REGISTRY.register("area_miner", () -> IMenuTypeExtension.create(AreaMinerMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<AreaActivatorMenu>> AREA_ACTIVATOR =
+            REGISTRY.register("area_activator", () -> IMenuTypeExtension.create(AreaActivatorMenu::new));
 
     private ClayiumMenus() {}
 
