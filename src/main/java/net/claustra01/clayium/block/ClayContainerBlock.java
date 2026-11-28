@@ -26,6 +26,7 @@ import net.claustra01.clayium.blockentity.ClayInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.CobblestoneGeneratorBlockEntity;
 import net.claustra01.clayium.blockentity.CreativeEnergySourceBlockEntity;
 import net.claustra01.clayium.blockentity.DistributorBlockEntity;
+import net.claustra01.clayium.blockentity.FEGeneratorBlockEntity;
 import net.claustra01.clayium.blockentity.FluidTranslatorBlockEntity;
 import net.claustra01.clayium.blockentity.IGeneralInterface;
 import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
@@ -51,6 +52,7 @@ import net.claustra01.clayium.menu.AutoTraderMenu;
 import net.claustra01.clayium.menu.ClayCraftingTableMenu;
 import net.claustra01.clayium.menu.DistributorMenu;
 import net.claustra01.clayium.menu.EnergyOnlyMenu;
+import net.claustra01.clayium.menu.FEGeneratorMenu;
 import net.claustra01.clayium.menu.MultitrackBufferMenu;
 import net.claustra01.clayium.menu.NormalInventoryMenu;
 import net.claustra01.clayium.menu.PANAdapterMenu;
@@ -224,10 +226,20 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
     }
 
     public boolean isPipeConnected(BlockGetter level, BlockPos pos, Direction dir) {
+        if (level instanceof Level lvl
+                && lvl.getCapability(Capabilities.EnergyStorage.BLOCK, pos, dir) != null
+                && lvl.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(dir), dir.getOpposite()) != null) {
+            return true;
+        }
         BlockEntity self = level.getBlockEntity(pos);
         BlockEntity other = level.getBlockEntity(pos.relative(dir));
         if (self == null || other == null) {
             return false;
+        }
+        if (self.getLevel() != null && other.getLevel() != null
+                && self.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, pos, dir) != null
+                && other.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(dir), dir.getOpposite()) != null) {
+            return true;
         }
         int impSelf = connectionScoreImport(self, dir, other);
         int expOther = connectionScoreExport(other, dir.getOpposite(), self);
@@ -520,6 +532,17 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
                     });
             return true;
         }
+        if (container instanceof FEGeneratorBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new FEGeneratorMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
         if (container instanceof PANCoreBlockEntity core) {
             core.refreshNetwork();
             core.refreshItemSet();
@@ -586,6 +609,9 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
         if (block instanceof PANAdapterBlock) {
             return "pan_adapter";
         }
+        if (block instanceof FEGeneratorBlock) {
+            return "fe_generator";
+        }
         if (!(block instanceof ClayContainerBlock cc)) {
             return null;
         }
@@ -633,6 +659,9 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
         }
         if ("generator".equals(cc.categoryKey)) {
             return "water_wheel";
+        }
+        if ("fe_generator".equals(cc.categoryKey)) {
+            return "fe_generator";
         }
         if ("clay_blast_furnace".equals(path)) {
             return "blast_furnace";
@@ -739,6 +768,7 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
             case "area_miner" -> new AreaMinerBlockEntity(pos, state);
             case "area_collector" -> new AreaCollectorBlockEntity(pos, state);
             case "area_activator" -> new AreaActivatorBlockEntity(pos, state);
+            case "fe_generator" -> new FEGeneratorBlockEntity(pos, state);
             default -> null;
         };
     }

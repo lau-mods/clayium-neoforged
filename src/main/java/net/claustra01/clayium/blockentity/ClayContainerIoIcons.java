@@ -1,10 +1,8 @@
 package net.claustra01.clayium.blockentity;
 
 import javax.annotation.Nullable;
-import net.claustra01.clayium.block.ClayContainerBlock;
 import net.claustra01.clayium.util.ClayDirection.RelativeSide;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
@@ -73,6 +71,9 @@ public final class ClayContainerIoIcons {
         if (container instanceof AreaMinerBlockEntity) {
             return MINER_INSERT;
         }
+        if (container instanceof FEGeneratorBlockEntity) {
+            return COLLECTOR_INSERT;
+        }
         if (container instanceof TieredClayContainerBlockEntity) {
             return MACHINE_INSERT;
         }
@@ -98,7 +99,7 @@ public final class ClayContainerIoIcons {
         if (container instanceof MultitrackBufferBlockEntity) {
             return MULTITRACK_EXTRACT;
         }
-        if ("rf_generator".equals(ClayContainerBlock.resolveBlockEntityCategory(container.getBlockState().getBlock()))) {
+        if (container instanceof FEGeneratorBlockEntity) {
             return RF_EXTRACT;
         }
         if (container instanceof ClayEnergyLaserBlockEntity) {

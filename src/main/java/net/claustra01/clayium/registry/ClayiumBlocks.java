@@ -18,6 +18,7 @@ import net.claustra01.clayium.block.ClayTreeSaplingBlock;
 import net.claustra01.clayium.block.ClayWorkTableBlock;
 import net.claustra01.clayium.block.CompressedClayBlock;
 import net.claustra01.clayium.block.DirectionalClayContainerBlock;
+import net.claustra01.clayium.block.FEGeneratorBlock;
 import net.claustra01.clayium.block.HorizontalClayContainerBlock;
 import net.claustra01.clayium.block.LaserReflectorBlock;
 import net.claustra01.clayium.block.MachineHullBlock;
@@ -111,6 +112,18 @@ public final class ClayiumBlocks {
             case 2 -> new DirectionalClayContainerBlock(stoneMachineProps(), tier, baseTex, overlayTex, category, tooltipKey, overlayMode);
             default -> new ClayContainerBlock(stoneMachineProps(), tier, baseTex, overlayTex, category, tooltipKey, overlayMode);
         });
+    }
+
+    private static void regFEGenerator(String path, String configBlockName, int tier, String baseTex) {
+        reg(path, () -> new FEGeneratorBlock(
+                stoneMachineProps(),
+                configBlockName,
+                tier,
+                baseTex,
+                "rfgenerator",
+                "fe_generator",
+                "tooltip.RFGenerator",
+                OverlayMode.ALL_FACES));
     }
 
     private static void regActiveContainer(
@@ -453,16 +466,16 @@ public final class ClayiumBlocks {
         regSilicone("green_silicone_block", DyeColor.GREEN);
         regSilicone("red_silicone_block", DyeColor.RED);
         regSilicone("black_silicone_block", DyeColor.BLACK);
-        regContainer("basic_rf_generator", 4, 2, "machinehull-3", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("advanced_rf_generator", 5, 2, "machinehull-4", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("precision_rf_generator", 6, 2, "machinehull-5", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("clay_steel_rf_generator", 7, 2, "machinehull-6", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("clayium_rf_generator", 8, 2, "machinehull-7", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("ultimate_rf_generator", 9, 2, "machinehull-8", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("antimatter_rf_generator", 10, 2, "machinehull-9", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("pure_antimatter_rf_generator", 11, 2, "machinehull-10", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("oec_rf_generator", 12, 2, "machinehull-11", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
-        regContainer("opa_rf_generator", 13, 2, "machinehull-12", "rfgenerator", "fe_generator", "tooltip.RFGenerator", OverlayMode.ALL_FACES);
+        regFEGenerator("basic_rf_generator", "BasicRFGenerator", 4, "machinehull-3");
+        regFEGenerator("advanced_rf_generator", "AdvancedRFGenerator", 5, "machinehull-4");
+        regFEGenerator("precision_rf_generator", "PrecisionRFGenerator", 6, "machinehull-5");
+        regFEGenerator("clay_steel_rf_generator", "ClaySteelRFGenerator", 7, "machinehull-6");
+        regFEGenerator("clayium_rf_generator", "ClayiumRFGenerator", 8, "machinehull-7");
+        regFEGenerator("ultimate_rf_generator", "UltimateRFGenerator", 9, "machinehull-8");
+        regFEGenerator("antimatter_rf_generator", "AntimatterRFGenerator", 10, "machinehull-9");
+        regFEGenerator("pure_antimatter_rf_generator", "PureAntimatterRFGenerator", 11, "machinehull-10");
+        regFEGenerator("oec_rf_generator", "OECRFGenerator", 12, "machinehull-11");
+        regFEGenerator("opa_rf_generator", "OPARFGenerator", 13, "machinehull-12");
         regMetalBlock("magnesium_block", CMaterials.MAGNESIUM, -1, "metalblock", true);
         regMetalBlock("sodium_block", CMaterials.SODIUM, -1, "metalblock", true);
         regMetalBlock("lithium_block", CMaterials.LITHIUM, -1, "metalblock", true);

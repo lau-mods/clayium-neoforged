@@ -18,6 +18,7 @@ import net.claustra01.clayium.client.screen.AreaMinerScreen;
 import net.claustra01.clayium.client.screen.AutoTraderScreen;
 import net.claustra01.clayium.client.screen.ClayCraftingTableScreen;
 import net.claustra01.clayium.client.screen.ClayWorkTableScreen;
+import net.claustra01.clayium.client.screen.FEGeneratorScreen;
 import net.claustra01.clayium.client.screen.ItemFilterStringScreen;
 import net.claustra01.clayium.client.screen.MultipageScreen;
 import net.claustra01.clayium.client.screen.PANAdapterScreen;
@@ -168,6 +169,7 @@ public final class ClayiumClientEvents {
         event.register(ClayiumMenus.AREA_ACTIVATOR.get(), AreaActivatorScreen::new);
         event.register(ClayiumMenus.PAN_ADAPTER.get(), PANAdapterScreen::new);
         event.register(ClayiumMenus.PAN_CORE.get(), PANCoreScreen::new);
+        event.register(ClayiumMenus.FE_GENERATOR.get(), FEGeneratorScreen::new);
     }
 
     @SubscribeEvent
@@ -214,6 +216,7 @@ public final class ClayiumClientEvents {
         event.registerBlockEntityRenderer(ClayiumBlockEntities.AREA_MINER.get(), AreaMachineRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.AREA_COLLECTOR.get(), AreaMachineRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.AREA_ACTIVATOR.get(), AreaMachineRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.FE_GENERATOR.get(), ClayContainerRenderer::new);
 
         event.registerEntityRenderer(ClayiumEntities.CLAY_BALL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ClayiumEntities.TELEPORT_BALL.get(), ThrownItemRenderer::new);

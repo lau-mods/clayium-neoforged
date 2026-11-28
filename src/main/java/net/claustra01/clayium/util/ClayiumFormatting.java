@@ -119,6 +119,6 @@ public final class ClayiumFormatting {
     }
 
     public static String formatFE(long fe) {
-        return String.format("%,d", fe);
+        return String.format(java.util.Locale.US, "%,d", fe);
     }
 }

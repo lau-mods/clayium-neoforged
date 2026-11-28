@@ -404,6 +404,7 @@ public abstract class ClayContainerBlockEntity extends BlockEntity implements IG
                 } else {
                     player.sendSystemMessage(Component.literal("Set insert route " + this.insertRoutes[sIdx]));
                 }
+                this.level.invalidateCapabilities(this.worldPosition);
             }
             case 1 -> {
                 this.extractRoutes[sIdx]++;
@@ -413,6 +414,7 @@ public abstract class ClayContainerBlockEntity extends BlockEntity implements IG
                 } else {
                     player.sendSystemMessage(Component.literal("Set extract route " + this.extractRoutes[sIdx]));
                 }
+                this.level.invalidateCapabilities(this.worldPosition);
             }
             case 2 -> {
                 BlockState cur = getBlockState();
@@ -421,6 +423,7 @@ public abstract class ClayContainerBlockEntity extends BlockEntity implements IG
                         && cur.hasProperty(ClayContainerBlock.PIPE_MODE)) {
                     BlockState next = cur.cycle(ClayContainerBlock.PIPE_MODE);
                     this.level.setBlock(this.worldPosition, next, Block.UPDATE_ALL);
+                    this.level.invalidateCapabilities(this.worldPosition);
                 }
             }
             case 10 -> {
@@ -441,7 +444,10 @@ public abstract class ClayContainerBlockEntity extends BlockEntity implements IG
                     this.filters.set(sIdx, ItemStack.EMPTY);
                 }
             }
-            case 20 -> rotateContainerFacing(hitFace);
+            case 20 -> {
+                rotateContainerFacing(hitFace);
+                this.level.invalidateCapabilities(this.worldPosition);
+            }
             case 30 -> {
                 Block block = getBlockState().getBlock();
                 if (block instanceof ClayContainerBlock cc) {
@@ -462,6 +468,7 @@ public abstract class ClayContainerBlockEntity extends BlockEntity implements IG
                 if (memory != null && getBlockState().getBlock() instanceof ClayContainerBlock cc) {
                     if (cc.getFacingMode().name().equals(memory.facingMode())) {
                         applyIoMemory(memory);
+                        this.level.invalidateCapabilities(this.worldPosition);
                         player.sendSystemMessage(Component.literal("Loaded settings from memory"));
                     } else {
                         player.sendSystemMessage(Component.literal("Invalid data"));

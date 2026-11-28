@@ -7,7 +7,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 /**
- * Registers ItemHandler and FluidHandler capabilities for Clayium BlockEntities.
+ * Registers ItemHandler, FluidHandler, and EnergyStorage capabilities for Clayium BlockEntities.
  */
 @EventBusSubscriber(modid = ClayiumMod.MOD_ID)
 public final class ClayiumCapabilities {
@@ -52,6 +52,13 @@ public final class ClayiumCapabilities {
         registerContainerItemHandler(event, ClayiumBlockEntities.AREA_MINER);
         registerContainerItemHandler(event, ClayiumBlockEntities.AREA_COLLECTOR);
         registerContainerItemHandler(event, ClayiumBlockEntities.AREA_ACTIVATOR);
+        registerContainerItemHandler(event, ClayiumBlockEntities.FE_GENERATOR);
+
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                ClayiumBlockEntities.FE_GENERATOR.get(),
+                (be, side) -> be.getEnergyStorage(side)
+        );
 
         event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,

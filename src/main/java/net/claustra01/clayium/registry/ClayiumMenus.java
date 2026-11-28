@@ -10,6 +10,7 @@ import net.claustra01.clayium.menu.ClayCraftingTableMenu;
 import net.claustra01.clayium.menu.ClayWorkTableMenu;
 import net.claustra01.clayium.menu.DistributorMenu;
 import net.claustra01.clayium.menu.EnergyOnlyMenu;
+import net.claustra01.clayium.menu.FEGeneratorMenu;
 import net.claustra01.clayium.menu.GadgetHolderMenu;
 import net.claustra01.clayium.menu.ItemFilterStringMenu;
 import net.claustra01.clayium.menu.ItemFilterWhitelistMenu;
@@ -72,6 +73,8 @@ public final class ClayiumMenus {
             REGISTRY.register("pan_adapter", () -> IMenuTypeExtension.create(PANAdapterMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<PANCoreMenu>> PAN_CORE =
             REGISTRY.register("pan_core", () -> IMenuTypeExtension.create(PANCoreMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<FEGeneratorMenu>> FE_GENERATOR =
+            REGISTRY.register("fe_generator", () -> IMenuTypeExtension.create(FEGeneratorMenu::new));
 
     private ClayiumMenus() {}
 

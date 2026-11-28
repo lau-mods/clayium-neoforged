@@ -30,6 +30,7 @@ import net.claustra01.clayium.blockentity.ClayWorkTableBlockEntity;
 import net.claustra01.clayium.blockentity.CobblestoneGeneratorBlockEntity;
 import net.claustra01.clayium.blockentity.CreativeEnergySourceBlockEntity;
 import net.claustra01.clayium.blockentity.DistributorBlockEntity;
+import net.claustra01.clayium.blockentity.FEGeneratorBlockEntity;
 import net.claustra01.clayium.blockentity.FluidTranslatorBlockEntity;
 import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.LaserReflectorBlockEntity;
@@ -150,6 +151,8 @@ public final class ClayiumBlockEntities {
             regByCategory("area_collector", AreaCollectorBlockEntity::new);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AreaActivatorBlockEntity>> AREA_ACTIVATOR =
             regByCategory("area_activator", AreaActivatorBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FEGeneratorBlockEntity>> FE_GENERATOR =
+            regByCategory("fe_generator", FEGeneratorBlockEntity::new);
 
     private static <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> regByCategory(
             String category,

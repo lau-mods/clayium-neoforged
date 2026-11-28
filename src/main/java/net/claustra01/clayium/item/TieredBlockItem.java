@@ -3,11 +3,13 @@ package net.claustra01.clayium.item;
 import java.util.List;
 import net.claustra01.clayium.block.ClayContainerBlock;
 import net.claustra01.clayium.block.CompressedClayBlock;
+import net.claustra01.clayium.block.FEGeneratorBlock;
 import net.claustra01.clayium.block.ITieredBlock;
 import net.claustra01.clayium.block.MetalChestBlock;
 import net.claustra01.clayium.block.StorageContainerBlock;
 import net.claustra01.clayium.block.UpgradeBlock;
 import net.claustra01.clayium.component.ClayiumDataComponentTypes.StorageContentData;
+import net.claustra01.clayium.energy.FEGeneratorSpecs;
 import net.claustra01.clayium.energy.IClayEnergy;
 import net.claustra01.clayium.registry.ClayiumDataComponents;
 import net.claustra01.clayium.util.ClayiumFormatting;
@@ -91,6 +93,23 @@ public class TieredBlockItem extends BlockItem implements ITieredItem, IClayEner
                         .withStyle(ChatFormatting.GRAY));
             } else if (StorageContainerBlock.isUpgradedStack(stack)) {
                 tooltip.add(Component.literal("0/" + StorageContainerBlock.getMaxStorage(stack)).withStyle(ChatFormatting.GRAY));
+            }
+        } else if (block instanceof FEGeneratorBlock feGen) {
+            FEGeneratorSpecs.Spec spec = FEGeneratorSpecs.forBlock(feGen);
+            if (spec != null) {
+                if (lang.has("tooltip.RFGenerator.convertRate")) {
+                    tooltip.add(ClayiumTooltips.formatLocalizedLine(
+                            "tooltip.RFGenerator.convertRate",
+                            ClayiumFormatting.formatClayEnergy(spec.ceConsumptionPerTick()),
+                            ClayiumFormatting.formatFE(spec.feProductionPerTick())
+                    ));
+                }
+                if (lang.has("tooltip.RFGenerator.output")) {
+                    tooltip.add(ClayiumTooltips.formatLocalizedLine(
+                            "tooltip.RFGenerator.output",
+                            ClayiumFormatting.formatFE(spec.feOutputPerTick())
+                    ));
+                }
             }
         }
 
