@@ -43,6 +43,8 @@ public final class ClayiumCapabilities {
         registerContainerItemHandler(event, ClayiumBlockEntities.CREATIVE_CE_SOURCE);
         registerContainerItemHandler(event, ClayiumBlockEntities.AUTO_CRAFTER);
         registerContainerItemHandler(event, ClayiumBlockEntities.AUTO_TRADER);
+        registerContainerItemHandler(event, ClayiumBlockEntities.PAN_CORE);
+        registerContainerItemHandler(event, ClayiumBlockEntities.PAN_ADAPTER);
         registerContainerItemHandler(event, ClayiumBlockEntities.PAN_DUPLICATOR);
         registerContainerItemHandler(event, ClayiumBlockEntities.CLAY_CRAFTING_TABLE);
         registerContainerItemHandler(event, ClayiumBlockEntities.LASER_INTERFACE);

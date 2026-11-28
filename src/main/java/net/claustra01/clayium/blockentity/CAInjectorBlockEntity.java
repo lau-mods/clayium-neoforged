@@ -34,7 +34,7 @@ public class CAInjectorBlockEntity extends AssemblerBlockEntity {
     }
 
     @Override
-    protected double getCraftTimeMultiplier() {
+    public double getCraftTimeMultiplier() {
         return ClayEnergyUpgradeMath.caInjectorCraftTimeMultiplier(getResonance(), getTier());
     }
 }

@@ -80,14 +80,14 @@ class GuiAndNetworkTest {
 
     @Test
     void all15MenuTypesAreRegisteredAndDistinct() {
-        assertEquals(17, ClayiumMenus.REGISTRY.getEntries().size());
+        assertEquals(19, ClayiumMenus.REGISTRY.getEntries().size());
         Set<MenuType<?>> types = new HashSet<>();
         for (var entry : ClayiumMenus.REGISTRY.getEntries()) {
             MenuType<?> type = entry.get();
             assertNotNull(type);
             assertTrue(types.add(type), "Duplicate MenuType: " + entry.getId());
         }
-        assertEquals(17, types.size());
+        assertEquals(19, types.size());
     }
 
     @Test

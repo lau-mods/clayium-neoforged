@@ -24,6 +24,7 @@ import net.claustra01.clayium.block.MachineHullBlock;
 import net.claustra01.clayium.block.MetalChestBlock;
 import net.claustra01.clayium.block.MetalMaterialBlock;
 import net.claustra01.clayium.block.PANAdapterBlock;
+import net.claustra01.clayium.block.PANCoreBlock;
 import net.claustra01.clayium.block.PANDuplicatorBlock;
 import net.claustra01.clayium.block.PanCableBlock;
 import net.claustra01.clayium.block.QuartzCrucibleBlock;
@@ -222,7 +223,7 @@ public final class ClayiumBlocks {
         reg("clay_tree_leaves", () -> new ClayTreeLeavesBlock(Properties.ofFullCopy(Blocks.OAK_LEAVES)));
         reg("clay_tree_log", () -> new ClayTreeLogBlock(Properties.of().mapColor(MapColor.CLAY).strength(1.5F).sound(SoundType.GRAVEL)));
         reg("clay_chunk_loader", () -> new ClayContainerBlock(Properties.of().mapColor(MapColor.METAL).strength(6.0F, 25.0F).sound(SoundType.METAL).requiresCorrectToolForDrops(), 6, "zk60ahull", "chunkloader", "utility", null, OverlayMode.ALL_FACES));
-        reg("pan_core", () -> new HorizontalClayContainerBlock(Properties.of().mapColor(MapColor.METAL).strength(4.0F, 4.0F).sound(SoundType.METAL).requiresCorrectToolForDrops(), 11, "machinehull-10", "pancore", "pan", null));
+        reg("pan_core", () -> new PANCoreBlock(Properties.of().mapColor(MapColor.METAL).strength(4.0F, 4.0F).sound(SoundType.METAL).requiresCorrectToolForDrops()));
         reg("pan_cable", () -> new PanCableBlock(stoneMachineProps().noOcclusion()));
         regContainer("clay_bending_machine", 1, 1, "machinehull-0", "bendingmachine", "machine", null);
         regContainer("dense_clay_bending_machine", 2, 1, "machinehull-1", "bendingmachine", "machine", null);

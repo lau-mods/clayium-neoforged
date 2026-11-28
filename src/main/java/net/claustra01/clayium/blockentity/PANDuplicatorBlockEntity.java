@@ -4,6 +4,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.claustra01.clayium.block.PANDuplicatorBlock;
 import net.claustra01.clayium.blockentity.IPANCoreAccess.PANConversionEntry;
+import net.claustra01.clayium.pan.IPANComponent;
 import net.claustra01.clayium.registry.ClayiumBlockEntities;
 import net.claustra01.clayium.registry.ClayiumItems;
 import net.claustra01.clayium.transfer.ClayiumTransfer;
@@ -16,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * PAN Duplicator (Rank 4..13): duplicates registered PAN items alongside an Antimatter gem
  * using {@code 100000 * 10^(rank - 5)} CE/t up to the PAN item's energy cost.
  */
-public class PANDuplicatorBlockEntity extends AbstractClayMachineBlockEntity {
+public class PANDuplicatorBlockEntity extends AbstractClayMachineBlockEntity implements IPANComponent {
     public static final float BASE_CONSUMING_ENERGY = 100000.0F;
 
     @Nullable

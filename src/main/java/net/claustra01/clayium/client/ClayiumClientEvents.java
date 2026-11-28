@@ -20,6 +20,8 @@ import net.claustra01.clayium.client.screen.ClayCraftingTableScreen;
 import net.claustra01.clayium.client.screen.ClayWorkTableScreen;
 import net.claustra01.clayium.client.screen.ItemFilterStringScreen;
 import net.claustra01.clayium.client.screen.MultipageScreen;
+import net.claustra01.clayium.client.screen.PANAdapterScreen;
+import net.claustra01.clayium.client.screen.PANCoreScreen;
 import net.claustra01.clayium.client.screen.ProcessingMachineScreen;
 import net.claustra01.clayium.client.screen.SimpleContainerScreen;
 import net.claustra01.clayium.client.screen.StorageContainerScreen;
@@ -164,6 +166,8 @@ public final class ClayiumClientEvents {
         event.register(ClayiumMenus.GADGET_HOLDER.get(), SimpleContainerScreen<GadgetHolderMenu>::new);
         event.register(ClayiumMenus.AREA_MINER.get(), AreaMinerScreen::new);
         event.register(ClayiumMenus.AREA_ACTIVATOR.get(), AreaActivatorScreen::new);
+        event.register(ClayiumMenus.PAN_ADAPTER.get(), PANAdapterScreen::new);
+        event.register(ClayiumMenus.PAN_CORE.get(), PANCoreScreen::new);
     }
 
     @SubscribeEvent
@@ -199,6 +203,8 @@ public final class ClayiumClientEvents {
         event.registerBlockEntityRenderer(ClayiumBlockEntities.CREATIVE_CE_SOURCE.get(), ClayContainerRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.AUTO_CRAFTER.get(), ClayContainerRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.AUTO_TRADER.get(), ClayContainerRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.PAN_CORE.get(), ClayContainerRenderer::new);
+        event.registerBlockEntityRenderer(ClayiumBlockEntities.PAN_ADAPTER.get(), ClayContainerRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.PAN_DUPLICATOR.get(), ClayContainerRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.CLAY_CRAFTING_TABLE.get(), ClayContainerRenderer::new);
         event.registerBlockEntityRenderer(ClayiumBlockEntities.CLAY_CHUNK_LOADER.get(), ClayContainerRenderer::new);

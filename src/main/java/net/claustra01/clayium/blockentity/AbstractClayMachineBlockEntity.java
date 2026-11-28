@@ -48,6 +48,10 @@ public abstract class AbstractClayMachineBlockEntity extends TieredClayContainer
         return "";
     }
 
+    public java.util.Collection<net.claustra01.clayium.recipe.ClayMachineRecipe> getAvailableRecipes() {
+        return net.claustra01.clayium.recipe.ClayMachineRecipeLookup.recipesForCategory(this.level, getRecipeCategoryId());
+    }
+
     @Override
     public boolean acceptEnergyClay() {
         return UtilTier.acceptEnergyClay(getTier());

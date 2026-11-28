@@ -35,6 +35,8 @@ import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.LaserReflectorBlockEntity;
 import net.claustra01.clayium.blockentity.MetalChestBlockEntity;
 import net.claustra01.clayium.blockentity.MultitrackBufferBlockEntity;
+import net.claustra01.clayium.blockentity.PANAdapterBlockEntity;
+import net.claustra01.clayium.blockentity.PANCoreBlockEntity;
 import net.claustra01.clayium.blockentity.PANDuplicatorBlockEntity;
 import net.claustra01.clayium.blockentity.QuartzCrucibleBlockEntity;
 import net.claustra01.clayium.blockentity.ReactorBlockEntity;
@@ -124,6 +126,10 @@ public final class ClayiumBlockEntities {
             regByCategory("auto_trader", AutoTraderBlockEntity::new);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PANDuplicatorBlockEntity>> PAN_DUPLICATOR =
             regByCategory("pan_duplicator", PANDuplicatorBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PANCoreBlockEntity>> PAN_CORE =
+            regByCategory("pan_core", PANCoreBlockEntity::new);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PANAdapterBlockEntity>> PAN_ADAPTER =
+            regByCategory("pan_adapter", PANAdapterBlockEntity::new);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayWorkTableBlockEntity>> CLAY_WORK_TABLE =
             regByCategory("clay_work_table", ClayWorkTableBlockEntity::new);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ClayCraftingTableBlockEntity>> CLAY_CRAFTING_TABLE =

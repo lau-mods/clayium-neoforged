@@ -15,6 +15,8 @@ import net.claustra01.clayium.menu.ItemFilterStringMenu;
 import net.claustra01.clayium.menu.ItemFilterWhitelistMenu;
 import net.claustra01.clayium.menu.MultitrackBufferMenu;
 import net.claustra01.clayium.menu.NormalInventoryMenu;
+import net.claustra01.clayium.menu.PANAdapterMenu;
+import net.claustra01.clayium.menu.PANCoreMenu;
 import net.claustra01.clayium.menu.ProcessingMachineMenu;
 import net.claustra01.clayium.menu.StorageContainerMenu;
 import net.claustra01.clayium.menu.WaterWheelMenu;
@@ -66,6 +68,10 @@ public final class ClayiumMenus {
             REGISTRY.register("area_miner", () -> IMenuTypeExtension.create(AreaMinerMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<AreaActivatorMenu>> AREA_ACTIVATOR =
             REGISTRY.register("area_activator", () -> IMenuTypeExtension.create(AreaActivatorMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<PANAdapterMenu>> PAN_ADAPTER =
+            REGISTRY.register("pan_adapter", () -> IMenuTypeExtension.create(PANAdapterMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<PANCoreMenu>> PAN_CORE =
+            REGISTRY.register("pan_core", () -> IMenuTypeExtension.create(PANCoreMenu::new));
 
     private ClayiumMenus() {}
 

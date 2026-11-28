@@ -109,6 +109,11 @@ public class CAReactorBlockEntity extends AbstractMultiblockMachineBlockEntity {
     }
 
     @Override
+    public String getRecipeCategoryId() {
+        return "ca_reactor";
+    }
+
+    @Override
     public boolean canOverclock() {
         return this.reactorTier >= 13;
     }

@@ -65,11 +65,17 @@ public class AssemblerBlockEntity extends AbstractClayMachineBlockEntity {
         }
     }
 
+    @Override
+    public String getRecipeCategoryId() {
+        return this.recipeCategoryId;
+    }
+
     public void setOverrideRecipesForTest(@Nullable Collection<ClayMachineRecipe> recipes) {
         this.overrideRecipesForTest = recipes;
     }
 
-    protected Collection<ClayMachineRecipe> getAvailableRecipes() {
+    @Override
+    public Collection<ClayMachineRecipe> getAvailableRecipes() {
         if (this.overrideRecipesForTest != null) {
             return this.overrideRecipesForTest;
         }

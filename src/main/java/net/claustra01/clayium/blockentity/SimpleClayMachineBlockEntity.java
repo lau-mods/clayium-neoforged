@@ -121,7 +121,8 @@ public class SimpleClayMachineBlockEntity extends AbstractClayMachineBlockEntity
         this.overrideRecipesForTest = recipes;
     }
 
-    protected Collection<ClayMachineRecipe> getAvailableRecipes() {
+    @Override
+    public Collection<ClayMachineRecipe> getAvailableRecipes() {
         if (this.overrideRecipesForTest != null) {
             return this.overrideRecipesForTest;
         }

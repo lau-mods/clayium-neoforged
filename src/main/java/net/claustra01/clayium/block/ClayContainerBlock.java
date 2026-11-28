@@ -31,6 +31,8 @@ import net.claustra01.clayium.blockentity.IGeneralInterface;
 import net.claustra01.clayium.blockentity.LaserInterfaceBlockEntity;
 import net.claustra01.clayium.blockentity.LaserReflectorBlockEntity;
 import net.claustra01.clayium.blockentity.MultitrackBufferBlockEntity;
+import net.claustra01.clayium.blockentity.PANAdapterBlockEntity;
+import net.claustra01.clayium.blockentity.PANCoreBlockEntity;
 import net.claustra01.clayium.blockentity.PANDuplicatorBlockEntity;
 import net.claustra01.clayium.blockentity.QuartzCrucibleBlockEntity;
 import net.claustra01.clayium.blockentity.ReactorBlockEntity;
@@ -51,6 +53,8 @@ import net.claustra01.clayium.menu.DistributorMenu;
 import net.claustra01.clayium.menu.EnergyOnlyMenu;
 import net.claustra01.clayium.menu.MultitrackBufferMenu;
 import net.claustra01.clayium.menu.NormalInventoryMenu;
+import net.claustra01.clayium.menu.PANAdapterMenu;
+import net.claustra01.clayium.menu.PANCoreMenu;
 import net.claustra01.clayium.menu.ProcessingMachineMenu;
 import net.claustra01.clayium.menu.StorageContainerMenu;
 import net.claustra01.clayium.menu.WaterWheelMenu;
@@ -59,6 +63,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -504,6 +509,33 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
                     });
             return true;
         }
+        if (container instanceof PANAdapterBlockEntity) {
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new PANAdapterMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            return true;
+        }
+        if (container instanceof PANCoreBlockEntity core) {
+            core.refreshNetwork();
+            core.refreshItemSet();
+            player.openMenu(
+                    new SimpleMenuProvider(
+                            (id, inv, p) -> new PANCoreMenu(id, inv, targetPos, interactionPos),
+                            title),
+                    buf -> {
+                        buf.writeBlockPos(targetPos);
+                        buf.writeBlockPos(interactionPos);
+                    });
+            if (player instanceof ServerPlayer sp && sp.containerMenu instanceof PANCoreMenu panMenu) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp, panMenu.createSyncPayload());
+            }
+            return true;
+        }
         return false;
     }
 
@@ -547,6 +579,12 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
         }
         if (block instanceof PANDuplicatorBlock) {
             return "pan_duplicator";
+        }
+        if (block instanceof PANCoreBlock) {
+            return "pan_core";
+        }
+        if (block instanceof PANAdapterBlock) {
+            return "pan_adapter";
         }
         if (!(block instanceof ClayContainerBlock cc)) {
             return null;
@@ -693,6 +731,8 @@ public class ClayContainerBlock extends Block implements ITieredBlock, EntityBlo
             case "chemical_reactor" -> new ChemicalReactorBlockEntity(pos, state);
             case "assembler" -> new AssemblerBlockEntity(pos, state);
             case "simple_machine" -> new SimpleClayMachineBlockEntity(pos, state);
+            case "pan_core" -> new PANCoreBlockEntity(pos, state);
+            case "pan_adapter" -> new PANAdapterBlockEntity(pos, state);
             case "pan_duplicator" -> new PANDuplicatorBlockEntity(pos, state);
             case "clay_energy_laser" -> new ClayEnergyLaserBlockEntity(pos, state);
             case "laser_reflector" -> new LaserReflectorBlockEntity(pos, state);

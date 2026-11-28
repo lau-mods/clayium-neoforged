@@ -28,5 +28,10 @@ public final class ClayiumNetwork {
                 AutoTraderOffersPayload.STREAM_CODEC,
                 AutoTraderOffersPayload::handle
         );
+        registrar.playToClient(
+                PANCoreListPayload.TYPE,
+                PANCoreListPayload.STREAM_CODEC,
+                PANCoreListPayload::handle
+        );
     }
 }

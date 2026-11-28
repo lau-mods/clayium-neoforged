@@ -59,8 +59,21 @@ public class CentrifugeBlockEntity extends AbstractClayMachineBlockEntity {
         }
     }
 
+    @Override
+    public String getRecipeCategoryId() {
+        return "centrifuge";
+    }
+
     public void setOverrideRecipesForTest(@Nullable Collection<ClayMachineRecipe> recipes) {
         this.overrideRecipesForTest = recipes;
+    }
+
+    @Override
+    public Collection<ClayMachineRecipe> getAvailableRecipes() {
+        if (this.overrideRecipesForTest != null) {
+            return this.overrideRecipesForTest;
+        }
+        return ClayMachineRecipeLookup.recipesForCategory(this.level, "centrifuge");
     }
 
     @Nullable

@@ -1,6 +1,8 @@
 package net.claustra01.clayium.block;
 
 import java.util.Map;
+import net.claustra01.clayium.pan.IPANConductor;
+import net.claustra01.clayium.pan.UtilPAN;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,7 +20,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * Standard PAN cable without ForgeMultipart: center 4/16 cube with 6 directional connection arms.
  */
-public class PanCableBlock extends Block implements ITieredBlock {
+public class PanCableBlock extends Block implements ITieredBlock, IPANConductor {
     public static final BooleanProperty NORTH = PipeBlock.NORTH;
     public static final BooleanProperty EAST = PipeBlock.EAST;
     public static final BooleanProperty SOUTH = PipeBlock.SOUTH;
@@ -57,12 +59,7 @@ public class PanCableBlock extends Block implements ITieredBlock {
     }
 
     public static boolean canConnectTo(BlockState neighbor) {
-        Block block = neighbor.getBlock();
-        if (block instanceof PanCableBlock) {
-            return true;
-        }
-        return block instanceof ClayContainerBlock container
-                && ("pan".equals(container.getCategoryKey()) || "pan_core".equals(container.getCategoryKey()));
+        return UtilPAN.isPANConductor(neighbor.getBlock());
     }
 
     @Override

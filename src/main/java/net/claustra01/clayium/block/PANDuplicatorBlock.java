@@ -1,11 +1,12 @@
 package net.claustra01.clayium.block;
 
+import net.claustra01.clayium.pan.IPANConductor;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * PAN Duplicator (metaMode=1 horizontal, machinehull-(rank-1) base, panduplicator front, pancasing other faces).
  */
-public class PANDuplicatorBlock extends HorizontalClayContainerBlock {
+public class PANDuplicatorBlock extends HorizontalClayContainerBlock implements IPANConductor {
     private final int duplicatorRank;
 
     public PANDuplicatorBlock(Properties properties, int rank) {
